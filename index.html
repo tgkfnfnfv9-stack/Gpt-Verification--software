@@ -7,14 +7,15 @@
 .tabs{display:flex;gap:2px;border-bottom:1px solid var(--line);padding:0 10px;background:var(--panel2)}.tab{border:0;background:transparent;color:var(--muted);padding:11px 13px;cursor:pointer;border-bottom:2px solid transparent}.tab.active{color:var(--text);border-bottom-color:var(--cyan)}.tabbody{display:none}.tabbody.active{display:block}.filters{padding:8px 10px;display:flex;gap:6px;border-bottom:1px solid var(--line);flex-wrap:wrap}.filter{border:1px solid var(--line);background:#111821;color:var(--muted);padding:5px 9px;border-radius:7px;cursor:pointer}.filter.active{color:var(--text);border-color:#4c8ca7;background:#142832}.table-wrap{max-height:390px;overflow:auto}.trades{width:100%;border-collapse:collapse;font-size:12px}.trades th{position:sticky;top:0;background:#111821;color:var(--muted);font-weight:600;text-align:left;padding:9px 10px;border-bottom:1px solid var(--line);z-index:2}.trades td{padding:8px 10px;border-bottom:1px solid #222a34}.trades tbody tr{cursor:pointer}.trades tbody tr:hover{background:#19222d}.trades tbody tr.selected{background:#162a35}.sidepill{font-weight:800}.buy{color:var(--cyan)}.sell{color:#ff7a7a}.win{color:var(--green)}.loss{color:var(--red)}.section-title{font-weight:750;padding:12px 14px;border-bottom:1px solid var(--line)}.selected-body,.strategy{padding:14px}.selected-big{font-size:19px;font-weight:800}.kv{display:grid;grid-template-columns:1fr auto;gap:7px 10px;margin-top:12px}.kv span:nth-child(odd){color:var(--muted)}.mini-chart{height:185px;padding:8px}.mini-chart canvas{width:100%;height:100%;display:block}.strategy{line-height:1.7}.strategy h3{font-size:14px;margin:15px 0 6px}.strategy ul{padding-left:20px}.chips{display:flex;gap:6px;flex-wrap:wrap}.chip{border:1px solid var(--line);padding:4px 7px;border-radius:999px;color:var(--muted);font-size:11px}.notice{padding:10px 12px;border:1px solid #55470f;background:#221d0d;color:#e3c86c;border-radius:8px;margin-top:12px;font-size:12px}.empty{color:var(--muted);padding:12px}
 @media(max-width:1100px){.page{grid-template-columns:1fr}.side{display:grid;grid-template-columns:1fr 1fr}.stats{grid-template-columns:repeat(3,1fr)}}@media(max-width:720px){.meta{width:100%;margin:0;overflow:auto}.topbar{flex-wrap:wrap}.page{padding:8px}.stats{grid-template-columns:repeat(2,1fr)}.side{display:flex}.chart-wrap{height:620px}}
 
-.importbar{margin:14px 14px 0;background:linear-gradient(135deg,#17212b,#101820);border:1px solid #34506a;border-radius:12px;display:flex;align-items:center;gap:14px;padding:13px 16px;box-shadow:var(--shadow);transition:.15s}.importbar.dragover{border-color:var(--cyan);background:#142a35}.import-main{min-width:0;flex:1}.import-title{font-size:15px;font-weight:800}.import-desc{margin-top:3px;color:var(--muted);font-size:12px}.import-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.import-btn{border:1px solid #3d8fb2;background:#143247;color:#eaf8ff;padding:8px 13px;border-radius:8px;cursor:pointer;font-weight:700}.import-btn:hover{background:#17415a}.clear-btn{border:1px solid #5a3b43;background:#27171b;color:#ffc5cd;padding:8px 13px;border-radius:8px;cursor:pointer;font-weight:700}.clear-btn:hover:not(:disabled){background:#381d23}.clear-btn:disabled{opacity:.38;cursor:not-allowed}.empty-chart{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;background:radial-gradient(circle at center,rgba(22,34,44,.7),rgba(13,18,24,.96));z-index:4;color:#c8d3de}.empty-chart div{max-width:520px;padding:24px}.empty-chart b{display:block;font-size:18px;margin-bottom:8px}.empty-chart span{display:block;color:var(--muted);font-size:12px;line-height:1.7}.file-status{font-size:11px;color:#9eb0c0;max-width:340px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.import-error{color:#ff8b8b}.import-ok{color:#66d99a}@media(max-width:720px){.importbar{margin:8px 8px 0;align-items:flex-start;flex-direction:column}.import-actions{width:100%}.file-status{max-width:100%}}
+.importbar{margin:14px 14px 0;background:linear-gradient(135deg,#17212b,#101820);border:1px solid #34506a;border-radius:12px;display:flex;align-items:center;gap:14px;padding:13px 16px;box-shadow:var(--shadow);transition:.15s}.importbar.dragover{border-color:var(--cyan);background:#142a35}.import-main{min-width:0;flex:1}.import-title{font-size:15px;font-weight:800}.import-desc{margin-top:3px;color:var(--muted);font-size:12px}.import-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.import-btn{min-height:44px;border:1px solid #3d8fb2;background:#143247;color:#eaf8ff;padding:8px 13px;border-radius:8px;cursor:pointer;font-weight:700}.import-btn:disabled{opacity:.38;cursor:not-allowed}.import-btn:hover:not(:disabled){background:#17415a}.clear-btn{border:1px solid #5a3b43;background:#27171b;color:#ffc5cd;padding:8px 13px;border-radius:8px;cursor:pointer;font-weight:700}.clear-btn:hover:not(:disabled){background:#381d23}.clear-btn:disabled{opacity:.38;cursor:not-allowed}.empty-chart{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;background:radial-gradient(circle at center,rgba(22,34,44,.7),rgba(13,18,24,.96));z-index:4;color:#c8d3de}.empty-chart div{max-width:520px;padding:24px}.empty-chart b{display:block;font-size:18px;margin-bottom:8px}.empty-chart span{display:block;color:var(--muted);font-size:12px;line-height:1.7}.file-status{font-size:11px;color:#9eb0c0;max-width:340px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.import-error{color:#ff8b8b}.import-ok{color:#66d99a}@media(max-width:720px){.importbar{margin:8px 8px 0;align-items:flex-start;flex-direction:column}.import-actions{width:100%}.file-status{max-width:100%}}
 
 .datasetbar{margin:10px 14px 0;background:#101820;border:1px solid var(--line);border-radius:10px;padding:10px 12px;box-shadow:var(--shadow)}
+.storage-status{margin:8px 0 0;font-size:12px;color:#9eb0c0;overflow-wrap:anywhere}.storage-status[data-state="error"]{color:#ff9aa7}.storage-status[data-state="saved"]{color:#66d99a}
 .datasetbar-head{display:flex;align-items:center;gap:10px;margin-bottom:8px}.datasetbar-head b{font-size:13px}.dataset-count{font-size:11px;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:2px 7px}.dataset-list{display:flex;gap:8px;flex-wrap:wrap}.dataset-item{display:flex;align-items:stretch;border:1px solid var(--line);border-radius:9px;background:#111821;overflow:hidden;min-width:190px;max-width:340px}.dataset-item.active{border-color:#3f9bc0;background:#142832;box-shadow:0 0 0 1px rgba(59,200,255,.12) inset}.dataset-select{border:0;background:transparent;color:var(--text);padding:7px 10px;cursor:pointer;text-align:left;min-width:0;flex:1}.dataset-name{display:block;font-size:12px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.dataset-source{display:block;font-size:10px;color:var(--muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.dataset-remove{min-width:48px;padding:0 9px;border:0;border-left:1px solid var(--line);background:#1b1418;color:#ff9aa7;cursor:pointer;font-size:11px;font-weight:700}.dataset-remove:hover{background:#351a20}.empty-inline{font-size:12px;color:var(--muted);padding:4px 2px}.danger-all{border:1px solid #6a3d46;background:#2a171c;color:#ffc4cc;padding:8px 13px;border-radius:8px;cursor:pointer;font-weight:700}.danger-all:hover:not(:disabled){background:#3a1c23}.danger-all:disabled{opacity:.38;cursor:not-allowed}.tool:disabled{opacity:.35;cursor:not-allowed}.import-summary{font-size:11px;color:#9eb0c0;white-space:nowrap}.import-summary.import-error{color:#ff8b8b}.import-summary.import-ok{color:#66d99a}
 @media(max-width:720px){.datasetbar{margin:8px 8px 0}.dataset-item{max-width:100%;width:100%}.dataset-list{display:grid;grid-template-columns:1fr}}
 
-/* Normal view yields vertical scroll and page pinch to the browser. */
-#chart{touch-action:pan-y pinch-zoom;user-select:none;-webkit-user-select:none}
+/* Native one-finger vertical scroll; chart pinch is handled locally. */
+#chart{touch-action:pan-y;user-select:none;-webkit-user-select:none}
 .price-axis{position:absolute;right:0;top:0;width:70px;display:none;touch-action:none;cursor:ns-resize;user-select:none;-webkit-user-select:none;z-index:3;border-left:1px solid transparent}
 .price-axis:hover,.price-axis:focus-visible{background:rgba(59,200,255,.06);border-left-color:#3bc8ff;outline:none}
 .fullscreen-tools{flex-wrap:wrap}
@@ -40,14 +41,16 @@ body.chart-modal-open{position:fixed;width:100%;overflow:hidden}
 <div class="topbar"><div class="brand">GPT 戦略検証ビューア</div><div class="badge" id="statusBadge"></div><div class="meta"><span>銘柄 <b id="mSymbol"></b></span><span>時間足 <b id="mTf"></b></span><span>期間 <b id="mPeriod"></b></span><span>戦略 <b id="mStrategy"></b></span></div></div>
 <div class="importbar" id="dropZone">
   <div class="import-main"><div class="import-title">GPTの検証データを追加</div><div class="import-desc">JSONは1個でも複数でも読み込めます。ファイルを選ぶか、この枠へドラッグ＆ドロップしてください。追加したデータは下から切り替え・個別削除できます。</div></div>
-  <div class="import-actions"><button class="import-btn" id="openDataBtn">JSONを追加</button><button class="danger-all" id="clearAllDataBtn" disabled>すべて消去</button><input id="fileInput" type="file" accept=".json,application/json" multiple hidden><span class="import-summary" id="fileStatus">読み込み済み：0件</span></div>
+  <div class="import-actions"><button class="import-btn" id="openDataBtn">JSONを追加</button><button class="import-btn" id="saveDataBtn" disabled>端末に保存</button><button class="danger-all" id="clearAllDataBtn" disabled>すべて消去</button><input id="fileInput" type="file" accept=".json,application/json" multiple hidden><span class="import-summary" id="fileStatus">読み込み済み：0件</span></div>
 </div>
 <div class="datasetbar" id="datasetBar">
   <div class="datasetbar-head"><b>読み込み済みデータ</b><span class="dataset-count" id="datasetCount">0ファイル / 0チャート</span></div>
+  <p class="storage-status" id="storageStatus" role="status" aria-live="polite">端末の保存データを確認中…</p>
+  <p class="storage-status">このブラウザ内だけに保存します。消去すると保存分も削除します。元のJSONは保管してください。</p>
   <div class="dataset-list" id="datasetList"><span class="empty-inline">まだデータはありません。</span></div>
 </div>
 <div class="page"><div class="main"><div class="stats" id="stats"></div>
-<div class="card"><div class="chart-tabs" id="chartTabs"></div><div class="chart-head"><div><div class="chart-title" id="chartTitle"></div><div class="chart-sub" id="chartSub"></div></div><div class="chart-tools"><button class="tool" id="prevTrade">← 前</button><button class="tool" id="zoomOut" aria-label="時間軸を縮小">－時間</button><button class="tool" id="zoomIn" aria-label="時間軸を拡大">＋時間</button><button class="tool" id="allView">時間全体</button><button class="tool" id="fitPrice">価格を合わせる</button><button class="tool" id="openFullscreen" aria-haspopup="dialog" aria-controls="chartDialog">全画面</button><button class="tool" id="nextTrade">次 →</button></div></div><div class="indicator-row" id="indicatorRow"></div><div id="chartPlaceholder" hidden></div><div class="chart-wrap" id="chartWrap"><canvas id="chart"></canvas><div id="priceAxis" class="price-axis" tabindex="0" role="group" aria-label="価格目盛り：上にドラッグで拡大、下で縮小。上下キーでも操作できます。" title="価格目盛り：上にドラッグで拡大、下で縮小"></div><div class="empty-chart" id="emptyChart"><div><b>検証データはまだ読み込まれていません</b><span>上の「JSONファイルを選ぶ」からGPT出力JSONを読み込んでください。</span></div></div><div class="tooltip" id="tooltip"></div><div class="hint"><span class="hint-desktop">ホイール: 時間軸 / 右の価格目盛りを上下ドラッグ: 価格軸</span><span class="hint-touch"><span class="hint-normal">上下: ページ移動 / 左右: 時間移動<br>右の価格目盛りを上下: 価格軸 / ピンチは全画面</span><span class="hint-full">1本指: 横移動 / 2本指: 時間軸の拡縮<br>右の価格目盛りを上下: 価格軸の拡縮</span></span></div></div></div>
+<div class="card"><div class="chart-tabs" id="chartTabs"></div><div class="chart-head"><div><div class="chart-title" id="chartTitle"></div><div class="chart-sub" id="chartSub"></div></div><div class="chart-tools"><button class="tool" id="prevTrade">← 前</button><button class="tool" id="zoomOut" aria-label="時間軸を縮小">－時間</button><button class="tool" id="zoomIn" aria-label="時間軸を拡大">＋時間</button><button class="tool" id="allView">時間全体</button><button class="tool" id="fitPrice">価格を合わせる</button><button class="tool" id="openFullscreen" aria-haspopup="dialog" aria-controls="chartDialog">全画面</button><button class="tool" id="nextTrade">次 →</button></div></div><div class="indicator-row" id="indicatorRow"></div><div id="chartPlaceholder" hidden></div><div class="chart-wrap" id="chartWrap"><canvas id="chart"></canvas><div id="priceAxis" class="price-axis" tabindex="0" role="group" aria-label="価格目盛り：上にドラッグで拡大、下で縮小。上下キーでも操作できます。" title="価格目盛り：上にドラッグで拡大、下で縮小"></div><div class="empty-chart" id="emptyChart"><div><b>検証データはまだ読み込まれていません</b><span>上の「JSONファイルを選ぶ」からGPT出力JSONを読み込んでください。</span></div></div><div class="tooltip" id="tooltip"></div><div class="hint"><span class="hint-desktop">ホイール: 時間軸 / 右の価格目盛りを上下ドラッグ: 価格軸</span><span class="hint-touch"><span class="hint-normal">上下: ページ移動 / 左右: 時間移動<br>2本指: 時間軸の拡縮 / 右目盛り: 価格軸</span><span class="hint-full">1本指: 横移動 / 2本指: 時間軸の拡縮<br>右の価格目盛りを上下: 価格軸の拡縮</span></span></div></div></div>
 <div class="card"><div class="tabs"><button class="tab active" data-tab="tradesTab">トレード一覧</button><button class="tab" data-tab="strategyTab">戦略仕様</button><button class="tab" data-tab="notesTab">検証メモ</button></div><div class="tabbody active" id="tradesTab"><div class="filters"><button class="filter active" data-filter="ALL">すべて</button><button class="filter" data-filter="BUY">買い</button><button class="filter" data-filter="SELL">売り</button><button class="filter" data-filter="WIN">勝ち</button><button class="filter" data-filter="LOSS">負け</button></div><div class="table-wrap"><table class="trades"><thead><tr><th>No.</th><th>銘柄/足</th><th>日時</th><th>売買</th><th>結果</th><th>R</th><th>条件</th><th>信頼度</th></tr></thead><tbody id="tradeRows"></tbody></table></div></div><div class="tabbody" id="strategyTab"><div class="strategy" id="strategyBody"></div></div><div class="tabbody" id="notesTab"><div class="strategy" id="notesBody"></div></div></div></div>
 <div class="side"><div class="card"><div class="section-title">選択トレード</div><div class="selected-body" id="selectedBody"></div></div><div class="card"><div class="section-title">累積R</div><div class="mini-chart"><canvas id="equity"></canvas></div></div><div class="card"><div class="section-title">表示中チャート</div><div class="selected-body" id="chartInfo"></div></div></div></div></div>
 <dialog id="chartDialog" class="chart-dialog" aria-labelledby="fullscreenTitle">
@@ -62,8 +65,84 @@ let importEpoch=0,importPending=0,importQueue=Promise.resolve();
 let activeDatasetIndex=-1;
 const $=id=>document.getElementById(id);
 let chartIndex=0,selectedTradeIndex=-1,filter='ALL',view={start:0,end:100},drag=null;
-let chartFullscreen=false,fullscreenState=null,normalTouch=null,priceDrag=null;
+let chartFullscreen=false,fullscreenState=null,normalTouch=null,normalPinch=null,priceDrag=null;
 const chartViews=new WeakMap();
+let storageDb=null,storageVersion,storageLoaded=false,savedRecordPresent=false,storageDirty=false,saveRevision=0,saveQueue=Promise.resolve();
+function refreshStorageControls(){$('saveDataBtn').disabled=!storageLoaded||(!DATASETS.length&&!storageDirty);$('clearAllDataBtn').disabled=!DATASETS.length&&!importPending&&storageLoaded&&!savedRecordPresent&&!storageDirty}
+function storageNotice(message,state='idle'){$('storageStatus').textContent=message;$('storageStatus').dataset.state=state}
+function openStorage(){
+  if(storageDb)return storageDb;
+  storageDb=new Promise((resolve,reject)=>{
+    if(typeof indexedDB==='undefined'){reject(new Error('端末保存に対応していません'));return}
+    let finished=false;
+    const request=indexedDB.open('gpt-verification--software',1);
+    request.onupgradeneeded=()=>{if(!request.result.objectStoreNames.contains('viewer'))request.result.createObjectStore('viewer')};
+    request.onerror=()=>{finished=true;reject(request.error||new Error('端末保存を開けません'))};
+    request.onblocked=()=>{finished=true;reject(new Error('別のタブを閉じて再度保存してください'))};
+    request.onsuccess=()=>{
+      const db=request.result;if(finished){db.close();return}
+      db.onversionchange=()=>{db.close();storageDb=null};resolve(db);
+    };
+  }).catch(error=>{storageDb=null;throw error});
+  return storageDb;
+}
+async function storageTransaction(mode,value){
+  const db=await openStorage();
+  return new Promise((resolve,reject)=>{
+    const tx=db.transaction('viewer',mode),store=tx.objectStore('viewer'),expectedVersion=storageVersion;
+    const request=store.get('workspace');let result,conflict;
+    request.onsuccess=()=>{
+      result=request.result;
+      if(mode==='readwrite'){
+        // The version check and replacement share one exclusive write transaction.
+        if((result?.revision??null)!==expectedVersion){
+          conflict=new Error('別のタブで保存データが更新されました');conflict.code='STORAGE_CONFLICT';tx.abort();return;
+        }
+        store.put(value,'workspace');result=value;
+      }
+    };
+    tx.oncomplete=()=>resolve(result);
+    tx.onabort=tx.onerror=()=>reject(conflict||tx.error||request.error||new Error('端末への保存に失敗しました'));
+  });
+}
+async function restoreSavedData(){
+  const epoch=importEpoch;
+  try{
+    const saved=await storageTransaction('readonly');
+    storageVersion=saved?.revision??null;savedRecordPresent=!!saved&&(saved.version!==1||!Array.isArray(saved.datasets)||saved.datasets.length>0);
+    if(epoch!==importEpoch)return;
+    if(!saved){storageNotice('読み込んだJSONはこの端末・ブラウザに自動保存します。');return}
+    if(saved.version!==1||!Array.isArray(saved.datasets))throw new Error('保存データの形式を読み取れません');
+    const restored=[];let failed=0;
+    for(const item of saved.datasets){try{restored.push({id:String(item.id),sourceName:String(item.sourceName||'保存データ.json'),data:normalizeData(item.data)})}catch(error){failed++}}
+    DATASETS=restored;
+    if(restored.length){const index=restored.findIndex(x=>x.id===saved.activeId);activateDataset(Math.max(0,index))}else{activeDatasetIndex=-1;renderEmpty()}
+    storageNotice(failed?`${restored.length}件を復元 / ${failed}件を復元できませんでした。元のJSONから追加してください。`:
+      restored.length?`端末から${restored.length}件を復元しました（このブラウザのみ）。`:'端末に保存されたデータはありません。',failed?'error':'saved');
+  }catch(error){if(epoch===importEpoch)storageNotice('端末保存を読み取れません。JSONの追加は可能です。元のJSONは保管してください。','error')}
+  finally{storageLoaded=true;refreshStorageControls()}
+}
+function persistDatasets(){
+  const revision=++saveRevision;storageDirty=true;refreshStorageControls();
+  storageNotice('端末に保存中… 完了表示までページを閉じないでください。','saving');
+  let snapshot;
+  try{snapshot=JSON.parse(JSON.stringify({version:1,revision:`${Date.now()}_${Math.random().toString(36).slice(2)}`,activeId:DATASETS[activeDatasetIndex]?.id||null,datasets:DATASETS}))}
+  catch(error){storageNotice('端末に保存できませんでした。元のJSONを保管し「端末に保存」で再試行してください。','error');return Promise.resolve(false)}
+  const task=saveQueue.then(async()=>{
+    await storageReady;
+    try{
+      await storageTransaction('readwrite',snapshot);storageVersion=snapshot.revision;
+      savedRecordPresent=snapshot.datasets.length>0;
+      if(revision===saveRevision){storageDirty=false;storageNotice(snapshot.datasets.length?`端末に${snapshot.datasets.length}件保存済み（このブラウザのみ）。`:'端末の保存データも消去しました。','saved')}
+      refreshStorageControls();
+      return true;
+    }catch(error){
+      if(revision===saveRevision)storageNotice(error.code==='STORAGE_CONFLICT'?'別のタブで保存データが更新されたため、上書きを止めました。元のJSONを保管し、再読み込み後に追加してください。':'端末に保存できませんでした。空き容量・ブラウザ設定を確認し「端末に保存」で再試行してください。消去前の保存データが残っている可能性があります。','error');
+      refreshStorageControls();return false;
+    }
+  });
+  saveQueue=task;return task;
+}
 const COLORS=['#3bc8ff','#f3c969','#ad8cff','#ff9f43','#4b8cff','#2fbf71','#ff7a7a'];
 const esc=v=>String(v??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 const sideLabel=s=>String(s||'').toUpperCase()==='BUY'?'買い':String(s||'').toUpperCase()==='SELL'?'売り':(s||'—');
@@ -175,7 +254,7 @@ const chartPointers=new Map();
 const priceAxis=$('priceAxis');
 function resetChartGesture(){
   const ids=[...chartPointers.keys()];
-  chartPointers.clear();drag=null;normalTouch=null;
+  chartPointers.clear();drag=null;normalTouch=null;normalPinch=null;
   const priceId=priceDrag?.id;priceDrag=null;
   if(priceId!==undefined&&priceAxis.hasPointerCapture(priceId))priceAxis.releasePointerCapture(priceId);
   for(const id of ids){if(cv.hasPointerCapture(id))cv.releasePointerCapture(id)}
@@ -213,22 +292,22 @@ cv.addEventListener('wheel',e=>{
   setChartView(center-span*ratio,span);
 },{passive:false});
 cv.addEventListener('pointerdown',e=>{
-  if(priceDrag||!DATA?.charts?.length||(e.pointerType==='mouse'&&e.button!==0))return;
+  if(normalPinch||priceDrag||!DATA?.charts?.length||(e.pointerType==='mouse'&&e.button!==0))return;
   chartPointers.set(e.pointerId,{x:e.clientX,y:e.clientY});
   $('tooltip').style.display='none';
   if(!chartFullscreen&&e.pointerType==='touch'){
-    // Wait for intent. Never cancel native vertical scroll or page pinch here.
-    if(chartPointers.size>1){normalTouch={axis:'multi'};drag=null;return}
+    // Lock a single finger to page scroll or horizontal chart movement.
+    if(chartPointers.size>1){if(normalTouch?.axis==='y')return;normalTouch={axis:'multi'};beginChartGesture();return}
     normalTouch={axis:'pending',x:e.clientX,y:e.clientY};
     beginChartGesture();return;
   }
   cv.setPointerCapture(e.pointerId);beginChartGesture();
 });
 cv.addEventListener('pointermove',e=>{
-  if(!chartPointers.has(e.pointerId)||!DATA?.charts?.length)return;
+  if(normalPinch||!chartPointers.has(e.pointerId)||!DATA?.charts?.length)return;
   chartPointers.set(e.pointerId,{x:e.clientX,y:e.clientY});
   if(!chartFullscreen&&normalTouch){
-    if(normalTouch.axis==='multi'||normalTouch.axis==='y')return;
+    if(normalTouch.axis==='y')return;
     if(normalTouch.axis==='pending'){
       const dx=Math.abs(e.clientX-normalTouch.x),dy=Math.abs(e.clientY-normalTouch.y);
       if(Math.max(dx,dy)<8)return;
@@ -247,15 +326,46 @@ function endChartPointer(e){
   if(!chartPointers.delete(e.pointerId))return;
   if(cv.hasPointerCapture(e.pointerId))cv.releasePointerCapture(e.pointerId);
   if(!chartFullscreen&&normalTouch){
-    // After a native page pinch, wait for all fingers to lift before chart panning.
+    // After a pinch, wait for all fingers to lift before chart panning.
     normalTouch=chartPointers.size?{axis:'multi'}:null;drag=null;return;
   }
   beginChartGesture();
 }
 cv.addEventListener('pointerup',endChartPointer);
 cv.addEventListener('lostpointercapture',endChartPointer);
-cv.addEventListener('pointercancel',resetChartGesture);
+cv.addEventListener('pointercancel',()=>{if(!normalPinch)resetChartGesture()});
 window.addEventListener('blur',resetChartGesture);
+function beginNormalPinch(touches){
+  const points=Array.from(touches).slice(0,2),g=cv._geom;
+  if(points.length<2||!g)return;
+  const x=(points[0].clientX+points[1].clientX)/2,left=cv.getBoundingClientRect().left+g.pad.l,span=view.end-view.start;
+  normalPinch={ids:points.map(t=>t.identifier),span,left,width:g.pw,anchor:view.start+(x-left)/g.pw*span,
+    distance:Math.max(1,Math.hypot(points[1].clientX-points[0].clientX,points[1].clientY-points[0].clientY))};
+}
+cv.addEventListener('touchstart',e=>{
+  if(chartFullscreen||priceDrag||!DATA?.charts?.length||normalTouch?.axis==='y'||e.targetTouches.length<2||!e.cancelable)return;
+  e.preventDefault();resetChartGesture();beginNormalPinch(e.targetTouches);
+},{passive:false});
+cv.addEventListener('touchmove',e=>{
+  if(chartFullscreen||!normalPinch)return;
+  // A native scroll already in progress cannot be reclaimed; lift to start a new gesture.
+  if(!e.cancelable){resetChartGesture();return}
+  e.preventDefault();if(normalPinch.waiting)return;
+  const points=normalPinch.ids.map(id=>Array.from(e.targetTouches).find(t=>t.identifier===id));
+  if(points.some(t=>!t))return;
+  const x=(points[0].clientX+points[1].clientX)/2,distance=Math.max(1,Math.hypot(points[1].clientX-points[0].clientX,points[1].clientY-points[0].clientY));
+  const span=clampChartSpan(normalPinch.span*normalPinch.distance/distance);
+  setChartView(normalPinch.anchor-(x-normalPinch.left)/normalPinch.width*span,span);
+},{passive:false});
+cv.addEventListener('touchend',e=>{
+  if(chartFullscreen||!normalPinch)return;
+  if(e.cancelable)e.preventDefault();
+  if(e.targetTouches.length>=2)beginNormalPinch(e.targetTouches);
+  else if(e.targetTouches.length)normalPinch={waiting:true};
+  else resetChartGesture();
+},{passive:false});
+cv.addEventListener('touchcancel',resetChartGesture);
+
 priceAxis.addEventListener('pointerdown',e=>{
   if(!DATA?.charts?.length||priceDrag||(e.pointerType==='mouse'&&e.button!==0))return;
   resetChartGesture();
@@ -330,9 +440,9 @@ cv.addEventListener('mousemove',e=>{if(drag||!DATA?.charts?.length){$('tooltip')
 function updateTradeButtons(){let has=!!DATA?.trades?.length;$('prevTrade').disabled=!has;$('nextTrade').disabled=!has;let chart=!!DATA?.charts?.length;for(const id of ['allView','fullAllView','openFullscreen','fitPrice','fullFitPrice'])$(id).disabled=!chart;for(const id of ['zoomIn','zoomOut','fullZoomIn','fullZoomOut'])$(id).disabled=!chart||currentChart().candles.length<2}
 $('prevTrade').onclick=()=>{if(DATA?.trades?.length){let i=selectedTradeIndex<0?0:(selectedTradeIndex-1+DATA.trades.length)%DATA.trades.length;focusTrade(i)}};$('nextTrade').onclick=()=>{if(DATA?.trades?.length){let i=selectedTradeIndex<0?0:(selectedTradeIndex+1)%DATA.trades.length;focusTrade(i)}};$('allView').onclick=showAllChart;
 document.querySelectorAll('.filter').forEach(b=>b.onclick=()=>{document.querySelectorAll('.filter').forEach(x=>x.classList.remove('active'));b.classList.add('active');filter=b.dataset.filter;renderRows()});document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.tabbody').forEach(x=>x.classList.remove('active'));b.classList.add('active');$(b.dataset.tab).classList.add('active')});window.addEventListener('resize',()=>{resetChartGesture();drawChart();drawEquity()});
-function removeChartFromActive(chartIdx){if(!DATA||activeDatasetIndex<0||chartIdx<0||chartIdx>=DATA.charts.length)return;if(DATA.charts.length===1){removeDataset(activeDatasetIndex);return}let removed=DATA.charts[chartIdx],removedId=removed.id;DATA.charts.splice(chartIdx,1);DATA.trades=DATA.trades.filter(t=>t.chart_id!==removedId);recalcSummary(DATA);if(chartIndex>chartIdx)chartIndex--;else if(chartIndex===chartIdx)chartIndex=Math.min(chartIdx,DATA.charts.length-1);selectedTradeIndex=-1;renderMeta();renderStats();renderStrategy();renderChartTabs();switchChart(chartIndex);drawEquity();renderRows();renderSelected();renderDatasetList();$('fileStatus').textContent=`チャートを1件消去・残り${DATA.charts.length}チャート`;$('fileStatus').className='import-summary'}
+function removeChartFromActive(chartIdx){if(!DATA||activeDatasetIndex<0||chartIdx<0||chartIdx>=DATA.charts.length)return;if(DATA.charts.length===1){removeDataset(activeDatasetIndex);return}let removed=DATA.charts[chartIdx],removedId=removed.id;DATA.charts.splice(chartIdx,1);DATA.trades=DATA.trades.filter(t=>t.chart_id!==removedId);recalcSummary(DATA);if(chartIndex>chartIdx)chartIndex--;else if(chartIndex===chartIdx)chartIndex=Math.min(chartIdx,DATA.charts.length-1);selectedTradeIndex=-1;renderMeta();renderStats();renderStrategy();renderChartTabs();switchChart(chartIndex);drawEquity();renderRows();renderSelected();renderDatasetList();$('fileStatus').textContent=`チャートを1件消去・残り${DATA.charts.length}チャート`;$('fileStatus').className='import-summary';persistDatasets()}
 function datasetDisplayName(item){let d=item.data,c=d.charts[0],more=d.charts.length>1?` +${d.charts.length-1}`:'';return `${c.symbol} / ${c.timeframe}${more} ・ ${d.strategy.strategy_id}`}
-function renderDatasetList(){let list=$('datasetList'),totalCharts=DATASETS.reduce((n,x)=>n+(x.data?.charts?.length||0),0);$('datasetCount').textContent=`${DATASETS.length}ファイル / ${totalCharts}チャート`;$('clearAllDataBtn').disabled=DATASETS.length===0&&importPending===0;$('fileStatus').textContent=`読み込み済み：${DATASETS.length}ファイル / ${totalCharts}チャート`;if(!DATASETS.length){list.innerHTML='<span class="empty-inline">まだデータはありません。</span>';return}list.innerHTML=DATASETS.map((item,i)=>`<div class="dataset-item ${i===activeDatasetIndex?'active':''}" data-dataset="${i}"><button class="dataset-select" data-select="${i}" title="${esc(item.sourceName)}"><span class="dataset-name">${esc(datasetDisplayName(item))}</span><span class="dataset-source">${esc(item.sourceName)}</span></button><button class="dataset-remove" data-remove="${i}" title="このデータだけ消去" aria-label="このデータだけ消去">消す</button></div>`).join('');document.querySelectorAll('[data-select]').forEach(b=>b.onclick=()=>activateDataset(Number(b.dataset.select)));document.querySelectorAll('[data-remove]').forEach(b=>b.onclick=e=>{e.stopPropagation();removeDataset(Number(b.dataset.remove))})}
+function renderDatasetList(){let list=$('datasetList'),totalCharts=DATASETS.reduce((n,x)=>n+(x.data?.charts?.length||0),0);$('datasetCount').textContent=`${DATASETS.length}ファイル / ${totalCharts}チャート`;refreshStorageControls();$('fileStatus').textContent=`読み込み済み：${DATASETS.length}ファイル / ${totalCharts}チャート`;if(!DATASETS.length){list.innerHTML='<span class="empty-inline">まだデータはありません。</span>';return}list.innerHTML=DATASETS.map((item,i)=>`<div class="dataset-item ${i===activeDatasetIndex?'active':''}" data-dataset="${i}"><button class="dataset-select" data-select="${i}" title="${esc(item.sourceName)}"><span class="dataset-name">${esc(datasetDisplayName(item))}</span><span class="dataset-source">${esc(item.sourceName)}</span></button><button class="dataset-remove" data-remove="${i}" title="このデータだけ消去" aria-label="このデータだけ消去">消す</button></div>`).join('');document.querySelectorAll('[data-select]').forEach(b=>b.onclick=()=>activateDataset(Number(b.dataset.select)));document.querySelectorAll('[data-remove]').forEach(b=>b.onclick=e=>{e.stopPropagation();removeDataset(Number(b.dataset.remove))})}
 function renderEmpty(){closeChartFullscreen();resetChartGesture();$('priceAxis').style.display='none';DATA=null;chartIndex=0;selectedTradeIndex=-1;filter='ALL';view={start:0,end:100};drag=null;$('statusBadge').textContent='データなし';$('mSymbol').textContent='—';$('mTf').textContent='—';$('mPeriod').textContent='—';$('mStrategy').textContent='—';$('stats').innerHTML=stat('トレード数','—','未読込')+stat('勝率','—','未読込')+stat('期待値','—','未読込')+stat('PF','—','未読込')+stat('最大DD','—','未読込')+stat('累積R','—','未読込');$('chartTabs').innerHTML='';$('chartTitle').textContent='検証データ未読込';$('chartSub').textContent='GPT出力JSONを読み込むとチャートが表示されます。';$('indicatorRow').innerHTML='<span class="ind-chip">データなし</span>';$('tradeRows').innerHTML='';$('strategyBody').innerHTML='<div class="empty">戦略データはまだ読み込まれていません。</div>';$('notesBody').innerHTML='<div class="empty">検証メモはまだありません。</div>';$('selectedBody').innerHTML='<div class="empty">トレードを読み込むと詳細が表示されます。</div>';$('chartInfo').innerHTML='<div class="empty">チャートデータなし</div>';$('emptyChart').style.display='flex';$('tooltip').style.display='none';document.querySelectorAll('.filter').forEach((x,i)=>x.classList.toggle('active',i===0));updateTradeButtons();let rc=resizeCanvas($('chart'));rc.ctx.clearRect(0,0,rc.w,rc.h);drawEquity();renderDatasetList()}
 function activateDataset(index){if(index<0||index>=DATASETS.length){activeDatasetIndex=-1;renderEmpty();return}activeDatasetIndex=index;DATA=DATASETS[index].data;chartIndex=0;selectedTradeIndex=-1;filter='ALL';drag=null;renderMeta();renderStats();renderStrategy();renderChartTabs();switchChart(0);drawEquity();renderRows();renderSelected();$('emptyChart').style.display='none';document.querySelectorAll('.filter').forEach((x,i)=>x.classList.toggle('active',i===0));renderDatasetList();updateTradeButtons()}
 function loadJsonFiles(fileList){
@@ -342,6 +452,7 @@ function loadJsonFiles(fileList){
   $('fileStatus').textContent='JSONを読み込み中…';$('fileInput').value='';
   // Keep import batches in selection order. Clearing invalidates even pending reads.
   const task=importQueue.then(async()=>{
+    await storageReady;
     if(epoch!==importEpoch)return;
     const added=[],errors=[];
     for(const file of files){
@@ -355,12 +466,15 @@ function loadJsonFiles(fileList){
     const firstNew=DATASETS.length;DATASETS.push(...added);
     if(added.length){activateDataset(firstNew);$('fileStatus').textContent=`${added.length}件追加・合計${DATASETS.length}件`;$('fileStatus').className='import-summary import-ok'}else renderDatasetList();
     if(errors.length){$('fileStatus').textContent=`${added.length}件追加 / ${errors.length}件エラー：${errors[0]}`;$('fileStatus').className='import-summary import-error';console.warn(errors.join('\n'))}
-  }).finally(()=>{if(epoch===importEpoch){importPending--;$('clearAllDataBtn').disabled=DATASETS.length===0&&importPending===0}});
+    if(added.length)await persistDatasets();
+  }).finally(()=>{if(epoch===importEpoch){importPending--;refreshStorageControls()}});
   importQueue=task.catch(()=>{});return task;
 }
-function removeDataset(index){if(index<0||index>=DATASETS.length)return;let wasActive=index===activeDatasetIndex;DATASETS.splice(index,1);if(!DATASETS.length){activeDatasetIndex=-1;renderEmpty();$('fileStatus').textContent='読み込み済み：0件';$('fileStatus').className='import-summary';return}if(wasActive){activateDataset(Math.min(index,DATASETS.length-1))}else{if(index<activeDatasetIndex)activeDatasetIndex--;renderDatasetList()}$('fileStatus').textContent=`1件消去・残り${DATASETS.length}件`;$('fileStatus').className='import-summary'}
-function clearAllDatasets(){if(!DATASETS.length&&!importPending)return;if(DATASETS.length>1&&!confirm(`${DATASETS.length}件の読み込みデータをすべて画面から消去しますか？
-元のJSONファイルは削除されません。`))return;importEpoch++;importPending=0;importQueue=Promise.resolve();DATASETS=[];activeDatasetIndex=-1;renderEmpty();$('fileStatus').textContent='すべて消去しました（元のJSONファイルは残っています）';$('fileStatus').className='import-summary'}
+function removeDataset(index){if(index<0||index>=DATASETS.length)return;let wasActive=index===activeDatasetIndex;DATASETS.splice(index,1);if(!DATASETS.length){activeDatasetIndex=-1;renderEmpty();$('fileStatus').textContent='読み込み済み：0件';$('fileStatus').className='import-summary';persistDatasets();return}if(wasActive){activateDataset(Math.min(index,DATASETS.length-1))}else{if(index<activeDatasetIndex)activeDatasetIndex--;renderDatasetList()}$('fileStatus').textContent=`1件消去・残り${DATASETS.length}件`;$('fileStatus').className='import-summary';persistDatasets()}
+function clearAllDatasets(){if(!DATASETS.length&&!importPending&&storageLoaded&&!savedRecordPresent&&!storageDirty)return;if((DATASETS.length||savedRecordPresent)&&!confirm(`${DATASETS.length}件の読み込みデータと端末保存分をすべて消去しますか？
+元のJSONファイルは削除されません。`))return;importEpoch++;importPending=0;importQueue=Promise.resolve();DATASETS=[];activeDatasetIndex=-1;renderEmpty();$('fileStatus').textContent='画面から消去しました（元のJSONファイルは残っています）';$('fileStatus').className='import-summary';persistDatasets()}
+$('saveDataBtn').onclick=()=>persistDatasets();
 $('openDataBtn').onclick=()=>$('fileInput').click();$('clearAllDataBtn').onclick=clearAllDatasets;$('fileInput').addEventListener('change',e=>loadJsonFiles(e.target.files));let dz=$('dropZone');['dragenter','dragover'].forEach(ev=>dz.addEventListener(ev,e=>{e.preventDefault();dz.classList.add('dragover')}));['dragleave','drop'].forEach(ev=>dz.addEventListener(ev,e=>{e.preventDefault();dz.classList.remove('dragover')}));dz.addEventListener('drop',e=>loadJsonFiles(e.dataTransfer?.files));
 renderEmpty();
+const storageReady=restoreSavedData();
 </script></body></html>

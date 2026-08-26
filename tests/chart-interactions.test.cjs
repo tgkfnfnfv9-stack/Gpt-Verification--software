@@ -7,9 +7,35 @@ const vm=require('node:vm');
 const root=path.resolve(__dirname,'..');
 const sample=fs.readFileSync(path.join(root,'samples/GPT出力データ_サンプル.json'),'utf8');
 
+// Minimal async IndexedDB boundary double. Real IDB is also checked on the published page.
+function fakeStorage(initial){
+  const copy=value=>value===undefined?undefined:JSON.parse(JSON.stringify(value));
+  const state={record:copy(initial),failRead:false,failWrite:false,holdRead:false,holdWrite:false,writes:0};
+  let queue=Promise.resolve();
+  const db={objectStoreNames:{contains:()=>true},createObjectStore(){},close(){},transaction(name,mode){
+    const ops=[];let staged,aborted=false;
+    const tx={abort(){aborted=true},objectStore(){return {
+      get(){const request={};ops.push(()=>{request.result=copy(state.record);request.onsuccess?.()});return request},
+      put(value){staged=copy(value);return {}}
+    }}};
+    queue=queue.then(async()=>{
+      if(mode==='readonly'&&state.holdRead)await new Promise(resolve=>state.releaseRead=resolve);
+      if(mode==='readonly'&&state.failRead){tx.error=new Error('read unavailable');tx.onabort?.();return}
+      while(ops.length)ops.shift()();
+      if(mode==='readwrite'&&state.holdWrite)await new Promise(resolve=>state.releaseWrite=resolve);
+      if(aborted){tx.onabort?.();return}
+      if(mode==='readwrite'&&(++state.writes===state.failWriteNumber||state.failWrite)){tx.error=new Error('quota exceeded');tx.onabort?.();return}
+      if(mode==='readwrite')state.record=staged;
+      tx.oncomplete?.();
+    });
+    return tx;
+  }};
+  return {state,open(){const request={};queueMicrotask(()=>{request.result=db;request.onsuccess?.()});return request}};
+}
+const flushTasks=async()=>{for(let i=0;i<25;i++)await Promise.resolve()};
 // Exercise the actual inline application and registered handlers, without browser dependencies.
 // Canvas is a drawing stub: these tests do not certify real-browser gesture delivery or layout.
-function setup(filename){
+function setup(filename,storage){
   const elements=new Map(),windowListeners=new Map();
   const doc={activeElement:null};
   const win={scrollX:0,scrollY:420,scrollTo(x,y){this.scrollX=x;this.scrollY=y},addEventListener(name,fn){windowListeners.set(name,fn)}};
@@ -18,7 +44,7 @@ function setup(filename){
   function element(id){
     if(elements.has(id))return elements.get(id);
     const listeners=new Map(),captures=new Set(),classes=new Set();
-    const e={innerHTML:'',textContent:'',style:{},disabled:false,value:'',className:'',
+    const e={innerHTML:'',textContent:'',style:{},dataset:{},disabled:false,value:'',className:'',
       classList:{add(x){classes.add(x)},remove(x){classes.delete(x)},contains:x=>classes.has(x),toggle(x,on){if(on)classes.add(x);else classes.delete(x)}},
       parentNode:null,
       appendChild(child){child.parentNode=this},after(child){child.parentNode=this.parentNode},
@@ -38,7 +64,7 @@ function setup(filename){
   doc.activeElement=element('openFullscreen');
   element('chartWrap').parentNode=element('chartPlaceholder').parentNode=element('chartCard');
   const context=vm.createContext({document:doc,window:win,devicePixelRatio:1,
-    console:{warn(){}},confirm:()=>true});
+    console:{warn(){}},confirm:()=>true,indexedDB:storage});
   const run=code=>vm.runInContext(code,context);
   const html=fs.readFileSync(process.env.VIEWER_HTML||path.join(root,filename),'utf8');
   const script=html.match(/<script>([\s\S]*?)<\/script>/)[1];
@@ -55,7 +81,7 @@ function setup(filename){
   const view=()=>JSON.parse(run('JSON.stringify(view)'));
   const span=()=>{const v=view();return v.end-v.start};
   async function load(){context.files=[{name:'sample.json',type:'application/json',text:async()=>sample}];await run('loadJsonFiles(files)');run('view={start:10,end:50};drawChart()')}
-  return {run,context,element,chart,fire,drawCalls,axisFire:(type,id=7,x=390,y=100,extra={})=>fire(type,id,x,y,extra,element('priceAxis')),view,span,load,html,doc,win,windowEvent:name=>windowListeners.get(name)(),dialogEvent(name){let prevented=false;for(const {fn} of element('chartDialog').listeners.get(name)||[])fn({preventDefault(){prevented=true}});return prevented}};
+  return {run,context,element,chart,fire,drawCalls,touch:(type,points=[],extra={})=>fire(type,1,0,0,{cancelable:true,targetTouches:points.map(([identifier,clientX,clientY=100])=>({identifier,clientX,clientY})),...extra}),ready:run('storageReady'),axisFire:(type,id=7,x=390,y=100,extra={})=>fire(type,id,x,y,extra,element('priceAxis')),view,span,load,html,doc,win,windowEvent:name=>windowListeners.get(name)(),dialogEvent(name){let prevented=false;for(const {fn} of element('chartDialog').listeners.get(name)||[])fn({preventDefault(){prevented=true}});return prevented}};
 }
 const near=(a,b)=>assert.ok(Math.abs(a-b)<1e-8,`${a} != ${b}`);
 
@@ -140,12 +166,12 @@ for(const filename of ['index.html','report.html']){
       h.fire('pointerup');
     }
   });
-  test(`${filename}: normal multi-touch never zooms or resumes a stray drag`,async()=>{
+  test(`${filename}: normal pointer pinch zooms time and waits for all fingers to lift`,async()=>{
     const h=setup(filename);await h.load();const before=h.view();
     h.fire('pointerdown',1,130);h.fire('pointerdown',2,290);
-    h.fire('pointermove',1,90);h.fire('pointermove',2,330);assert.deepEqual(h.view(),before);
-    h.fire('pointerup',2);h.fire('pointermove',1,180);assert.deepEqual(h.view(),before);
-    h.fire('pointerup',1);h.fire('pointerdown',1,190);h.fire('pointermove',1,230);near(h.view().start,5);
+    h.fire('pointermove',1,90);h.fire('pointermove',2,330);assert.ok(h.span()<before.end-before.start);const zoomed=h.view();
+    h.fire('pointerup',2);h.fire('pointermove',1,180);assert.deepEqual(h.view(),zoomed);
+    h.fire('pointerup',1);h.run('setChartView(10,40)');h.fire('pointerdown',1,190);h.fire('pointermove',1,230);near(h.view().start,5);
   });
   test(`${filename}: fullscreen preserves view and restores scroll, styles and focus`,async()=>{
     const h=setup(filename);await h.load();
@@ -236,22 +262,22 @@ for(const filename of ['index.html','report.html']){
     h.run('openChartFullscreen();closeChartFullscreen()');h.windowEvent('resize');assert.equal(h.run('JSON.stringify(chartState())'),expected);
   });
   test(`${filename}: clearing cancels pending and queued imports without blocking fresh reads`,async()=>{
-    const h=setup(filename);let finish;
+    const h=setup(filename);await h.ready;let finish;
     h.context.slow=[{name:'slow.json',text:()=>new Promise(resolve=>{finish=resolve})}];
     h.context.fast=[{name:'fresh.json',text:async()=>sample}];
-    const old=h.run('loadJsonFiles(slow)');await Promise.resolve();
+    const old=h.run('loadJsonFiles(slow)');await Promise.resolve();await Promise.resolve();
     const queued=h.run('loadJsonFiles(fast)');assert.equal(h.element('clearAllDataBtn').disabled,false);
-    h.run('clearAllDatasets()');assert.equal(h.element('clearAllDataBtn').disabled,true);
+    h.run('clearAllDatasets()');assert.equal(h.run('DATASETS.length'),0);
     await h.run('loadJsonFiles(fast)');assert.equal(h.run('DATASETS.length'),1);
     const status=h.element('fileStatus').textContent;finish(sample);await Promise.all([old,queued]);
     assert.equal(h.run('DATASETS.length'),1);assert.equal(h.run('DATASETS[0].sourceName'),'fresh.json');
     assert.equal(h.element('fileStatus').textContent,status);assert.equal(h.run('importPending'),0);
   });
   test(`${filename}: simultaneous import batches retain selection order`,async()=>{
-    const h=setup(filename);let finish;
+    const h=setup(filename);await h.ready;let finish;
     h.context.first=[{name:'first.json',text:()=>new Promise(resolve=>{finish=resolve})}];
     h.context.second=[{name:'second.json',text:async()=>sample}];
-    const first=h.run('loadJsonFiles(first)'),second=h.run('loadJsonFiles(second)');await Promise.resolve();
+    const first=h.run('loadJsonFiles(first)'),second=h.run('loadJsonFiles(second)');await Promise.resolve();await Promise.resolve();
     assert.equal(h.run('DATASETS.length'),0);finish(sample);await Promise.all([first,second]);
     assert.equal(h.run('DATASETS.map(x=>x.sourceName).join(",")'),'first.json,second.json');
     assert.equal(h.run('activeDatasetIndex'),1);assert.equal(h.run('importPending'),0);
@@ -305,6 +331,92 @@ for(const filename of ['index.html','report.html']){
       assert.equal(levels.length,count*2);
       for(let i=0;i<levels.length;i+=2)assert.ok(levels[i].args[1]>levels[i+1].args[1]);
     }
+  });
+  test(`${filename}: normal TouchEvents pinch overrides page zoom without double zooming`,async()=>{
+    const h=setup(filename);await h.load();const price=h.run('JSON.stringify(chartState().price)');
+    h.fire('pointerdown',1,130);assert.equal(h.touch('touchstart',[[10,130]]).prevented,false);
+    h.fire('pointerdown',2,290);assert.equal(h.touch('touchstart',[[10,130],[20,290]]).prevented,true);
+    h.fire('pointermove',2,330);near(h.span(),40);
+    assert.equal(h.touch('touchmove',[[10,90],[20,330]]).prevented,true);near(h.span(),40*160/240);
+    assert.equal(h.run('JSON.stringify(chartState().price)'),price);assert.equal(h.win.scrollY,420);
+    h.fire('pointercancel');assert.ok(h.run('normalPinch'));
+    h.touch('touchend',[[10,90]]);const view=h.view();h.touch('touchmove',[[10,190]]);assert.deepEqual(h.view(),view);
+    h.touch('touchend');assert.equal(h.run('normalPinch'),null);
+    assert.equal(h.chart.listeners.get('touchmove')[0].options.passive,false);
+    assert.match(h.html,/#chart\{touch-action:pan-y;/);
+  });
+  test(`${filename}: native vertical scroll and cancelled touches cannot become a stuck pinch`,async()=>{
+    const h=setup(filename);await h.load();const before=h.view();
+    h.fire('pointerdown',1,190,100);h.fire('pointermove',1,192,140);h.fire('pointerdown',2,280,140);
+    assert.equal(h.touch('touchstart',[[10,190,140],[20,280,140]]).prevented,false);assert.equal(h.run('normalPinch'),null);
+    h.fire('pointercancel');assert.equal(h.touch('touchstart',[[10,130],[20,290]],{cancelable:false}).prevented,false);
+    h.touch('touchstart',[[10,130],[20,290]]);h.touch('touchmove',[[10,90],[20,330]],{cancelable:false});
+    assert.equal(h.run('normalPinch'),null);assert.deepEqual(h.view(),before);
+    h.touch('touchstart',[[10,130],[20,290]]);h.touch('touchcancel');assert.equal(h.run('normalPinch'),null);
+    h.touch('touchstart',[[10,130],[20,290]]);h.run('openChartFullscreen()');assert.equal(h.run('normalPinch'),null);
+    assert.equal(h.touch('touchstart',[[10,130],[20,290]]).prevented,false);
+  });
+  test(`${filename}: imported datasets survive a fresh page instance and both entry points share storage`,async()=>{
+    const db=fakeStorage(),h=setup(filename,db);await h.load();await h.load();
+    assert.equal(db.state.record.datasets.length,2);assert.equal(h.element('storageStatus').dataset.state,'saved');
+    h.run('activateDataset(0)');await h.element('saveDataBtn').onclick();
+    const next=setup(filename==='index.html'?'report.html':'index.html',db);await next.ready;
+    assert.equal(next.run('DATASETS.length'),2);assert.equal(next.run('DATA.charts.length'),2);
+    assert.equal(next.run('DATA.trades.length'),4);assert.equal(next.run('activeDatasetIndex'),0);
+    assert.match(next.element('storageStatus').textContent,/2件を復元/);
+  });
+  test(`${filename}: save status waits for transaction commit and preserves memory on write failure`,async()=>{
+    const db=fakeStorage(),h=setup(filename,db);await h.ready;db.state.holdWrite=true;
+    const loading=h.load();await flushTasks();assert.equal(h.element('storageStatus').dataset.state,'saving');
+    assert.equal(db.state.record,undefined);db.state.holdWrite=false;db.state.releaseWrite();await loading;
+    assert.equal(h.element('storageStatus').dataset.state,'saved');db.state.failWrite=true;
+    await h.load();assert.equal(h.run('DATASETS.length'),2);assert.equal(db.state.record.datasets.length,1);
+    assert.equal(h.element('storageStatus').dataset.state,'error');assert.equal(h.element('saveDataBtn').disabled,false);
+    db.state.failWrite=false;await h.element('saveDataBtn').onclick();assert.equal(db.state.record.datasets.length,2);
+  });
+  test(`${filename}: chart, file and all-data deletion update durable storage`,async()=>{
+    const db=fakeStorage(),h=setup(filename,db);await h.load();await h.load();
+    h.run('removeChartFromActive(1)');await h.run('saveQueue');assert.equal(db.state.record.datasets[1].data.charts.length,1);
+    h.run('removeDataset(0)');await h.run('saveQueue');assert.equal(db.state.record.datasets.length,1);
+    h.run('clearAllDatasets()');await h.run('saveQueue');assert.equal(db.state.record.datasets.length,0);
+    const next=setup(filename,db);await next.ready;assert.equal(next.run('DATASETS.length'),0);assert.equal(next.run('DATA'),null);assert.equal(next.element('clearAllDataBtn').disabled,true);
+  });
+  test(`${filename}: imports wait for restoration and clear invalidates a pending restore`,async()=>{
+    const db=fakeStorage(),seed=setup(filename,db);await seed.load();
+    db.state.holdRead=true;const h=setup(filename,db);const loading=h.load();await flushTasks();
+    assert.equal(h.run('DATASETS.length'),0);db.state.holdRead=false;db.state.releaseRead();await loading;
+    assert.equal(h.run('DATASETS.length'),2);assert.equal(db.state.record.datasets.length,2);
+    db.state.holdRead=true;const cleared=setup(filename,db);await flushTasks();cleared.run('clearAllDatasets()');
+    db.state.holdRead=false;db.state.releaseRead();await cleared.ready;await cleared.run('saveQueue');
+    assert.equal(cleared.run('DATASETS.length'),0);assert.equal(db.state.record.datasets.length,0);
+  });
+  test(`${filename}: failed clearing after an in-flight save can be retried from the empty screen`,async()=>{
+    const db=fakeStorage(),h=setup(filename,db);await h.ready;db.state.holdWrite=true;db.state.failWriteNumber=2;
+    const loading=h.load();await flushTasks();h.run('clearAllDatasets()');
+    db.state.holdWrite=false;db.state.releaseWrite();await loading;await h.run('saveQueue');
+    assert.equal(h.run('DATASETS.length'),0);assert.equal(db.state.record.datasets.length,1);
+    assert.equal(h.element('storageStatus').dataset.state,'error');
+    assert.equal(h.element('saveDataBtn').disabled,false);assert.equal(h.element('clearAllDataBtn').disabled,false);
+    await h.element('saveDataBtn').onclick();assert.equal(db.state.record.datasets.length,0);
+    assert.equal(h.element('saveDataBtn').disabled,true);
+
+  });
+  test(`${filename}: stale tabs cannot overwrite another tab's saved changes`,async()=>{
+    const db=fakeStorage(),seed=setup(filename,db);await seed.load();
+    const a=setup(filename,db),b=setup(filename,db);await Promise.all([a.ready,b.ready]);
+    await a.load();const revision=db.state.record.revision;await b.load();
+    assert.equal(db.state.record.revision,revision);assert.equal(b.element('storageStatus').dataset.state,'error');
+    assert.match(b.element('storageStatus').textContent,/別のタブ/);assert.equal(b.run('DATASETS.length'),2);
+    b.run('clearAllDatasets()');await b.run('saveQueue');assert.equal(db.state.record.datasets.length,2);
+  });
+  test(`${filename}: corrupt saved entries are isolated and unavailable storage does not block import`,async()=>{
+    const db=fakeStorage({version:1,datasets:[{id:'good',data:JSON.parse(sample)},{id:'bad',data:{}}]});
+    const h=setup(filename,db);await h.ready;assert.equal(h.run('DATASETS.length'),1);
+    assert.equal(h.element('storageStatus').dataset.state,'error');assert.equal(db.state.record.datasets.length,2);
+    const corrupt=setup(filename,fakeStorage({version:99,datasets:[]}));await corrupt.ready;
+    assert.equal(corrupt.element('storageStatus').dataset.state,'error');assert.equal(corrupt.element('clearAllDataBtn').disabled,false);
+    const unavailable=setup(filename);await unavailable.load();assert.equal(unavailable.run('DATASETS.length'),1);
+    assert.equal(unavailable.element('storageStatus').dataset.state,'error');assert.equal(unavailable.element('saveDataBtn').disabled,false);
   });
   test(`${filename}: imports, deletion, filters, escaping and statistics regressions`,async()=>{
     const h=setup(filename);await h.load();await h.load();assert.equal(h.run('DATASETS.length'),2);
