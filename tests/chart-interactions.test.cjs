@@ -13,7 +13,8 @@ function setup(filename){
   const elements=new Map(),windowListeners=new Map();
   const doc={activeElement:null};
   const win={scrollX:0,scrollY:420,scrollTo(x,y){this.scrollX=x;this.scrollY=y},addEventListener(name,fn){windowListeners.set(name,fn)}};
-  const drawing=new Proxy({}, {get:(obj,key)=>obj[key]??(()=>{}),set:(obj,key,value)=>(obj[key]=value,true)});
+  const drawCalls=[];
+  const drawing=new Proxy({}, {get:(obj,key)=>obj[key]??((...args)=>drawCalls.push({method:key,args,stroke:obj.strokeStyle,fill:obj.fillStyle})),set:(obj,key,value)=>(obj[key]=value,true)});
   function element(id){
     if(elements.has(id))return elements.get(id);
     const listeners=new Map(),captures=new Set(),classes=new Set();
@@ -43,10 +44,10 @@ function setup(filename){
   const script=html.match(/<script>([\s\S]*?)<\/script>/)[1];
   run(script);
   const chart=element('chart');
-  function fire(type,id=1,x=190,y=100,extra={}){
+  function fire(type,id=1,x=190,y=100,extra={},target=chart){
     let prevented=false;
     const e={pointerId:id,pointerType:'touch',button:0,clientX:x,clientY:y,deltaY:100,preventDefault(){prevented=true},...extra};
-    const handlers=chart.listeners.get(type)||[];
+    const handlers=target.listeners.get(type)||[];
     assert.ok(handlers.length,`${type} must have a registered handler`);
     for(const {fn} of handlers)fn(e);
     return {prevented};
@@ -54,7 +55,7 @@ function setup(filename){
   const view=()=>JSON.parse(run('JSON.stringify(view)'));
   const span=()=>{const v=view();return v.end-v.start};
   async function load(){context.files=[{name:'sample.json',type:'application/json',text:async()=>sample}];await run('loadJsonFiles(files)');run('view={start:10,end:50};drawChart()')}
-  return {run,context,element,chart,fire,view,span,load,html,doc,win,windowEvent:name=>windowListeners.get(name)(),dialogEvent(name){let prevented=false;for(const {fn} of element('chartDialog').listeners.get(name)||[])fn({preventDefault(){prevented=true}});return prevented}};
+  return {run,context,element,chart,fire,drawCalls,axisFire:(type,id=7,x=390,y=100,extra={})=>fire(type,id,x,y,extra,element('priceAxis')),view,span,load,html,doc,win,windowEvent:name=>windowListeners.get(name)(),dialogEvent(name){let prevented=false;for(const {fn} of element('chartDialog').listeners.get(name)||[])fn({preventDefault(){prevented=true}});return prevented}};
 }
 const near=(a,b)=>assert.ok(Math.abs(a-b)<1e-8,`${a} != ${b}`);
 
@@ -180,6 +181,130 @@ for(const filename of ['index.html','report.html']){
     assert.equal(h.run('chartPointers.size'),0);assert.deepEqual(h.view(),before);assert.equal(h.run('chartFullscreen'),true);
     h.chart.getBoundingClientRect=()=>({width:700,height:150,left:0,top:0});h.run('drawChart()');
     assert.ok(h.chart._geom.mainH<150);assert.ok(h.chart._geom.mainH>0);
+  });
+  test(`${filename}: first import does not automatically zoom to a trade`,async()=>{
+    const h=setup(filename);h.context.files=[{name:'test.json',type:'application/json',text:async()=>sample}];
+    await h.run('loadJsonFiles(files)');assert.deepEqual(h.view(),{start:0,end:63});
+    const before=h.view();h.run('focusTrade(1)');assert.deepEqual(h.view(),before);
+  });
+  test(`${filename}: time zoom, panning, trade focus and full view never autoscale price`,async()=>{
+    const h=setup(filename);await h.load();
+    const price=()=>JSON.parse(h.run('JSON.stringify(chartState().price)'));
+    const initial=price();h.run('zoomChart(.5)');assert.deepEqual(price(),initial);
+    const span=h.span();h.run('focusTrade(1)');near(h.span(),span);assert.deepEqual(price(),initial);
+    h.run('setChartView(35,20)');assert.deepEqual(price(),initial);
+    h.run('openChartFullscreen()');h.fire('pointerdown',1,130);h.fire('pointerdown',2,290);h.fire('pointermove',2,330);
+    assert.ok(h.span()<20);assert.deepEqual(price(),initial);h.run('closeChartFullscreen()');
+    h.element('allView').onclick();assert.deepEqual(price(),initial);
+  });
+  test(`${filename}: dragging the price scale affects price only in both modes`,async()=>{
+    const h=setup(filename);await h.load();const view=h.view();
+    for(const full of [false,true]){
+      if(full)h.run('openChartFullscreen()');
+      const original=h.run('chartState().price.hi-chartState().price.lo');
+      h.axisFire('pointerdown',7,390,200);assert.ok(h.element('priceAxis').captures.has(7));
+      h.axisFire('pointermove',7,390,100);assert.ok(h.run('chartState().price.hi-chartState().price.lo')<original);
+      assert.deepEqual(h.view(),view);
+      h.axisFire('pointermove',7,390,300);assert.ok(h.run('chartState().price.hi-chartState().price.lo')>original);
+      h.axisFire('pointerup');assert.equal(h.run('priceDrag'),null);assert.equal(h.element('priceAxis').captures.size,0);
+      const stopped=h.run('chartState().price.hi');h.axisFire('pointermove',7,390,-500);near(h.run('chartState().price.hi'),stopped);
+    }
+  });
+  test(`${filename}: price-scale cancel, extreme drag and keyboard are safe`,async()=>{
+    const h=setup(filename);await h.load();
+    h.axisFire('pointerdown',7,390,200);h.axisFire('pointerdown',8,390,150);
+    h.fire('pointerdown',1);assert.equal(h.run('chartPointers.size'),0);
+    for(const y of [-1e9,1e9]){h.axisFire('pointermove',7,390,y);assert.ok(h.run('Number.isFinite(chartState().price.lo)&&Number.isFinite(chartState().price.hi)&&chartState().price.hi>chartState().price.lo'))}
+    h.axisFire('pointercancel');assert.equal(h.run('priceDrag'),null);
+    h.axisFire('pointerdown');h.windowEvent('resize');assert.equal(h.run('priceDrag'),null);
+    const before=h.view();assert.ok(h.axisFire('keydown',7,390,100,{key:'Home'}).prevented);
+    const span=h.run('chartState().price.hi-chartState().price.lo');h.axisFire('keydown',7,390,100,{key:'ArrowUp'});
+    assert.ok(h.run('chartState().price.hi-chartState().price.lo')<span);assert.deepEqual(h.view(),before);
+  });
+  test(`${filename}: price fit is explicit and only uses the visible candles`,async()=>{
+    const h=setup(filename);await h.load();
+    const hi=h.run('chartState().price.hi');h.run('currentChart().candles[45].high=10000;drawChart()');near(h.run('chartState().price.hi'),hi);
+    const before=h.view();h.element('fitPrice').onclick();assert.ok(h.run('chartState().price.hi')>10000);assert.deepEqual(h.view(),before);
+    h.run('setChartView(0,10)');assert.ok(h.run('chartState().price.hi')>10000);
+    h.element('fitPrice').onclick();assert.ok(h.run('chartState().price.hi')<10000);
+  });
+  test(`${filename}: each chart and dataset retains its own time and price ranges`,async()=>{
+    const h=setup(filename);await h.load();h.run('zoomChart(.5)');h.axisFire('pointerdown');h.axisFire('pointermove',7,390,30);h.axisFire('pointerup');
+    const expected=h.run('JSON.stringify(chartState())');h.run('switchChart(1);switchChart(0)');assert.equal(h.run('JSON.stringify(chartState())'),expected);
+    await h.run('loadJsonFiles(files)');assert.equal(h.run('DATASETS.length'),2);assert.notEqual(h.run('JSON.stringify(chartState())'),expected);
+    h.run('activateDataset(0)');assert.equal(h.run('JSON.stringify(chartState())'),expected);
+    h.run('openChartFullscreen();closeChartFullscreen()');h.windowEvent('resize');assert.equal(h.run('JSON.stringify(chartState())'),expected);
+  });
+  test(`${filename}: clearing cancels pending and queued imports without blocking fresh reads`,async()=>{
+    const h=setup(filename);let finish;
+    h.context.slow=[{name:'slow.json',text:()=>new Promise(resolve=>{finish=resolve})}];
+    h.context.fast=[{name:'fresh.json',text:async()=>sample}];
+    const old=h.run('loadJsonFiles(slow)');await Promise.resolve();
+    const queued=h.run('loadJsonFiles(fast)');assert.equal(h.element('clearAllDataBtn').disabled,false);
+    h.run('clearAllDatasets()');assert.equal(h.element('clearAllDataBtn').disabled,true);
+    await h.run('loadJsonFiles(fast)');assert.equal(h.run('DATASETS.length'),1);
+    const status=h.element('fileStatus').textContent;finish(sample);await Promise.all([old,queued]);
+    assert.equal(h.run('DATASETS.length'),1);assert.equal(h.run('DATASETS[0].sourceName'),'fresh.json');
+    assert.equal(h.element('fileStatus').textContent,status);assert.equal(h.run('importPending'),0);
+  });
+  test(`${filename}: simultaneous import batches retain selection order`,async()=>{
+    const h=setup(filename);let finish;
+    h.context.first=[{name:'first.json',text:()=>new Promise(resolve=>{finish=resolve})}];
+    h.context.second=[{name:'second.json',text:async()=>sample}];
+    const first=h.run('loadJsonFiles(first)'),second=h.run('loadJsonFiles(second)');await Promise.resolve();
+    assert.equal(h.run('DATASETS.length'),0);finish(sample);await Promise.all([first,second]);
+    assert.equal(h.run('DATASETS.map(x=>x.sourceName).join(",")'),'first.json,second.json');
+    assert.equal(h.run('activeDatasetIndex'),1);assert.equal(h.run('importPending'),0);
+  });
+  test(`${filename}: malformed records and nonfinite trade results are rejected before registration`,async()=>{
+    const h=setup(filename);
+    const mutations=[d=>d.strategy='oops',d=>d.meta=[],d=>d.trades[0].steps=[null],d=>d.trades[0]=null,
+      d=>d.trades[0].r='1e309',d=>d.trades.forEach(t=>t.r=1e308)];
+    h.context.files=mutations.map((mutate,i)=>{const d=JSON.parse(sample);mutate(d);return {name:`bad${i}.json`,text:async()=>JSON.stringify(d)}});
+    h.context.files.push({name:'good.json',text:async()=>sample});await h.run('loadJsonFiles(files)');
+    assert.equal(h.run('DATASETS.length'),1);assert.equal(h.run('DATASETS[0].sourceName'),'good.json');
+    assert.match(h.element('fileStatus').textContent,/6件エラー/);h.run('focusTrade(0);drawChart();renderStrategy()');
+  });
+  test(`${filename}: missing or inconsistent OHLC is not silently converted to zero`,async()=>{
+    const h=setup(filename);
+    for(const value of [null,'','   ',true,{},'1e309']){
+      const d=JSON.parse(sample);d.charts[0].candles[0].open=value;h.context.raw=d;
+      assert.throws(()=>h.run('normalizeData(raw)'),/OHLC/);
+    }
+    for(const key of ['high','low']){
+      const d=JSON.parse(sample);d.charts[0].candles[0][key]=key==='high'?-10000:10000;h.context.raw=d;
+      assert.throws(()=>h.run('normalizeData(raw)'),/OHLC/);
+    }
+    const d=JSON.parse(sample);Object.assign(d.charts[0].candles[0],{open:0,high:1,low:-1,close:0});
+    d.trades[0].entry_price=null;h.context.raw=d;h.run('normalizeData(raw)');
+    assert.equal(h.context.raw.charts[0].candles[0].open,0);
+    assert.equal(h.context.raw.trades[0].entry_price,h.context.raw.charts[0].candles[d.trades[0].entry_i].close);
+  });
+  test(`${filename}: single-sign histograms use zero and are clipped to their own pane`,async()=>{
+    const h=setup(filename);await h.load();
+    for(const value of [-100,100]){
+      h.run(`currentChart().panes=[{label:'MACD',zero_line:true,series:[{kind:'histogram',values:Array(64).fill(${value})}]}]`);
+      h.drawCalls.length=0;h.run('drawChart()');
+      const zero=h.drawCalls.find(c=>c.method==='lineTo'&&c.stroke==='#39424f').args[1];
+      const pane=h.drawCalls.filter(c=>c.method==='rect').at(-1).args;
+      assert.ok(zero>=pane[1]&&zero<=pane[1]+pane[3]);
+      const bar=h.drawCalls.find(c=>c.method==='fillRect'&&c.fill===(value<0?'rgba(255,93,93,.65)':'rgba(47,191,113,.65)'));
+      if(value<0)near(bar.args[1],zero);else near(bar.args[1]+bar.args[3],zero);
+      assert.equal(h.drawCalls.filter(c=>c.method==='clip').length,2);
+      assert.equal(h.drawCalls.filter(c=>c.method==='save').length,h.drawCalls.filter(c=>c.method==='restore').length);
+    }
+  });
+  test(`${filename}: short landscape canvases and many panes never invert price or indicators`,async()=>{
+    const h=setup(filename);await h.load();
+    for(const height of [150,100,30])for(const count of [2,8]){
+      h.chart.getBoundingClientRect=()=>({width:400,height,left:20,top:0});
+      h.run(`currentChart().panes=Array.from({length:${count}},()=>({label:'RSI',min:0,max:100,levels:[0,100],series:[]}))`);
+      h.drawCalls.length=0;h.run('drawChart()');
+      assert.ok(h.run('cv._geom.Y(cv._geom.hi)<cv._geom.Y(cv._geom.lo)'));
+      const levels=h.drawCalls.filter(c=>c.method==='lineTo'&&c.stroke==='#333b47');
+      assert.equal(levels.length,count*2);
+      for(let i=0;i<levels.length;i+=2)assert.ok(levels[i].args[1]>levels[i+1].args[1]);
+    }
   });
   test(`${filename}: imports, deletion, filters, escaping and statistics regressions`,async()=>{
     const h=setup(filename);await h.load();await h.load();assert.equal(h.run('DATASETS.length'),2);
