@@ -15,6 +15,9 @@
 
 /* Normal view yields vertical scroll and page pinch to the browser. */
 #chart{touch-action:pan-y pinch-zoom;user-select:none;-webkit-user-select:none}
+.price-axis{position:absolute;right:0;top:0;width:70px;display:none;touch-action:none;cursor:ns-resize;user-select:none;-webkit-user-select:none;z-index:3;border-left:1px solid transparent}
+.price-axis:hover,.price-axis:focus-visible{background:rgba(59,200,255,.06);border-left-color:#3bc8ff;outline:none}
+.fullscreen-tools{flex-wrap:wrap}
 .chart-head{flex-wrap:wrap}.chart-head>div:first-child{min-width:0}.chart-sub{overflow-wrap:anywhere}
 .chart-tools{flex-wrap:wrap}.chart-tools .tool,.fullscreen-tools .tool{min-height:44px}
 .hint-full{display:none}
@@ -44,61 +47,93 @@ body.chart-modal-open{position:fixed;width:100%;overflow:hidden}
   <div class="dataset-list" id="datasetList"><span class="empty-inline">まだデータはありません。</span></div>
 </div>
 <div class="page"><div class="main"><div class="stats" id="stats"></div>
-<div class="card"><div class="chart-tabs" id="chartTabs"></div><div class="chart-head"><div><div class="chart-title" id="chartTitle"></div><div class="chart-sub" id="chartSub"></div></div><div class="chart-tools"><button class="tool" id="prevTrade">← 前</button><button class="tool" id="zoomOut" aria-label="チャートを縮小">－縮小</button><button class="tool" id="zoomIn" aria-label="チャートを拡大">＋拡大</button><button class="tool" id="allView">全体</button><button class="tool" id="openFullscreen" aria-haspopup="dialog" aria-controls="chartDialog">全画面</button><button class="tool" id="nextTrade">次 →</button></div></div><div class="indicator-row" id="indicatorRow"></div><div id="chartPlaceholder" hidden></div><div class="chart-wrap" id="chartWrap"><canvas id="chart"></canvas><div class="empty-chart" id="emptyChart"><div><b>検証データはまだ読み込まれていません</b><span>上の「JSONファイルを選ぶ」からGPT出力JSONを読み込んでください。</span></div></div><div class="tooltip" id="tooltip"></div><div class="hint"><span class="hint-desktop">ホイール: ズーム / ドラッグ: 横移動 / 一覧クリック: 該当エントリーへ</span><span class="hint-touch"><span class="hint-normal">上下: ページ移動 / 左右: チャート移動<br>拡大・縮小はボタン / ピンチは全画面</span><span class="hint-full">1本指: 横移動 / 2本指: 拡大・縮小<br>通常画面に戻るには「閉じる」</span></span></div></div></div>
+<div class="card"><div class="chart-tabs" id="chartTabs"></div><div class="chart-head"><div><div class="chart-title" id="chartTitle"></div><div class="chart-sub" id="chartSub"></div></div><div class="chart-tools"><button class="tool" id="prevTrade">← 前</button><button class="tool" id="zoomOut" aria-label="時間軸を縮小">－時間</button><button class="tool" id="zoomIn" aria-label="時間軸を拡大">＋時間</button><button class="tool" id="allView">時間全体</button><button class="tool" id="fitPrice">価格を合わせる</button><button class="tool" id="openFullscreen" aria-haspopup="dialog" aria-controls="chartDialog">全画面</button><button class="tool" id="nextTrade">次 →</button></div></div><div class="indicator-row" id="indicatorRow"></div><div id="chartPlaceholder" hidden></div><div class="chart-wrap" id="chartWrap"><canvas id="chart"></canvas><div id="priceAxis" class="price-axis" tabindex="0" role="group" aria-label="価格目盛り：上にドラッグで拡大、下で縮小。上下キーでも操作できます。" title="価格目盛り：上にドラッグで拡大、下で縮小"></div><div class="empty-chart" id="emptyChart"><div><b>検証データはまだ読み込まれていません</b><span>上の「JSONファイルを選ぶ」からGPT出力JSONを読み込んでください。</span></div></div><div class="tooltip" id="tooltip"></div><div class="hint"><span class="hint-desktop">ホイール: 時間軸 / 右の価格目盛りを上下ドラッグ: 価格軸</span><span class="hint-touch"><span class="hint-normal">上下: ページ移動 / 左右: 時間移動<br>右の価格目盛りを上下: 価格軸 / ピンチは全画面</span><span class="hint-full">1本指: 横移動 / 2本指: 時間軸の拡縮<br>右の価格目盛りを上下: 価格軸の拡縮</span></span></div></div></div>
 <div class="card"><div class="tabs"><button class="tab active" data-tab="tradesTab">トレード一覧</button><button class="tab" data-tab="strategyTab">戦略仕様</button><button class="tab" data-tab="notesTab">検証メモ</button></div><div class="tabbody active" id="tradesTab"><div class="filters"><button class="filter active" data-filter="ALL">すべて</button><button class="filter" data-filter="BUY">買い</button><button class="filter" data-filter="SELL">売り</button><button class="filter" data-filter="WIN">勝ち</button><button class="filter" data-filter="LOSS">負け</button></div><div class="table-wrap"><table class="trades"><thead><tr><th>No.</th><th>銘柄/足</th><th>日時</th><th>売買</th><th>結果</th><th>R</th><th>条件</th><th>信頼度</th></tr></thead><tbody id="tradeRows"></tbody></table></div></div><div class="tabbody" id="strategyTab"><div class="strategy" id="strategyBody"></div></div><div class="tabbody" id="notesTab"><div class="strategy" id="notesBody"></div></div></div></div>
 <div class="side"><div class="card"><div class="section-title">選択トレード</div><div class="selected-body" id="selectedBody"></div></div><div class="card"><div class="section-title">累積R</div><div class="mini-chart"><canvas id="equity"></canvas></div></div><div class="card"><div class="section-title">表示中チャート</div><div class="selected-body" id="chartInfo"></div></div></div></div></div>
 <dialog id="chartDialog" class="chart-dialog" aria-labelledby="fullscreenTitle">
   <div class="fullscreen-head"><div class="fullscreen-title" id="fullscreenTitle">チャート</div><button class="tool fullscreen-close" id="closeFullscreen" autofocus>閉じる</button></div>
   <div class="fullscreen-host" id="fullscreenHost"></div>
-  <div class="fullscreen-tools"><button class="tool" id="fullZoomOut" aria-label="チャートを縮小">－縮小</button><button class="tool" id="fullZoomIn" aria-label="チャートを拡大">＋拡大</button><button class="tool" id="fullAllView">全体</button></div>
+  <div class="fullscreen-tools"><button class="tool" id="fullZoomOut" aria-label="時間軸を縮小">－時間</button><button class="tool" id="fullZoomIn" aria-label="時間軸を拡大">＋時間</button><button class="tool" id="fullAllView">時間全体</button><button class="tool" id="fullFitPrice">価格を合わせる</button></div>
 </dialog>
 <script>
 let DATA=null;
 let DATASETS=[];
+let importEpoch=0,importPending=0,importQueue=Promise.resolve();
 let activeDatasetIndex=-1;
 const $=id=>document.getElementById(id);
 let chartIndex=0,selectedTradeIndex=-1,filter='ALL',view={start:0,end:100},drag=null;
-let chartFullscreen=false,fullscreenState=null,normalTouch=null;
+let chartFullscreen=false,fullscreenState=null,normalTouch=null,priceDrag=null;
+const chartViews=new WeakMap();
 const COLORS=['#3bc8ff','#f3c969','#ad8cff','#ff9f43','#4b8cff','#2fbf71','#ff7a7a'];
 const esc=v=>String(v??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 const sideLabel=s=>String(s||'').toUpperCase()==='BUY'?'買い':String(s||'').toUpperCase()==='SELL'?'売り':(s||'—');
 const resultLabel=r=>String(r||'').toUpperCase()==='WIN'?'勝ち':String(r||'').toUpperCase()==='LOSS'?'負け':String(r||'').toUpperCase()==='EVEN'?'引分':(r||'—');
 function calcStats(trades){let rs=trades.map(t=>Number(t.r)||0),wins=rs.filter(x=>x>0),losses=rs.filter(x=>x<0),sum=rs.reduce((a,b)=>a+b,0),gp=wins.reduce((a,b)=>a+b,0),gl=Math.abs(losses.reduce((a,b)=>a+b,0)),eq=0,peak=0,maxdd=0;for(const r of rs){eq+=r;peak=Math.max(peak,eq);maxdd=Math.min(maxdd,eq-peak)}return {trades:trades.length,win_rate:trades.length?+(wins.length/trades.length*100).toFixed(1):0,expectancy_r:trades.length?+(sum/trades.length).toFixed(3):0,profit_factor:gl?+(gp/gl).toFixed(2):(gp?null:0),max_dd_r:+Math.abs(maxdd).toFixed(2),total_r:+sum.toFixed(2)}}
 function recalcSummary(d){let by={};for(const c of d.charts)by[c.id]=calcStats(d.trades.filter(t=>t.chart_id===c.id));let all=calcStats(d.trades),buy=calcStats(d.trades.filter(t=>t.side==='BUY')),sell=calcStats(d.trades.filter(t=>t.side==='SELL'));d.summary={...all,buy,sell,by_chart:by};return d.summary}
-function numberOrNull(v){if(v===null||v===undefined||v==='')return null;let n=Number(v);return Number.isFinite(n)?n:null}
+function numberOrNull(v){if(!['number','string'].includes(typeof v)||String(v).trim()==='')return null;let n=Number(v);return Number.isFinite(n)?n:null}
+function requireRecord(v,label){if(!v||typeof v!=='object'||Array.isArray(v))throw new Error(`${label} はオブジェクトで指定してください。`);return v}
 function normalizeSeriesValues(values){return Array.isArray(values)?values.map(numberOrNull):[]}
 function normalizeData(raw){
   let d=(raw&&raw.data&&raw.data.charts)?raw.data:(raw&&raw.report&&raw.report.charts)?raw.report:raw;
   if(!d||typeof d!=='object'||Array.isArray(d))throw new Error('JSONの内容を読み取れません。');
-  d.meta=d.meta||{};d.strategy=d.strategy||{};d.charts=Array.isArray(d.charts)?d.charts:[];d.trades=Array.isArray(d.trades)?d.trades:[];
+  d.meta=d.meta==null?{}:requireRecord(d.meta,'meta');d.strategy=d.strategy==null?{}:requireRecord(d.strategy,'strategy');d.charts=Array.isArray(d.charts)?d.charts:[];d.trades=Array.isArray(d.trades)?d.trades:[];
   if(!d.charts.length)throw new Error('charts がありません。チャートデータを含むJSONを指定してください。');
   const ids=new Set();
   d.charts=d.charts.map((rawChart,i)=>{
-    const c={...rawChart};c.id=String(c.id||`chart_${i+1}`);
+    const c={...requireRecord(rawChart,`charts[${i}]`)};c.id=String(c.id||`chart_${i+1}`);
     if(ids.has(c.id))throw new Error(`チャートIDが重複しています：${c.id}`);ids.add(c.id);
     c.symbol=String(c.symbol||c.title||`銘柄${i+1}`);c.timeframe=String(c.timeframe||'未指定');c.period=String(c.period||'未指定');
     if(!Array.isArray(c.candles)||!c.candles.length)throw new Error(`${c.symbol}/${c.timeframe} にローソク足データがありません。`);
-    c.candles=c.candles.map((x,j)=>{let o=Number(x?.open),h=Number(x?.high),l=Number(x?.low),cl=Number(x?.close);if(![o,h,l,cl].every(Number.isFinite))throw new Error(`${c.symbol}/${c.timeframe} の ${j+1} 本目に不正なOHLCがあります。`);return {...x,open:o,high:h,low:l,close:cl,volume:numberOrNull(x?.volume)}});
+    c.candles=c.candles.map((x,j)=>{let o=numberOrNull(x?.open),h=numberOrNull(x?.high),l=numberOrNull(x?.low),cl=numberOrNull(x?.close);if(![o,h,l,cl].every(Number.isFinite)||h<Math.max(o,cl)||l>Math.min(o,cl)||h<l)throw new Error(`${c.symbol}/${c.timeframe} の ${j+1} 本目に不正なOHLCがあります。`);return {...x,open:o,high:h,low:l,close:cl,volume:numberOrNull(x?.volume)}});
+    const range=fittedPriceRange(c,0,c.candles.length-1);if(![range.lo,range.hi,range.basisSpan].every(Number.isFinite))throw new Error(`${c.symbol} の価格が描画可能な数値範囲を超えています。`);
     c.overlays=(Array.isArray(c.overlays)?c.overlays:[]).map(o=>{let n={...o,label:String(o?.label||'指標')};if(n.kind==='band'){n.upper=normalizeSeriesValues(n.upper);n.middle=normalizeSeriesValues(n.middle);n.lower=normalizeSeriesValues(n.lower)}else{n.kind='line';n.values=normalizeSeriesValues(n.values)}return n});
     c.panes=(Array.isArray(c.panes)?c.panes:[]).map(p=>({...p,label:String(p?.label||'指標'),min:numberOrNull(p?.min),max:numberOrNull(p?.max),levels:(Array.isArray(p?.levels)?p.levels:[]).map(Number).filter(Number.isFinite),series:(Array.isArray(p?.series)?p.series:[]).map(s=>({...s,label:String(s?.label||''),values:normalizeSeriesValues(s?.values)}))}));
     return c;
   });
   d.trades=d.trades.map((rawTrade,i)=>{
-    let t={...rawTrade};t.no=t.no??i+1;t.side=String(t.side||'BUY').toUpperCase();t.r=Number(t.r)||0;t.result=String(t.result||(t.r>0?'WIN':t.r<0?'LOSS':'EVEN')).toUpperCase();
+    let t={...requireRecord(rawTrade,`trades[${i}]`)};t.no=t.no??i+1;t.side=String(t.side||'BUY').toUpperCase();t.r=t.r==null?0:numberOrNull(t.r);if(t.r===null)throw new Error(`trades[${i}].r は有限の数値で指定してください。`);t.result=String(t.result||(t.r>0?'WIN':t.r<0?'LOSS':'EVEN')).toUpperCase();
     if(!ids.has(String(t.chart_id||'')))t.chart_id=d.charts[0].id; else t.chart_id=String(t.chart_id);
     let c=d.charts.find(x=>x.id===t.chart_id)||d.charts[0],last=c.candles.length-1;
     t.entry_i=Math.max(0,Math.min(last,Math.trunc(Number(t.entry_i)||0)));t.exit_i=Math.max(t.entry_i,Math.min(last,Math.trunc(Number(t.exit_i)||t.entry_i)));
     let ec=c.candles[t.entry_i]||{},xc=c.candles[t.exit_i]||{};t.entry_time=t.entry_time||ec.time;t.exit_time=t.exit_time||xc.time;
-    t.entry_price=Number.isFinite(Number(t.entry_price))?Number(t.entry_price):Number(ec.close);t.exit_price=Number.isFinite(Number(t.exit_price))?Number(t.exit_price):Number(xc.close);
-    t.stop=numberOrNull(t.stop);t.target=numberOrNull(t.target);t.confidence=numberOrNull(t.confidence);t.steps=Array.isArray(t.steps)?t.steps:[];
+    t.entry_price=numberOrNull(t.entry_price)??ec.close;t.exit_price=numberOrNull(t.exit_price)??xc.close;
+    t.stop=numberOrNull(t.stop);t.target=numberOrNull(t.target);t.confidence=numberOrNull(t.confidence);t.steps=Array.isArray(t.steps)?t.steps.map((st,j)=>({...requireRecord(st,`trades[${i}].steps[${j}]`)})):[];
     return t;
   });
   recalcSummary(d);
+  for(const stats of [d.summary,d.summary.buy,d.summary.sell,...Object.values(d.summary.by_chart)]){for(const key of ['expectancy_r','profit_factor','max_dd_r','total_r'])if(stats[key]!==null&&!Number.isFinite(stats[key]))throw new Error('トレードの損益が計算可能な数値範囲を超えています。')}
   d.meta.report_title=String(d.meta.report_title||'GPT 戦略検証レポート');d.meta.status=String(d.meta.status||'読み込みデータ');d.strategy.strategy_id=String(d.strategy.strategy_id||'未指定');d.strategy.name=String(d.strategy.name||'戦略名未指定');d.strategy.hypothesis=String(d.strategy.hypothesis||'仮説は未記入です。');d.strategy.entry_logic=Array.isArray(d.strategy.entry_logic)?d.strategy.entry_logic:[];d.strategy.exit_logic=Array.isArray(d.strategy.exit_logic)?d.strategy.exit_logic:[];d.strategy.future_tests=Array.isArray(d.strategy.future_tests)?d.strategy.future_tests:[];d.notes=Array.isArray(d.notes)?d.notes:[];
   return d;
 }
 const currentChart=()=>DATA?.charts?.[chartIndex]||null;
 const chartTrades=()=>{let c=currentChart();return c&&DATA?.trades?DATA.trades.filter(t=>t.chart_id===c.id):[]};
+// Display state is kept per chart object, outside the imported JSON.
+function chartState(c=currentChart()){
+  if(!c)return null;
+  if(!chartViews.has(c))chartViews.set(c,{time:{start:0,end:Math.max(0,c.candles.length-1)},price:null});
+  const state=chartViews.get(c),last=Math.max(0,c.candles.length-1),span=Math.min(last,state.time.end-state.time.start);
+  const start=Math.max(0,Math.min(last-span,state.time.start));state.time={start,end:start+span};
+  return state;
+}
+function fittedPriceRange(c,a,b){
+  let lo=Infinity,hi=-Infinity;
+  for(let i=a;i<=b;i++){lo=Math.min(lo,c.candles[i].low);hi=Math.max(hi,c.candles[i].high)}
+  const center=lo/2+hi/2,span=Math.max(hi-lo,Math.abs(center)*.001,1e-8)*1.16;
+  return {lo:center-span/2,hi:center+span/2,basisSpan:span};
+}
+function setPriceRange(center,span){
+  const state=chartState();if(!state?.price||!Number.isFinite(center)||!Number.isFinite(span))return;
+  const basis=state.price.basisSpan,min=Math.max(Math.abs(center)*Number.EPSILON*64,basis*1e-6,1e-12),max=Math.max(min,basis*1e6);
+  span=Math.max(min,Math.min(max,span));
+  const lo=center-span/2,hi=center+span/2;
+  if(Number.isFinite(lo)&&Number.isFinite(hi)&&hi>lo)state.price={lo,hi,basisSpan:basis};
+}
+function fitPriceScale(){
+  const c=currentChart();if(!c)return;
+  resetChartGesture();
+  chartState(c).price=fittedPriceRange(c,Math.max(0,Math.floor(view.start)),Math.min(c.candles.length-1,Math.ceil(view.end)));
+  drawChart();
+}
 const nice=v=>{if(v===null||v===undefined||Number.isNaN(v))return '—';let a=Math.abs(v);return a>=10000?v.toLocaleString('ja-JP',{maximumFractionDigits:1}):a>=100?v.toLocaleString('ja-JP',{minimumFractionDigits:2,maximumFractionDigits:3}):v.toLocaleString('ja-JP',{minimumFractionDigits:3,maximumFractionDigits:5})};
 const timeLabel=(iso,full=false)=>{if(!iso)return '—';let d=new Date(iso);if(Number.isNaN(d.getTime()))return String(iso);return full?`${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`:`${d.getMonth()+1}/${d.getDate()} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`};
 function renderMeta(){$('statusBadge').textContent=DATA.meta.status;$('mStrategy').textContent=DATA.strategy.strategy_id}
@@ -111,23 +146,38 @@ function resizeCanvas(canvas){const dpr=devicePixelRatio||1,r=canvas.getBounding
 function drawTri(ctx,x,y,dir,col){ctx.fillStyle=col;ctx.beginPath();if(dir==='up'){ctx.moveTo(x,y-9);ctx.lineTo(x-7,y+5);ctx.lineTo(x+7,y+5)}else{ctx.moveTo(x,y+9);ctx.lineTo(x-7,y-5);ctx.lineTo(x+7,y-5)}ctx.closePath();ctx.fill()}
 function seriesRange(vals,a,b){let mn=Infinity,mx=-Infinity,found=false;for(let i=a;i<=b;i++){let v=vals?.[i];if(v!==null&&v!==undefined&&Number.isFinite(v)){if(v<mn)mn=v;if(v>mx)mx=v;found=true}}return found?[mn,mx]:[0,1]}
 function drawLine(ctx,vals,a,b,X,Y,col,width=1.4,dash=[],step=1){ctx.strokeStyle=col;ctx.lineWidth=width;ctx.setLineDash(dash);ctx.beginPath();let started=false;for(let i=a;i<=b;i+=step){let v=vals?.[i];if(v===null||v===undefined||!Number.isFinite(v)){started=false;continue}let x=X(i),y=Y(v);if(!started){ctx.moveTo(x,y);started=true}else ctx.lineTo(x,y)}if(b>=a&&((b-a)%step)!==0){let v=vals?.[b];if(v!==null&&v!==undefined&&Number.isFinite(v)){let x=X(b),y=Y(v);if(!started)ctx.moveTo(x,y);else ctx.lineTo(x,y)}}ctx.stroke();ctx.setLineDash([])}
-function drawChart(){let cv=$('chart'),{ctx,w,h}=resizeCanvas(cv);ctx.clearRect(0,0,w,h);let c=currentChart();if(!c)return;let C=c.candles;if(!C.length)return;let panes=c.panes||[],usable=Math.max(1,h-42),gap=panes.length?Math.min(8,usable/(panes.length*8)):0,paneH=panes.length?Math.min(120,usable*.34/panes.length):0,mainH=Math.max(1,usable-(paneH+gap)*panes.length);let pad={l:10,r:70,t:20,b:20},pw=Math.max(50,w-pad.l-pad.r);let a=Math.max(0,Math.floor(view.start)),b=Math.min(C.length-1,Math.ceil(view.end));if(b<a)return;let lo=Infinity,hi=-Infinity;for(let i=a;i<=b;i++){let d=C[i];if(d.low<lo)lo=d.low;if(d.high>hi)hi=d.high}if(!Number.isFinite(lo)||!Number.isFinite(hi))return;let rg=hi-lo||1;lo-=rg*.08;hi+=rg*.08;let span=Math.max(1,view.end-view.start),X=i=>pad.l+(i-view.start)/span*pw,Y=p=>pad.t+(hi-p)/(hi-lo)*(mainH-pad.t-pad.b);let visibleCount=b-a+1,renderStep=Math.max(1,Math.ceil(visibleCount/Math.max(800,pw*1.6)));
+function drawChart(){let cv=$('chart'),{ctx,w,h}=resizeCanvas(cv);ctx.clearRect(0,0,w,h);let c=currentChart();if(!c)return;let C=c.candles;if(!C.length)return;let panes=c.panes||[],usable=Math.max(1,h-42),gap=panes.length?Math.min(8,usable/(panes.length*8)):0,paneH=panes.length?Math.min(120,usable*.34/panes.length):0,mainH=Math.max(1,usable-(paneH+gap)*panes.length);let pad={l:10,r:70,t:Math.min(20,mainH*.2),b:Math.min(20,mainH*.2)},pw=Math.max(50,w-pad.l-pad.r);let a=Math.max(0,Math.floor(view.start)),b=Math.min(C.length-1,Math.ceil(view.end));if(b<a)return;const state=chartState(c);state.time={...view};if(!state.price)state.price=fittedPriceRange(c,a,b);let {lo,hi}=state.price;$('priceAxis').style.height=mainH+'px';$('priceAxis').style.width=pad.r+'px';$('priceAxis').style.display='block';let span=Math.max(1,view.end-view.start),X=i=>pad.l+(i-view.start)/span*pw,Y=p=>pad.t+(hi-p)/(hi-lo)*(mainH-pad.t-pad.b);let visibleCount=b-a+1,renderStep=Math.max(1,Math.ceil(visibleCount/Math.max(800,pw*1.6)));
 ctx.font='11px Segoe UI';for(let k=0;k<=5;k++){let y=pad.t+(mainH-pad.t-pad.b)*k/5;ctx.strokeStyle='#202a35';ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(pad.l+pw,y);ctx.stroke();ctx.fillStyle='#728191';ctx.textAlign='right';ctx.fillText(nice(hi-(hi-lo)*k/5),w-6,y+4)}for(let k=0;k<=6;k++){let i=Math.round(view.start+span*k/6);if(i<0||i>=C.length)continue;let x=X(i);ctx.strokeStyle='#17202a';ctx.beginPath();ctx.moveTo(x,pad.t);ctx.lineTo(x,mainH);ctx.stroke();ctx.fillStyle='#667585';ctx.textAlign='center';ctx.fillText(timeLabel(C[i].time),x,mainH-3)}
+ctx.save();ctx.beginPath();ctx.rect(pad.l,pad.t,pw,Math.max(1,mainH-pad.t-pad.b));ctx.clip();
 (c.overlays||[]).forEach((o,oi)=>{if(o.kind==='band'){ctx.fillStyle='rgba(173,140,255,.08)';ctx.beginPath();let started=false;for(let i=a;i<=b;i+=renderStep){let v=o.upper?.[i];if(v==null)continue;let x=X(i),y=Y(v);if(!started){ctx.moveTo(x,y);started=true}else ctx.lineTo(x,y)}for(let i=b;i>=a;i-=renderStep){let v=o.lower?.[i];if(v==null)continue;ctx.lineTo(X(i),Y(v))}if(started){ctx.closePath();ctx.fill()}drawLine(ctx,o.upper,a,b,X,Y,COLORS[oi%COLORS.length],1,[4,3],renderStep);drawLine(ctx,o.middle,a,b,X,Y,COLORS[oi%COLORS.length],1.2,[],renderStep);drawLine(ctx,o.lower,a,b,X,Y,COLORS[oi%COLORS.length],1,[4,3],renderStep)}})
 let bucketCount=Math.ceil(visibleCount/renderStep),pxPer=Math.max(1,pw/Math.max(1,bucketCount)),body=Math.max(1,Math.min(9,pxPer*.68));for(let i=a;i<=b;i+=renderStep){let j=Math.min(b,i+renderStep-1),first=C[i],last=C[j],hh=-Infinity,ll=Infinity;for(let k=i;k<=j;k++){if(C[k].high>hh)hh=C[k].high;if(C[k].low<ll)ll=C[k].low}let x=X((i+j)/2),yo=Y(first.open),yc=Y(last.close),yh=Y(hh),yl=Y(ll),col=last.close>=first.open?'#2fbf71':'#ff5d5d';ctx.strokeStyle=col;ctx.beginPath();ctx.moveTo(x,yh);ctx.lineTo(x,yl);ctx.stroke();ctx.fillStyle=col;ctx.fillRect(x-body/2,Math.min(yo,yc),body,Math.max(1,Math.abs(yc-yo)))}
 (c.overlays||[]).forEach((o,oi)=>{if(o.kind==='line')drawLine(ctx,o.values,a,b,X,Y,COLORS[oi%COLORS.length],1.5,[],renderStep)});
 let ct=chartTrades();ct.forEach(t=>{if(t.entry_i<view.start-2||t.entry_i>view.end+2)return;let x=X(t.entry_i),y=Y(t.entry_price);drawTri(ctx,x,y,t.side==='BUY'?'up':'down',t.side==='BUY'?'#3bc8ff':'#ff6f6f');let selected=DATA.trades[selectedTradeIndex]===t;if(selected){ctx.strokeStyle='#fff';ctx.beginPath();ctx.arc(x,y,13,0,Math.PI*2);ctx.stroke();(t.steps||[]).forEach(st=>{let si=Math.trunc(Number(st.i));if(si>=a&&si<=b&&C[si]){ctx.fillStyle='#ad8cff';ctx.beginPath();ctx.arc(X(si),Y(C[si].close),4,0,Math.PI*2);ctx.fill();ctx.fillStyle='#b9a7ff';ctx.textAlign='center';ctx.fillText(String(st.label||''),X(si),Y(C[si].close)-9)}});ctx.strokeStyle=t.r>0?'#2fbf71':'#ff5d5d';ctx.setLineDash([5,4]);[t.stop,t.target].filter(Number.isFinite).forEach(p=>{ctx.beginPath();ctx.moveTo(X(t.entry_i),Y(p));ctx.lineTo(X(t.exit_i),Y(p));ctx.stroke()});ctx.setLineDash([]);if(Number.isFinite(t.exit_price)){ctx.fillStyle=t.r>0?'#2fbf71':'#ff5d5d';ctx.beginPath();ctx.arc(X(t.exit_i),Y(t.exit_price),5,0,Math.PI*2);ctx.fill()}}});
-let y0=mainH+gap;panes.forEach((p,pi)=>{let ph=paneH;ctx.fillStyle='#0c1117';ctx.fillRect(0,y0,w,ph);ctx.strokeStyle='#2b3441';ctx.beginPath();ctx.moveTo(0,y0);ctx.lineTo(w,y0);ctx.stroke();let mn=Infinity,mx=-Infinity,found=false;(p.series||[]).forEach(s=>{let [smn,smx]=seriesRange(s.values,a,b);if(smn!==0||smx!==1||s.values?.some?.(v=>Number.isFinite(v))){if(smn<mn)mn=smn;if(smx>mx)mx=smx;found=true}});mn=p.min!=null?p.min:(found?mn:0);mx=p.max!=null?p.max:(found?mx:1);if(mx===mn){mx+=1;mn-=1}let margin=(mx-mn)*.1;if(p.min==null)mn-=margin;if(p.max==null)mx+=margin;let PY=v=>y0+14+(mx-v)/(mx-mn)*(ph-28);ctx.fillStyle='#8b98a7';ctx.textAlign='left';ctx.fillText(p.label,8,y0+13);ctx.textAlign='right';ctx.fillText(nice(mx),w-6,y0+14);ctx.fillText(nice(mn),w-6,y0+ph-5);(p.levels||[]).forEach(l=>{ctx.strokeStyle='#333b47';ctx.setLineDash([3,3]);ctx.beginPath();ctx.moveTo(pad.l,PY(l));ctx.lineTo(pad.l+pw,PY(l));ctx.stroke();ctx.setLineDash([])});if(p.zero_line){ctx.strokeStyle='#39424f';ctx.beginPath();ctx.moveTo(pad.l,PY(0));ctx.lineTo(pad.l+pw,PY(0));ctx.stroke()}(p.series||[]).forEach((s,si)=>{let col=COLORS[(si+pi+2)%COLORS.length];if(s.kind==='histogram'){for(let i=a;i<=b;i+=renderStep){let v=s.values?.[i];if(v==null)continue;let zero=(mn<=0&&mx>=0)?PY(0):PY(mn),yy=PY(v);ctx.fillStyle=v>=0?'rgba(47,191,113,.65)':'rgba(255,93,93,.65)';ctx.fillRect(X(i)-Math.max(1,body*.35),Math.min(yy,zero),Math.max(1,body*.7),Math.max(1,Math.abs(zero-yy)))}}else drawLine(ctx,s.values,a,b,X,PY,col,1.3,[],renderStep)});y0+=ph+gap});cv._geom={pad,pw,mainH,X,Y,a,b,lo,hi}}
-function switchChart(i){if(!DATA?.charts?.length||i<0||i>=DATA.charts.length)return;resetChartGesture();chartIndex=i;let c=currentChart();view={start:0,end:Math.min(c.candles.length-1,150)};let ti=DATA.trades.findIndex(t=>t.chart_id===c.id);selectedTradeIndex=ti>=0?ti:-1;renderChartTabs();renderChartInfo();renderRows();renderSelected();drawChart();updateTradeButtons()}
-function focusTrade(globalIdx){if(!DATA?.trades?.length||globalIdx<0||globalIdx>=DATA.trades.length)return;resetChartGesture();selectedTradeIndex=globalIdx;let t=DATA.trades[globalIdx],ci=DATA.charts.findIndex(c=>c.id===t.chart_id);if(ci<0)return;if(ci!==chartIndex){chartIndex=ci;renderChartTabs();renderChartInfo()}let C=currentChart().candles;view.start=Math.max(0,t.entry_i-45);view.end=Math.min(C.length-1,Math.max(t.entry_i+20,t.exit_i+55));renderRows();renderSelected();drawChart();updateTradeButtons()}
+ctx.restore();
+let y0=mainH+gap;panes.forEach((p,pi)=>{let ph=paneH;ctx.fillStyle='#0c1117';ctx.fillRect(0,y0,w,ph);ctx.strokeStyle='#2b3441';ctx.beginPath();ctx.moveTo(0,y0);ctx.lineTo(w,y0);ctx.stroke();let mn=Infinity,mx=-Infinity,found=false;(p.series||[]).forEach(s=>{let [smn,smx]=seriesRange(s.values,a,b);if(smn!==0||smx!==1||s.values?.some?.(v=>Number.isFinite(v))){if(smn<mn)mn=smn;if(smx>mx)mx=smx;found=true}});const needsZero=p.zero_line||(p.series||[]).some(s=>s.kind==='histogram');mn=p.min!=null?p.min:(found?Math.min(mn,needsZero?0:mn):0);mx=p.max!=null?p.max:(found?Math.max(mx,needsZero?0:mx):1);if(mx<=mn){mx=mn+1;mn-=1}let margin=(mx-mn)*.1;if(p.min==null)mn-=margin;if(p.max==null)mx+=margin;const inset=Math.min(14,ph*.2);let PY=v=>y0+inset+(mx-v)/(mx-mn)*(ph-2*inset);ctx.fillStyle='#8b98a7';ctx.textAlign='left';ctx.fillText(p.label,8,y0+13);ctx.textAlign='right';ctx.fillText(nice(mx),w-6,y0+14);ctx.fillText(nice(mn),w-6,y0+ph-5);ctx.save();ctx.beginPath();ctx.rect(pad.l,y0,pw,ph);ctx.clip();(p.levels||[]).forEach(l=>{ctx.strokeStyle='#333b47';ctx.setLineDash([3,3]);ctx.beginPath();ctx.moveTo(pad.l,PY(l));ctx.lineTo(pad.l+pw,PY(l));ctx.stroke();ctx.setLineDash([])});if(p.zero_line){ctx.strokeStyle='#39424f';ctx.beginPath();ctx.moveTo(pad.l,PY(0));ctx.lineTo(pad.l+pw,PY(0));ctx.stroke()}(p.series||[]).forEach((s,si)=>{let col=COLORS[(si+pi+2)%COLORS.length];if(s.kind==='histogram'){for(let i=a;i<=b;i+=renderStep){let v=s.values?.[i];if(v==null)continue;let zero=PY(0),yy=PY(v);ctx.fillStyle=v>=0?'rgba(47,191,113,.65)':'rgba(255,93,93,.65)';ctx.fillRect(X(i)-Math.max(1,body*.35),Math.min(yy,zero),Math.max(1,body*.7),Math.max(1,Math.abs(zero-yy)))}}else drawLine(ctx,s.values,a,b,X,PY,col,1.3,[],renderStep)});ctx.restore();y0+=ph+gap});cv._geom={pad,pw,mainH,X,Y,a,b,lo,hi}}
+function switchChart(i){if(!DATA?.charts?.length||i<0||i>=DATA.charts.length)return;resetChartGesture();chartIndex=i;let c=currentChart();view={...chartState(c).time};let ti=DATA.trades.findIndex(t=>t.chart_id===c.id);selectedTradeIndex=ti>=0?ti:-1;renderChartTabs();renderChartInfo();renderRows();renderSelected();drawChart();updateTradeButtons()}
+function focusTrade(globalIdx){
+  if(!DATA?.trades?.length||globalIdx<0||globalIdx>=DATA.trades.length)return;
+  resetChartGesture();
+  const t=DATA.trades[globalIdx],ci=DATA.charts.findIndex(c=>c.id===t.chart_id);if(ci<0)return;
+  if(ci!==chartIndex){chartIndex=ci;view={...chartState().time};renderChartTabs();renderChartInfo()}
+  selectedTradeIndex=globalIdx;
+  // Move to the trade, without changing either zoom level.
+  const last=currentChart().candles.length-1,span=Math.min(last,view.end-view.start);
+  const start=Math.max(0,Math.min(last-span,t.entry_i-span*.4));
+  view={start,end:start+span};renderRows();renderSelected();drawChart();updateTradeButtons();
+}
 function renderRows(){if(!DATA){$('tradeRows').innerHTML='';return}let rows=DATA.trades.map((t,idx)=>({t,idx})).filter(({t})=>filter==='ALL'||t.side===filter||t.result===filter).map(({t,idx})=>{let c=DATA.charts.find(x=>x.id===t.chart_id)||DATA.charts[0];return `<tr data-idx="${idx}" class="${selectedTradeIndex===idx?'selected':''}"><td>${esc(t.no)}</td><td>${esc(c.symbol)}/${esc(c.timeframe)}</td><td>${esc(timeLabel(t.entry_time,true))}</td><td class="${esc(t.side.toLowerCase())}">${esc(sideLabel(t.side))}</td><td class="${esc(t.result.toLowerCase())}">${esc(resultLabel(t.result))}</td><td class="${t.r>=0?'positive':'negative'}">${t.r>=0?'+':''}${t.r.toFixed(2)}R</td><td>${esc(t.setup||'')}</td><td>${t.confidence??'—'}</td></tr>`}).join('');$('tradeRows').innerHTML=rows||'<tr><td colspan="8" class="empty">該当するトレードはありません。</td></tr>';document.querySelectorAll('#tradeRows tr[data-idx]').forEach(r=>r.onclick=()=>focusTrade(Number(r.dataset.idx)))}
 function renderSelected(){let t=DATA?.trades?.[selectedTradeIndex];if(!t){$('selectedBody').innerHTML='<div class="empty">選択中のトレードはありません。</div>';return}let c=DATA.charts.find(x=>x.id===t.chart_id)||DATA.charts[0];let note=t.note?`<div class="notice">${esc(t.note)}</div>`:'';$('selectedBody').innerHTML=`<div class="selected-big"><span class="${esc(t.side.toLowerCase())}">${esc(sideLabel(t.side))}</span> No.${esc(t.no)} <span class="${t.r>=0?'positive':'negative'}">${t.r>=0?'+':''}${t.r.toFixed(2)}R</span></div><div class="kv"><span>銘柄</span><b>${esc(c.symbol)}</b><span>時間足</span><b>${esc(c.timeframe)}</b><span>エントリー</span><b>${esc(nice(t.entry_price))}</b><span>日時</span><b>${esc(timeLabel(t.entry_time,true))}</b><span>損切り</span><b>${esc(nice(t.stop))}</b><span>利確</span><b>${esc(nice(t.target))}</b><span>信頼度</span><b>${t.confidence??'—'}</b></div>${note}`}
 function drawEquity(){let cv=$('equity'),{ctx,w,h}=resizeCanvas(cv);ctx.clearRect(0,0,w,h);if(!DATA?.trades?.length){ctx.fillStyle='#8b98a7';ctx.font='12px Segoe UI';ctx.textAlign='center';ctx.fillText('トレードなし',w/2,h/2);return}let vals=[0],s=0;DATA.trades.forEach(t=>{s+=t.r;vals.push(s)});let lo=Infinity,hi=-Infinity;for(const v of vals){if(v<lo)lo=v;if(v>hi)hi=v}lo=Math.min(lo,0);hi=Math.max(hi,0);let rg=hi-lo||1,px=12,py=12;let X=i=>px+i/Math.max(1,vals.length-1)*(w-2*px),Y=v=>py+(hi-v)/rg*(h-2*py);ctx.strokeStyle='#263241';ctx.beginPath();ctx.moveTo(px,Y(0));ctx.lineTo(w-px,Y(0));ctx.stroke();ctx.strokeStyle='#3bc8ff';ctx.lineWidth=2;ctx.beginPath();vals.forEach((v,i)=>i?ctx.lineTo(X(i),Y(v)):ctx.moveTo(X(i),Y(v)));ctx.stroke();ctx.fillStyle='#8b98a7';ctx.textAlign='left';ctx.fillText('0R',4,Y(0)-4);ctx.fillStyle=s>=0?'#2fbf71':'#ff5d5d';ctx.textAlign='right';ctx.fillText(`${s>=0?'+':''}${s.toFixed(1)}R`,w-6,Y(s)-5)}
 const cv=$('chart');
 const chartPointers=new Map();
+const priceAxis=$('priceAxis');
 function resetChartGesture(){
   const ids=[...chartPointers.keys()];
   chartPointers.clear();drag=null;normalTouch=null;
+  const priceId=priceDrag?.id;priceDrag=null;
+  if(priceId!==undefined&&priceAxis.hasPointerCapture(priceId))priceAxis.releasePointerCapture(priceId);
   for(const id of ids){if(cv.hasPointerCapture(id))cv.releasePointerCapture(id)}
   $('tooltip').style.display='none';
 }
@@ -163,7 +213,7 @@ cv.addEventListener('wheel',e=>{
   setChartView(center-span*ratio,span);
 },{passive:false});
 cv.addEventListener('pointerdown',e=>{
-  if(!DATA?.charts?.length||(e.pointerType==='mouse'&&e.button!==0))return;
+  if(priceDrag||!DATA?.charts?.length||(e.pointerType==='mouse'&&e.button!==0))return;
   chartPointers.set(e.pointerId,{x:e.clientX,y:e.clientY});
   $('tooltip').style.display='none';
   if(!chartFullscreen&&e.pointerType==='touch'){
@@ -206,6 +256,30 @@ cv.addEventListener('pointerup',endChartPointer);
 cv.addEventListener('lostpointercapture',endChartPointer);
 cv.addEventListener('pointercancel',resetChartGesture);
 window.addEventListener('blur',resetChartGesture);
+priceAxis.addEventListener('pointerdown',e=>{
+  if(!DATA?.charts?.length||priceDrag||(e.pointerType==='mouse'&&e.button!==0))return;
+  resetChartGesture();
+  const price=chartState().price;if(!price)return;
+  priceDrag={id:e.pointerId,y:e.clientY,span:price.hi-price.lo,center:price.lo/2+price.hi/2,height:Math.max(80,cv._geom.mainH)};
+  priceAxis.setPointerCapture(e.pointerId);
+});
+priceAxis.addEventListener('pointermove',e=>{
+  if(!priceDrag||e.pointerId!==priceDrag.id)return;
+  const exponent=Math.max(-14,Math.min(14,2*(e.clientY-priceDrag.y)/priceDrag.height));
+  setPriceRange(priceDrag.center,priceDrag.span*Math.exp(exponent));drawChart();
+});
+for(const type of ['pointerup','pointercancel','lostpointercapture'])priceAxis.addEventListener(type,e=>{
+  if(priceDrag?.id===e.pointerId)resetChartGesture();
+});
+priceAxis.addEventListener('keydown',e=>{
+  if(!DATA?.charts?.length||!['ArrowUp','ArrowDown','Home'].includes(e.key))return;
+  e.preventDefault();
+  if(e.key==='Home'){fitPriceScale();return}
+  resetChartGesture();const p=chartState().price;
+  setPriceRange(p.lo/2+p.hi/2,(p.hi-p.lo)*(e.key==='ArrowUp'?.85:1/.85));drawChart();
+});
+$('fitPrice').onclick=$('fullFitPrice').onclick=fitPriceScale;
+
 function zoomChart(factor){
   if(!DATA?.charts?.length||currentChart().candles.length<2)return;
   resetChartGesture();
@@ -253,18 +327,40 @@ $('zoomOut').onclick=$('fullZoomOut').onclick=()=>zoomChart(1/.75);
 $('fullAllView').onclick=showAllChart;
 
 cv.addEventListener('mousemove',e=>{if(drag||!DATA?.charts?.length){$('tooltip').style.display='none';return}let C=currentChart().candles,g=cv._geom,r=cv.getBoundingClientRect(),x=e.clientX-r.left,y=e.clientY-r.top;if(!g||x<g.pad.l||x>g.pad.l+g.pw||y<g.pad.t||y>g.mainH){$('tooltip').style.display='none';return}let idx=Math.max(0,Math.min(C.length-1,Math.round(view.start+(x-g.pad.l)/g.pw*(view.end-view.start)))),d=C[idx],tt=$('tooltip');tt.innerHTML=`<b>${esc(timeLabel(d.time,true))}</b><br>始値 ${esc(nice(d.open))} / 高値 ${esc(nice(d.high))}<br>安値 ${esc(nice(d.low))} / 終値 ${esc(nice(d.close))}<br>出来高 ${esc(d.volume??'—')}`;tt.style.display='block';tt.style.left=Math.min(x+14,r.width-190)+'px';tt.style.top=Math.max(8,y-55)+'px'});cv.addEventListener('mouseleave',()=>$('tooltip').style.display='none');
-function updateTradeButtons(){let has=!!DATA?.trades?.length;$('prevTrade').disabled=!has;$('nextTrade').disabled=!has;let chart=!!DATA?.charts?.length;for(const id of ['allView','fullAllView','openFullscreen'])$(id).disabled=!chart;for(const id of ['zoomIn','zoomOut','fullZoomIn','fullZoomOut'])$(id).disabled=!chart||currentChart().candles.length<2}
+function updateTradeButtons(){let has=!!DATA?.trades?.length;$('prevTrade').disabled=!has;$('nextTrade').disabled=!has;let chart=!!DATA?.charts?.length;for(const id of ['allView','fullAllView','openFullscreen','fitPrice','fullFitPrice'])$(id).disabled=!chart;for(const id of ['zoomIn','zoomOut','fullZoomIn','fullZoomOut'])$(id).disabled=!chart||currentChart().candles.length<2}
 $('prevTrade').onclick=()=>{if(DATA?.trades?.length){let i=selectedTradeIndex<0?0:(selectedTradeIndex-1+DATA.trades.length)%DATA.trades.length;focusTrade(i)}};$('nextTrade').onclick=()=>{if(DATA?.trades?.length){let i=selectedTradeIndex<0?0:(selectedTradeIndex+1)%DATA.trades.length;focusTrade(i)}};$('allView').onclick=showAllChart;
 document.querySelectorAll('.filter').forEach(b=>b.onclick=()=>{document.querySelectorAll('.filter').forEach(x=>x.classList.remove('active'));b.classList.add('active');filter=b.dataset.filter;renderRows()});document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.tabbody').forEach(x=>x.classList.remove('active'));b.classList.add('active');$(b.dataset.tab).classList.add('active')});window.addEventListener('resize',()=>{resetChartGesture();drawChart();drawEquity()});
-function removeChartFromActive(chartIdx){if(!DATA||activeDatasetIndex<0||chartIdx<0||chartIdx>=DATA.charts.length)return;if(DATA.charts.length===1){removeDataset(activeDatasetIndex);return}let removed=DATA.charts[chartIdx],removedId=removed.id;DATA.charts.splice(chartIdx,1);DATA.trades=DATA.trades.filter(t=>t.chart_id!==removedId);recalcSummary(DATA);if(chartIndex>chartIdx)chartIndex--;else if(chartIndex===chartIdx)chartIndex=Math.min(chartIdx,DATA.charts.length-1);selectedTradeIndex=-1;renderMeta();renderStats();renderStrategy();renderChartTabs();switchChart(chartIndex);drawEquity();let first=DATA.trades.findIndex(t=>t.chart_id===currentChart()?.id);if(first>=0)focusTrade(first);else{renderRows();renderSelected()}renderDatasetList();$('fileStatus').textContent=`チャートを1件消去・残り${DATA.charts.length}チャート`;$('fileStatus').className='import-summary'}
+function removeChartFromActive(chartIdx){if(!DATA||activeDatasetIndex<0||chartIdx<0||chartIdx>=DATA.charts.length)return;if(DATA.charts.length===1){removeDataset(activeDatasetIndex);return}let removed=DATA.charts[chartIdx],removedId=removed.id;DATA.charts.splice(chartIdx,1);DATA.trades=DATA.trades.filter(t=>t.chart_id!==removedId);recalcSummary(DATA);if(chartIndex>chartIdx)chartIndex--;else if(chartIndex===chartIdx)chartIndex=Math.min(chartIdx,DATA.charts.length-1);selectedTradeIndex=-1;renderMeta();renderStats();renderStrategy();renderChartTabs();switchChart(chartIndex);drawEquity();renderRows();renderSelected();renderDatasetList();$('fileStatus').textContent=`チャートを1件消去・残り${DATA.charts.length}チャート`;$('fileStatus').className='import-summary'}
 function datasetDisplayName(item){let d=item.data,c=d.charts[0],more=d.charts.length>1?` +${d.charts.length-1}`:'';return `${c.symbol} / ${c.timeframe}${more} ・ ${d.strategy.strategy_id}`}
-function renderDatasetList(){let list=$('datasetList'),totalCharts=DATASETS.reduce((n,x)=>n+(x.data?.charts?.length||0),0);$('datasetCount').textContent=`${DATASETS.length}ファイル / ${totalCharts}チャート`;$('clearAllDataBtn').disabled=DATASETS.length===0;$('fileStatus').textContent=`読み込み済み：${DATASETS.length}ファイル / ${totalCharts}チャート`;if(!DATASETS.length){list.innerHTML='<span class="empty-inline">まだデータはありません。</span>';return}list.innerHTML=DATASETS.map((item,i)=>`<div class="dataset-item ${i===activeDatasetIndex?'active':''}" data-dataset="${i}"><button class="dataset-select" data-select="${i}" title="${esc(item.sourceName)}"><span class="dataset-name">${esc(datasetDisplayName(item))}</span><span class="dataset-source">${esc(item.sourceName)}</span></button><button class="dataset-remove" data-remove="${i}" title="このデータだけ消去" aria-label="このデータだけ消去">消す</button></div>`).join('');document.querySelectorAll('[data-select]').forEach(b=>b.onclick=()=>activateDataset(Number(b.dataset.select)));document.querySelectorAll('[data-remove]').forEach(b=>b.onclick=e=>{e.stopPropagation();removeDataset(Number(b.dataset.remove))})}
-function renderEmpty(){closeChartFullscreen();resetChartGesture();DATA=null;chartIndex=0;selectedTradeIndex=-1;filter='ALL';view={start:0,end:100};drag=null;$('statusBadge').textContent='データなし';$('mSymbol').textContent='—';$('mTf').textContent='—';$('mPeriod').textContent='—';$('mStrategy').textContent='—';$('stats').innerHTML=stat('トレード数','—','未読込')+stat('勝率','—','未読込')+stat('期待値','—','未読込')+stat('PF','—','未読込')+stat('最大DD','—','未読込')+stat('累積R','—','未読込');$('chartTabs').innerHTML='';$('chartTitle').textContent='検証データ未読込';$('chartSub').textContent='GPT出力JSONを読み込むとチャートが表示されます。';$('indicatorRow').innerHTML='<span class="ind-chip">データなし</span>';$('tradeRows').innerHTML='';$('strategyBody').innerHTML='<div class="empty">戦略データはまだ読み込まれていません。</div>';$('notesBody').innerHTML='<div class="empty">検証メモはまだありません。</div>';$('selectedBody').innerHTML='<div class="empty">トレードを読み込むと詳細が表示されます。</div>';$('chartInfo').innerHTML='<div class="empty">チャートデータなし</div>';$('emptyChart').style.display='flex';$('tooltip').style.display='none';document.querySelectorAll('.filter').forEach((x,i)=>x.classList.toggle('active',i===0));updateTradeButtons();let rc=resizeCanvas($('chart'));rc.ctx.clearRect(0,0,rc.w,rc.h);drawEquity();renderDatasetList()}
-function activateDataset(index){if(index<0||index>=DATASETS.length){activeDatasetIndex=-1;renderEmpty();return}activeDatasetIndex=index;DATA=DATASETS[index].data;chartIndex=0;selectedTradeIndex=-1;filter='ALL';drag=null;renderMeta();renderStats();renderStrategy();renderChartTabs();switchChart(0);drawEquity();let first=DATA.trades.findIndex(t=>t.chart_id===currentChart()?.id);if(first>=0)focusTrade(first);else{renderRows();renderSelected()}$('emptyChart').style.display='none';document.querySelectorAll('.filter').forEach((x,i)=>x.classList.toggle('active',i===0));renderDatasetList();updateTradeButtons()}
-async function loadJsonFiles(fileList){let files=[...(fileList||[])].filter(f=>f&&(/\.json$/i.test(f.name)||f.type==='application/json'));if(!files.length){$('fileStatus').textContent='JSONファイルが選択されていません。';$('fileStatus').className='import-summary import-error';return}let firstNew=-1,ok=0,errors=[];for(const file of files){try{let text=await file.text(),raw=JSON.parse(text),data=normalizeData(raw);if(firstNew<0)firstNew=DATASETS.length;DATASETS.push({id:`ds_${Date.now()}_${Math.random().toString(36).slice(2)}`,sourceName:file.name,data});ok++}catch(err){errors.push(`${file.name}: ${err?.message||err}`)}}if(ok){activateDataset(firstNew);$('fileStatus').textContent=`${ok}件追加・合計${DATASETS.length}件`;$('fileStatus').className='import-summary import-ok'}else{renderDatasetList()}if(errors.length){$('fileStatus').textContent=`${ok}件追加 / ${errors.length}件エラー：${errors[0]}`;$('fileStatus').className='import-summary import-error';console.warn(errors.join('\n'))}$('fileInput').value=''}
+function renderDatasetList(){let list=$('datasetList'),totalCharts=DATASETS.reduce((n,x)=>n+(x.data?.charts?.length||0),0);$('datasetCount').textContent=`${DATASETS.length}ファイル / ${totalCharts}チャート`;$('clearAllDataBtn').disabled=DATASETS.length===0&&importPending===0;$('fileStatus').textContent=`読み込み済み：${DATASETS.length}ファイル / ${totalCharts}チャート`;if(!DATASETS.length){list.innerHTML='<span class="empty-inline">まだデータはありません。</span>';return}list.innerHTML=DATASETS.map((item,i)=>`<div class="dataset-item ${i===activeDatasetIndex?'active':''}" data-dataset="${i}"><button class="dataset-select" data-select="${i}" title="${esc(item.sourceName)}"><span class="dataset-name">${esc(datasetDisplayName(item))}</span><span class="dataset-source">${esc(item.sourceName)}</span></button><button class="dataset-remove" data-remove="${i}" title="このデータだけ消去" aria-label="このデータだけ消去">消す</button></div>`).join('');document.querySelectorAll('[data-select]').forEach(b=>b.onclick=()=>activateDataset(Number(b.dataset.select)));document.querySelectorAll('[data-remove]').forEach(b=>b.onclick=e=>{e.stopPropagation();removeDataset(Number(b.dataset.remove))})}
+function renderEmpty(){closeChartFullscreen();resetChartGesture();$('priceAxis').style.display='none';DATA=null;chartIndex=0;selectedTradeIndex=-1;filter='ALL';view={start:0,end:100};drag=null;$('statusBadge').textContent='データなし';$('mSymbol').textContent='—';$('mTf').textContent='—';$('mPeriod').textContent='—';$('mStrategy').textContent='—';$('stats').innerHTML=stat('トレード数','—','未読込')+stat('勝率','—','未読込')+stat('期待値','—','未読込')+stat('PF','—','未読込')+stat('最大DD','—','未読込')+stat('累積R','—','未読込');$('chartTabs').innerHTML='';$('chartTitle').textContent='検証データ未読込';$('chartSub').textContent='GPT出力JSONを読み込むとチャートが表示されます。';$('indicatorRow').innerHTML='<span class="ind-chip">データなし</span>';$('tradeRows').innerHTML='';$('strategyBody').innerHTML='<div class="empty">戦略データはまだ読み込まれていません。</div>';$('notesBody').innerHTML='<div class="empty">検証メモはまだありません。</div>';$('selectedBody').innerHTML='<div class="empty">トレードを読み込むと詳細が表示されます。</div>';$('chartInfo').innerHTML='<div class="empty">チャートデータなし</div>';$('emptyChart').style.display='flex';$('tooltip').style.display='none';document.querySelectorAll('.filter').forEach((x,i)=>x.classList.toggle('active',i===0));updateTradeButtons();let rc=resizeCanvas($('chart'));rc.ctx.clearRect(0,0,rc.w,rc.h);drawEquity();renderDatasetList()}
+function activateDataset(index){if(index<0||index>=DATASETS.length){activeDatasetIndex=-1;renderEmpty();return}activeDatasetIndex=index;DATA=DATASETS[index].data;chartIndex=0;selectedTradeIndex=-1;filter='ALL';drag=null;renderMeta();renderStats();renderStrategy();renderChartTabs();switchChart(0);drawEquity();renderRows();renderSelected();$('emptyChart').style.display='none';document.querySelectorAll('.filter').forEach((x,i)=>x.classList.toggle('active',i===0));renderDatasetList();updateTradeButtons()}
+function loadJsonFiles(fileList){
+  const files=[...(fileList||[])].filter(f=>f&&(/\.json$/i.test(f.name)||f.type==='application/json'));
+  if(!files.length){$('fileStatus').textContent='JSONファイルが選択されていません。';$('fileStatus').className='import-summary import-error';return Promise.resolve()}
+  const epoch=importEpoch;importPending++;$('clearAllDataBtn').disabled=false;
+  $('fileStatus').textContent='JSONを読み込み中…';$('fileInput').value='';
+  // Keep import batches in selection order. Clearing invalidates even pending reads.
+  const task=importQueue.then(async()=>{
+    if(epoch!==importEpoch)return;
+    const added=[],errors=[];
+    for(const file of files){
+      try{
+        const text=await file.text();if(epoch!==importEpoch)return;
+        const data=normalizeData(JSON.parse(text));
+        added.push({id:`ds_${Date.now()}_${Math.random().toString(36).slice(2)}`,sourceName:file.name,data});
+      }catch(err){if(epoch!==importEpoch)return;errors.push(`${file.name}: ${err?.message||err}`)}
+    }
+    if(epoch!==importEpoch)return;
+    const firstNew=DATASETS.length;DATASETS.push(...added);
+    if(added.length){activateDataset(firstNew);$('fileStatus').textContent=`${added.length}件追加・合計${DATASETS.length}件`;$('fileStatus').className='import-summary import-ok'}else renderDatasetList();
+    if(errors.length){$('fileStatus').textContent=`${added.length}件追加 / ${errors.length}件エラー：${errors[0]}`;$('fileStatus').className='import-summary import-error';console.warn(errors.join('\n'))}
+  }).finally(()=>{if(epoch===importEpoch){importPending--;$('clearAllDataBtn').disabled=DATASETS.length===0&&importPending===0}});
+  importQueue=task.catch(()=>{});return task;
+}
 function removeDataset(index){if(index<0||index>=DATASETS.length)return;let wasActive=index===activeDatasetIndex;DATASETS.splice(index,1);if(!DATASETS.length){activeDatasetIndex=-1;renderEmpty();$('fileStatus').textContent='読み込み済み：0件';$('fileStatus').className='import-summary';return}if(wasActive){activateDataset(Math.min(index,DATASETS.length-1))}else{if(index<activeDatasetIndex)activeDatasetIndex--;renderDatasetList()}$('fileStatus').textContent=`1件消去・残り${DATASETS.length}件`;$('fileStatus').className='import-summary'}
-function clearAllDatasets(){if(!DATASETS.length)return;if(DATASETS.length>1&&!confirm(`${DATASETS.length}件の読み込みデータをすべて画面から消去しますか？
-元のJSONファイルは削除されません。`))return;DATASETS=[];activeDatasetIndex=-1;renderEmpty();$('fileStatus').textContent='すべて消去しました（元のJSONファイルは残っています）';$('fileStatus').className='import-summary'}
+function clearAllDatasets(){if(!DATASETS.length&&!importPending)return;if(DATASETS.length>1&&!confirm(`${DATASETS.length}件の読み込みデータをすべて画面から消去しますか？
+元のJSONファイルは削除されません。`))return;importEpoch++;importPending=0;importQueue=Promise.resolve();DATASETS=[];activeDatasetIndex=-1;renderEmpty();$('fileStatus').textContent='すべて消去しました（元のJSONファイルは残っています）';$('fileStatus').className='import-summary'}
 $('openDataBtn').onclick=()=>$('fileInput').click();$('clearAllDataBtn').onclick=clearAllDatasets;$('fileInput').addEventListener('change',e=>loadJsonFiles(e.target.files));let dz=$('dropZone');['dragenter','dragover'].forEach(ev=>dz.addEventListener(ev,e=>{e.preventDefault();dz.classList.add('dragover')}));['dragleave','drop'].forEach(ev=>dz.addEventListener(ev,e=>{e.preventDefault();dz.classList.remove('dragover')}));dz.addEventListener('drop',e=>loadJsonFiles(e.dataTransfer?.files));
 renderEmpty();
 </script></body></html>
