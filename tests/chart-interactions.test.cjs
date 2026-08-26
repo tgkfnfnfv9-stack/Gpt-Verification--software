@@ -39,8 +39,12 @@ function setup(filename,storage){
   const elements=new Map(),windowListeners=new Map();
   const doc={activeElement:null};
   const win={scrollX:0,scrollY:420,scrollTo(x,y){this.scrollX=x;this.scrollY=y},addEventListener(name,fn){windowListeners.set(name,fn)}};
-  const drawCalls=[];
-  const drawing=new Proxy({}, {get:(obj,key)=>obj[key]??((...args)=>drawCalls.push({method:key,args,stroke:obj.strokeStyle,fill:obj.fillStyle})),set:(obj,key,value)=>(obj[key]=value,true)});
+  const drawCalls=[],drawingStack=[];
+  const drawing=new Proxy({}, {get:(obj,key)=>obj[key]??(key==='measureText'?text=>({width:Array.from(String(text)).length*7}):(...args)=>{
+    drawCalls.push({method:key,args,stroke:obj.strokeStyle,fill:obj.fillStyle,font:obj.font});
+    if(key==='save')drawingStack.push({...obj});
+    if(key==='restore'){const saved=drawingStack.pop();if(saved){for(const property of Object.keys(obj))delete obj[property];Object.assign(obj,saved)}}
+  }),set:(obj,key,value)=>(obj[key]=value,true)});
   function element(id){
     if(elements.has(id))return elements.get(id);
     const listeners=new Map(),captures=new Set(),classes=new Set();
@@ -48,7 +52,7 @@ function setup(filename,storage){
       classList:{add(x){classes.add(x)},remove(x){classes.delete(x)},contains:x=>classes.has(x),toggle(x,on){if(on)classes.add(x);else classes.delete(x)}},
       parentNode:null,
       appendChild(child){child.parentNode=this},after(child){child.parentNode=this.parentNode},
-      focus(){doc.activeElement=this},
+      focus(){doc.activeElement=this},click(){this.clickCount=(this.clickCount||0)+1},
       getAttribute(name){if(name==='style')return Object.keys(this.style).length?JSON.stringify(this.style):null;return null},
       setAttribute(name,value){if(name==='style'){for(const key of Object.keys(this.style))delete this.style[key];Object.assign(this.style,JSON.parse(value))}},
       removeAttribute(name){if(name==='style')for(const key of Object.keys(this.style))delete this.style[key]},
@@ -417,6 +421,91 @@ for(const filename of ['index.html','report.html']){
     assert.equal(corrupt.element('storageStatus').dataset.state,'error');assert.equal(corrupt.element('clearAllDataBtn').disabled,false);
     const unavailable=setup(filename);await unavailable.load();assert.equal(unavailable.run('DATASETS.length'),1);
     assert.equal(unavailable.element('storageStatus').dataset.state,'error');assert.equal(unavailable.element('saveDataBtn').disabled,false);
+  });
+  test(`${filename}: fullscreen touch and normal mouse drag move price without resizing either axis`,async()=>{
+    for(const full of [false,true]){
+      const h=setup(filename);await h.load();if(full)h.run('openChartFullscreen()');
+      const before=h.run('JSON.stringify(chartState().price)'),price=JSON.parse(before),v=h.view();
+      const height=h.run('cv._geom.mainH-cv._geom.pad.t-cv._geom.pad.b'),pointerType=full?'touch':'mouse';
+      h.fire('pointerdown',1,190,150,{pointerType});h.fire('pointermove',1,230,210,{pointerType});
+      const after=JSON.parse(h.run('JSON.stringify(chartState().price)'));
+      near(after.hi-after.lo,price.hi-price.lo);near(after.lo-price.lo,60*(price.hi-price.lo)/height);
+      near(h.span(),v.end-v.start);near(h.view().start,5);h.fire('pointerup');
+      const stopped=h.run('JSON.stringify(chartState().price)');h.fire('pointermove',1,230,310,{pointerType});
+      assert.equal(h.run('JSON.stringify(chartState().price)'),stopped);
+    }
+  });
+  test(`${filename}: normal two-finger translation pans vertically while one finger keeps native scrolling`,async()=>{
+    const h=setup(filename);await h.load();const price=h.run('JSON.stringify(chartState().price)'),time=h.span();
+    h.fire('pointerdown',1,190,100);h.fire('pointermove',1,190,160);
+    assert.equal(h.run('JSON.stringify(chartState().price)'),price);h.fire('pointercancel');
+    h.touch('touchstart',[[10,130,100],[20,290,100]]);h.touch('touchmove',[[10,150,150],[20,310,150]]);
+    assert.ok(h.run('chartState().price.lo')>JSON.parse(price).lo);near(h.run('chartState().price.hi-chartState().price.lo'),JSON.parse(price).hi-JSON.parse(price).lo);
+    near(h.span(),time);near(h.view().start,7.5);assert.equal(h.win.scrollY,420);
+    const shifted=h.run('JSON.stringify(chartState().price)');h.touch('touchmove',[[10,110,150],[20,350,150]]);
+    assert.ok(h.span()<time);assert.equal(h.run('JSON.stringify(chartState().price)'),shifted);
+    h.touch('touchend',[[10,110,150]]);h.touch('touchmove',[[10,110,250]]);assert.equal(h.run('JSON.stringify(chartState().price)'),shifted);
+    h.touch('touchend');assert.equal(h.run('normalPinch'),null);
+  });
+  test(`${filename}: full-screen vertical pan rebases across fingers and survives chart switches`,async()=>{
+    const h=setup(filename);await h.load();h.run('openChartFullscreen()');
+    h.fire('pointerdown',1,130,100);h.fire('pointerdown',2,290,100);h.fire('pointermove',1,130,140);h.fire('pointermove',2,290,140);
+    const before=h.run('JSON.stringify(chartState().price)');h.fire('pointerup',2,290,140);h.fire('pointermove',1,130,140);
+    assert.equal(h.run('JSON.stringify(chartState().price)'),before);h.fire('pointermove',1,130,160);
+    assert.ok(h.run('chartState().price.lo')>JSON.parse(before).lo);h.fire('pointercancel');
+    const shifted=h.run('JSON.stringify(chartState().price)');h.run('switchChart(1);switchChart(0);closeChartFullscreen()');
+    assert.equal(h.run('JSON.stringify(chartState().price)'),shifted);
+  });
+  test(`${filename}: extreme vertical shifts never expand price scale or generate infinite coordinates`,async()=>{
+    const h=setup(filename);await h.load();h.run('openChartFullscreen()');const span=h.run('chartState().price.hi-chartState().price.lo');
+    h.fire('pointerdown',1,190,100);
+    for(const y of [1e6,-1e6,1e30,Infinity]){
+      h.fire('pointermove',1,190,y);near(h.run('chartState().price.hi-chartState().price.lo'),span);
+      assert.ok(h.run('Number.isFinite(chartState().price.hi)&&Number.isFinite(chartState().price.lo)'));
+    }
+  });
+  test(`${filename}: step labels have white text, opaque backing and fit inside the plot`,async()=>{
+    const h=setup(filename);await h.load();
+    h.run("cv.getContext('2d').font='11px original';DATA.trades[0].steps=[{i:20,label:'条件が成立'}];focusTrade(0)");
+    assert.ok(h.drawCalls.some(c=>c.method==='fillText'&&c.args[0]==='条件が成立'&&c.fill==='#f8fafc'&&c.font.includes('600 12px')));
+    h.drawCalls.length=0;
+    h.run("cv.getContext('2d').font='11px original';drawStepLabel(cv.getContext('2d'),'非常に長いラベル文字の確認',48,40,{left:10,top:20,width:50,height:80})");
+    const background=h.drawCalls.find(c=>c.method==='fillRect'&&c.fill==='#07111c');
+    assert.ok(background.args[0]>=10&&background.args[0]+background.args[2]<=60);
+    assert.ok(background.args[1]>=20&&background.args[1]+background.args[3]<=100);
+    assert.ok(h.drawCalls.find(c=>c.method==='fillText').args[0].endsWith('…'));
+    assert.equal(h.run("cv.getContext('2d').font"),'11px original');
+    h.drawCalls.length=0;h.run("drawStepLabel(cv.getContext('2d'),'offscreen',30,-100,{left:10,top:20,width:50,height:80})");
+    assert.equal(h.drawCalls.length,0);
+  });
+  test(`${filename}: native JSON picker reuses its directory identity on each selection`,async()=>{
+    const h=setup(filename);await h.ready;const calls=[];h.win.isSecureContext=true;
+    h.win.showOpenFilePicker=async options=>{calls.push(options);return [{name:'chosen.json',getFile:async()=>({text:async()=>sample})}]};
+    h.run('updatePickerHelp()');await h.element('openDataBtn').onclick();await h.element('openDataBtn').onclick();
+    assert.equal(h.run('DATASETS.length'),2);assert.equal(h.run('activeDatasetIndex'),1);
+    assert.equal(calls.length,2);assert.equal(calls[0].id,calls[1].id);assert.ok(calls[0].id);
+    assert.equal(calls[0].multiple,true);assert.equal(h.element('fileInput').clickCount,undefined);
+    assert.equal(h.element('standardPickerBtn').hidden,false);
+  });
+  test(`${filename}: native picker cancellation is quiet and failed pickers offer an explicit fallback`,async()=>{
+    const h=setup(filename);await h.load();h.win.isSecureContext=true;const previous=h.element('fileStatus').textContent;
+    h.win.showOpenFilePicker=async()=>{throw Object.assign(new Error('cancelled'),{name:'AbortError'})};
+    await h.element('openDataBtn').onclick();assert.equal(h.element('fileStatus').textContent,previous);assert.equal(h.run('DATASETS.length'),1);
+    h.win.showOpenFilePicker=async()=>{throw new Error('blocked')};await h.element('openDataBtn').onclick();
+    assert.match(h.element('fileStatus').textContent,/通常の選択/);assert.equal(h.element('standardPickerBtn').hidden,false);
+    h.element('standardPickerBtn').onclick();assert.equal(h.element('fileInput').clickCount,1);
+  });
+  test(`${filename}: unsupported pickers use the normal chooser and unreadable selections stay isolated`,async()=>{
+    const h=setup(filename);await h.ready;await h.element('openDataBtn').onclick();assert.equal(h.element('fileInput').clickCount,1);
+    assert.match(h.element('pickerHelp').textContent,/指定できません/);h.win.isSecureContext=true;
+    h.win.showOpenFilePicker=async()=>[{name:'broken.json',getFile:async()=>{throw new Error('removed')}},{name:'good.json',getFile:async()=>({text:async()=>sample})}];
+    await h.element('openDataBtn').onclick();assert.equal(h.run('DATASETS.length'),1);assert.match(h.element('fileStatus').textContent,/1件エラー/);
+  });
+  test(`${filename}: clearing data while a native picker is pending cancels its late import`,async()=>{
+    const h=setup(filename);await h.load();h.win.isSecureContext=true;let finish;
+    h.win.showOpenFilePicker=()=>new Promise(resolve=>finish=resolve);const pending=h.element('openDataBtn').onclick();
+    h.run('clearAllDatasets()');finish([{name:'late.json',getFile:async()=>({text:async()=>sample})}]);await pending;
+    assert.equal(h.run('DATASETS.length'),0);
   });
   test(`${filename}: imports, deletion, filters, escaping and statistics regressions`,async()=>{
     const h=setup(filename);await h.load();await h.load();assert.equal(h.run('DATASETS.length'),2);
