@@ -7,9 +7,35 @@ const vm=require('node:vm');
 const root=path.resolve(__dirname,'..');
 const sample=fs.readFileSync(path.join(root,'samples/GPT出力データ_サンプル.json'),'utf8');
 
+// Minimal async IndexedDB boundary double. Real IDB is also checked on the published page.
+function fakeStorage(initial){
+  const copy=value=>value===undefined?undefined:JSON.parse(JSON.stringify(value));
+  const state={record:copy(initial),failRead:false,failWrite:false,holdRead:false,holdWrite:false,writes:0};
+  let queue=Promise.resolve();
+  const db={objectStoreNames:{contains:()=>true},createObjectStore(){},close(){},transaction(name,mode){
+    const ops=[];let staged,aborted=false;
+    const tx={abort(){aborted=true},objectStore(){return {
+      get(){const request={};ops.push(()=>{request.result=copy(state.record);request.onsuccess?.()});return request},
+      put(value){staged=copy(value);return {}}
+    }}};
+    queue=queue.then(async()=>{
+      if(mode==='readonly'&&state.holdRead)await new Promise(resolve=>state.releaseRead=resolve);
+      if(mode==='readonly'&&state.failRead){tx.error=new Error('read unavailable');tx.onabort?.();return}
+      while(ops.length)ops.shift()();
+      if(mode==='readwrite'&&state.holdWrite)await new Promise(resolve=>state.releaseWrite=resolve);
+      if(aborted){tx.onabort?.();return}
+      if(mode==='readwrite'&&(++state.writes===state.failWriteNumber||state.failWrite)){tx.error=new Error('quota exceeded');tx.onabort?.();return}
+      if(mode==='readwrite')state.record=staged;
+      tx.oncomplete?.();
+    });
+    return tx;
+  }};
+  return {state,open(){const request={};queueMicrotask(()=>{request.result=db;request.onsuccess?.()});return request}};
+}
+const flushTasks=async()=>{for(let i=0;i<25;i++)await Promise.resolve()};
 // Exercise the actual inline application and registered handlers, without browser dependencies.
 // Canvas is a drawing stub: these tests do not certify real-browser gesture delivery or layout.
-function setup(filename){
+function setup(filename,storage){
   const elements=new Map(),windowListeners=new Map();
   const doc={activeElement:null};
   const win={scrollX:0,scrollY:420,scrollTo(x,y){this.scrollX=x;this.scrollY=y},addEventListener(name,fn){windowListeners.set(name,fn)}};
@@ -42,12 +68,7 @@ function setup(filename){
   doc.activeElement=element('openFullscreen');
   element('chartWrap').parentNode=element('chartPlaceholder').parentNode=element('chartCard');
   const context=vm.createContext({document:doc,window:win,devicePixelRatio:1,
-    console:{warn(){}},confirm:()=>true});
-  const storageAccesses=[];
-  for(const name of ['indexedDB','localStorage','sessionStorage']){
-    const get=()=>{storageAccesses.push(name);throw new Error('Persistent storage must not be used')};
-    Object.defineProperty(context,name,{get});Object.defineProperty(win,name,{get});
-  }
+    console:{warn(){}},confirm:()=>true,indexedDB:storage});
   const run=code=>vm.runInContext(code,context);
   const html=fs.readFileSync(process.env.VIEWER_HTML||path.join(root,filename),'utf8');
   const script=html.match(/<script>([\s\S]*?)<\/script>/)[1];
@@ -64,7 +85,7 @@ function setup(filename){
   const view=()=>JSON.parse(run('JSON.stringify(view)'));
   const span=()=>{const v=view();return v.end-v.start};
   async function load(){context.files=[{name:'sample.json',type:'application/json',text:async()=>sample}];await run('loadJsonFiles(files)');run('view={start:10,end:50};drawChart()')}
-  return {run,context,element,chart,fire,drawCalls,storageAccesses,touch:(type,points=[],extra={})=>fire(type,1,0,0,{cancelable:true,targetTouches:points.map(([identifier,clientX,clientY=100])=>({identifier,clientX,clientY})),...extra}),axisFire:(type,id=7,x=390,y=100,extra={})=>fire(type,id,x,y,extra,element('priceAxis')),view,span,load,html,doc,win,windowEvent:name=>windowListeners.get(name)(),dialogEvent(name){let prevented=false;for(const {fn} of element('chartDialog').listeners.get(name)||[])fn({preventDefault(){prevented=true}});return prevented}};
+  return {run,context,element,chart,fire,drawCalls,touch:(type,points=[],extra={})=>fire(type,1,0,0,{cancelable:true,targetTouches:points.map(([identifier,clientX,clientY=100])=>({identifier,clientX,clientY})),...extra}),ready:run('storageReady'),axisFire:(type,id=7,x=390,y=100,extra={})=>fire(type,id,x,y,extra,element('priceAxis')),view,span,load,html,doc,win,windowEvent:name=>windowListeners.get(name)(),dialogEvent(name){let prevented=false;for(const {fn} of element('chartDialog').listeners.get(name)||[])fn({preventDefault(){prevented=true}});return prevented}};
 }
 const near=(a,b)=>assert.ok(Math.abs(a-b)<1e-8,`${a} != ${b}`);
 
@@ -245,7 +266,7 @@ for(const filename of ['index.html','report.html']){
     h.run('openChartFullscreen();closeChartFullscreen()');h.windowEvent('resize');assert.equal(h.run('JSON.stringify(chartState())'),expected);
   });
   test(`${filename}: clearing cancels pending and queued imports without blocking fresh reads`,async()=>{
-    const h=setup(filename);let finish;
+    const h=setup(filename);await h.ready;let finish;
     h.context.slow=[{name:'slow.json',text:()=>new Promise(resolve=>{finish=resolve})}];
     h.context.fast=[{name:'fresh.json',text:async()=>sample}];
     const old=h.run('loadJsonFiles(slow)');await Promise.resolve();await Promise.resolve();
@@ -257,7 +278,7 @@ for(const filename of ['index.html','report.html']){
     assert.equal(h.element('fileStatus').textContent,status);assert.equal(h.run('importPending'),0);
   });
   test(`${filename}: simultaneous import batches retain selection order`,async()=>{
-    const h=setup(filename);let finish;
+    const h=setup(filename);await h.ready;let finish;
     h.context.first=[{name:'first.json',text:()=>new Promise(resolve=>{finish=resolve})}];
     h.context.second=[{name:'second.json',text:async()=>sample}];
     const first=h.run('loadJsonFiles(first)'),second=h.run('loadJsonFiles(second)');await Promise.resolve();await Promise.resolve();
@@ -339,40 +360,67 @@ for(const filename of ['index.html','report.html']){
     h.touch('touchstart',[[10,130],[20,290]]);h.run('openChartFullscreen()');assert.equal(h.run('normalPinch'),null);
     assert.equal(h.touch('touchstart',[[10,130],[20,290]]).prevented,false);
   });
-  test(`${filename}: startup and import/removal never access persistent storage`,async()=>{
-    const h=setup(filename);
-    assert.equal(h.run('DATA'),null);assert.equal(h.run('DATASETS.length'),0);
-    assert.equal(h.element('clearAllDataBtn').disabled,true);
-    assert.doesNotMatch(h.html,/id="(?:saveDataBtn|storageStatus)"/);
-    assert.match(h.html,/データは保存しません/);
-    await h.load();await h.load();assert.equal(h.run('DATASETS.length'),2);
+  test(`${filename}: imported datasets auto-save without a button and survive a fresh page instance`,async()=>{
+    const db=fakeStorage(),h=setup(filename,db);await h.load();await h.load();
+    assert.equal(db.state.record.datasets.length,2);assert.equal(h.element('storageStatus').dataset.state,'saved');
+    const next=setup(filename==='index.html'?'report.html':'index.html',db);await next.ready;
+    assert.equal(next.run('DATASETS.length'),2);assert.equal(next.run('DATA.charts.length'),2);
+    assert.equal(next.run('DATA.trades.length'),4);assert.equal(next.run('activeDatasetIndex'),1);
+    assert.match(next.element('storageStatus').textContent,/2件を復元/);
+  });
+  test(`${filename}: auto-save waits for commit and retries on the next data change`,async()=>{
+    const db=fakeStorage(),h=setup(filename,db);await h.ready;db.state.holdWrite=true;
+    const loading=h.load();await flushTasks();assert.equal(h.element('storageStatus').dataset.state,'saving');
+    assert.equal(db.state.record,undefined);db.state.holdWrite=false;db.state.releaseWrite();await loading;
+    assert.equal(h.element('storageStatus').dataset.state,'saved');db.state.failWrite=true;
+    await h.load();assert.equal(h.run('DATASETS.length'),2);assert.equal(db.state.record.datasets.length,1);
+    assert.equal(h.element('storageStatus').dataset.state,'error');assert.ok(!h.html.includes('id="saveDataBtn"'));
+    db.state.failWrite=false;await h.load();assert.equal(db.state.record.datasets.length,3);
+  });
+  test(`${filename}: chart, file and all-data deletion update durable storage`,async()=>{
+    const db=fakeStorage(),h=setup(filename,db);await h.load();await h.load();
+    h.run('removeChartFromActive(1)');await h.run('saveQueue');assert.equal(db.state.record.datasets[1].data.charts.length,1);
+    h.run('removeDataset(0)');await h.run('saveQueue');assert.equal(db.state.record.datasets.length,1);
+    h.run('clearAllDatasets()');await h.run('saveQueue');assert.equal(db.state.record.datasets.length,0);
+    const next=setup(filename,db);await next.ready;assert.equal(next.run('DATASETS.length'),0);assert.equal(next.run('DATA'),null);assert.equal(next.element('clearAllDataBtn').disabled,true);
+  });
+  test(`${filename}: imports wait for restoration and clear is blocked until restore finishes`,async()=>{
+    const db=fakeStorage(),seed=setup(filename,db);await seed.load();
+    db.state.holdRead=true;const h=setup(filename,db);const loading=h.load();await flushTasks();
+    assert.equal(h.run('DATASETS.length'),0);db.state.holdRead=false;db.state.releaseRead();await loading;
+    assert.equal(h.run('DATASETS.length'),2);assert.equal(db.state.record.datasets.length,2);
+    db.state.holdRead=true;const cleared=setup(filename,db);await flushTasks();
+    assert.equal(cleared.element('clearAllDataBtn').disabled,true);cleared.run('clearAllDatasets()');
+    db.state.holdRead=false;db.state.releaseRead();await cleared.ready;await cleared.run('saveQueue');
+    assert.equal(cleared.run('DATASETS.length'),2);assert.equal(db.state.record.datasets.length,2);
+  });
+  test(`${filename}: failed clearing can be retried with the all-clear button`,async()=>{
+    const db=fakeStorage(),h=setup(filename,db);await h.ready;db.state.holdWrite=true;db.state.failWriteNumber=2;
+    const loading=h.load();await flushTasks();h.run('clearAllDatasets()');
+    db.state.holdWrite=false;db.state.releaseWrite();await loading;await h.run('saveQueue');
+    assert.equal(h.run('DATASETS.length'),0);assert.equal(db.state.record.datasets.length,1);
+    assert.equal(h.element('storageStatus').dataset.state,'error');
     assert.equal(h.element('clearAllDataBtn').disabled,false);
-    h.run('removeChartFromActive(1);removeDataset(0);clearAllDatasets()');
-    assert.equal(h.run('DATA'),null);assert.equal(h.element('clearAllDataBtn').disabled,true);
-    assert.deepEqual(h.storageAccesses,[]);
+    h.run('clearAllDatasets()');await h.run('saveQueue');assert.equal(db.state.record.datasets.length,0);
+    assert.equal(h.element('clearAllDataBtn').disabled,true);
+
   });
-  test(`${filename}: fresh pages do not restore data and remain independent`,async()=>{
-    const first=setup(filename);await first.load();
-    for(const entry of [filename,filename==='index.html'?'report.html':'index.html']){
-      const next=setup(entry);
-      assert.equal(next.run('DATASETS.length'),0);assert.equal(next.run('DATA'),null);
-      assert.equal(next.element('datasetCount').textContent,'0ファイル / 0チャート');
-      await next.load();next.run('clearAllDatasets()');
-      assert.equal(first.run('DATASETS.length'),1);assert.deepEqual(next.storageAccesses,[]);
-    }
-    assert.deepEqual(first.storageAccesses,[]);
+  test(`${filename}: stale tabs cannot overwrite another tab's saved changes`,async()=>{
+    const db=fakeStorage(),seed=setup(filename,db);await seed.load();
+    const a=setup(filename,db),b=setup(filename,db);await Promise.all([a.ready,b.ready]);
+    await a.load();const revision=db.state.record.revision;await b.load();
+    assert.equal(db.state.record.revision,revision);assert.equal(b.element('storageStatus').dataset.state,'error');
+    assert.match(b.element('storageStatus').textContent,/別のタブ/);assert.equal(b.run('DATASETS.length'),2);
+    b.run('clearAllDatasets()');await b.run('saveQueue');assert.equal(db.state.record.datasets.length,2);
   });
-  test(`${filename}: cancelling clear preserves current data and the import queue`,async()=>{
-    const h=setup(filename);await h.load();let finish,confirmation;
-    h.context.slow=[{name:'pending.json',text:()=>new Promise(resolve=>{finish=resolve})}];
-    const pending=h.run('loadJsonFiles(slow)');await Promise.resolve();
-    h.context.confirm=message=>{confirmation=message;return false};
-    h.run('clearAllDatasets()');assert.equal(h.run('DATASETS.length'),1);
-    assert.match(confirmation,/画面から/);assert.doesNotMatch(confirmation,/保存/);
-    finish(sample);await pending;assert.equal(h.run('DATASETS.length'),2);
-    h.context.confirm=()=>true;h.run('clearAllDatasets()');
-    assert.equal(h.run('DATASETS.length'),0);assert.equal(h.run('importPending'),0);
-    assert.deepEqual(h.storageAccesses,[]);
+  test(`${filename}: corrupt saved entries are isolated and unavailable storage does not block import`,async()=>{
+    const db=fakeStorage({version:1,datasets:[{id:'good',data:JSON.parse(sample)},{id:'bad',data:{}}]});
+    const h=setup(filename,db);await h.ready;assert.equal(h.run('DATASETS.length'),1);
+    assert.equal(h.element('storageStatus').dataset.state,'error');assert.equal(db.state.record.datasets.length,2);
+    const corrupt=setup(filename,fakeStorage({version:99,datasets:[]}));await corrupt.ready;
+    assert.equal(corrupt.element('storageStatus').dataset.state,'error');assert.equal(corrupt.element('clearAllDataBtn').disabled,false);
+    const unavailable=setup(filename);await unavailable.load();assert.equal(unavailable.run('DATASETS.length'),1);
+    assert.equal(unavailable.element('storageStatus').dataset.state,'error');assert.ok(!unavailable.html.includes('id="saveDataBtn"'));
   });
   test(`${filename}: fullscreen touch and normal mouse drag move price without resizing either axis`,async()=>{
     for(const full of [false,true]){
@@ -431,7 +479,7 @@ for(const filename of ['index.html','report.html']){
     assert.equal(h.drawCalls.length,0);
   });
   test(`${filename}: native JSON picker reuses its directory identity on each selection`,async()=>{
-    const h=setup(filename);const calls=[];h.win.isSecureContext=true;
+    const h=setup(filename);await h.ready;const calls=[];h.win.isSecureContext=true;
     h.win.showOpenFilePicker=async options=>{calls.push(options);return [{name:'chosen.json',getFile:async()=>({text:async()=>sample})}]};
     h.run('updatePickerHelp()');await h.element('openDataBtn').onclick();await h.element('openDataBtn').onclick();
     assert.equal(h.run('DATASETS.length'),2);assert.equal(h.run('activeDatasetIndex'),1);
@@ -448,7 +496,7 @@ for(const filename of ['index.html','report.html']){
     h.element('standardPickerBtn').onclick();assert.equal(h.element('fileInput').clickCount,1);
   });
   test(`${filename}: unsupported pickers use the normal chooser and unreadable selections stay isolated`,async()=>{
-    const h=setup(filename);await h.element('openDataBtn').onclick();assert.equal(h.element('fileInput').clickCount,1);
+    const h=setup(filename);await h.ready;await h.element('openDataBtn').onclick();assert.equal(h.element('fileInput').clickCount,1);
     assert.match(h.element('pickerHelp').textContent,/指定できません/);h.win.isSecureContext=true;
     h.win.showOpenFilePicker=async()=>[{name:'broken.json',getFile:async()=>{throw new Error('removed')}},{name:'good.json',getFile:async()=>({text:async()=>sample})}];
     await h.element('openDataBtn').onclick();assert.equal(h.run('DATASETS.length'),1);assert.match(h.element('fileStatus').textContent,/1件エラー/);
