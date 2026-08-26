@@ -13,8 +13,24 @@
 .datasetbar-head{display:flex;align-items:center;gap:10px;margin-bottom:8px}.datasetbar-head b{font-size:13px}.dataset-count{font-size:11px;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:2px 7px}.dataset-list{display:flex;gap:8px;flex-wrap:wrap}.dataset-item{display:flex;align-items:stretch;border:1px solid var(--line);border-radius:9px;background:#111821;overflow:hidden;min-width:190px;max-width:340px}.dataset-item.active{border-color:#3f9bc0;background:#142832;box-shadow:0 0 0 1px rgba(59,200,255,.12) inset}.dataset-select{border:0;background:transparent;color:var(--text);padding:7px 10px;cursor:pointer;text-align:left;min-width:0;flex:1}.dataset-name{display:block;font-size:12px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.dataset-source{display:block;font-size:10px;color:var(--muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.dataset-remove{min-width:48px;padding:0 9px;border:0;border-left:1px solid var(--line);background:#1b1418;color:#ff9aa7;cursor:pointer;font-size:11px;font-weight:700}.dataset-remove:hover{background:#351a20}.empty-inline{font-size:12px;color:var(--muted);padding:4px 2px}.danger-all{border:1px solid #6a3d46;background:#2a171c;color:#ffc4cc;padding:8px 13px;border-radius:8px;cursor:pointer;font-weight:700}.danger-all:hover:not(:disabled){background:#3a1c23}.danger-all:disabled{opacity:.38;cursor:not-allowed}.tool:disabled{opacity:.35;cursor:not-allowed}.import-summary{font-size:11px;color:#9eb0c0;white-space:nowrap}.import-summary.import-error{color:#ff8b8b}.import-summary.import-ok{color:#66d99a}
 @media(max-width:720px){.datasetbar{margin:8px 8px 0}.dataset-item{max-width:100%;width:100%}.dataset-list{display:grid;grid-template-columns:1fr}}
 
-/* Let the chart own touch gestures; keep page scrolling/zooming outside it. */
-#chart{touch-action:none;user-select:none;-webkit-user-select:none}
+/* Normal view yields vertical scroll and page pinch to the browser. */
+#chart{touch-action:pan-y pinch-zoom;user-select:none;-webkit-user-select:none}
+.chart-head{flex-wrap:wrap}.chart-head>div:first-child{min-width:0}.chart-sub{overflow-wrap:anywhere}
+.chart-tools{flex-wrap:wrap}.chart-tools .tool,.fullscreen-tools .tool{min-height:44px}
+.hint-full{display:none}
+.chart-dialog{position:fixed;inset:0;width:100%;max-width:none;height:100vh;height:100dvh;max-height:none;margin:0;padding:0;border:0;background:var(--bg);color:var(--text);overflow:hidden;overscroll-behavior:none}
+.chart-dialog[open]{display:flex;flex-direction:column}
+.chart-dialog::backdrop{background:#0d1117}
+.fullscreen-head{display:flex;align-items:center;gap:12px;flex-shrink:0;padding:8px max(12px,env(safe-area-inset-right)) 8px max(12px,env(safe-area-inset-left));padding-top:max(8px,env(safe-area-inset-top));border-bottom:1px solid var(--line)}
+.fullscreen-title{font-weight:800;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fullscreen-close{min-height:44px;min-width:76px;font-weight:700;border-color:#3d8fb2;background:#143247}
+.fullscreen-host{flex:1;min-height:0;overflow:hidden;padding:0 env(safe-area-inset-right) 0 env(safe-area-inset-left)}
+.fullscreen-host .chart-wrap{height:100%}
+.fullscreen-host #chart{touch-action:none}
+.fullscreen-host .hint-normal{display:none}.fullscreen-host .hint-full{display:inline}
+.fullscreen-tools{display:flex;justify-content:center;gap:8px;flex-shrink:0;border-top:1px solid var(--line);padding:8px max(12px,env(safe-area-inset-right)) max(8px,env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left))}
+body.chart-modal-open{position:fixed;width:100%;overflow:hidden}
+@media(max-width:720px){.chart-tools{width:100%;margin-left:0;gap:6px}.chart-tools .tool{flex:1 0 auto}}
 .hint-touch{display:none}
 @media(pointer:coarse){.hint-desktop{display:none}.hint-touch{display:inline}.hint{left:8px;right:8px;text-align:center;white-space:normal}}
 </style></head><body><div class="app">
@@ -28,15 +44,21 @@
   <div class="dataset-list" id="datasetList"><span class="empty-inline">まだデータはありません。</span></div>
 </div>
 <div class="page"><div class="main"><div class="stats" id="stats"></div>
-<div class="card"><div class="chart-tabs" id="chartTabs"></div><div class="chart-head"><div><div class="chart-title" id="chartTitle"></div><div class="chart-sub" id="chartSub"></div></div><div class="chart-tools"><button class="tool" id="prevTrade">← 前</button><button class="tool" id="allView">全体</button><button class="tool" id="nextTrade">次 →</button></div></div><div class="indicator-row" id="indicatorRow"></div><div class="chart-wrap" id="chartWrap"><canvas id="chart"></canvas><div class="empty-chart" id="emptyChart"><div><b>検証データはまだ読み込まれていません</b><span>上の「JSONファイルを選ぶ」からGPT出力JSONを読み込んでください。</span></div></div><div class="tooltip" id="tooltip"></div><div class="hint"><span class="hint-desktop">ホイール: ズーム / ドラッグ: 横移動 / 一覧クリック: 該当エントリーへ</span><span class="hint-touch">1本指: 横移動 / 2本指: 拡大・縮小<br>ページのスクロールはチャートの外で操作</span></div></div></div>
+<div class="card"><div class="chart-tabs" id="chartTabs"></div><div class="chart-head"><div><div class="chart-title" id="chartTitle"></div><div class="chart-sub" id="chartSub"></div></div><div class="chart-tools"><button class="tool" id="prevTrade">← 前</button><button class="tool" id="zoomOut" aria-label="チャートを縮小">－縮小</button><button class="tool" id="zoomIn" aria-label="チャートを拡大">＋拡大</button><button class="tool" id="allView">全体</button><button class="tool" id="openFullscreen" aria-haspopup="dialog" aria-controls="chartDialog">全画面</button><button class="tool" id="nextTrade">次 →</button></div></div><div class="indicator-row" id="indicatorRow"></div><div id="chartPlaceholder" hidden></div><div class="chart-wrap" id="chartWrap"><canvas id="chart"></canvas><div class="empty-chart" id="emptyChart"><div><b>検証データはまだ読み込まれていません</b><span>上の「JSONファイルを選ぶ」からGPT出力JSONを読み込んでください。</span></div></div><div class="tooltip" id="tooltip"></div><div class="hint"><span class="hint-desktop">ホイール: ズーム / ドラッグ: 横移動 / 一覧クリック: 該当エントリーへ</span><span class="hint-touch"><span class="hint-normal">上下: ページ移動 / 左右: チャート移動<br>拡大・縮小はボタン / ピンチは全画面</span><span class="hint-full">1本指: 横移動 / 2本指: 拡大・縮小<br>通常画面に戻るには「閉じる」</span></span></div></div></div>
 <div class="card"><div class="tabs"><button class="tab active" data-tab="tradesTab">トレード一覧</button><button class="tab" data-tab="strategyTab">戦略仕様</button><button class="tab" data-tab="notesTab">検証メモ</button></div><div class="tabbody active" id="tradesTab"><div class="filters"><button class="filter active" data-filter="ALL">すべて</button><button class="filter" data-filter="BUY">買い</button><button class="filter" data-filter="SELL">売り</button><button class="filter" data-filter="WIN">勝ち</button><button class="filter" data-filter="LOSS">負け</button></div><div class="table-wrap"><table class="trades"><thead><tr><th>No.</th><th>銘柄/足</th><th>日時</th><th>売買</th><th>結果</th><th>R</th><th>条件</th><th>信頼度</th></tr></thead><tbody id="tradeRows"></tbody></table></div></div><div class="tabbody" id="strategyTab"><div class="strategy" id="strategyBody"></div></div><div class="tabbody" id="notesTab"><div class="strategy" id="notesBody"></div></div></div></div>
 <div class="side"><div class="card"><div class="section-title">選択トレード</div><div class="selected-body" id="selectedBody"></div></div><div class="card"><div class="section-title">累積R</div><div class="mini-chart"><canvas id="equity"></canvas></div></div><div class="card"><div class="section-title">表示中チャート</div><div class="selected-body" id="chartInfo"></div></div></div></div></div>
+<dialog id="chartDialog" class="chart-dialog" aria-labelledby="fullscreenTitle">
+  <div class="fullscreen-head"><div class="fullscreen-title" id="fullscreenTitle">チャート</div><button class="tool fullscreen-close" id="closeFullscreen" autofocus>閉じる</button></div>
+  <div class="fullscreen-host" id="fullscreenHost"></div>
+  <div class="fullscreen-tools"><button class="tool" id="fullZoomOut" aria-label="チャートを縮小">－縮小</button><button class="tool" id="fullZoomIn" aria-label="チャートを拡大">＋拡大</button><button class="tool" id="fullAllView">全体</button></div>
+</dialog>
 <script>
 let DATA=null;
 let DATASETS=[];
 let activeDatasetIndex=-1;
 const $=id=>document.getElementById(id);
 let chartIndex=0,selectedTradeIndex=-1,filter='ALL',view={start:0,end:100},drag=null;
+let chartFullscreen=false,fullscreenState=null,normalTouch=null;
 const COLORS=['#3bc8ff','#f3c969','#ad8cff','#ff9f43','#4b8cff','#2fbf71','#ff7a7a'];
 const esc=v=>String(v??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 const sideLabel=s=>String(s||'').toUpperCase()==='BUY'?'買い':String(s||'').toUpperCase()==='SELL'?'売り':(s||'—');
@@ -83,13 +105,13 @@ function renderMeta(){$('statusBadge').textContent=DATA.meta.status;$('mStrategy
 function stat(k,v,s,cls=''){return `<div class="stat"><div class="k">${esc(k)}</div><div class="v ${cls}">${esc(v)}</div><div class="s">${esc(s)}</div></div>`}
 function renderStats(){let S=DATA.summary;$('stats').innerHTML=stat('トレード数',S.trades,'全体')+stat('勝率',S.win_rate+'%','全体')+stat('期待値',(S.expectancy_r>=0?'+':'')+S.expectancy_r+'R','1回あたり',S.expectancy_r>=0?'positive':'negative')+stat('PF',S.profit_factor===null?'∞':S.profit_factor,'利益 ÷ 損失')+stat('最大DD',S.max_dd_r+'R','最大ドローダウン','negative')+stat('累積R',(S.total_r>=0?'+':'')+S.total_r+'R','合計',S.total_r>=0?'positive':'negative')}
 function renderChartTabs(){$('chartTabs').innerHTML=DATA.charts.map((c,i)=>`<div class="chart-tab-group ${i===chartIndex?'active':''}"><button class="chart-tab" data-i="${i}">${esc(c.symbol)} / ${esc(c.timeframe)}</button><button class="chart-tab-remove" data-remove-chart="${i}" title="このチャートだけ消去" aria-label="このチャートだけ消去">×</button></div>`).join('');document.querySelectorAll('.chart-tab').forEach(b=>b.onclick=()=>switchChart(+b.dataset.i));document.querySelectorAll('[data-remove-chart]').forEach(b=>b.onclick=e=>{e.stopPropagation();removeChartFromActive(Number(b.dataset.removeChart))})}
-function renderChartInfo(){let c=currentChart();if(!c)return;$('mSymbol').textContent=c.symbol;$('mTf').textContent=c.timeframe;$('mPeriod').textContent=c.period;$('chartTitle').textContent=`${c.symbol} / ${c.timeframe}`;$('chartSub').textContent=`${c.period} ・ ${c.candles.length.toLocaleString()}本`;let labels=[];c.overlays.forEach(x=>labels.push(x.label));c.panes.forEach(p=>labels.push(p.label));$('indicatorRow').innerHTML=labels.length?labels.map(x=>`<span class="ind-chip">${esc(x)}</span>`).join(''):'<span class="ind-chip">インジケータなし</span>';let s=DATA.summary.by_chart?.[c.id];$('chartInfo').innerHTML=`<div class="kv"><span>銘柄</span><b>${esc(c.symbol)}</b><span>時間足</span><b>${esc(c.timeframe)}</b><span>ローソク足</span><b>${c.candles.length.toLocaleString()}本</b><span>価格上の指標</span><b>${c.overlays.length}</b><span>別枠指標</span><b>${c.panes.length}</b>${s?`<span>トレード数</span><b>${s.trades}</b><span>期待値</span><b class="${s.expectancy_r>=0?'positive':'negative'}">${s.expectancy_r>=0?'+':''}${s.expectancy_r}R</b>`:''}</div>`}
+function renderChartInfo(){let c=currentChart();if(!c)return;$('mSymbol').textContent=c.symbol;$('mTf').textContent=c.timeframe;$('mPeriod').textContent=c.period;$('chartTitle').textContent=`${c.symbol} / ${c.timeframe}`;$('fullscreenTitle').textContent=`${c.symbol} / ${c.timeframe}`;$('chartSub').textContent=`${c.period} ・ ${c.candles.length.toLocaleString()}本`;let labels=[];c.overlays.forEach(x=>labels.push(x.label));c.panes.forEach(p=>labels.push(p.label));$('indicatorRow').innerHTML=labels.length?labels.map(x=>`<span class="ind-chip">${esc(x)}</span>`).join(''):'<span class="ind-chip">インジケータなし</span>';let s=DATA.summary.by_chart?.[c.id];$('chartInfo').innerHTML=`<div class="kv"><span>銘柄</span><b>${esc(c.symbol)}</b><span>時間足</span><b>${esc(c.timeframe)}</b><span>ローソク足</span><b>${c.candles.length.toLocaleString()}本</b><span>価格上の指標</span><b>${c.overlays.length}</b><span>別枠指標</span><b>${c.panes.length}</b>${s?`<span>トレード数</span><b>${s.trades}</b><span>期待値</span><b class="${s.expectancy_r>=0?'positive':'negative'}">${s.expectancy_r>=0?'+':''}${s.expectancy_r}R</b>`:''}</div>`}
 function renderStrategy(){let s=DATA.strategy;$('strategyBody').innerHTML=`<h3>${esc(s.name)}</h3><p>${esc(s.hypothesis)}</p><h3>エントリーロジック</h3><ul>${s.entry_logic.map(x=>`<li>${esc(x)}</li>`).join('')}</ul><h3>決済ロジック</h3><ul>${s.exit_logic.map(x=>`<li>${esc(x)}</li>`).join('')}</ul><h3>次の研究候補</h3><div class="chips">${s.future_tests.map(x=>`<span class="chip">${esc(x)}</span>`).join('')}</div>`;$('notesBody').innerHTML=(DATA.notes||[]).length?(DATA.notes||[]).map(x=>`<div class="notice">${esc(x)}</div>`).join(''):'<div class="empty">検証メモはありません。</div>'}
 function resizeCanvas(canvas){const dpr=devicePixelRatio||1,r=canvas.getBoundingClientRect();canvas.width=Math.max(1,Math.floor(r.width*dpr));canvas.height=Math.max(1,Math.floor(r.height*dpr));const ctx=canvas.getContext('2d');ctx.setTransform(dpr,0,0,dpr,0,0);return {ctx,w:r.width,h:r.height}}
 function drawTri(ctx,x,y,dir,col){ctx.fillStyle=col;ctx.beginPath();if(dir==='up'){ctx.moveTo(x,y-9);ctx.lineTo(x-7,y+5);ctx.lineTo(x+7,y+5)}else{ctx.moveTo(x,y+9);ctx.lineTo(x-7,y-5);ctx.lineTo(x+7,y-5)}ctx.closePath();ctx.fill()}
 function seriesRange(vals,a,b){let mn=Infinity,mx=-Infinity,found=false;for(let i=a;i<=b;i++){let v=vals?.[i];if(v!==null&&v!==undefined&&Number.isFinite(v)){if(v<mn)mn=v;if(v>mx)mx=v;found=true}}return found?[mn,mx]:[0,1]}
 function drawLine(ctx,vals,a,b,X,Y,col,width=1.4,dash=[],step=1){ctx.strokeStyle=col;ctx.lineWidth=width;ctx.setLineDash(dash);ctx.beginPath();let started=false;for(let i=a;i<=b;i+=step){let v=vals?.[i];if(v===null||v===undefined||!Number.isFinite(v)){started=false;continue}let x=X(i),y=Y(v);if(!started){ctx.moveTo(x,y);started=true}else ctx.lineTo(x,y)}if(b>=a&&((b-a)%step)!==0){let v=vals?.[b];if(v!==null&&v!==undefined&&Number.isFinite(v)){let x=X(b),y=Y(v);if(!started)ctx.moveTo(x,y);else ctx.lineTo(x,y)}}ctx.stroke();ctx.setLineDash([])}
-function drawChart(){let cv=$('chart'),{ctx,w,h}=resizeCanvas(cv);ctx.clearRect(0,0,w,h);let c=currentChart();if(!c)return;let C=c.candles;if(!C.length)return;let panes=c.panes||[],gap=8,paneH=panes.length?Math.min(120,(h*0.34)/panes.length):0,mainH=h-30-(paneH+gap)*panes.length;mainH=Math.max(300,mainH);let pad={l:10,r:70,t:20,b:20},pw=Math.max(50,w-pad.l-pad.r);let a=Math.max(0,Math.floor(view.start)),b=Math.min(C.length-1,Math.ceil(view.end));if(b<a)return;let lo=Infinity,hi=-Infinity;for(let i=a;i<=b;i++){let d=C[i];if(d.low<lo)lo=d.low;if(d.high>hi)hi=d.high}if(!Number.isFinite(lo)||!Number.isFinite(hi))return;let rg=hi-lo||1;lo-=rg*.08;hi+=rg*.08;let span=Math.max(1,view.end-view.start),X=i=>pad.l+(i-view.start)/span*pw,Y=p=>pad.t+(hi-p)/(hi-lo)*(mainH-pad.t-pad.b);let visibleCount=b-a+1,renderStep=Math.max(1,Math.ceil(visibleCount/Math.max(800,pw*1.6)));
+function drawChart(){let cv=$('chart'),{ctx,w,h}=resizeCanvas(cv);ctx.clearRect(0,0,w,h);let c=currentChart();if(!c)return;let C=c.candles;if(!C.length)return;let panes=c.panes||[],usable=Math.max(1,h-42),gap=panes.length?Math.min(8,usable/(panes.length*8)):0,paneH=panes.length?Math.min(120,usable*.34/panes.length):0,mainH=Math.max(1,usable-(paneH+gap)*panes.length);let pad={l:10,r:70,t:20,b:20},pw=Math.max(50,w-pad.l-pad.r);let a=Math.max(0,Math.floor(view.start)),b=Math.min(C.length-1,Math.ceil(view.end));if(b<a)return;let lo=Infinity,hi=-Infinity;for(let i=a;i<=b;i++){let d=C[i];if(d.low<lo)lo=d.low;if(d.high>hi)hi=d.high}if(!Number.isFinite(lo)||!Number.isFinite(hi))return;let rg=hi-lo||1;lo-=rg*.08;hi+=rg*.08;let span=Math.max(1,view.end-view.start),X=i=>pad.l+(i-view.start)/span*pw,Y=p=>pad.t+(hi-p)/(hi-lo)*(mainH-pad.t-pad.b);let visibleCount=b-a+1,renderStep=Math.max(1,Math.ceil(visibleCount/Math.max(800,pw*1.6)));
 ctx.font='11px Segoe UI';for(let k=0;k<=5;k++){let y=pad.t+(mainH-pad.t-pad.b)*k/5;ctx.strokeStyle='#202a35';ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(pad.l+pw,y);ctx.stroke();ctx.fillStyle='#728191';ctx.textAlign='right';ctx.fillText(nice(hi-(hi-lo)*k/5),w-6,y+4)}for(let k=0;k<=6;k++){let i=Math.round(view.start+span*k/6);if(i<0||i>=C.length)continue;let x=X(i);ctx.strokeStyle='#17202a';ctx.beginPath();ctx.moveTo(x,pad.t);ctx.lineTo(x,mainH);ctx.stroke();ctx.fillStyle='#667585';ctx.textAlign='center';ctx.fillText(timeLabel(C[i].time),x,mainH-3)}
 (c.overlays||[]).forEach((o,oi)=>{if(o.kind==='band'){ctx.fillStyle='rgba(173,140,255,.08)';ctx.beginPath();let started=false;for(let i=a;i<=b;i+=renderStep){let v=o.upper?.[i];if(v==null)continue;let x=X(i),y=Y(v);if(!started){ctx.moveTo(x,y);started=true}else ctx.lineTo(x,y)}for(let i=b;i>=a;i-=renderStep){let v=o.lower?.[i];if(v==null)continue;ctx.lineTo(X(i),Y(v))}if(started){ctx.closePath();ctx.fill()}drawLine(ctx,o.upper,a,b,X,Y,COLORS[oi%COLORS.length],1,[4,3],renderStep);drawLine(ctx,o.middle,a,b,X,Y,COLORS[oi%COLORS.length],1.2,[],renderStep);drawLine(ctx,o.lower,a,b,X,Y,COLORS[oi%COLORS.length],1,[4,3],renderStep)}})
 let bucketCount=Math.ceil(visibleCount/renderStep),pxPer=Math.max(1,pw/Math.max(1,bucketCount)),body=Math.max(1,Math.min(9,pxPer*.68));for(let i=a;i<=b;i+=renderStep){let j=Math.min(b,i+renderStep-1),first=C[i],last=C[j],hh=-Infinity,ll=Infinity;for(let k=i;k<=j;k++){if(C[k].high>hh)hh=C[k].high;if(C[k].low<ll)ll=C[k].low}let x=X((i+j)/2),yo=Y(first.open),yc=Y(last.close),yh=Y(hh),yl=Y(ll),col=last.close>=first.open?'#2fbf71':'#ff5d5d';ctx.strokeStyle=col;ctx.beginPath();ctx.moveTo(x,yh);ctx.lineTo(x,yl);ctx.stroke();ctx.fillStyle=col;ctx.fillRect(x-body/2,Math.min(yo,yc),body,Math.max(1,Math.abs(yc-yo)))}
@@ -105,7 +127,7 @@ const cv=$('chart');
 const chartPointers=new Map();
 function resetChartGesture(){
   const ids=[...chartPointers.keys()];
-  chartPointers.clear();drag=null;
+  chartPointers.clear();drag=null;normalTouch=null;
   for(const id of ids){if(cv.hasPointerCapture(id))cv.releasePointerCapture(id)}
   $('tooltip').style.display='none';
 }
@@ -143,35 +165,101 @@ cv.addEventListener('wheel',e=>{
 cv.addEventListener('pointerdown',e=>{
   if(!DATA?.charts?.length||(e.pointerType==='mouse'&&e.button!==0))return;
   chartPointers.set(e.pointerId,{x:e.clientX,y:e.clientY});
-  cv.setPointerCapture(e.pointerId);
-  $('tooltip').style.display='none';beginChartGesture();
+  $('tooltip').style.display='none';
+  if(!chartFullscreen&&e.pointerType==='touch'){
+    // Wait for intent. Never cancel native vertical scroll or page pinch here.
+    if(chartPointers.size>1){normalTouch={axis:'multi'};drag=null;return}
+    normalTouch={axis:'pending',x:e.clientX,y:e.clientY};
+    beginChartGesture();return;
+  }
+  cv.setPointerCapture(e.pointerId);beginChartGesture();
 });
 cv.addEventListener('pointermove',e=>{
-  if(!chartPointers.has(e.pointerId)||!drag||!DATA?.charts?.length)return;
+  if(!chartPointers.has(e.pointerId)||!DATA?.charts?.length)return;
   chartPointers.set(e.pointerId,{x:e.clientX,y:e.clientY});
+  if(!chartFullscreen&&normalTouch){
+    if(normalTouch.axis==='multi'||normalTouch.axis==='y')return;
+    if(normalTouch.axis==='pending'){
+      const dx=Math.abs(e.clientX-normalTouch.x),dy=Math.abs(e.clientY-normalTouch.y);
+      if(Math.max(dx,dy)<8)return;
+      // Diagonal movement favors page scrolling; the axis stays locked until lift.
+      normalTouch.axis=dx>dy*1.5?'x':'y';
+      if(normalTouch.axis==='y'){drag=null;return}
+      cv.setPointerCapture(e.pointerId);
+    }
+  }
+  if(!drag)return;
   const point=chartGestureGeometry();
-  // Keep the candle under the moving midpoint anchored during both pan and pinch.
   const span=clampChartSpan(drag.distance&&point.distance?drag.span*drag.distance/point.distance:drag.span);
   setChartView(drag.anchor-(point.x-drag.left)/drag.width*span,span);
 });
 function endChartPointer(e){
   if(!chartPointers.delete(e.pointerId))return;
   if(cv.hasPointerCapture(e.pointerId))cv.releasePointerCapture(e.pointerId);
-  // Rebase when two fingers become one so the remaining finger does not jump.
+  if(!chartFullscreen&&normalTouch){
+    // After a native page pinch, wait for all fingers to lift before chart panning.
+    normalTouch=chartPointers.size?{axis:'multi'}:null;drag=null;return;
+  }
   beginChartGesture();
 }
 cv.addEventListener('pointerup',endChartPointer);
 cv.addEventListener('lostpointercapture',endChartPointer);
 cv.addEventListener('pointercancel',resetChartGesture);
 window.addEventListener('blur',resetChartGesture);
+function zoomChart(factor){
+  if(!DATA?.charts?.length||currentChart().candles.length<2)return;
+  resetChartGesture();
+  const center=(view.start+view.end)/2,span=clampChartSpan((view.end-view.start)*factor);
+  setChartView(center-span/2,span);
+}
+function showAllChart(){
+  if(!DATA?.charts?.length)return;
+  resetChartGesture();view={start:0,end:Math.max(0,currentChart().candles.length-1)};drawChart();
+}
+function openChartFullscreen(){
+  if(chartFullscreen||!DATA?.charts?.length)return;
+  const dialog=$('chartDialog');
+  if(typeof dialog.showModal!=='function'){
+    $('fileStatus').textContent='全画面表示には最新版のブラウザをご利用ください。';return;
+  }
+  resetChartGesture();
+  fullscreenState={x:window.scrollX,y:window.scrollY,bodyStyle:document.body.getAttribute('style'),focus:document.activeElement};
+  chartFullscreen=true;
+  document.body.classList.add('chart-modal-open');
+  document.body.style.top=`-${fullscreenState.y}px`;document.body.style.left=`-${fullscreenState.x}px`;
+  $('fullscreenHost').appendChild($('chartWrap'));
+  dialog.showModal();drawChart();$('closeFullscreen').focus({preventScroll:true});
+}
+function restoreChartFullscreen(){
+  if(!chartFullscreen)return;
+  resetChartGesture();chartFullscreen=false;
+  $('chartPlaceholder').after($('chartWrap'));
+  document.body.classList.remove('chart-modal-open');
+  const saved=fullscreenState;fullscreenState=null;
+  if(saved.bodyStyle===null)document.body.removeAttribute('style');else document.body.setAttribute('style',saved.bodyStyle);
+  drawChart();drawEquity();
+  saved.focus?.focus({preventScroll:true});window.scrollTo(saved.x,saved.y);
+}
+function closeChartFullscreen(){
+  if(!chartFullscreen)return;
+  $('chartDialog').close();restoreChartFullscreen();
+}
+$('openFullscreen').onclick=openChartFullscreen;
+$('closeFullscreen').onclick=closeChartFullscreen;
+$('chartDialog').addEventListener('cancel',e=>{e.preventDefault();closeChartFullscreen()});
+$('chartDialog').addEventListener('close',()=>{if(!$('chartDialog').open)restoreChartFullscreen()});
+$('zoomIn').onclick=$('fullZoomIn').onclick=()=>zoomChart(.75);
+$('zoomOut').onclick=$('fullZoomOut').onclick=()=>zoomChart(1/.75);
+$('fullAllView').onclick=showAllChart;
+
 cv.addEventListener('mousemove',e=>{if(drag||!DATA?.charts?.length){$('tooltip').style.display='none';return}let C=currentChart().candles,g=cv._geom,r=cv.getBoundingClientRect(),x=e.clientX-r.left,y=e.clientY-r.top;if(!g||x<g.pad.l||x>g.pad.l+g.pw||y<g.pad.t||y>g.mainH){$('tooltip').style.display='none';return}let idx=Math.max(0,Math.min(C.length-1,Math.round(view.start+(x-g.pad.l)/g.pw*(view.end-view.start)))),d=C[idx],tt=$('tooltip');tt.innerHTML=`<b>${esc(timeLabel(d.time,true))}</b><br>始値 ${esc(nice(d.open))} / 高値 ${esc(nice(d.high))}<br>安値 ${esc(nice(d.low))} / 終値 ${esc(nice(d.close))}<br>出来高 ${esc(d.volume??'—')}`;tt.style.display='block';tt.style.left=Math.min(x+14,r.width-190)+'px';tt.style.top=Math.max(8,y-55)+'px'});cv.addEventListener('mouseleave',()=>$('tooltip').style.display='none');
-function updateTradeButtons(){let has=!!DATA?.trades?.length;$('prevTrade').disabled=!has;$('nextTrade').disabled=!has;$('allView').disabled=!DATA?.charts?.length}
-$('prevTrade').onclick=()=>{if(DATA?.trades?.length){let i=selectedTradeIndex<0?0:(selectedTradeIndex-1+DATA.trades.length)%DATA.trades.length;focusTrade(i)}};$('nextTrade').onclick=()=>{if(DATA?.trades?.length){let i=selectedTradeIndex<0?0:(selectedTradeIndex+1)%DATA.trades.length;focusTrade(i)}};$('allView').onclick=()=>{if(!DATA?.charts?.length)return;resetChartGesture();let C=currentChart().candles;view={start:0,end:Math.max(0,C.length-1)};drawChart()};
+function updateTradeButtons(){let has=!!DATA?.trades?.length;$('prevTrade').disabled=!has;$('nextTrade').disabled=!has;let chart=!!DATA?.charts?.length;for(const id of ['allView','fullAllView','openFullscreen'])$(id).disabled=!chart;for(const id of ['zoomIn','zoomOut','fullZoomIn','fullZoomOut'])$(id).disabled=!chart||currentChart().candles.length<2}
+$('prevTrade').onclick=()=>{if(DATA?.trades?.length){let i=selectedTradeIndex<0?0:(selectedTradeIndex-1+DATA.trades.length)%DATA.trades.length;focusTrade(i)}};$('nextTrade').onclick=()=>{if(DATA?.trades?.length){let i=selectedTradeIndex<0?0:(selectedTradeIndex+1)%DATA.trades.length;focusTrade(i)}};$('allView').onclick=showAllChart;
 document.querySelectorAll('.filter').forEach(b=>b.onclick=()=>{document.querySelectorAll('.filter').forEach(x=>x.classList.remove('active'));b.classList.add('active');filter=b.dataset.filter;renderRows()});document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.tabbody').forEach(x=>x.classList.remove('active'));b.classList.add('active');$(b.dataset.tab).classList.add('active')});window.addEventListener('resize',()=>{resetChartGesture();drawChart();drawEquity()});
 function removeChartFromActive(chartIdx){if(!DATA||activeDatasetIndex<0||chartIdx<0||chartIdx>=DATA.charts.length)return;if(DATA.charts.length===1){removeDataset(activeDatasetIndex);return}let removed=DATA.charts[chartIdx],removedId=removed.id;DATA.charts.splice(chartIdx,1);DATA.trades=DATA.trades.filter(t=>t.chart_id!==removedId);recalcSummary(DATA);if(chartIndex>chartIdx)chartIndex--;else if(chartIndex===chartIdx)chartIndex=Math.min(chartIdx,DATA.charts.length-1);selectedTradeIndex=-1;renderMeta();renderStats();renderStrategy();renderChartTabs();switchChart(chartIndex);drawEquity();let first=DATA.trades.findIndex(t=>t.chart_id===currentChart()?.id);if(first>=0)focusTrade(first);else{renderRows();renderSelected()}renderDatasetList();$('fileStatus').textContent=`チャートを1件消去・残り${DATA.charts.length}チャート`;$('fileStatus').className='import-summary'}
 function datasetDisplayName(item){let d=item.data,c=d.charts[0],more=d.charts.length>1?` +${d.charts.length-1}`:'';return `${c.symbol} / ${c.timeframe}${more} ・ ${d.strategy.strategy_id}`}
 function renderDatasetList(){let list=$('datasetList'),totalCharts=DATASETS.reduce((n,x)=>n+(x.data?.charts?.length||0),0);$('datasetCount').textContent=`${DATASETS.length}ファイル / ${totalCharts}チャート`;$('clearAllDataBtn').disabled=DATASETS.length===0;$('fileStatus').textContent=`読み込み済み：${DATASETS.length}ファイル / ${totalCharts}チャート`;if(!DATASETS.length){list.innerHTML='<span class="empty-inline">まだデータはありません。</span>';return}list.innerHTML=DATASETS.map((item,i)=>`<div class="dataset-item ${i===activeDatasetIndex?'active':''}" data-dataset="${i}"><button class="dataset-select" data-select="${i}" title="${esc(item.sourceName)}"><span class="dataset-name">${esc(datasetDisplayName(item))}</span><span class="dataset-source">${esc(item.sourceName)}</span></button><button class="dataset-remove" data-remove="${i}" title="このデータだけ消去" aria-label="このデータだけ消去">消す</button></div>`).join('');document.querySelectorAll('[data-select]').forEach(b=>b.onclick=()=>activateDataset(Number(b.dataset.select)));document.querySelectorAll('[data-remove]').forEach(b=>b.onclick=e=>{e.stopPropagation();removeDataset(Number(b.dataset.remove))})}
-function renderEmpty(){resetChartGesture();DATA=null;chartIndex=0;selectedTradeIndex=-1;filter='ALL';view={start:0,end:100};drag=null;$('statusBadge').textContent='データなし';$('mSymbol').textContent='—';$('mTf').textContent='—';$('mPeriod').textContent='—';$('mStrategy').textContent='—';$('stats').innerHTML=stat('トレード数','—','未読込')+stat('勝率','—','未読込')+stat('期待値','—','未読込')+stat('PF','—','未読込')+stat('最大DD','—','未読込')+stat('累積R','—','未読込');$('chartTabs').innerHTML='';$('chartTitle').textContent='検証データ未読込';$('chartSub').textContent='GPT出力JSONを読み込むとチャートが表示されます。';$('indicatorRow').innerHTML='<span class="ind-chip">データなし</span>';$('tradeRows').innerHTML='';$('strategyBody').innerHTML='<div class="empty">戦略データはまだ読み込まれていません。</div>';$('notesBody').innerHTML='<div class="empty">検証メモはまだありません。</div>';$('selectedBody').innerHTML='<div class="empty">トレードを読み込むと詳細が表示されます。</div>';$('chartInfo').innerHTML='<div class="empty">チャートデータなし</div>';$('emptyChart').style.display='flex';$('tooltip').style.display='none';document.querySelectorAll('.filter').forEach((x,i)=>x.classList.toggle('active',i===0));updateTradeButtons();let rc=resizeCanvas($('chart'));rc.ctx.clearRect(0,0,rc.w,rc.h);drawEquity();renderDatasetList()}
+function renderEmpty(){closeChartFullscreen();resetChartGesture();DATA=null;chartIndex=0;selectedTradeIndex=-1;filter='ALL';view={start:0,end:100};drag=null;$('statusBadge').textContent='データなし';$('mSymbol').textContent='—';$('mTf').textContent='—';$('mPeriod').textContent='—';$('mStrategy').textContent='—';$('stats').innerHTML=stat('トレード数','—','未読込')+stat('勝率','—','未読込')+stat('期待値','—','未読込')+stat('PF','—','未読込')+stat('最大DD','—','未読込')+stat('累積R','—','未読込');$('chartTabs').innerHTML='';$('chartTitle').textContent='検証データ未読込';$('chartSub').textContent='GPT出力JSONを読み込むとチャートが表示されます。';$('indicatorRow').innerHTML='<span class="ind-chip">データなし</span>';$('tradeRows').innerHTML='';$('strategyBody').innerHTML='<div class="empty">戦略データはまだ読み込まれていません。</div>';$('notesBody').innerHTML='<div class="empty">検証メモはまだありません。</div>';$('selectedBody').innerHTML='<div class="empty">トレードを読み込むと詳細が表示されます。</div>';$('chartInfo').innerHTML='<div class="empty">チャートデータなし</div>';$('emptyChart').style.display='flex';$('tooltip').style.display='none';document.querySelectorAll('.filter').forEach((x,i)=>x.classList.toggle('active',i===0));updateTradeButtons();let rc=resizeCanvas($('chart'));rc.ctx.clearRect(0,0,rc.w,rc.h);drawEquity();renderDatasetList()}
 function activateDataset(index){if(index<0||index>=DATASETS.length){activeDatasetIndex=-1;renderEmpty();return}activeDatasetIndex=index;DATA=DATASETS[index].data;chartIndex=0;selectedTradeIndex=-1;filter='ALL';drag=null;renderMeta();renderStats();renderStrategy();renderChartTabs();switchChart(0);drawEquity();let first=DATA.trades.findIndex(t=>t.chart_id===currentChart()?.id);if(first>=0)focusTrade(first);else{renderRows();renderSelected()}$('emptyChart').style.display='none';document.querySelectorAll('.filter').forEach((x,i)=>x.classList.toggle('active',i===0));renderDatasetList();updateTradeButtons()}
 async function loadJsonFiles(fileList){let files=[...(fileList||[])].filter(f=>f&&(/\.json$/i.test(f.name)||f.type==='application/json'));if(!files.length){$('fileStatus').textContent='JSONファイルが選択されていません。';$('fileStatus').className='import-summary import-error';return}let firstNew=-1,ok=0,errors=[];for(const file of files){try{let text=await file.text(),raw=JSON.parse(text),data=normalizeData(raw);if(firstNew<0)firstNew=DATASETS.length;DATASETS.push({id:`ds_${Date.now()}_${Math.random().toString(36).slice(2)}`,sourceName:file.name,data});ok++}catch(err){errors.push(`${file.name}: ${err?.message||err}`)}}if(ok){activateDataset(firstNew);$('fileStatus').textContent=`${ok}件追加・合計${DATASETS.length}件`;$('fileStatus').className='import-summary import-ok'}else{renderDatasetList()}if(errors.length){$('fileStatus').textContent=`${ok}件追加 / ${errors.length}件エラー：${errors[0]}`;$('fileStatus').className='import-summary import-error';console.warn(errors.join('\n'))}$('fileInput').value=''}
 function removeDataset(index){if(index<0||index>=DATASETS.length)return;let wasActive=index===activeDatasetIndex;DATASETS.splice(index,1);if(!DATASETS.length){activeDatasetIndex=-1;renderEmpty();$('fileStatus').textContent='読み込み済み：0件';$('fileStatus').className='import-summary';return}if(wasActive){activateDataset(Math.min(index,DATASETS.length-1))}else{if(index<activeDatasetIndex)activeDatasetIndex--;renderDatasetList()}$('fileStatus').textContent=`1件消去・残り${DATASETS.length}件`;$('fileStatus').className='import-summary'}
