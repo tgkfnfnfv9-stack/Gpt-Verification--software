@@ -1,0 +1,60 @@
+name: temp-flush-recovery-v1
+
+on:
+  push:
+    branches:
+      - tmp/backtest-flush-recovery-v1
+
+permissions:
+  contents: read
+
+jobs:
+  backtest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install pinned dukascopy-go v0.2.0
+        shell: bash
+        run: |
+          set -euo pipefail
+          URL="https://github.com/Nosvemos/dukascopy-go/releases/download/v0.2.0/dukascopy-go_0.2.0_linux_amd64.tar.gz"
+          curl -L --fail --retry 3 -o /tmp/dukascopy-go.tar.gz "$URL"
+          echo "f78f621d747e7584be2ae6789f6b97e22ae656203cc9ab7a32766f699e455e4b  /tmp/dukascopy-go.tar.gz" | sha256sum -c -
+          mkdir -p /tmp/dukascopy-go
+          tar -xzf /tmp/dukascopy-go.tar.gz -C /tmp/dukascopy-go
+          BIN="$(find /tmp/dukascopy-go -type f -name 'dukascopy-go' | head -1)"
+          chmod +x "$BIN"
+          sudo install "$BIN" /usr/local/bin/dukascopy-go
+          dukascopy-go --help | head -20
+
+      - name: Download 2y M15 BID and ASK data
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p data
+          for SYMBOL in GBPJPY XAUUSD; do
+            echo "=== $SYMBOL BID ==="
+            dukascopy-go download --symbol "$SYMBOL" --timeframe m15 --side bid --from 2024-08-27 --to 2026-08-27 --output "data/${SYMBOL}_M15_bid.csv" --engine jetta
+            echo "=== $SYMBOL ASK ==="
+            dukascopy-go download --symbol "$SYMBOL" --timeframe m15 --side ask --from 2024-08-27 --to 2026-08-27 --output "data/${SYMBOL}_M15_ask.csv" --engine jetta
+            wc -l "data/${SYMBOL}_M15_bid.csv" "data/${SYMBOL}_M15_ask.csv"
+            head -3 "data/${SYMBOL}_M15_bid.csv"
+            tail -3 "data/${SYMBOL}_M15_bid.csv"
+          done
+
+      - name: Run V1 backtest and build viewer JSON
+        shell: bash
+        run: |
+          set -euo pipefail
+          python .tmp/backtest_flush_recovery_v1.py
+
+      - name: Upload JSON results
+        uses: actions/upload-artifact@v4
+        with:
+          name: flush-recovery-v1-results
+          path: results/
+          if-no-files-found: error
+          retention-days: 7
