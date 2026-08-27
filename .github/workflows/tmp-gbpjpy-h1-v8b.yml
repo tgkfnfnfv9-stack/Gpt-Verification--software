@@ -1,4 +1,4 @@
-name: temp-gbpjpy-h1-v8b
+name: temp-gbpjpy-h1-v7-1-vix
 
 on:
   push:
@@ -16,15 +16,15 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Load V5 base and V8 research
+      - name: Load V5 base and V7.1 research
         shell: bash
         run: |
           set -euo pipefail
           git fetch origin tmp/gbpjpy-h1-v5
           git show FETCH_HEAD:.tmp/gbpjpy_h1_v5_opt.py > /tmp/gbpjpy_h1_v5_opt.py
           git show FETCH_HEAD:.tmp/gbpjpy_h1_v8_macro.py > /tmp/gbpjpy_h1_v8_macro.py
-          git show FETCH_HEAD:.tmp/gbpjpy_h1_v8_macro2.py > /tmp/gbpjpy_h1_v8_macro2.py
-          python -m py_compile /tmp/gbpjpy_h1_v5_opt.py /tmp/gbpjpy_h1_v8_macro.py /tmp/gbpjpy_h1_v8_macro2.py
+          git show FETCH_HEAD:.tmp/gbpjpy_h1_v7_1_vix.py > /tmp/gbpjpy_h1_v7_1_vix.py
+          python -m py_compile /tmp/gbpjpy_h1_v5_opt.py /tmp/gbpjpy_h1_v8_macro.py /tmp/gbpjpy_h1_v7_1_vix.py
 
       - name: Install pinned dukascopy-go v0.2.0
         shell: bash
@@ -48,16 +48,23 @@ jobs:
           dukascopy-go download --symbol GBPJPY --timeframe m15 --side ask --from 2019-08-27 --to 2026-08-27 --output data/GBPJPY_M15_ask.csv --engine jetta
           wc -l data/GBPJPY_M15_bid.csv data/GBPJPY_M15_ask.csv
 
-      - name: Run V8 macro regime research
+      - name: Download FRED VIX daily history
         shell: bash
         run: |
           set -euo pipefail
-          python /tmp/gbpjpy_h1_v8_macro2.py
+          curl -L --fail --retry 3 'https://fred.stlouisfed.org/graph/fredgraph.csv?id=VIXCLS&cosd=2019-08-01&coed=2026-08-27' -o data/VIXCLS.csv
+          head -5 data/VIXCLS.csv
 
-      - name: Upload V8 JSON
+      - name: Run V7.1 VIX risk guard research
+        shell: bash
+        run: |
+          set -euo pipefail
+          python /tmp/gbpjpy_h1_v7_1_vix.py
+
+      - name: Upload V7.1 JSON
         uses: actions/upload-artifact@v4
         with:
-          name: gbpjpy-h1-v8b-results
+          name: gbpjpy-h1-v7-1-vix-results
           path: results/
           if-no-files-found: error
           retention-days: 7
