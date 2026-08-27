@@ -1,4 +1,4 @@
-name: temp-gbpjpy-h1-v2
+name: temp-gbpjpy-h1-v2b-validation
 
 on:
   push:
@@ -16,13 +16,14 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Load temporary optimizer
+      - name: Load fixed V2b validation scripts
         shell: bash
         run: |
           set -euo pipefail
           git fetch origin tmp/gbpjpy-h1-v2
           git show FETCH_HEAD:.tmp/gbpjpy_h1_v2_opt.py > /tmp/gbpjpy_h1_v2_opt.py
-          python -m py_compile /tmp/gbpjpy_h1_v2_opt.py
+          git show FETCH_HEAD:.tmp/gbpjpy_h1_v2b_validate.py > /tmp/gbpjpy_h1_v2b_validate.py
+          python -m py_compile /tmp/gbpjpy_h1_v2_opt.py /tmp/gbpjpy_h1_v2b_validate.py
 
       - name: Install pinned dukascopy-go v0.2.0
         shell: bash
@@ -37,25 +38,25 @@ jobs:
           chmod +x "$BIN"
           sudo install "$BIN" /usr/local/bin/dukascopy-go
 
-      - name: Download GBPJPY 2y M15 BID and ASK
+      - name: Download GBPJPY 3y M15 BID and ASK
         shell: bash
         run: |
           set -euo pipefail
           mkdir -p data
-          dukascopy-go download --symbol GBPJPY --timeframe m15 --side bid --from 2024-08-27 --to 2026-08-27 --output data/GBPJPY_M15_bid.csv --engine jetta
-          dukascopy-go download --symbol GBPJPY --timeframe m15 --side ask --from 2024-08-27 --to 2026-08-27 --output data/GBPJPY_M15_ask.csv --engine jetta
+          dukascopy-go download --symbol GBPJPY --timeframe m15 --side bid --from 2023-08-27 --to 2026-08-27 --output data/GBPJPY_M15_bid.csv --engine jetta
+          dukascopy-go download --symbol GBPJPY --timeframe m15 --side ask --from 2023-08-27 --to 2026-08-27 --output data/GBPJPY_M15_ask.csv --engine jetta
           wc -l data/GBPJPY_M15_bid.csv data/GBPJPY_M15_ask.csv
 
-      - name: Optimize and backtest V2
+      - name: Validate fixed V2b and build JSON
         shell: bash
         run: |
           set -euo pipefail
-          python /tmp/gbpjpy_h1_v2_opt.py
+          python /tmp/gbpjpy_h1_v2b_validate.py
 
-      - name: Upload V2 JSON
+      - name: Upload V2b JSON
         uses: actions/upload-artifact@v4
         with:
-          name: gbpjpy-h1-v2-results
+          name: gbpjpy-h1-v2b-results
           path: results/
           if-no-files-found: error
           retention-days: 7
