@@ -39,6 +39,7 @@ def main() -> None:
     parser.add_argument("--h1h4", type=Path, required=True)
     parser.add_argument("--registry", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--run-id", type=int, required=True)
     args = parser.parse_args()
 
     m15 = load(args.m15)
@@ -57,14 +58,9 @@ def main() -> None:
             for name, value in subruns.items()
         }
         episodes = {name: value["sample_size"]["unique_episodes"] for name, value in subruns.items()}
-        cis = {name: value["cluster_inference"]["bootstrap_95ci"] for name, value in subruns.items()}
-        fdr = {name: value["cluster_inference"]["bh_fdr_adjusted_p"] for name, value in subruns.items()}
         positive_both = all(value is not None and value > 0 for value in edges.values())
         enough_both = all(value >= 50 for value in episodes.values())
-        development_both = all(
-            episodes[name] >= 100 and edges[name] >= 0.05 and cis[name][0] is not None and cis[name][0] > 0 and fdr[name] <= 0.10
-            for name in subruns
-        )
+        development_both = all(value["runner_decision"] == "DEVELOPMENT" for value in subruns.values())
         if development_both:
             decision = "DEVELOPMENT"
             reasons = ["Both M15 and H1/H4 independently passed the frozen core statistical gate."]
@@ -77,6 +73,7 @@ def main() -> None:
         else:
             decision = "REJECT"
             reasons = ["Cross-timeframe sign/sample gate failed; selecting only the favorable timeframe is prohibited."]
+        rank_score = min(edges.values()) if all(value is not None for value in edges.values()) else None
         merged.append({
             "strategy_id": strategy_id,
             "family": meta["family"],
@@ -100,7 +97,7 @@ def main() -> None:
             "weaknesses": meta["weaknesses"],
             "decision": decision,
             "decision_reasons": reasons,
-            "conservative_rank_score": min(value for value in edges.values() if value is not None),
+            "conservative_rank_score": rank_score,
         })
 
     ranked = {}
@@ -108,7 +105,11 @@ def main() -> None:
         family_rows = [item for item in merged if item["family"] == family]
         ranked[family] = [
             item["strategy_id"]
-            for item in sorted(family_rows, key=lambda item: item["conservative_rank_score"], reverse=True)
+            for item in sorted(
+                family_rows,
+                key=lambda item: item["conservative_rank_score"] if item["conservative_rank_score"] is not None else float("-inf"),
+                reverse=True,
+            )
         ]
 
     result = {
@@ -116,7 +117,7 @@ def main() -> None:
         "decision_scope": "DISCOVERY_CROSS_TIMEFRAME_STRATIFIED",
         "evaluated_period": m15["evaluated_period"],
         "development_oos_final_holdout_accessed": False,
-        "run_id": 33179529138,
+        "run_id": args.run_id,
         "rank_method": "Descending minimum of M15 and H1/H4 episode-weighted mean edge; no favorable-timeframe selection.",
         "ranked_top5_per_family": ranked,
         "decision_counts": {

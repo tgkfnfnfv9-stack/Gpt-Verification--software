@@ -1,7 +1,7 @@
 {
   "project": "auto-trading-multi-agent-research",
   "updated_at": "2026-08-28",
-  "phase": "PHASE8_BLIND_DISCOVERY_PREREGISTERED",
+  "phase": "PHASE8_DISCOVERY_COMPLETE",
   "predecessor": {
     "strategy_id": "STRAT-PA-002",
     "decision": "REJECT_FOR_DEVELOPMENT",
@@ -22,6 +22,18 @@
     "oos_downloaded": false,
     "final_holdout_downloaded": false
   },
+  "discovery_execution": {
+    "workflow_run_id": 33210045954,
+    "registered_candidates_unchanged": true,
+    "registered_instruments_unchanged": true,
+    "registered_timeframes_unchanged": true,
+    "decision_counts": {
+      "REJECT": 14,
+      "WATCH": 1,
+      "DEVELOPMENT": 0
+    },
+    "watch_candidates": ["STRAT-VV-104"]
+  },
   "final_holdout": {
     "period": ["2025-08-28", "2026-08-28"],
     "status": "MASKED_NOT_DOWNLOADED_NOT_EVALUATED"
@@ -32,5 +44,11 @@
     "account": "live-standard",
     "ea_allowed_after_all_gates_only": true
   },
-  "next_gate": "RUN_DISCOVERY_M15_H1_H4_AND_AUDIT_OUTPUTS"
+  "next_gate": "UNIFIED_DISCOVERY_EPISODE_AUDIT_FOR_STRAT_VV_104_WITHOUT_PARAMETER_CHANGES",
+  "prohibited_next_actions": [
+    "PA-002 optimization or threshold changes",
+    "H4-only post-hoc selection",
+    "Development/OOS/Final Holdout access before a frozen promotion decision",
+    "MT5 EA implementation"
+  ]
 }

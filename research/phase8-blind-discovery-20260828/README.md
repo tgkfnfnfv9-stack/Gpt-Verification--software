@@ -51,6 +51,21 @@ GitHub Actions workflow:
 
 Raw市場データはRepositoryへ保存せず、取得manifest、SHA-256、検証結果だけをArtifactへ保存する。
 
+## Discovery結果
+
+GitHub Actions run `33210045954` で、登録済み15候補をM15とH1/H4の両層で評価した。
+横断判定は有利な時間足だけを採用せず、両層のepisode-weighted mean edgeの小さい方を
+順位スコアとした。
+
+- DEVELOPMENT: 0
+- WATCH: 1（`STRAT-VV-104`）
+- REJECT: 14
+
+`STRAT-VV-104`はM15とH1/H4の平均Edgeがともに正だが、95% CIおよびBH-FDR Gateを
+通過していない。したがってDevelopmentへ進めず、同一条件での統合episode監査だけを
+次の許可作業とする。詳細は`results/RESULTS_SUMMARY.md`と
+`results/phase8_cross_timeframe_decision.json`を参照。
+
 ## 禁止事項
 
 - STRAT-PA-002の閾値変更・派生最適化
@@ -59,4 +74,3 @@ Raw市場データはRepositoryへ保存せず、取得manifest、SHA-256、検�
 - 結果を見て銘柄・時間足・方向を候補定義から削除
 - Gate通過前のMT5 EA化
 - API Key、Token、MT5資格情報の保存
-
