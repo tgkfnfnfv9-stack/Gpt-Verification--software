@@ -23,11 +23,25 @@
     "discovery_started": false,
     "data_download_started": false,
     "external_data_blocker": "STRAT-P9-RR-205 requires point-in-time historical forward or financing data",
-    "discussion_required": true
+    "discussion_required": true,
+    "next_session_handoff_prepared": true,
+    "next_session_handoff": "NEXT_SESSION_HANDOFF.md",
+    "copy_paste_prompt": "NEXT_SESSION_PROMPT.md"
+  },
+  "data_requirements": {
+    "status": "DRAFT_NOT_DOWNLOADED",
+    "human_readable": "DATA_REQUIREMENTS.md",
+    "machine_readable": "spec/data_requirements.draft.json",
+    "raw_market_data_committed_to_git": false,
+    "required_source_timeframes": ["M15", "H1"],
+    "derived_timeframes": ["H4", "D1"],
+    "required_price_sides": ["BID", "ASK"],
+    "carry_data_blocked_candidate": "STRAT-P9-RR-205"
   },
   "data_scope": {
     "phase8_discovery": {"period": ["2019-08-28", "2022-08-28"], "phase9_status": "SEEN_CONTAMINATED_FOR_SPEC_SELECTION"},
     "proposed_phase9_discovery": {"period": ["2014-08-28", "2019-08-28"], "status": "PROPOSED_NOT_DOWNLOADED_AVAILABILITY_UNCONFIRMED"},
+    "development_walk_forward": {"period": ["2022-08-28", "2024-08-28"], "status": "MASKED_NOT_DOWNLOADED"},
     "strict_oos": {"period": ["2024-08-28", "2025-08-28"], "status": "MASKED_NOT_DOWNLOADED"},
     "final_holdout": {"period": ["2025-08-28", "2026-08-28"], "status": "MASKED_NOT_DOWNLOADED_NOT_EVALUATED"}
   },

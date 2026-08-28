@@ -16,9 +16,13 @@ Phase 8で棄却された15候補を閾値調整で延命せず、失敗原因�
 - `PHASE8_HYPOTHESIS_REVIEW.md`: 旧15候補の失敗原因と、廃止・統合・再設計の判断
 - `HYPOTHESIS_PORTFOLIO.md`: Phase 9の15候補を日本語で比較する討論用一覧
 - `spec/candidate_registry.draft.json`: 完全な数値条件を含む機械可読草案
+- `DATA_REQUIREMENTS.md`: 必要な市場データ、期間、品質Gate、保存方針
+- `spec/data_requirements.draft.json`: 機械可読のデータ取得要件
 - `policy/hypothesis_stage_policy.json`: 仮説段階で許可・禁止する操作
 - `sources/PRIMARY_RESEARCH.md`: 新設計の根拠と、論文を短期売買へ外挿しないための注意
 - `SESSION_STATE.json`: 現在地と未開封データの状態
+- `NEXT_SESSION_HANDOFF.md`: 次セッションが読む完全な引き継ぎ
+- `NEXT_SESSION_PROMPT.md`: 次セッションへそのまま送れる開始文
 
 ## 重要な境界
 
@@ -42,6 +46,6 @@ Phase 8で棄却された15候補を閾値調整で延命せず、失敗原因�
 
 1. 15候補の経済仮説と実装可能性をユーザーと討論する。
 2. 重複候補を削除し、必要なら新候補と入れ替える。結果を見て候補を増減しない。
-3. Phase 9専用の未使用Discovery期間とデータ可用性を確定する。
+3. Phase 9専用の未使用Discovery期間とデータ可用性を、returnを計算せず確定する。
 4. 候補、期間、universe、matched control、outcome、multiple-testing Gateを凍結する。
 5. 凍結コミット後にのみデータ取得とDiscovery検証を開始する。

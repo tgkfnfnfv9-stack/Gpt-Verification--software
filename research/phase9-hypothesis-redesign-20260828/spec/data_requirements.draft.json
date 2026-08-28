@@ -1,0 +1,101 @@
+{
+  "schema_version": "phase9-data-requirements-v0.1-draft",
+  "status": "DRAFT_NOT_DOWNLOADED",
+  "as_of": "2026-08-28",
+  "raw_market_data_committed_to_git": false,
+  "universe": {
+    "FX": ["AUDJPY", "AUDUSD", "EURGBP", "EURJPY", "EURUSD", "GBPJPY", "GBPUSD", "USDJPY"],
+    "PRECIOUS_METALS": ["XAUUSD", "XAGUSD"],
+    "ENERGY": ["BRENTCMDUSD", "LIGHTCMDUSD"]
+  },
+  "periods": {
+    "warmup_proposed": {
+      "start_inclusive": "2013-01-01T00:00:00Z",
+      "end_exclusive": "2014-08-28T00:00:00Z",
+      "status": "NOT_DOWNLOADED"
+    },
+    "phase9_discovery_proposed": {
+      "start_inclusive": "2014-08-28T00:00:00Z",
+      "end_exclusive": "2019-08-28T00:00:00Z",
+      "status": "NOT_DOWNLOADED_AVAILABILITY_UNCONFIRMED"
+    },
+    "phase8_seen_period": {
+      "start_inclusive": "2019-08-28T00:00:00Z",
+      "end_exclusive": "2022-08-28T00:00:00Z",
+      "status": "CONTAMINATED_FOR_PHASE9_SPECIFICATION_NOT_A_PROMOTION_GATE"
+    },
+    "development_walk_forward": {
+      "start_inclusive": "2022-08-28T00:00:00Z",
+      "end_exclusive": "2024-08-28T00:00:00Z",
+      "status": "MASKED_NOT_DOWNLOADED"
+    },
+    "strict_oos": {
+      "start_inclusive": "2024-08-28T00:00:00Z",
+      "end_exclusive": "2025-08-28T00:00:00Z",
+      "status": "MASKED_NOT_DOWNLOADED"
+    },
+    "final_holdout": {
+      "start_inclusive": "2025-08-28T00:00:00Z",
+      "end_exclusive": "2026-08-28T00:00:00Z",
+      "status": "MASKED_NOT_DOWNLOADED_NOT_EVALUATED"
+    }
+  },
+  "base_series": {
+    "source_timeframes": ["M15", "H1"],
+    "derived_timeframes": ["H4", "D1"],
+    "fields": [
+      "timestamp_utc_bar_open",
+      "bid_open",
+      "bid_high",
+      "bid_low",
+      "bid_close",
+      "ask_open",
+      "ask_high",
+      "ask_low",
+      "ask_close",
+      "tick_volume"
+    ],
+    "spread_rule": "ask_open_minus_bid_open; fixed spread substitution prohibited",
+    "aggregation_rule": "BID and ASK aggregated separately; incomplete buckets dropped; D1 boundary 00:00 UTC"
+  },
+  "candidate_specific": {
+    "STRAT-P9-PS-204": ["complete 00:00-10:00 UTC intraday bars"],
+    "STRAT-P9-LV-201": ["40 prior trading-day same-UTC-slot tick volume", "point-in-time spread"],
+    "STRAT-P9-LV-203": ["40 prior trading-day same-UTC-slot tick volume"],
+    "STRAT-P9-LV-204": ["same-slot tick volume", "point-in-time spread", "synchronized fixed peers"],
+    "STRAT-P9-RR-201": ["all eight FX pairs synchronized at D1 and H4"],
+    "STRAT-P9-RR-202": ["all eight FX pairs synchronized at H1 and H4"],
+    "STRAT-P9-RR-203": ["synchronized XAUUSD and XAGUSD H4/D1"],
+    "STRAT-P9-RR-204": ["synchronized Brent and WTI H4/D1", "roll and session metadata"],
+    "STRAT-P9-RR-205": ["point-in-time historical 1M forward points or broker financing series"]
+  },
+  "quality_gates_before_return_calculation": [
+    "strictly increasing timestamps and zero duplicates",
+    "valid OHLC geometry",
+    "positive prices and nonnegative tick volume",
+    "ask open greater than or equal to bid open",
+    "gap inventory",
+    "row counts and first/last timestamps",
+    "UTC-session missingness inventory",
+    "SHA-256 for every source file",
+    "cross-market synchronous bar counts",
+    "energy roll-date inventory"
+  ],
+  "external_blockers": {
+    "STRAT-P9-RR-205": {
+      "status": "BLOCKED_PENDING_POINT_IN_TIME_CARRY_DATA",
+      "forbidden_substitute": "central-bank policy rate alone",
+      "action_if_unavailable": "REMOVE_OR_REPLACE_BEFORE_PREREGISTRATION_WITHOUT_VIEWING_RETURNS"
+    }
+  },
+  "git_artifacts_after_acquisition": [
+    "source_versions.json",
+    "row_counts.txt",
+    "sha256.txt",
+    "gaps.json",
+    "cross_market_overlap.json",
+    "energy_roll_inventory.json",
+    "deterministic acquisition and validation scripts"
+  ],
+  "download_gate": "DO_NOT_DOWNLOAD_UNTIL_CANDIDATE_REGISTRY_AND_PERIODS_ARE_FROZEN_IN_GIT"
+}
