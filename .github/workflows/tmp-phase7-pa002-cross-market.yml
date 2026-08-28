@@ -23,7 +23,7 @@ jobs:
           tar -xzf /tmp/dukascopy-go.tar.gz -C /tmp/dukascopy-go
           BIN="$(find /tmp/dukascopy-go -type f -name dukascopy-go | head -1)"
           chmod +x "$BIN" && sudo install "$BIN" /usr/local/bin/dukascopy-go
-      - name: Download FX and commodities M15 BID ASK
+      - name: Download FX and metals H1 BID ASK
         run: |
           set -u
           mkdir -p data results
@@ -31,9 +31,9 @@ jobs:
           download_symbol() {
             s="$1"
             ok=1
-            dukascopy-go download --symbol "$s" --timeframe m15 --side bid --from 2019-08-28 --to 2026-08-28 --output "data/${s}_M15_bid.csv" --engine jetta || ok=0
-            dukascopy-go download --symbol "$s" --timeframe m15 --side ask --from 2019-08-28 --to 2026-08-28 --output "data/${s}_M15_ask.csv" --engine jetta || ok=0
-            if [ "$ok" -eq 0 ]; then rm -f "data/${s}_M15_bid.csv" "data/${s}_M15_ask.csv"; fi
+            dukascopy-go download --symbol "$s" --timeframe h1 --side bid --from 2019-08-28 --to 2026-08-28 --output "data/${s}_H1_bid.csv" --engine jetta || ok=0
+            dukascopy-go download --symbol "$s" --timeframe h1 --side ask --from 2019-08-28 --to 2026-08-28 --output "data/${s}_H1_ask.csv" --engine jetta || ok=0
+            if [ "$ok" -eq 0 ]; then rm -f "data/${s}_H1_bid.csv" "data/${s}_H1_ask.csv"; fi
           }
           active=0
           for s in "${symbols[@]}"; do
@@ -45,8 +45,8 @@ jobs:
           find data -type f -maxdepth 1 -printf '%f %s bytes\n' | sort
       - name: Run frozen PA-002 cross-market validation
         run: |
-          python -m py_compile .tmp/phase7_pa002_cross_market.py
-          python .tmp/phase7_pa002_cross_market.py | tee results/run.log
+          python -m py_compile .tmp/phase7_pa002_h1h4.py
+          python .tmp/phase7_pa002_h1h4.py | tee results/run_h1h4.log
       - name: Upload result JSON only
         uses: actions/upload-artifact@v4
         with:
@@ -60,9 +60,8 @@ jobs:
           git config user.name github-actions
           git config user.email github-actions@github.com
           cp -R results /tmp/phase7-results
-          git checkout --orphan tmp-phase7-result-worktree
-          git rm -rf .
-          mkdir -p results
+          git fetch origin tmp/phase7-pa002-results
+          git checkout -B tmp-phase7-result-worktree FETCH_HEAD
           cp -R /tmp/phase7-results/. results/
           git add results
           git commit -m "Publish temporary PA-002 validation results"
