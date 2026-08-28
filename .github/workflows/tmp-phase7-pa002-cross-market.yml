@@ -1,0 +1,48 @@
+name: temp-phase7-pa002-cross-market
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  backtest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install pinned dukascopy-go v0.2.0
+        run: |
+          set -euo pipefail
+          URL="https://github.com/Nosvemos/dukascopy-go/releases/download/v0.2.0/dukascopy-go_0.2.0_linux_amd64.tar.gz"
+          curl -L --fail --retry 3 -o /tmp/dukascopy-go.tar.gz "$URL"
+          echo "f78f621d747e7584be2ae6789f6b97e22ae656203cc9ab7a32766f699e455e4b  /tmp/dukascopy-go.tar.gz" | sha256sum -c -
+          mkdir -p /tmp/dukascopy-go
+          tar -xzf /tmp/dukascopy-go.tar.gz -C /tmp/dukascopy-go
+          BIN="$(find /tmp/dukascopy-go -type f -name dukascopy-go | head -1)"
+          chmod +x "$BIN" && sudo install "$BIN" /usr/local/bin/dukascopy-go
+      - name: Download FX and commodities M15 BID ASK
+        run: |
+          set -u
+          mkdir -p data results
+          symbols=(EURUSD GBPUSD USDJPY GBPJPY EURJPY AUDUSD AUDJPY EURGBP XAUUSD XAGUSD LIGHTCMDUSD BRENTCMDUSD GASCMDUSD)
+          for s in "${symbols[@]}"; do
+            ok=1
+            dukascopy-go download --symbol "$s" --timeframe m15 --side bid --from 2019-08-28 --to 2026-08-28 --output "data/${s}_M15_bid.csv" --engine jetta || ok=0
+            dukascopy-go download --symbol "$s" --timeframe m15 --side ask --from 2019-08-28 --to 2026-08-28 --output "data/${s}_M15_ask.csv" --engine jetta || ok=0
+            if [ "$ok" -eq 0 ]; then rm -f "data/${s}_M15_bid.csv" "data/${s}_M15_ask.csv"; fi
+          done
+          find data -type f -maxdepth 1 -printf '%f %s bytes\n' | sort
+      - name: Run frozen PA-002 cross-market validation
+        run: |
+          python -m py_compile .tmp/phase7_pa002_cross_market.py
+          python .tmp/phase7_pa002_cross_market.py | tee results/run.log
+      - name: Upload result JSON only
+        uses: actions/upload-artifact@v4
+        with:
+          name: phase7-pa002-cross-market-results
+          path: results/
+          if-no-files-found: error
+          retention-days: 7
