@@ -1,0 +1,53 @@
+{
+  "policy_version": "phase9-hypothesis-stage-v0.1-draft",
+  "status": "DRAFT_FOR_DISCUSSION_NOT_FROZEN",
+  "as_of": "2026-08-28",
+  "allowed_now": [
+    "discuss economic mechanisms",
+    "remove or merge redundant draft candidates",
+    "clarify entry-time-available data",
+    "inventory data sources without downloading masked periods",
+    "change draft numeric conditions before preregistration, with a written rationale unrelated to outcomes"
+  ],
+  "prohibited_now": [
+    "run Phase 9 candidates on Phase 8 Discovery data",
+    "download or inspect Development, OOS, or Final Holdout data",
+    "choose symbols or timeframes using Phase 8 subgroup results",
+    "revive any Phase 8 strategy ID",
+    "optimize STRAT-PA-002 or any rejected Phase 8 threshold",
+    "implement an MT5 EA"
+  ],
+  "future_freeze_requirements": [
+    "final candidate list",
+    "numeric entry conditions",
+    "eligible instruments and timeframes",
+    "entry timing and all feature lags",
+    "fixed-real-time and fixed-bar outcomes",
+    "matched-control algorithm",
+    "episode de-duplication",
+    "sample-size gates",
+    "multiple-testing correction",
+    "transaction-cost stress",
+    "unused Discovery, Development, OOS, Walk-Forward, and Final Holdout boundaries"
+  ],
+  "data_boundaries": {
+    "phase8_discovery": {
+      "period": ["2019-08-28", "2022-08-28"],
+      "status": "SEEN_CONTAMINATED_FOR_PHASE9_SPECIFICATION"
+    },
+    "phase9_discovery": {
+      "preferred_period": ["2014-08-28", "2019-08-28"],
+      "status": "PROPOSED_NOT_DOWNLOADED_DATA_AVAILABILITY_UNCONFIRMED"
+    },
+    "strict_oos": {
+      "period": ["2024-08-28", "2025-08-28"],
+      "status": "MASKED_NOT_DOWNLOADED"
+    },
+    "final_holdout": {
+      "period": ["2025-08-28", "2026-08-28"],
+      "status": "MASKED_NOT_DOWNLOADED_NOT_EVALUATED"
+    }
+  },
+  "decision_labels": ["REJECT", "WATCH", "DEVELOPMENT"],
+  "current_label_for_all_phase9_candidates": "UNTESTED_DRAFT"
+}

@@ -1,0 +1,52 @@
+{
+  "project": "auto-trading-research",
+  "updated_at": "2026-08-28",
+  "phase": "PHASE9_HYPOTHESIS_REDESIGN_DRAFT",
+  "phase8": {
+    "candidate_count": 15,
+    "decision_counts": {"REJECT_FOR_DEVELOPMENT": 15, "WATCH": 0, "DEVELOPMENT": 0},
+    "reoptimization_allowed": false,
+    "result_based_symbol_or_timeframe_selection_allowed": false
+  },
+  "pa002": {
+    "strategy_id": "STRAT-PA-002",
+    "decision": "REJECT_FOR_DEVELOPMENT",
+    "optimization_allowed": false,
+    "mt5_implementation_allowed": false
+  },
+  "phase9_draft": {
+    "candidate_count": 15,
+    "families": {"PRICE_STRUCTURE": 5, "LIQUIDITY_VOLATILITY": 5, "RELATIVE_VALUE_REGIME": 5},
+    "direction_balance": {"continuation_or_trend": 8, "reversal_or_relative_reversion": 7},
+    "status_for_all_candidates": "UNTESTED_DRAFT",
+    "preregistered": false,
+    "discovery_started": false,
+    "data_download_started": false,
+    "external_data_blocker": "STRAT-P9-RR-205 requires point-in-time historical forward or financing data",
+    "discussion_required": true
+  },
+  "data_scope": {
+    "phase8_discovery": {"period": ["2019-08-28", "2022-08-28"], "phase9_status": "SEEN_CONTAMINATED_FOR_SPEC_SELECTION"},
+    "proposed_phase9_discovery": {"period": ["2014-08-28", "2019-08-28"], "status": "PROPOSED_NOT_DOWNLOADED_AVAILABILITY_UNCONFIRMED"},
+    "strict_oos": {"period": ["2024-08-28", "2025-08-28"], "status": "MASKED_NOT_DOWNLOADED"},
+    "final_holdout": {"period": ["2025-08-28", "2026-08-28"], "status": "MASKED_NOT_DOWNLOADED_NOT_EVALUATED"}
+  },
+  "target_execution": {
+    "platform": "MT5",
+    "broker": "OANDA",
+    "account": "live-standard",
+    "ea_allowed_after_all_gates_only": true
+  },
+  "next_actions": [
+    "discuss and remove overlapping or weak draft hypotheses",
+    "resolve RR-205 data availability without viewing returns",
+    "freeze the final candidate registry and untouched period boundaries",
+    "only then prepare data acquisition and a new Discovery runner"
+  ],
+  "prohibited_next_actions": [
+    "run draft candidates before preregistration",
+    "inspect Development, OOS, or Final Holdout",
+    "tune from Phase 8 subgroup outcomes",
+    "implement MT5 EA"
+  ]
+}

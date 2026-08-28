@@ -1,0 +1,387 @@
+{
+  "registry_version": "phase9-v0.1-draft",
+  "status": "DRAFT_FOR_DISCUSSION_NOT_PREREGISTERED",
+  "created_at": "2026-08-28",
+  "candidate_count": 15,
+  "universe": {
+    "FX": ["AUDJPY", "AUDUSD", "EURGBP", "EURJPY", "EURUSD", "GBPJPY", "GBPUSD", "USDJPY"],
+    "PRECIOUS_METALS": ["XAUUSD", "XAGUSD"],
+    "ENERGY": ["BRENTCMDUSD", "LIGHTCMDUSD"]
+  },
+  "common_information_rule": {
+    "signal_time": "t is the close time of the final required confirmation bar",
+    "entry_time": "next tradable bar open after t; no feature may use data timestamped after t",
+    "bar_data": "BID OHLC and tick volume available at or before t; ASK/spread data are required before cost validation",
+    "higher_timeframe_rule": "only the most recently completed higher-timeframe bar is available",
+    "rolling_window_rule": "all rolling windows end at t or earlier and use no centered statistics",
+    "same_timestamp_cross_market_rule": "peer bars must be complete at t; missing peers invalidate the event rather than being forward-filled"
+  },
+  "common_outcomes": {
+    "primary": "direction-adjusted return from next-bar open to the last close at or before entry+12 real hours, in entry-time ATR14 units",
+    "secondary_fixed_time": ["1h", "4h", "24h"],
+    "secondary_fixed_bars": [4, 12],
+    "path": ["MFE through 12 real hours in ATR", "MAE through 12 real hours in ATR"],
+    "breakdowns": ["calendar year", "instrument", "signal timeframe", "BUY versus SELL", "volatility quintile"],
+    "absolute_return_gate": "positive matched edge is insufficient when the raw signal return after realistic costs is non-positive"
+  },
+  "common_matched_control": {
+    "pool": "non-signal bars from the same predeclared target set, instrument, timeframe, and direction",
+    "exact_matches": ["calendar year", "UTC session bucket", "direction"],
+    "numeric_calipers": {
+      "ATR252_percentile_points": 10,
+      "spread252_percentile_points": 10,
+      "signed_60bar_return_z": 0.5
+    },
+    "selection": "one nearest control by standardized Euclidean distance, selected without using future returns",
+    "exclusions": "control bar cannot fall within 24 real hours of any treated signal for the same instrument",
+    "episode_rule": "same instrument, direction, and overlapping 12-hour outcome windows are collapsed to the first event"
+  },
+  "sample_size_policy": {
+    "broad_candidate_min_unified_episodes": 500,
+    "pair_or_external_data_candidate_min_unified_episodes": 250,
+    "minimum_instrument_groups": 3,
+    "minimum_timeframe_groups": 2,
+    "action_below_minimum": "REJECT_AS_UNDERPOWERED; do not loosen entry thresholds after counting"
+  },
+  "candidates": [
+    {
+      "strategy_id": "STRAT-P9-PS-201",
+      "family": "PRICE_STRUCTURE",
+      "name": "Confirmed Balance Break Retest",
+      "lineage": "new ID; structural redesign merging PA-101 and PA-102",
+      "role": "CONTINUATION",
+      "hypothesis": "A balance break has continuation only after price retests the broken boundary and closes back in the break direction without materially re-entering the balance.",
+      "targets": "ALL_UNIVERSE",
+      "timeframes": ["M15", "H1", "H4"],
+      "entry_conditions": [
+        "Let b be a breakout bar among t-3..t-1. The high-low range of bars b-8..b-1 is <=1.25*ATR14(b).",
+        "BUY breakout: C[b] >= max(H[b-20:b-1])+0.10*ATR14(b), body/range>=0.55; SELL symmetric.",
+        "During b+1..t price touches within 0.20*ATR14(b) of the broken 20-bar boundary, and no close penetrates more than 0.25*ATR14(b) back inside it.",
+        "BUY confirmation at t: C[t] is >= boundary+0.05*ATR14(t) and close-location>=0.65; SELL symmetric.",
+        "Enter in the confirmed direction at the next bar open."
+      ],
+      "entry_time_information": ["completed OHLC through t", "ATR14 through t-1", "prior 20-bar boundary", "break and retest bars through t"],
+      "matched_control": "common control plus exact match on 8-bar range/ATR quartile",
+      "sample_size_gate": 500,
+      "parameter_sensitivity": {"balance_range_atr_max": [1.0, 1.25, 1.5], "retest_window_bars": [2, 3, 4], "reentry_atr_max": [0.15, 0.25, 0.35]},
+      "weaknesses": ["confirmation delays entry", "gap-like commodity moves may never retest", "overlaps conceptually with LV-202"],
+      "status": "UNTESTED_DRAFT"
+    },
+    {
+      "strategy_id": "STRAT-P9-PS-202",
+      "family": "PRICE_STRUCTURE",
+      "name": "Failed 20-Bar Break Reversal",
+      "lineage": "independent new hypothesis; not a post-hoc sign flip of PA-101/PA-105",
+      "role": "REVERSAL",
+      "hypothesis": "A decisive new 20-bar extreme that is reclaimed within two bars traps late breakout participation and mean-reverts.",
+      "targets": "ALL_UNIVERSE",
+      "timeframes": ["M15", "H1", "H4"],
+      "entry_conditions": [
+        "Break bar b closes >=0.15*ATR14(b) beyond the prior 20-bar high, or <=-0.15*ATR below the prior low, with close-location>=0.75 in the break direction.",
+        "By t<=b+2, price closes at least 0.10*ATR14(t) back inside the pre-break 20-bar boundary.",
+        "The reclaim bar body/range>=0.40 and close-location>=0.60 in the reversal direction.",
+        "Enter opposite the failed break at the next bar open."
+      ],
+      "entry_time_information": ["completed OHLC through reclaim bar t", "pre-break 20-bar boundary", "ATR14 through t-1"],
+      "matched_control": "common control plus exact match on breakout-distance quartile; controls are unreclaimed breakouts",
+      "sample_size_gate": 500,
+      "parameter_sensitivity": {"break_atr_min": [0.1, 0.15, 0.2], "reclaim_window_bars": [1, 2, 3], "reclaim_inside_atr_min": [0.05, 0.1, 0.15]},
+      "weaknesses": ["reclaim may be a normal retest before continuation", "large spread around news can mimic a failure"],
+      "status": "UNTESTED_DRAFT"
+    },
+    {
+      "strategy_id": "STRAT-P9-PS-203",
+      "family": "PRICE_STRUCTURE",
+      "name": "Higher-Timeframe Trend Pullback Re-acceleration",
+      "lineage": "new ID; structural redesign of PA-103",
+      "role": "CONTINUATION",
+      "hypothesis": "A lower-timeframe pullback resumes only when a completed higher timeframe shows a persistent trend and the lower timeframe prints structural re-acceleration.",
+      "targets": "ALL_UNIVERSE",
+      "timeframes": ["M15", "H1", "H4"],
+      "entry_conditions": [
+        "Regime map is fixed: M15 uses completed H4; H1 and H4 use completed D1.",
+        "BUY regime: EMA20>EMA60 and EMA20(t)-EMA20(t-5)>=0.25*ATR14 on the regime timeframe; SELL symmetric.",
+        "On the signal timeframe, the last 2..6 bars retrace 0.50..1.75*ATR14 against the regime and touch EMA20, but no bar closes beyond EMA50 against the regime.",
+        "BUY confirmation at t closes above max(H[t-2:t-1]) with body/range>=0.50; SELL symmetric.",
+        "Enter with the higher-timeframe regime at the next bar open."
+      ],
+      "entry_time_information": ["last completed H4/D1 bar", "signal-timeframe OHLC and EMA through t", "ATR14 through t-1"],
+      "matched_control": "common control plus exact match on higher-timeframe EMA20-EMA60 gap quartile and pullback-depth quartile",
+      "sample_size_gate": 500,
+      "parameter_sensitivity": {"ema_slope_atr_min": [0.15, 0.25, 0.35], "pullback_atr_max": [1.25, 1.75, 2.25], "structure_lookback": [2, 3, 4]},
+      "weaknesses": ["EMA trend is delayed", "H4 signals depend on daily close convention", "cross-timeframe synchronization must be audited"],
+      "status": "UNTESTED_DRAFT"
+    },
+    {
+      "strategy_id": "STRAT-P9-PS-204",
+      "family": "PRICE_STRUCTURE",
+      "name": "European Session Range False-Break",
+      "lineage": "independent new hypothesis; PA-105 continuation remains retired",
+      "role": "REVERSAL",
+      "hypothesis": "A false break of a fixed pre-European range that rapidly returns inside the range is a rejection event, distinct from an ordinary session breakout.",
+      "targets": ["AUDJPY", "AUDUSD", "EURGBP", "EURJPY", "EURUSD", "GBPJPY", "GBPUSD", "USDJPY", "XAUUSD", "XAGUSD"],
+      "timeframes": ["M15", "H1"],
+      "entry_conditions": [
+        "Define the range once per UTC day from bars with open times 00:00<=time<06:00; eligible break bars open 06:00<=time<10:00.",
+        "The pre-session range must be 0.75..2.50*the ATR14 measured at 06:00.",
+        "Break bar b trades and closes >=0.15*ATR beyond the range high, or <=-0.15*ATR below the range low.",
+        "By t<=b+2, a completed bar closes >=0.10*ATR back inside the range with close-location>=0.65 in the reversal direction.",
+        "Only the first false break per UTC day and side is eligible; enter opposite the break next bar open."
+      ],
+      "entry_time_information": ["same-day 00:00-06:00 completed bars", "eligible completed bars through t", "ATR14 available at 06:00"],
+      "matched_control": "same instrument, timeframe, year, calendar month, direction, and pre-session-range/ATR quartile; unreclaimed breaks are excluded from controls",
+      "sample_size_gate": 500,
+      "parameter_sensitivity": {"break_atr_min": [0.1, 0.15, 0.2], "reclaim_bars": [1, 2, 3], "range_atr_max": [2.0, 2.5, 3.0]},
+      "weaknesses": ["UTC does not follow daylight-saving changes", "energy instruments are intentionally excluded", "news releases can dominate session effects"],
+      "status": "UNTESTED_DRAFT"
+    },
+    {
+      "strategy_id": "STRAT-P9-PS-205",
+      "family": "PRICE_STRUCTURE",
+      "name": "Long-Horizon Trend with Intraday Pullback",
+      "lineage": "independent new hypothesis grounded in long-horizon time-series momentum",
+      "role": "CONTINUATION",
+      "hypothesis": "D1 trends measured over weeks, rather than hours, persist and can be entered after a bounded H1/H4 countertrend pullback.",
+      "targets": "ALL_UNIVERSE",
+      "timeframes": ["H1", "H4"],
+      "entry_conditions": [
+        "Using the last completed D1 bar, signed 20-day and 60-day close returns have the same sign.",
+        "abs(60-day close return)/D1_ATR20 >=2.50 and the 60-day direction defines BUY or SELL.",
+        "On H1/H4, the prior 2..6 bars retrace 0.50..1.50*signal-timeframe ATR14 against the D1 direction.",
+        "At t, price closes beyond the prior 3-bar extreme in the D1 direction with body/range>=0.50.",
+        "Enter next bar open in the D1 direction."
+      ],
+      "entry_time_information": ["last completed D1 OHLC through prior day", "completed H1/H4 bars through t", "lagged ATR values"],
+      "matched_control": "common control plus exact match on D1 60-day return/ATR decile; controls lack the bounded pullback-and-resumption pattern",
+      "sample_size_gate": 500,
+      "parameter_sensitivity": {"trend_days": [40, 60, 80], "trend_atr_min": [2.0, 2.5, 3.0], "pullback_atr_max": [1.25, 1.5, 1.75]},
+      "weaknesses": ["slow trend reversals", "roll/financing effects are absent from spot OHLC", "H1 and H4 events can overlap"],
+      "status": "UNTESTED_DRAFT"
+    },
+    {
+      "strategy_id": "STRAT-P9-LV-201",
+      "family": "LIQUIDITY_VOLATILITY",
+      "name": "Seasonally Adjusted Participation Shock",
+      "lineage": "new ID; measurement redesign of VV-101",
+      "role": "CONTINUATION",
+      "hypothesis": "A directional expansion continues only when participation is exceptional relative to the same instrument and UTC bar slot, spread is normal, and the next bar confirms rather than fully retraces it.",
+      "targets": "ALL_UNIVERSE",
+      "timeframes": ["M15", "H1", "H4"],
+      "entry_conditions": [
+        "SeasonalVolumeRatio[t]=tick_volume[t]/median of the previous 40 trading-day observations with the same instrument, timeframe, and UTC bar-start slot.",
+        "Shock bar b has SeasonalVolumeRatio>=1.75, range>=1.50*ATR14, body/range>=0.60, and close-location>=0.75 in its direction.",
+        "Observed spread at b is <=the trailing 252-slot 80th percentile; missing spread invalidates the event.",
+        "Confirmation bar t=b+1 closes in the shock direction beyond the shock midpoint and does not close beyond the opposite 50% of the shock range.",
+        "Enter in the shock direction next bar open."
+      ],
+      "entry_time_information": ["completed tick volume and OHLC through t", "40 prior same-slot volumes", "spread through b", "ATR14 through b-1"],
+      "matched_control": "common control plus exact match on raw tick-volume decile; treatment is distinguished by seasonal residual and confirmation",
+      "sample_size_gate": 500,
+      "parameter_sensitivity": {"seasonal_volume_ratio_min": [1.5, 1.75, 2.0], "range_atr_min": [1.25, 1.5, 1.75], "spread_percentile_max": [70, 80, 90]},
+      "weaknesses": ["tick volume is not signed order flow", "40-day same-slot warm-up is large", "historical spread may be unavailable in discovery source"],
+      "status": "UNTESTED_DRAFT"
+    },
+    {
+      "strategy_id": "STRAT-P9-LV-202",
+      "family": "LIQUIDITY_VOLATILITY",
+      "name": "Squeeze Release Retest",
+      "lineage": "new ID; confirmation redesign of VV-102",
+      "role": "CONTINUATION",
+      "hypothesis": "A low-volatility release persists only when the expansion boundary survives a prompt retest.",
+      "targets": "ALL_UNIVERSE",
+      "timeframes": ["M15", "H1", "H4"],
+      "entry_conditions": [
+        "Before break b, median true range of b-12..b-1 is <=the 20th percentile of the 240 true ranges ending at b-13.",
+        "Break bar b closes beyond the 12-bar high/low by >=0.10*ATR14 with range>=1.25*ATR14 and body/range>=0.55.",
+        "Within b+1..b+3 price touches within 0.20*ATR of the broken boundary, with no close >0.20*ATR back inside.",
+        "Final confirmation t closes back beyond the boundary with close-location>=0.65 in the break direction; enter next bar open."
+      ],
+      "entry_time_information": ["completed OHLC and true range through t", "lagged 240-bar volatility distribution", "ATR14 through t-1"],
+      "matched_control": "common control plus exact match on pre-break 12-bar median-TR percentile; controls are releases without a successful retest",
+      "sample_size_gate": 500,
+      "parameter_sensitivity": {"squeeze_percentile_max": [15, 20, 25], "release_range_atr_min": [1.0, 1.25, 1.5], "retest_window_bars": [2, 3, 4]},
+      "weaknesses": ["overlap with PS-201", "percentiles can shift across market regimes", "confirmation may erase reward-to-risk"],
+      "status": "UNTESTED_DRAFT"
+    },
+    {
+      "strategy_id": "STRAT-P9-LV-203",
+      "family": "LIQUIDITY_VOLATILITY",
+      "name": "Confirmed Climactic Absorption",
+      "lineage": "new ID; confirmation redesign of VV-103",
+      "role": "REVERSAL",
+      "hypothesis": "An extreme, high-participation terminal wick reverses only when the following bar recovers the extreme bar midpoint without making a meaningful new extreme.",
+      "targets": "ALL_UNIVERSE",
+      "timeframes": ["M15", "H1", "H4"],
+      "entry_conditions": [
+        "Prior three-bar move into b is >=1.00*ATR14 in the exhausted direction.",
+        "Bar b range>=2.50*ATR14, SeasonalVolumeRatio>=1.50, and terminal wick/range>=0.40 on the exhausted side.",
+        "Confirmation t=b+1 does not extend the exhausted extreme by more than 0.10*ATR14 and closes through b midpoint in the reversal direction.",
+        "Confirmation body/range>=0.40; enter in the reversal direction next bar open."
+      ],
+      "entry_time_information": ["completed OHLC and seasonally normalized tick volume through t", "ATR14 through b-1"],
+      "matched_control": "common control plus exact match on b range/ATR and SeasonalVolumeRatio deciles; controls are climax bars lacking midpoint recovery",
+      "sample_size_gate": 500,
+      "parameter_sensitivity": {"range_atr_min": [2.0, 2.5, 3.0], "wick_fraction_min": [0.35, 0.4, 0.45], "new_extreme_atr_max": [0.0, 0.1, 0.2]},
+      "weaknesses": ["rare on H4", "extreme bars have high slippage", "one-bar confirmation may still be too short"],
+      "status": "UNTESTED_DRAFT"
+    },
+    {
+      "strategy_id": "STRAT-P9-LV-204",
+      "family": "LIQUIDITY_VOLATILITY",
+      "name": "Isolated Illiquidity Dislocation",
+      "lineage": "independent new compound hypothesis; VV-104 itself remains retired",
+      "role": "REVERSAL",
+      "hypothesis": "A large move caused by unusually high price impact, not confirmed by related markets and then reclaimed, is a temporary dislocation rather than informative price discovery.",
+      "targets": "ALL_UNIVERSE",
+      "timeframes": ["M15", "H1", "H4"],
+      "entry_conditions": [
+        "ImpactScore[t]=(range[t]/ATR14[t])/max(SeasonalVolumeRatio[t],0.10) is >=its trailing 240-bar 90th percentile and range[t]>=1.50*ATR14.",
+        "SeasonalVolumeRatio[t]<=0.80 while observed spread<=its trailing same-slot 80th percentile; missing spread invalidates the event.",
+        "Fixed peers show median signed same-direction return <=0.30 ATR over the signal bar. FX peers are derived from leave-one-pair-out currency scores; metals and energy use the other family instrument.",
+        "Within the next two completed bars, price closes through the signal-bar midpoint in the reversal direction with close-location>=0.60.",
+        "Enter opposite the dislocation at the next bar open."
+      ],
+      "entry_time_information": ["OHLC, tick volume, and spread through final reclaim bar", "same-timestamp completed peer bars", "trailing 240-bar impact distribution"],
+      "matched_control": "common control plus exact match on ImpactScore decile; controls have peer confirmation or lack a reclaim",
+      "sample_size_gate": 500,
+      "parameter_sensitivity": {"impact_percentile_min": [85, 90, 95], "seasonal_volume_ratio_max": [0.7, 0.8, 0.9], "peer_return_atr_max": [0.2, 0.3, 0.4]},
+      "weaknesses": ["historical spread is mandatory", "peer mapping for FX is model-dependent", "resembles VV-104 unless all three added mechanisms are enforced"],
+      "status": "UNTESTED_DRAFT"
+    },
+    {
+      "strategy_id": "STRAT-P9-LV-205",
+      "family": "LIQUIDITY_VOLATILITY",
+      "name": "Volatility-Managed Trend Resumption",
+      "lineage": "new ID; VV-105 directional volatility thesis is retired",
+      "role": "CONTINUATION_WITH_RISK_SCALING",
+      "hypothesis": "Volatility is more useful for sizing an independently defined long-horizon trend entry than for predicting direction from a volatility jump.",
+      "targets": "ALL_UNIVERSE",
+      "timeframes": ["H4"],
+      "entry_conditions": [
+        "D1 20-day and 60-day returns share a sign and abs(60-day return)/D1_ATR20>=2.50.",
+        "H4 bars t-3..t-1 retrace 0.50..1.50*H4_ATR14 against the D1 direction; t closes beyond their extreme in the D1 direction.",
+        "Annualized H4 realized volatility RV20 is computed only through t and must be between its trailing 252-bar 10th and 95th percentiles.",
+        "Enter next H4 open. Position multiplier=min(1.50,max(0.25,target_vol/RV20)); target_vol is fixed at preregistration and not selected by return."
+      ],
+      "entry_time_information": ["last completed D1 data", "H4 OHLC through t", "RV20 and trailing volatility distribution through t"],
+      "matched_control": "the exact same entry timestamps and directions at unit notional; compare return volatility, drawdown, expected shortfall, and cost-adjusted return",
+      "sample_size_gate": 500,
+      "parameter_sensitivity": {"trend_days": [40, 60, 80], "vol_floor_percentile": [5, 10, 15], "max_position_multiplier": [1.0, 1.5, 2.0]},
+      "weaknesses": ["not a pure event-edge hypothesis", "volatility scaling can increase turnover", "target-vol choice must be fixed without maximizing return"],
+      "status": "UNTESTED_DRAFT"
+    },
+    {
+      "strategy_id": "STRAT-P9-RR-201",
+      "family": "RELATIVE_VALUE_REGIME",
+      "name": "Cross-Sectional FX Momentum Rank",
+      "lineage": "independent new hypothesis informed by currency momentum research",
+      "role": "CONTINUATION",
+      "hypothesis": "The relative ranking of currency strength over weeks is more informative than same-direction USD or JPY breadth over hours.",
+      "targets": ["AUDJPY", "AUDUSD", "EURGBP", "EURJPY", "EURUSD", "GBPJPY", "GBPUSD", "USDJPY"],
+      "timeframes": ["H4"],
+      "entry_conditions": [
+        "At each completed D1 close, estimate AUD/EUR/GBP/JPY/USD strength scores by least squares from all eight oriented pair log returns over 20 and 60 D1 bars, with currency scores constrained to sum to zero.",
+        "For each tradable pair, the base-minus-quote score gap must have the same sign at 20 and 60 days and rank in the top absolute quartile among the eight pairs.",
+        "The pair was in the top absolute quartile on at least 3 of the previous 5 completed D1 dates.",
+        "On H4, a 2..6-bar pullback of 0.50..1.50 ATR is followed by a close beyond the prior 3-bar extreme in the score-gap direction; enter next H4 open.",
+        "If multiple pairs qualify at the same t, trade only the pair with the largest absolute 60-day score gap."
+      ],
+      "entry_time_information": ["completed D1 prices for all eight FX pairs", "completed H4 bars through t", "no future ranking or pair substitution"],
+      "matched_control": "same date and H4 trigger among pairs in the middle two score-gap quartiles, matched on absolute 60-day return and volatility",
+      "sample_size_gate": 250,
+      "parameter_sensitivity": {"momentum_days": [40, 60, 80], "rank_cutoff_percentile": [20, 25, 33], "rank_stability_days_of_5": [2, 3, 4]},
+      "weaknesses": ["small eight-pair cross-section", "currency scores depend on network coverage", "portfolio concentration may repeatedly select JPY pairs"],
+      "status": "UNTESTED_DRAFT"
+    },
+    {
+      "strategy_id": "STRAT-P9-RR-202",
+      "family": "RELATIVE_VALUE_REGIME",
+      "name": "Currency-Basket Residual Reversion",
+      "lineage": "independent new relative-value hypothesis; MR-101/MR-102 continuation remain retired",
+      "role": "RELATIVE_REVERSION",
+      "hypothesis": "A single FX pair that moves far beyond the move implied by its two currencies and the remaining pair network tends to close part of the residual gap.",
+      "targets": ["AUDJPY", "AUDUSD", "EURGBP", "EURJPY", "EURUSD", "GBPJPY", "GBPUSD", "USDJPY"],
+      "timeframes": ["H1", "H4"],
+      "entry_conditions": [
+        "For each target pair and bar t, estimate base and quote currency 12-bar returns from the other seven pairs only; the target pair is excluded from its own basket fit.",
+        "Residual=target 12-bar log return minus the leave-one-pair-out implied return. Standardize using the previous 240 target-timeframe residuals.",
+        "At bar b, abs(residual_z)>=2.00 while the median absolute standardized return of the seven peer pairs is <=1.00.",
+        "By t<=b+2, residual z moves toward zero by >=0.25 and the target closes in the reversion direction; enter next bar open toward zero."
+      ],
+      "entry_time_information": ["same-timestamp completed bars for all eight FX pairs", "leave-one-out rolling residual history ending before b", "confirmation through t"],
+      "matched_control": "same pair, timeframe, year, UTC bucket, direction, and residual-z band 1.00..1.50; controls are not extreme",
+      "sample_size_gate": 250,
+      "parameter_sensitivity": {"residual_window_bars": [160, 240, 320], "entry_abs_z_min": [1.75, 2.0, 2.25], "confirmation_z_move_min": [0.15, 0.25, 0.35]},
+      "weaknesses": ["synchronous data gaps invalidate events", "currency network may be underidentified during missing bars", "residual can reflect genuine pair-specific news"],
+      "status": "UNTESTED_DRAFT"
+    },
+    {
+      "strategy_id": "STRAT-P9-RR-203",
+      "family": "RELATIVE_VALUE_REGIME",
+      "name": "Gold-Silver Dynamic Hedge Residual",
+      "lineage": "independent pair-residual hypothesis replacing MR-103 co-momentum",
+      "role": "RELATIVE_REVERSION",
+      "hypothesis": "A temporary deviation in the dynamically hedged gold-silver residual mean-reverts when the prior formation window shows stable positive comovement and finite half-life.",
+      "targets": ["XAUUSD", "XAGUSD"],
+      "timeframes": ["H4"],
+      "entry_conditions": [
+        "Using the last 120 completed D1 observations, regress log(XAU) on log(XAG) with intercept; require beta>0 and R-squared>=0.60.",
+        "Fit AR(1) to lagged residuals using only the same formation window; require 0.10<rho<0.95 and implied half-life between 2 and 30 D1 bars.",
+        "Standardize the current completed H4 residual using the prior 120 D1 residual mean and standard deviation; at b abs(z)>=2.00.",
+        "At t=b+1, z moves toward zero by >=0.25 without exceeding abs(z)=3.50; enter a beta-hedged two-leg position toward zero next H4 open."
+      ],
+      "entry_time_information": ["completed D1 formation data", "completed synchronous H4 prices through t", "rolling beta, residual, rho, and z known at t"],
+      "matched_control": "same pair formation state and z direction with 1.00<=abs(z)<=1.50, matched on beta, R-squared, half-life, and volatility",
+      "sample_size_gate": 250,
+      "parameter_sensitivity": {"formation_days": [90, 120, 180], "entry_abs_z_min": [1.75, 2.0, 2.25], "max_half_life_days": [20, 30, 40]},
+      "weaknesses": ["cointegration can break", "two-leg costs and margin are material", "spot/CFD closing times must be synchronized"],
+      "status": "UNTESTED_DRAFT"
+    },
+    {
+      "strategy_id": "STRAT-P9-RR-204",
+      "family": "RELATIVE_VALUE_REGIME",
+      "name": "Brent-WTI Dynamic Hedge Residual",
+      "lineage": "new ID; structural redesign of MR-104",
+      "role": "RELATIVE_REVERSION",
+      "hypothesis": "A dynamically hedged Brent-WTI residual with stable recent mean reversion is superior to a raw 24-hour performance-gap reversal.",
+      "targets": ["BRENTCMDUSD", "LIGHTCMDUSD"],
+      "timeframes": ["H4"],
+      "entry_conditions": [
+        "Using the last 120 completed D1 observations, regress log(Brent) on log(WTI) with intercept; require beta>0 and R-squared>=0.70.",
+        "Fit AR(1) to formation residuals; require 0.10<rho<0.95 and implied half-life between 2 and 30 D1 bars.",
+        "At completed H4 bar b, abs(residual_z)>=2.00 using only the lagged formation mean and standard deviation.",
+        "At t=b+1, z moves toward zero by >=0.25 and remains abs(z)<3.50; enter beta-hedged two-leg reversion next H4 open."
+      ],
+      "entry_time_information": ["completed D1 Brent and WTI formation data", "synchronous H4 bars through t", "contract/CFD roll metadata available at t"],
+      "matched_control": "same beta/R-squared/half-life state and z direction with 1.00<=abs(z)<=1.50, excluding roll-distorted bars",
+      "sample_size_gate": 250,
+      "parameter_sensitivity": {"formation_days": [90, 120, 180], "entry_abs_z_min": [1.75, 2.0, 2.25], "r_squared_min": [0.6, 0.7, 0.8]},
+      "weaknesses": ["roll and CFD financing can dominate", "structural oil-market shocks break the spread", "two-leg execution requires synchronized quotes"],
+      "status": "UNTESTED_DRAFT"
+    },
+    {
+      "strategy_id": "STRAT-P9-RR-205",
+      "family": "RELATIVE_VALUE_REGIME",
+      "name": "FX Carry-Momentum Agreement",
+      "lineage": "independent new external-data hypothesis",
+      "role": "CONTINUATION",
+      "hypothesis": "A tradable FX carry differential is less vulnerable when medium-horizon spot momentum agrees and volatility is not in its extreme tail.",
+      "targets": ["AUDJPY", "AUDUSD", "EURGBP", "EURJPY", "EURUSD", "GBPJPY", "GBPUSD", "USDJPY"],
+      "timeframes": ["H4"],
+      "entry_conditions": [
+        "At the previous D1 close, obtain a reproducible tradable annualized carry estimate from historical 1-month forward points or broker financing for both long and short directions; policy rates alone are forbidden.",
+        "Eligible direction has expected carry>=+2.00% annualized and D1 60-day spot return in the same direction with abs(return)/D1_ATR20>=2.00.",
+        "D1 RV20 percentile over the prior 252 D1 bars is <=80.",
+        "On H4, a 2..6-bar pullback of 0.50..1.50 ATR is followed by a close beyond the prior 3-bar extreme in the carry/momentum direction; enter next H4 open.",
+        "If financing history is not point-in-time reproducible, the candidate is rejected for data insufficiency before testing."
+      ],
+      "entry_time_information": ["point-in-time historical forward or financing data available by prior D1 close", "completed D1 momentum/volatility", "completed H4 trigger through t"],
+      "matched_control": "same pair, direction, year, volatility decile, and momentum decile with carry between -0.50% and +0.50% annualized",
+      "sample_size_gate": 250,
+      "parameter_sensitivity": {"carry_percent_min": [1.0, 2.0, 3.0], "momentum_days": [40, 60, 80], "rv_percentile_max": [70, 80, 90]},
+      "weaknesses": ["required historical forward/financing series is not yet available", "carry crashes during deleveraging", "financing terms differ from institutional forwards"],
+      "data_readiness": "BLOCKED_PENDING_POINT_IN_TIME_CARRY_DATA",
+      "status": "UNTESTED_DRAFT"
+    }
+  ]
+}
