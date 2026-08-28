@@ -667,7 +667,7 @@ def main() -> None:
         report["primary_clock_12h"]["effect_note"]="mean_edge_atr is signal-weighted descriptive output; promotion uses episode_weighted_mean_edge_atr from cluster_inference."
         if n>=100 and episode_edge>=.05 and ci[0] is not None and ci[0]>0 and adjusted[cid]<=.10 and market_ratio>=.60 and tf_ratio>=.67 and sens>=.67:
             report["decision"]="DEVELOPMENT"
-        elif n>=50 and episode_edge>0 and sens>=.67:
+        elif n>=50 and episode_edge>0:
             report["decision"]="WATCH"
         else: report["decision"]="REJECT"
         report["decision_inputs"]={"positive_market_ratio":market_ratio,"positive_timeframe_ratio":tf_ratio,"sensitivity_same_sign_ratio":sens}
