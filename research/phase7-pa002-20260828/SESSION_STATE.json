@@ -1,0 +1,64 @@
+{
+  "project": "auto-trading-multi-agent-research",
+  "updated_at": "2026-08-28",
+  "repository": "tgkfnfnfv9-stack/Gpt-Verification--software",
+  "target_execution": {
+    "platform": "MT5",
+    "broker": "OANDA",
+    "account": "live-standard",
+    "ea_allowed": true
+  },
+  "current_phase": "RETURN_TO_BLIND_DISCOVERY_AFTER_PA002_REJECTION",
+  "strategy": {
+    "strategy_id": "STRAT-PA-002",
+    "decision": "REJECT_FOR_DEVELOPMENT",
+    "optimization_allowed": false,
+    "mt5_implementation_allowed": false
+  },
+  "validation": {
+    "scope": "PRELIMINARY_DUKASCOPY_BAR_SCREEN",
+    "instruments": [
+      "AUDJPY",
+      "AUDUSD",
+      "EURGBP",
+      "EURJPY",
+      "EURUSD",
+      "GBPJPY",
+      "GBPUSD",
+      "USDJPY",
+      "XAGUSD",
+      "XAUUSD"
+    ],
+    "timeframes": ["M15", "H1", "H4"],
+    "cells": 30,
+    "matched_signals": 11445,
+    "weighted_mean_edge_atr": -0.027630813595128423,
+    "positive_full_period_ci_cells": 0,
+    "github_runs": {
+      "M15": 33167784417,
+      "H1_H4": 33175890338
+    }
+  },
+  "splits": {
+    "DISCOVERY": ["2019-08-28", "2022-08-28"],
+    "DEVELOPMENT": ["2022-08-28", "2024-08-28"],
+    "OOS": ["2024-08-28", "2025-08-28"],
+    "FINAL_HOLDOUT": ["2025-08-28", "2026-08-28"]
+  },
+  "final_holdout_status": "MASKED_NOT_EVALUATED",
+  "next_work": [
+    "Blind Price Action discovery",
+    "Independent Volume/Volatility discovery",
+    "Independent Regime/Cross-Market discovery",
+    "Submit at most 15 candidates",
+    "Adversarial falsification",
+    "Canonical OANDA MT5 validation for survivors only"
+  ],
+  "hard_rules": [
+    "No future leakage",
+    "No retuning PA-002 on viewed OOS",
+    "No H4-only cherry-picking",
+    "No Final Holdout access before all prior gates pass",
+    "No credentials in GitHub"
+  ]
+}
