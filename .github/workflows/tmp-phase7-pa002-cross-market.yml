@@ -27,7 +27,7 @@ jobs:
         run: |
           set -u
           mkdir -p data results
-          symbols=(EURUSD GBPUSD USDJPY GBPJPY EURJPY AUDUSD AUDJPY EURGBP XAUUSD XAGUSD LIGHTCMDUSD BRENTCMDUSD GASCMDUSD)
+          symbols=(EURUSD GBPUSD USDJPY GBPJPY EURJPY AUDUSD AUDJPY EURGBP XAUUSD XAGUSD)
           download_symbol() {
             s="$1"
             ok=1
