@@ -28,12 +28,20 @@ jobs:
           set -u
           mkdir -p data results
           symbols=(EURUSD GBPUSD USDJPY GBPJPY EURJPY AUDUSD AUDJPY EURGBP XAUUSD XAGUSD LIGHTCMDUSD BRENTCMDUSD GASCMDUSD)
-          for s in "${symbols[@]}"; do
+          download_symbol() {
+            s="$1"
             ok=1
             dukascopy-go download --symbol "$s" --timeframe m15 --side bid --from 2019-08-28 --to 2026-08-28 --output "data/${s}_M15_bid.csv" --engine jetta || ok=0
             dukascopy-go download --symbol "$s" --timeframe m15 --side ask --from 2019-08-28 --to 2026-08-28 --output "data/${s}_M15_ask.csv" --engine jetta || ok=0
             if [ "$ok" -eq 0 ]; then rm -f "data/${s}_M15_bid.csv" "data/${s}_M15_ask.csv"; fi
+          }
+          active=0
+          for s in "${symbols[@]}"; do
+            download_symbol "$s" &
+            active=$((active+1))
+            if [ "$active" -ge 4 ]; then wait -n || true; active=$((active-1)); fi
           done
+          wait
           find data -type f -maxdepth 1 -printf '%f %s bytes\n' | sort
       - name: Run frozen PA-002 cross-market validation
         run: |
