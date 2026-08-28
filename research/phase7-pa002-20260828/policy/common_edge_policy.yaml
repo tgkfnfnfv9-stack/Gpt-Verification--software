@@ -1,0 +1,72 @@
+version: "0.2.0"
+status: PROVISIONAL_UNTIL_DATA_INVENTORY_FREEZE
+
+recognition_levels:
+  - CELL_EDGE
+  - WITHIN_FAMILY_EDGE
+  - CROSS_MARKET_EDGE
+  - CROSS_ASSET_COMMON_EDGE
+  - CROSS_ASSET_MULTI_TIMEFRAME_EDGE
+
+required_families_for_cross_asset_common:
+  - FX
+  - PRECIOUS_METALS
+  - ENERGY
+
+primary_effect:
+  definition: "net_atr_normalized_future_return_minus_matched_control"
+  minimum: "max(0.05_ATR, 2x_round_trip_cost_in_ATR)"
+
+independence:
+  unit: OPPORTUNITY_EPISODE
+  synchronized_global_time_blocks: true
+  shared_currency_events_are_clustered: true
+  commodity_family_shocks_are_clustered: true
+  nested_timeframe_signals_are_clustered: true
+  same_episode_total_weight_max: 1.0
+
+provisional_minimums:
+  oos_unique_episodes: 200
+  occupied_global_time_blocks: 80
+  episodes_per_required_family: 40
+  episodes_per_market_timeframe_cell: 20
+  markets_with_positive_effect_ratio: 0.70
+  valid_timeframes_with_positive_effect_ratio: 0.67
+  max_single_market_effect_contribution: 0.30
+  max_single_family_effect_contribution: 0.50
+
+heterogeneity:
+  preferred_i_squared_max: 0.60
+  common_edge_prohibited_i_squared_above: 0.75
+  positive_new_cell_probability_min: 0.80
+  family_sign_reversal_allowed: false
+
+leave_out_tests:
+  tests:
+    - LEAVE_ONE_MARKET_OUT
+    - LEAVE_ONE_CURRENCY_OUT
+    - LEAVE_ONE_TIMEFRAME_OUT
+    - LEAVE_ONE_FAMILY_OUT
+    - LEAVE_ONE_YEAR_OUT
+    - LEAVE_ONE_REGIME_OUT
+    - TOP_1_PERCENT_EPISODES_REMOVED
+    - TOP_5_EPISODES_REMOVED
+  required_worst_delta_ratio_vs_full: 0.50
+
+factor_tests:
+  - FX_CURRENCY_FACTOR_RESIDUAL
+  - PRECIOUS_METALS_FAMILY_RESIDUAL
+  - ENERGY_FAMILY_RESIDUAL
+  - SYNCHRONIZED_TIME_MATCHED_CONTROL
+
+cost_stress_multiple: 1.5
+bootstrap:
+  method: SYNCHRONIZED_GLOBAL_BLOCK_CLUSTER_BOOTSTRAP
+  iterations: 10000
+  confidence_level: 0.95
+
+multiple_testing:
+  discovery_fdr_q: 0.10
+  development: SYNC_BLOCK_MAX_STAT_OR_REALITY_CHECK
+  oos_familywise_alpha: 0.05
+  final_holdout_evaluations_per_frozen_candidate: 1
