@@ -1,0 +1,2461 @@
+{
+  "strategy_id": "STRAT-PA-002",
+  "spec": "frozen-no-retuning",
+  "data_source": "Dukascopy JForex H1 BID+ASK via pinned dukascopy-go v0.2.0 on GitHub Actions",
+  "source_period": [
+    "2019-08-28",
+    "2026-08-28"
+  ],
+  "evaluated_until_exclusive": "2025-08-28",
+  "final_holdout_2025_08_28_to_2026_08_28": "MASKED_NOT_EVALUATED",
+  "timeframes": [
+    "H1",
+    "H4"
+  ],
+  "matched_controls": "same instrument/timeframe/year/UTC4h; nearest prior-only ATR/trend/spread deciles; ±60 days; 5 requested/3 minimum; reuse cap 3",
+  "results": [
+    {
+      "status": "ESTIMABLE",
+      "signals": 183,
+      "signal_mean_atr": -0.05394956128598418,
+      "control_mean_atr": -0.11576954256153747,
+      "mean_edge_atr": 0.0618199812755533,
+      "median_edge_atr": 0.15979292292695102,
+      "positive_edge_rate": 0.5409836065573771,
+      "bootstrap_95ci": [
+        -0.10766665489498378,
+        0.25097337156993155
+      ],
+      "splits": {
+        "DISCOVERY": {
+          "status": "ESTIMABLE",
+          "signals": 93,
+          "signal_mean_atr": -0.1365128212955945,
+          "control_mean_atr": -0.1661635837628263,
+          "mean_edge_atr": 0.029650762467231816,
+          "median_edge_atr": 0.029864709235188053,
+          "positive_edge_rate": 0.5161290322580645,
+          "bootstrap_95ci": [
+            -0.23649037770235437,
+            0.2971100950928085
+          ]
+        },
+        "DEVELOPMENT": {
+          "status": "ESTIMABLE",
+          "signals": 47,
+          "signal_mean_atr": -0.057278738146675216,
+          "control_mean_atr": -0.04169010726631673,
+          "mean_edge_atr": -0.01558863088035848,
+          "median_edge_atr": 0.23492031015908316,
+          "positive_edge_rate": 0.5319148936170213,
+          "bootstrap_95ci": [
+            -0.3549773090414627,
+            0.3564587134780182
+          ]
+        },
+        "OOS": {
+          "status": "ESTIMABLE",
+          "signals": 43,
+          "signal_mean_atr": 0.12825635716392833,
+          "control_mean_atr": -0.08774832458840989,
+          "mean_edge_atr": 0.2160046817523382,
+          "median_edge_atr": 0.4053340639099439,
+          "positive_edge_rate": 0.6046511627906976,
+          "bootstrap_95ci": [
+            -0.12214470911770428,
+            0.5664257740403407
+          ]
+        }
+      },
+      "instrument": "AUDJPY",
+      "timeframe": "H1",
+      "data_rows": 43195,
+      "period": [
+        "2019-08-28T00:00:00",
+        "2026-07-31T20:00:00"
+      ]
+    },
+    {
+      "status": "ESTIMABLE",
+      "signals": 51,
+      "signal_mean_atr": 0.1843173818670673,
+      "control_mean_atr": -0.09857425391106388,
+      "mean_edge_atr": 0.2828916357781312,
+      "median_edge_atr": 0.2169540516135453,
+      "positive_edge_rate": 0.5882352941176471,
+      "bootstrap_95ci": [
+        -0.0811397952768922,
+        0.6770717952308346
+      ],
+      "splits": {
+        "DISCOVERY": {
+          "status": "ESTIMABLE",
+          "signals": 25,
+          "signal_mean_atr": -0.02434861355884827,
+          "control_mean_atr": -0.045308169784747054,
+          "mean_edge_atr": 0.020959556225898762,
+          "median_edge_atr": 0.13712101998072135,
+          "positive_edge_rate": 0.56,
+          "bootstrap_95ci": [
+            -0.5003933313886809,
+            0.5699965573564307
+          ]
+        },
+        "DEVELOPMENT": {
+          "status": "ESTIMABLE",
+          "signals": 16,
+          "signal_mean_atr": 0.5990622450629794,
+          "control_mean_atr": -0.05536358010363815,
+          "mean_edge_atr": 0.6544258251666176,
+          "median_edge_atr": 0.5741276828471626,
+          "positive_edge_rate": 0.625,
+          "bootstrap_95ci": [
+            -0.12092370062556165,
+            1.4998835430615993
+          ]
+        },
+        "OOS": {
+          "status": "ESTIMABLE",
+          "signals": 10,
+          "signal_mean_atr": 0.04239058931839692,
+          "control_mean_atr": -0.3008765423187371,
+          "mean_edge_atr": 0.343267131637134,
+          "median_edge_atr": 0.21917345972415123,
+          "positive_edge_rate": 0.6,
+          "bootstrap_95ci": [
+            -0.13187513725729072,
+            0.868119669119314
+          ]
+        }
+      },
+      "instrument": "AUDJPY",
+      "timeframe": "H4",
+      "data_rows": 10433,
+      "period": [
+        "2019-08-28T00:00:00",
+        "2026-07-31T16:00:00"
+      ]
+    },
+    {
+      "status": "ESTIMABLE",
+      "signals": 214,
+      "signal_mean_atr": -0.24578170459300572,
+      "control_mean_atr": -0.0799223288398177,
+      "mean_edge_atr": -0.165859375753188,
+      "median_edge_atr": -0.2102502969718908,
+      "positive_edge_rate": 0.42990654205607476,
+      "bootstrap_95ci": [
+        -0.37912495452649114,
+        0.05020277939784166
+      ],
+      "splits": {
+        "DISCOVERY": {
+          "status": "ESTIMABLE",
+          "signals": 103,
+          "signal_mean_atr": -0.12906605097429927,
+          "control_mean_atr": -0.023388429327269866,
+          "mean_edge_atr": -0.1056776216470294,
+          "median_edge_atr": -0.14147586752971864,
+          "positive_edge_rate": 0.4368932038834951,
+          "bootstrap_95ci": [
+            -0.4064704423308171,
+            0.20591373897624007
+          ]
+        },
+        "DEVELOPMENT": {
+          "status": "ESTIMABLE",
+          "signals": 67,
+          "signal_mean_atr": -0.36709999475151356,
+          "control_mean_atr": -0.10709439121376484,
+          "mean_edge_atr": -0.2600056035377487,
+          "median_edge_atr": -0.2607014499196939,
+          "positive_edge_rate": 0.40298507462686567,
+          "bootstrap_95ci": [
+            -0.6266412555962106,
+            0.053953670538018986
+          ]
+        },
+        "OOS": {
+          "status": "ESTIMABLE",
+          "signals": 44,
+          "signal_mean_atr": -0.3342677700954316,
+          "control_mean_atr": -0.17088740772022615,
+          "mean_edge_atr": -0.16338036237520548,
+          "median_edge_atr": -0.12916627647641826,
+          "positive_edge_rate": 0.45454545454545453,
+          "bootstrap_95ci": [
+            -0.6596791612131662,
+            0.3320979480387893
+          ]
+        }
+      },
+      "instrument": "AUDUSD",
+      "timeframe": "H1",
+      "data_rows": 43197,
+      "period": [
+        "2019-08-28T00:00:00",
+        "2026-07-31T20:00:00"
+      ]
+    },
+    {
+      "status": "ESTIMABLE",
+      "signals": 55,
+      "signal_mean_atr": 0.04197523923654755,
+      "control_mean_atr": -0.1112340417205964,
+      "mean_edge_atr": 0.15320928095714395,
+      "median_edge_atr": 0.11598072500541154,
+      "positive_edge_rate": 0.5272727272727272,
+      "bootstrap_95ci": [
+        -0.0698319207793075,
+        0.3904297425252948
+      ],
+      "splits": {
+        "DISCOVERY": {
+          "status": "ESTIMABLE",
+          "signals": 32,
+          "signal_mean_atr": 0.06569925395126186,
+          "control_mean_atr": -0.14842996019469812,
+          "mean_edge_atr": 0.21412921414595995,
+          "median_edge_atr": 0.1753984854974592,
+          "positive_edge_rate": 0.59375,
+          "bootstrap_95ci": [
+            -0.08161110796786722,
+            0.5376942381641767
+          ]
+        },
+        "DEVELOPMENT": {
+          "status": "ESTIMABLE",
+          "signals": 15,
+          "signal_mean_atr": -0.09344946450996551,
+          "control_mean_atr": -0.14559751356906447,
+          "mean_edge_atr": 0.05214804905909894,
+          "median_edge_atr": -0.16563005282225118,
+          "positive_edge_rate": 0.4,
+          "bootstrap_95ci": [
+            -0.36557552614206157,
+            0.47285061867665446
+          ]
+        },
+        "OOS": {
+          "status": "ESTIMABLE",
+          "signals": 8,
+          "signal_mean_atr": 0.20100049990240235,
+          "control_mean_atr": 0.10198114189168807,
+          "mean_edge_atr": 0.09901935801071432,
+          "median_edge_atr": -0.08258782169741663,
+          "positive_edge_rate": 0.5,
+          "bootstrap_95ci": [
+            -0.5013760201582954,
+            0.7360901051894423
+          ]
+        }
+      },
+      "instrument": "AUDUSD",
+      "timeframe": "H4",
+      "data_rows": 10433,
+      "period": [
+        "2019-08-28T00:00:00",
+        "2026-07-31T16:00:00"
+      ]
+    },
+    {
+      "status": "ESTIMABLE",
+      "signals": 248,
+      "signal_mean_atr": -0.1754760835733915,
+      "control_mean_atr": -0.16364157982412875,
+      "mean_edge_atr": -0.011834503749262735,
+      "median_edge_atr": -0.11162225995344968,
+      "positive_edge_rate": 0.4838709677419355,
+      "bootstrap_95ci": [
+        -0.22170030830168663,
+        0.19806479971269028
+      ],
+      "splits": {
+        "DISCOVERY": {
+          "status": "ESTIMABLE",
+          "signals": 125,
+          "signal_mean_atr": -0.21373001301747765,
+          "control_mean_atr": -0.09185972378956318,
+          "mean_edge_atr": -0.12187028922791447,
+          "median_edge_atr": -0.16476426166679287,
+          "positive_edge_rate": 0.472,
+          "bootstrap_95ci": [
+            -0.47371363712813763,
+            0.22392138995351102
+          ]
+        },
+        "DEVELOPMENT": {
+          "status": "ESTIMABLE",
+          "signals": 87,
+          "signal_mean_atr": -0.1986402855315275,
+          "control_mean_atr": -0.18997733795325492,
+          "mean_edge_atr": -0.008662947578272606,
+          "median_edge_atr": -0.057436754270725685,
+          "positive_edge_rate": 0.4827586206896552,
+          "bootstrap_95ci": [
+            -0.34638876374900973,
+            0.30441452598175767
+          ]
+        },
+        "OOS": {
+          "status": "ESTIMABLE",
+          "signals": 36,
+          "signal_mean_atr": 0.013330215061847485,
+          "control_mean_atr": -0.34923938668764887,
+          "mean_edge_atr": 0.3625696017494963,
+          "median_edge_atr": 0.10236161089181015,
+          "positive_edge_rate": 0.5277777777777778,
+          "bootstrap_95ci": [
+            -0.08457147790766541,
+            0.8256637830972469
+          ]
+        }
+      },
+      "instrument": "EURGBP",
+      "timeframe": "H1",
+      "data_rows": 43196,
+      "period": [
+        "2019-08-28T00:00:00",
+        "2026-07-31T20:00:00"
+      ]
+    },
+    {
+      "status": "ESTIMABLE",
+      "signals": 56,
+      "signal_mean_atr": -0.09251891901786395,
+      "control_mean_atr": -0.13139596206829485,
+      "mean_edge_atr": 0.0388770430504309,
+      "median_edge_atr": 0.2844559433171734,
+      "positive_edge_rate": 0.6428571428571429,
+      "bootstrap_95ci": [
+        -0.23928593425896708,
+        0.31112783105872993
+      ],
+      "splits": {
+        "DISCOVERY": {
+          "status": "ESTIMABLE",
+          "signals": 27,
+          "signal_mean_atr": 0.1412689307404586,
+          "control_mean_atr": -0.07853375938844091,
+          "mean_edge_atr": 0.21980269012889952,
+          "median_edge_atr": 0.5908769974797266,
+          "positive_edge_rate": 0.7037037037037037,
+          "bootstrap_95ci": [
+            -0.19748453202341779,
+            0.5923351560137726
+          ]
+        },
+        "DEVELOPMENT": {
+          "status": "ESTIMABLE",
+          "signals": 18,
+          "signal_mean_atr": -0.07388349972861402,
+          "control_mean_atr": -0.1766683785315012,
+          "mean_edge_atr": 0.10278487880288717,
+          "median_edge_atr": 0.26236152922090655,
+          "positive_edge_rate": 0.7222222222222222,
+          "bootstrap_95ci": [
+            -0.40004585498612566,
+            0.45694445575842974
+          ]
+        },
+        "OOS": {
+          "status": "ESTIMABLE",
+          "signals": 11,
+          "signal_mean_atr": -0.6968561454434283,
+          "control_mean_atr": -0.18706650534268965,
+          "mean_edge_atr": -0.5097896401007387,
+          "median_edge_atr": -0.22972616106501356,
+          "positive_edge_rate": 0.36363636363636365,
+          "bootstrap_95ci": [
+            -1.235375246144718,
+            0.10217505472586375
+          ]
+        }
+      },
+      "instrument": "EURGBP",
+      "timeframe": "H4",
+      "data_rows": 10433,
+      "period": [
+        "2019-08-28T00:00:00",
+        "2026-07-31T16:00:00"
+      ]
+    },
+    {
+      "status": "ESTIMABLE",
+      "signals": 185,
+      "signal_mean_atr": -0.017131327599622003,
+      "control_mean_atr": -0.0010076811063251903,
+      "mean_edge_atr": -0.01612364649329681,
+      "median_edge_atr": 0.05259538364402927,
+      "positive_edge_rate": 0.5135135135135135,
+      "bootstrap_95ci": [
+        -0.23372491555158526,
+        0.2017100166499916
+      ],
+      "splits": {
+        "DISCOVERY": {
+          "status": "ESTIMABLE",
+          "signals": 94,
+          "signal_mean_atr": 0.029909402914421936,
+          "control_mean_atr": 0.056755576549820524,
+          "mean_edge_atr": -0.02684617363539859,
+          "median_edge_atr": -0.32108231054804903,
+          "positive_edge_rate": 0.46808510638297873,
+          "bootstrap_95ci": [
+            -0.3240581609206803,
+            0.2696255334541629
+          ]
+        },
+        "DEVELOPMENT": {
+          "status": "ESTIMABLE",
+          "signals": 50,
+          "signal_mean_atr": -0.052852927510298,
+          "control_mean_atr": -0.05027517505425796,
+          "mean_edge_atr": -0.0025777524560400243,
+          "median_edge_atr": 0.33764926585271726,
+          "positive_edge_rate": 0.64,
+          "bootstrap_95ci": [
+            -0.4815741998735921,
+            0.4548553513624878
+          ]
+        },
+        "OOS": {
+          "status": "ESTIMABLE",
+          "signals": 41,
+          "signal_mean_atr": -0.08141788059441055,
+          "control_mean_atr": -0.07335820604000955,
+          "mean_edge_atr": -0.008059674554401007,
+          "median_edge_atr": -0.01658361966852906,
+          "positive_edge_rate": 0.4634146341463415,
+          "bootstrap_95ci": [
+            -0.36514199442777784,
+            0.3827528495455337
+          ]
+        }
+      },
+      "instrument": "EURJPY",
+      "timeframe": "H1",
+      "data_rows": 43197,
+      "period": [
+        "2019-08-28T00:00:00",
+        "2026-07-31T20:00:00"
+      ]
+    },
+    {
+      "status": "ESTIMABLE",
+      "signals": 39,
+      "signal_mean_atr": 0.19978627183280329,
+      "control_mean_atr": -0.03624085143563118,
+      "mean_edge_atr": 0.2360271232684345,
+      "median_edge_atr": 0.3131264456967308,
+      "positive_edge_rate": 0.5641025641025641,
+      "bootstrap_95ci": [
+        -0.17019317701831832,
+        0.6284872345555323
+      ],
+      "splits": {
+        "DISCOVERY": {
+          "status": "ESTIMABLE",
+          "signals": 25,
+          "signal_mean_atr": 0.2228078193075499,
+          "control_mean_atr": 0.007881599391448123,
+          "mean_edge_atr": 0.21492621991610178,
+          "median_edge_atr": 0.25162572445950965,
+          "positive_edge_rate": 0.52,
+          "bootstrap_95ci": [
+            -0.25389217903888217,
+            0.7218826592701879
+          ]
+        },
+        "DEVELOPMENT": {
+          "status": "ESTIMABLE",
+          "signals": 13,
+          "signal_mean_atr": 0.13353127358155653,
+          "control_mean_atr": -0.08065992889288154,
+          "mean_edge_atr": 0.21419120247443807,
+          "median_edge_atr": 0.3131264456967308,
+          "positive_edge_rate": 0.6153846153846154,
+          "bootstrap_95ci": [
+            -0.5642093295102417,
+            0.9257973148744575
+          ]
+        },
+        "OOS": {
+          "status": "ESTIMABLE",
+          "signals": 1,
+          "signal_mean_atr": 0.48556256223034633,
+          "control_mean_atr": -0.5618541151683593,
+          "mean_edge_atr": 1.0474166773987057,
+          "median_edge_atr": 1.0474166773987057,
+          "positive_edge_rate": 1.0,
+          "bootstrap_95ci": [
+            1.0474166773987057,
+            1.0474166773987057
+          ]
+        }
+      },
+      "instrument": "EURJPY",
+      "timeframe": "H4",
+      "data_rows": 10434,
+      "period": [
+        "2019-08-28T00:00:00",
+        "2026-07-31T16:00:00"
+      ]
+    },
+    {
+      "status": "ESTIMABLE",
+      "signals": 207,
+      "signal_mean_atr": -0.21989522466482306,
+      "control_mean_atr": -0.07712950654564851,
+      "mean_edge_atr": -0.14276571811917452,
+      "median_edge_atr": -0.2536244048769223,
+      "positive_edge_rate": 0.42028985507246375,
+      "bootstrap_95ci": [
+        -0.4163015565316368,
+        0.13910430688274747
+      ],
+      "splits": {
+        "DISCOVERY": {
+          "status": "ESTIMABLE",
+          "signals": 99,
+          "signal_mean_atr": -0.07888574691743931,
+          "control_mean_atr": -0.16589378000687646,
+          "mean_edge_atr": 0.08700803308943715,
+          "median_edge_atr": -0.11807313868284963,
+          "positive_edge_rate": 0.45454545454545453,
+          "bootstrap_95ci": [
+            -0.3647033993130094,
+            0.544662911682422
+          ]
+        },
+        "DEVELOPMENT": {
+          "status": "ESTIMABLE",
+          "signals": 72,
+          "signal_mean_atr": -0.49600205354632165,
+          "control_mean_atr": -0.10351346595405381,
+          "mean_edge_atr": -0.3924885875922679,
+          "median_edge_atr": -0.3091484063123687,
+          "positive_edge_rate": 0.4166666666666667,
+          "bootstrap_95ci": [
+            -0.8052642905190556,
+            -0.013294886884434136
+          ]
+        },
+        "OOS": {
+          "status": "ESTIMABLE",
+          "signals": 36,
+          "signal_mean_atr": -0.055457630707130924,
+          "control_mean_atr": 0.21974016428953894,
+          "mean_edge_atr": -0.27519779499666985,
+          "median_edge_atr": -0.38901825831436143,
+          "positive_edge_rate": 0.3333333333333333,
+          "bootstrap_95ci": [
+            -0.7461889816794476,
+            0.18908754253410479
+          ]
+        }
+      },
+      "instrument": "EURUSD",
+      "timeframe": "H1",
+      "data_rows": 43197,
+      "period": [
+        "2019-08-28T00:00:00",
+        "2026-07-31T20:00:00"
+      ]
+    },
+    {
+      "status": "ESTIMABLE",
+      "signals": 57,
+      "signal_mean_atr": 0.08431463509888695,
+      "control_mean_atr": -0.06632697409780978,
+      "mean_edge_atr": 0.15064160919669672,
+      "median_edge_atr": 0.1405983625141492,
+      "positive_edge_rate": 0.5789473684210527,
+      "bootstrap_95ci": [
+        -0.14281886731909513,
+        0.46567254018450227
+      ],
+      "splits": {
+        "DISCOVERY": {
+          "status": "ESTIMABLE",
+          "signals": 34,
+          "signal_mean_atr": -0.08954872186798396,
+          "control_mean_atr": -0.08317235035283488,
+          "mean_edge_atr": -0.006376371515149084,
+          "median_edge_atr": 0.13578102465236155,
+          "positive_edge_rate": 0.5588235294117647,
+          "bootstrap_95ci": [
+            -0.393502981917504,
+            0.3707856688841749
+          ]
+        },
+        "DEVELOPMENT": {
+          "status": "ESTIMABLE",
+          "signals": 12,
+          "signal_mean_atr": 0.5976320107496141,
+          "control_mean_atr": -0.12800979785482494,
+          "mean_edge_atr": 0.725641808604439,
+          "median_edge_atr": 0.2879185206381727,
+          "positive_edge_rate": 0.6666666666666666,
+          "bootstrap_95ci": [
+            0.010349728725422109,
+            1.5449827740780089
+          ]
+        },
+        "OOS": {
+          "status": "ESTIMABLE",
+          "signals": 11,
+          "signal_mean_atr": 0.06172787410478553,
+          "control_mean_atr": 0.05303090569810253,
+          "mean_edge_atr": 0.00869696840668301,
+          "median_edge_atr": 0.06706830713058354,
+          "positive_edge_rate": 0.5454545454545454,
+          "bootstrap_95ci": [
+            -0.38956730599640416,
+            0.43291553115657194
+          ]
+        }
+      },
+      "instrument": "EURUSD",
+      "timeframe": "H4",
+      "data_rows": 10434,
+      "period": [
+        "2019-08-28T00:00:00",
+        "2026-07-31T16:00:00"
+      ]
+    },
+    {
+      "status": "ESTIMABLE",
+      "signals": 220,
+      "signal_mean_atr": -0.1655647003014897,
+      "control_mean_atr": -0.06712246381205167,
+      "mean_edge_atr": -0.09844223648943803,
+      "median_edge_atr": -0.05122026529672158,
+      "positive_edge_rate": 0.4954545454545455,
+      "bootstrap_95ci": [
+        -0.3522389851390651,
+        0.14958693895180972
+      ],
+      "splits": {
+        "DISCOVERY": {
+          "status": "ESTIMABLE",
+          "signals": 101,
+          "signal_mean_atr": -0.21904174204813187,
+          "control_mean_atr": -0.007750176033971717,
+          "mean_edge_atr": -0.21129156601416016,
+          "median_edge_atr": -0.15751492887659124,
+          "positive_edge_rate": 0.48514851485148514,
+          "bootstrap_95ci": [
+            -0.5638878203608174,
+            0.12527039676048804
+          ]
+        },
+        "DEVELOPMENT": {
+          "status": "ESTIMABLE",
+          "signals": 75,
+          "signal_mean_atr": -0.049676780112211764,
+          "control_mean_atr": -0.1273305484279961,
+          "mean_edge_atr": 0.07765376831578436,
+          "median_edge_atr": 0.06212151979500016,
+          "positive_edge_rate": 0.5333333333333333,
+          "bootstrap_95ci": [
+            -0.4212167748349869,
+            0.5781072929337158
+          ]
+        },
+        "OOS": {
+          "status": "ESTIMABLE",
+          "signals": 44,
+          "signal_mean_atr": -0.24034680934205757,
+          "control_mean_atr": -0.10078143470728448,
+          "mean_edge_atr": -0.13956537463477312,
+          "median_edge_atr": -0.2167534596324754,
+          "positive_edge_rate": 0.45454545454545453,
+          "bootstrap_95ci": [
+            -0.5230909376702866,
+            0.27553146105729903
+          ]
+        }
+      },
+      "instrument": "GBPJPY",
+      "timeframe": "H1",
+      "data_rows": 43196,
+      "period": [
+        "2019-08-28T00:00:00",
+        "2026-07-31T20:00:00"
+      ]
+    },
+    {
+      "status": "ESTIMABLE",
+      "signals": 42,
+      "signal_mean_atr": -0.06726067635320075,
+      "control_mean_atr": -0.05855857153879712,
+      "mean_edge_atr": -0.008702104814403644,
+      "median_edge_atr": 0.15081501533767427,
+      "positive_edge_rate": 0.5476190476190477,
+      "bootstrap_95ci": [
+        -0.4544095724489471,
+        0.3781290334385524
+      ],
+      "splits": {
+        "DISCOVERY": {
+          "status": "ESTIMABLE",
+          "signals": 25,
+          "signal_mean_atr": 0.030712095539057058,
+          "control_mean_atr": -0.07389307770895093,
+          "mean_edge_atr": 0.10460517324800797,
+          "median_edge_atr": 0.17422166770216982,
+          "positive_edge_rate": 0.52,
+          "bootstrap_95ci": [
+            -0.35107849934816115,
+            0.5102118205279809
+          ]
+        },
+        "DEVELOPMENT": {
+          "status": "ESTIMABLE",
+          "signals": 13,
+          "signal_mean_atr": -0.38154972563770784,
+          "control_mean_atr": -0.04772764735755679,
+          "mean_edge_atr": -0.333822078280151,
+          "median_edge_atr": 0.1274083629731787,
+          "positive_edge_rate": 0.5384615384615384,
+          "bootstrap_95ci": [
+            -1.458247746087718,
+            0.6360447531934118
+          ]
+        },
+        "OOS": {
+          "status": "ESTIMABLE",
+          "signals": 4,
+          "signal_mean_atr": 0.3418489094948359,
+          "control_mean_atr": 0.002081588435633136,
+          "mean_edge_atr": 0.3397673210592027,
+          "median_edge_atr": 0.14702949976541702,
+          "positive_edge_rate": 0.75,
+          "bootstrap_95ci": [
+            0.0252904258705563,
+            0.8469820375416348
+          ]
+        }
+      },
+      "instrument": "GBPJPY",
+      "timeframe": "H4",
+      "data_rows": 10434,
+      "period": [
+        "2019-08-28T00:00:00",
+        "2026-07-31T16:00:00"
+      ]
+    },
+    {
+      "status": "ESTIMABLE",
+      "signals": 247,
+      "signal_mean_atr": -0.18145857706514634,
+      "control_mean_atr": -0.15221673753680937,
+      "mean_edge_atr": -0.029241839528336984,
+      "median_edge_atr": 0.057209290587820406,
+      "positive_edge_rate": 0.5101214574898786,
+      "bootstrap_95ci": [
+        -0.28655899087470255,
+        0.244617634333798
+      ],
+      "splits": {
+        "DISCOVERY": {
+          "status": "ESTIMABLE",
+          "signals": 121,
+          "signal_mean_atr": -0.2496798503789238,
+          "control_mean_atr": -0.19761173143110594,
+          "mean_edge_atr": -0.05206811894781785,
+          "median_edge_atr": 0.14053854119783682,
+          "positive_edge_rate": 0.5371900826446281,
+          "bootstrap_95ci": [
+            -0.3988014544586654,
+            0.29260553423319774
+          ]
+        },
+        "DEVELOPMENT": {
+          "status": "ESTIMABLE",
+          "signals": 73,
+          "signal_mean_atr": -0.043133397030987695,
+          "control_mean_atr": -0.10462786900077516,
+          "mean_edge_atr": 0.061494471969787495,
+          "median_edge_atr": -0.12651599478207146,
+          "positive_edge_rate": 0.4794520547945205,
+          "bootstrap_95ci": [
+            -0.5337538212792483,
+            0.6309137656642102
+          ]
+        },
+        "OOS": {
+          "status": "ESTIMABLE",
+          "signals": 53,
+          "signal_mean_atr": -0.2162314840750805,
+          "control_mean_atr": -0.11412604210134918,
+          "mean_edge_atr": -0.10210544197373135,
+          "median_edge_atr": -0.19351926349260182,
+          "positive_edge_rate": 0.49056603773584906,
+          "bootstrap_95ci": [
+            -0.643965939723295,
+            0.4082352393956245
+          ]
+        }
+      },
+      "instrument": "GBPUSD",
+      "timeframe": "H1",
+      "data_rows": 43195,
+      "period": [
+        "2019-08-28T00:00:00",
+        "2026-07-31T20:00:00"
+      ]
+    },
+    {
+      "status": "ESTIMABLE",
+      "signals": 49,
+      "signal_mean_atr": -0.12999194785038506,
+      "control_mean_atr": -0.0007284979112288815,
+      "mean_edge_atr": -0.1292634499391562,
+      "median_edge_atr": -0.13345341974738134,
+      "positive_edge_rate": 0.3877551020408163,
+      "bootstrap_95ci": [
+        -0.4401002176962172,
+        0.20900830621205596
+      ],
+      "splits": {
+        "DISCOVERY": {
+          "status": "ESTIMABLE",
+          "signals": 24,
+          "signal_mean_atr": 0.15859200206448973,
+          "control_mean_atr": -0.0205640131898907,
+          "mean_edge_atr": 0.1791560152543804,
+          "median_edge_atr": 0.15201205023235914,
+          "positive_edge_rate": 0.5,
+          "bootstrap_95ci": [
+            -0.2855313512336695,
+            0.6875525426829848
+          ]
+        },
+        "DEVELOPMENT": {
+          "status": "ESTIMABLE",
+          "signals": 19,
+          "signal_mean_atr": -0.43747778440097074,
+          "control_mean_atr": -0.04557319286650817,
+          "mean_edge_atr": -0.39190459153446255,
+          "median_edge_atr": -0.29029714160819076,
+          "positive_edge_rate": 0.3157894736842105,
+          "bootstrap_95ci": [
+            -0.8562955329116744,
+            0.061631839720180805
+          ]
+        },
+        "OOS": {
+          "status": "ESTIMABLE",
+          "signals": 6,
+          "signal_mean_atr": -0.3106225984330297,
+          "control_mean_atr": 0.22062176389513613,
+          "mean_edge_atr": -0.5312443623281659,
+          "median_edge_atr": -0.5873665379418997,
+          "positive_edge_rate": 0.16666666666666666,
+          "bootstrap_95ci": [
+            -1.1104083799682394,
+            0.04891211625763222
+          ]
+        }
+      },
+      "instrument": "GBPUSD",
+      "timeframe": "H4",
+      "data_rows": 10433,
+      "period": [
+        "2019-08-28T00:00:00",
+        "2026-07-31T16:00:00"
+      ]
+    },
+    {
+      "status": "ESTIMABLE",
+      "signals": 193,
+      "signal_mean_atr": -0.1729575267379396,
+      "control_mean_atr": -0.026383887651057997,
+      "mean_edge_atr": -0.14657363908688156,
+      "median_edge_atr": -0.13209028941168413,
+      "positive_edge_rate": 0.46113989637305697,
+      "bootstrap_95ci": [
+        -0.35296865786960074,
+        0.057673474167668166
+      ],
+      "splits": {
+        "DISCOVERY": {
+          "status": "ESTIMABLE",
+          "signals": 98,
+          "signal_mean_atr": -0.21957784605088213,
+          "control_mean_atr": -0.04524073943122939,
+          "mean_edge_atr": -0.1743371066196527,
+          "median_edge_atr": -0.17757358346172758,
+          "positive_edge_rate": 0.4387755102040816,
+          "bootstrap_95ci": [
+            -0.48370919959358083,
+            0.1382454012108417
+          ]
+        },
+        "DEVELOPMENT": {
+          "status": "ESTIMABLE",
+          "signals": 54,
+          "signal_mean_atr": -0.177641284727483,
+          "control_mean_atr": -0.03482058677479477,
+          "mean_edge_atr": -0.14282069795268823,
+          "median_edge_atr": -0.0076147831173304925,
+          "positive_edge_rate": 0.5,
+          "bootstrap_95ci": [
+            -0.4879009830268459,
+            0.1878941056672433
+          ]
+        },
+        "OOS": {
+          "status": "ESTIMABLE",
+          "signals": 41,
+          "signal_mean_atr": -0.055354740784190525,
+          "control_mean_atr": 0.029800337401102547,
+          "mean_edge_atr": -0.08515507818529307,
+          "median_edge_atr": -0.07969618958271912,
+          "positive_edge_rate": 0.4634146341463415,
+          "bootstrap_95ci": [
+            -0.46170081190465745,
+            0.2830229226020679
+          ]
+        }
+      },
+      "instrument": "USDJPY",
+      "timeframe": "H1",
+      "data_rows": 43197,
+      "period": [
+        "2019-08-28T00:00:00",
+        "2026-07-31T20:00:00"
+      ]
+    },
+    {
+      "status": "ESTIMABLE",
+      "signals": 58,
+      "signal_mean_atr": -0.4016508705519847,
+      "control_mean_atr": -0.10093479028412931,
+      "mean_edge_atr": -0.30071608026785535,
+      "median_edge_atr": 0.03149142572603081,
+      "positive_edge_rate": 0.5,
+      "bootstrap_95ci": [
+        -0.713159839318594,
+        0.10049241769461585
+      ],
+      "splits": {
+        "DISCOVERY": {
+          "status": "ESTIMABLE",
+          "signals": 28,
+          "signal_mean_atr": -0.36477731863735813,
+          "control_mean_atr": -0.016685074988921935,
+          "mean_edge_atr": -0.3480922436484363,
+          "median_edge_atr": 0.15208611077890152,
+          "positive_edge_rate": 0.5357142857142857,
+          "bootstrap_95ci": [
+            -0.8186974377607154,
+            0.12086338049018563
+          ]
+        },
+        "DEVELOPMENT": {
+          "status": "ESTIMABLE",
+          "signals": 23,
+          "signal_mean_atr": -0.6677620583452422,
+          "control_mean_atr": -0.18061272646224602,
+          "mean_edge_atr": -0.48714933188299625,
+          "median_edge_atr": -0.5529223777696182,
+          "positive_edge_rate": 0.391304347826087,
+          "bootstrap_95ci": [
+            -1.323967928115866,
+            0.1522073522501916
+          ]
+        },
+        "OOS": {
+          "status": "ESTIMABLE",
+          "signals": 7,
+          "signal_mean_atr": 0.32522025311021274,
+          "control_mean_atr": -0.17613471830828967,
+          "mean_edge_atr": 0.5013549714185024,
+          "median_edge_atr": 1.117367388492912,
+          "positive_edge_rate": 0.7142857142857143,
+          "bootstrap_95ci": [
+            -0.5325889840591689,
+            1.5148872712900967
+          ]
+        }
+      },
+      "instrument": "USDJPY",
+      "timeframe": "H4",
+      "data_rows": 10433,
+      "period": [
+        "2019-08-28T00:00:00",
+        "2026-07-31T16:00:00"
+      ]
+    },
+    {
+      "status": "ESTIMABLE",
+      "signals": 207,
+      "signal_mean_atr": -0.25825179491800915,
+      "control_mean_atr": -0.25152701062986393,
+      "mean_edge_atr": -0.006724784288145228,
+      "median_edge_atr": -0.06194946618207994,
+      "positive_edge_rate": 0.4975845410628019,
+      "bootstrap_95ci": [
+        -0.27251688560351495,
+        0.25141909423242675
+      ],
+      "splits": {
+        "DISCOVERY": {
+          "status": "ESTIMABLE",
+          "signals": 95,
+          "signal_mean_atr": -0.3348285562614911,
+          "control_mean_atr": -0.1997984001083691,
+          "mean_edge_atr": -0.13503015615312197,
+          "median_edge_atr": -0.07129891229453345,
+          "positive_edge_rate": 0.4842105263157895,
+          "bootstrap_95ci": [
+            -0.431584378174789,
+            0.14962073002602222
+          ]
+        },
+        "DEVELOPMENT": {
+          "status": "ESTIMABLE",
+          "signals": 81,
+          "signal_mean_atr": -0.2697176337804344,
+          "control_mean_atr": -0.4225723885618909,
+          "mean_edge_atr": 0.1528547547814565,
+          "median_edge_atr": 0.04904830908279992,
+          "positive_edge_rate": 0.5308641975308642,
+          "bootstrap_95ci": [
+            -0.3718591761538388,
+            0.6922746403419192
+          ]
+        },
+        "OOS": {
+          "status": "ESTIMABLE",
+          "signals": 31,
+          "signal_mean_atr": 0.006378052678353142,
+          "control_mean_atr": 0.0368748478524645,
+          "mean_edge_atr": -0.030496795174111354,
+          "median_edge_atr": -0.23801605620208655,
+          "positive_edge_rate": 0.45161290322580644,
+          "bootstrap_95ci": [
+            -0.5263583197745123,
+            0.4851518102476669
+          ]
+        }
+      },
+      "instrument": "XAGUSD",
+      "timeframe": "H1",
+      "data_rows": 40957,
+      "period": [
+        "2019-08-28T00:00:00",
+        "2026-07-31T20:00:00"
+      ]
+    },
+    {
+      "status": "ESTIMABLE",
+      "signals": 48,
+      "signal_mean_atr": -0.09417482051605587,
+      "control_mean_atr": -0.04706684892430014,
+      "mean_edge_atr": -0.04710797159175575,
+      "median_edge_atr": 0.059951687678655226,
+      "positive_edge_rate": 0.5208333333333334,
+      "bootstrap_95ci": [
+        -0.34088160898598824,
+        0.2386319221484778
+      ],
+      "splits": {
+        "DISCOVERY": {
+          "status": "ESTIMABLE",
+          "signals": 23,
+          "signal_mean_atr": -0.18207768613839115,
+          "control_mean_atr": -0.0765157704825141,
+          "mean_edge_atr": -0.10556191565587708,
+          "median_edge_atr": 0.04155618570399927,
+          "positive_edge_rate": 0.5217391304347826,
+          "bootstrap_95ci": [
+            -0.49570622898577216,
+            0.29009525459044766
+          ]
+        },
+        "DEVELOPMENT": {
+          "status": "ESTIMABLE",
+          "signals": 16,
+          "signal_mean_atr": -0.10245584622644044,
+          "control_mean_atr": -0.0053998173082929575,
+          "mean_edge_atr": -0.09705602891814748,
+          "median_edge_atr": -0.08331581648004222,
+          "positive_edge_rate": 0.5,
+          "bootstrap_95ci": [
+            -0.5335235275614297,
+            0.2654296096893624
+          ]
+        },
+        "OOS": {
+          "status": "ESTIMABLE",
+          "signals": 9,
+          "signal_mean_atr": 0.1451876595594846,
+          "control_mean_atr": -0.045883216703988344,
+          "mean_edge_atr": 0.19107087626347294,
+          "median_edge_atr": 0.13727433395823635,
+          "positive_edge_rate": 0.5555555555555556,
+          "bootstrap_95ci": [
+            -0.6693714721418232,
+            0.9861747365839401
+          ]
+        }
+      },
+      "instrument": "XAGUSD",
+      "timeframe": "H4",
+      "data_rows": 8895,
+      "period": [
+        "2019-08-28T00:00:00",
+        "2026-07-31T16:00:00"
+      ]
+    },
+    {
+      "status": "ESTIMABLE",
+      "signals": 215,
+      "signal_mean_atr": -0.16262386276995927,
+      "control_mean_atr": -0.10193492991745891,
+      "mean_edge_atr": -0.06068893285250035,
+      "median_edge_atr": 0.0018987342022151465,
+      "positive_edge_rate": 0.5023255813953489,
+      "bootstrap_95ci": [
+        -0.3359270743225655,
+        0.22148412542318244
+      ],
+      "splits": {
+        "DISCOVERY": {
+          "status": "ESTIMABLE",
+          "signals": 100,
+          "signal_mean_atr": -0.20583743842306754,
+          "control_mean_atr": -0.055434493233949264,
+          "mean_edge_atr": -0.15040294518911826,
+          "median_edge_atr": 0.05292364122730603,
+          "positive_edge_rate": 0.53,
+          "bootstrap_95ci": [
+            -0.604522341154616,
+            0.2644092863920434
+          ]
+        },
+        "DEVELOPMENT": {
+          "status": "ESTIMABLE",
+          "signals": 71,
+          "signal_mean_atr": -0.10558371243504047,
+          "control_mean_atr": -0.12333801188607985,
+          "mean_edge_atr": 0.017754299451039367,
+          "median_edge_atr": -0.05204560466496422,
+          "positive_edge_rate": 0.4507042253521127,
+          "bootstrap_95ci": [
+            -0.46982869887246004,
+            0.5382862730297311
+          ]
+        },
+        "OOS": {
+          "status": "ESTIMABLE",
+          "signals": 44,
+          "signal_mean_atr": -0.15645325159878665,
+          "control_mean_atr": -0.17308094920334247,
+          "mean_edge_atr": 0.016627697604555826,
+          "median_edge_atr": 0.1987307616871697,
+          "positive_edge_rate": 0.5227272727272727,
+          "bootstrap_95ci": [
+            -0.3492934235356384,
+            0.41774125383293104
+          ]
+        }
+      },
+      "instrument": "XAUUSD",
+      "timeframe": "H1",
+      "data_rows": 40961,
+      "period": [
+        "2019-08-28T00:00:00",
+        "2026-07-31T20:00:00"
+      ]
+    },
+    {
+      "status": "ESTIMABLE",
+      "signals": 35,
+      "signal_mean_atr": 0.033505310326911446,
+      "control_mean_atr": -0.02699358468395889,
+      "mean_edge_atr": 0.06049889501087035,
+      "median_edge_atr": -0.0816156551902103,
+      "positive_edge_rate": 0.42857142857142855,
+      "bootstrap_95ci": [
+        -0.4516622266620052,
+        0.5641973969680812
+      ],
+      "splits": {
+        "DISCOVERY": {
+          "status": "ESTIMABLE",
+          "signals": 19,
+          "signal_mean_atr": -0.1437072220345127,
+          "control_mean_atr": 0.07733624697901041,
+          "mean_edge_atr": -0.22104346901352315,
+          "median_edge_atr": -0.2455923308448973,
+          "positive_edge_rate": 0.3157894736842105,
+          "bootstrap_95ci": [
+            -0.8838630685894288,
+            0.5299979175015475
+          ]
+        },
+        "DEVELOPMENT": {
+          "status": "ESTIMABLE",
+          "signals": 5,
+          "signal_mean_atr": -1.162307425306018,
+          "control_mean_atr": -0.1349638213985635,
+          "mean_edge_atr": -1.0273436039074544,
+          "median_edge_atr": -0.9600278427080847,
+          "positive_edge_rate": 0.0,
+          "bootstrap_95ci": [
+            -1.7818123809507285,
+            -0.41993909728642764
+          ]
+        },
+        "OOS": {
+          "status": "ESTIMABLE",
+          "signals": 11,
+          "signal_mean_atr": 0.8831509278752484,
+          "control_mean_atr": -0.15812227723154015,
+          "mean_edge_atr": 1.0412732051067886,
+          "median_edge_atr": 0.6229025054156335,
+          "positive_edge_rate": 0.8181818181818182,
+          "bootstrap_95ci": [
+            0.2973813889116356,
+            1.8047860638992541
+          ]
+        }
+      },
+      "instrument": "XAUUSD",
+      "timeframe": "H4",
+      "data_rows": 8896,
+      "period": [
+        "2019-08-28T00:00:00",
+        "2026-07-31T16:00:00"
+      ]
+    }
+  ],
+  "ranked": [
+    {
+      "status": "ESTIMABLE",
+      "signals": 51,
+      "signal_mean_atr": 0.1843173818670673,
+      "control_mean_atr": -0.09857425391106388,
+      "mean_edge_atr": 0.2828916357781312,
+      "median_edge_atr": 0.2169540516135453,
+      "positive_edge_rate": 0.5882352941176471,
+      "bootstrap_95ci": [
+        -0.0811397952768922,
+        0.6770717952308346
+      ],
+      "splits": {
+        "DISCOVERY": {
+          "status": "ESTIMABLE",
+          "signals": 25,
+          "signal_mean_atr": -0.02434861355884827,
+          "control_mean_atr": -0.045308169784747054,
+          "mean_edge_atr": 0.020959556225898762,
+          "median_edge_atr": 0.13712101998072135,
+          "positive_edge_rate": 0.56,
+          "bootstrap_95ci": [
+            -0.5003933313886809,
+            0.5699965573564307
+          ]
+        },
+        "DEVELOPMENT": {
+          "status": "ESTIMABLE",
+          "signals": 16,
+          "signal_mean_atr": 0.5990622450629794,
+          "control_mean_atr": -0.05536358010363815,
+          "mean_edge_atr": 0.6544258251666176,
+          "median_edge_atr": 0.5741276828471626,
+          "positive_edge_rate": 0.625,
+          "bootstrap_95ci": [
+            -0.12092370062556165,
+            1.4998835430615993
+          ]
+        },
+        "OOS": {
+          "status": "ESTIMABLE",
+          "signals": 10,
+          "signal_mean_atr": 0.04239058931839692,
+          "control_mean_atr": -0.3008765423187371,
+          "mean_edge_atr": 0.343267131637134,
+          "median_edge_atr": 0.21917345972415123,
+          "positive_edge_rate": 0.6,
+          "bootstrap_95ci": [
+            -0.13187513725729072,
+            0.868119669119314
+          ]
+        }
+      },
+      "instrument": "AUDJPY",
+      "timeframe": "H4",
+      "data_rows": 10433,
+      "period": [
+        "2019-08-28T00:00:00",
+        "2026-07-31T16:00:00"
+      ]
+    },
+    {
+      "status": "ESTIMABLE",
+      "signals": 39,
+      "signal_mean_atr": 0.19978627183280329,
+      "control_mean_atr": -0.03624085143563118,
+      "mean_edge_atr": 0.2360271232684345,
+      "median_edge_atr": 0.3131264456967308,
+      "positive_edge_rate": 0.5641025641025641,
+      "bootstrap_95ci": [
+        -0.17019317701831832,
+        0.6284872345555323
+      ],
+      "splits": {
+        "DISCOVERY": {
+          "status": "ESTIMABLE",
+          "signals": 25,
+          "signal_mean_atr": 0.2228078193075499,
+          "control_mean_atr": 0.007881599391448123,
+          "mean_edge_atr": 0.21492621991610178,
+          "median_edge_atr": 0.25162572445950965,
+          "positive_edge_rate": 0.52,
+          "bootstrap_95ci": [
+            -0.25389217903888217,
+            0.7218826592701879
+          ]
+        },
+        "DEVELOPMENT": {
+          "status": "ESTIMABLE",
+          "signals": 13,
+          "signal_mean_atr": 0.13353127358155653,
+          "control_mean_atr": -0.08065992889288154,
+          "mean_edge_atr": 0.21419120247443807,
+          "median_edge_atr": 0.3131264456967308,
+          "positive_edge_rate": 0.6153846153846154,
+          "bootstrap_95ci": [
+            -0.5642093295102417,
+            0.9257973148744575
+          ]
+        },
+        "OOS": {
+          "status": "ESTIMABLE",
+          "signals": 1,
+          "signal_mean_atr": 0.48556256223034633,
+          "control_mean_atr": -0.5618541151683593,
+          "mean_edge_atr": 1.0474166773987057,
+          "median_edge_atr": 1.0474166773987057,
+          "positive_edge_rate": 1.0,
+          "bootstrap_95ci": [
+            1.0474166773987057,
+            1.0474166773987057
+          ]
+        }
+      },
+      "instrument": "EURJPY",
+      "timeframe": "H4",
+      "data_rows": 10434,
+      "period": [
+        "2019-08-28T00:00:00",
+        "2026-07-31T16:00:00"
+      ]
+    },
+    {
+      "status": "ESTIMABLE",
+      "signals": 55,
+      "signal_mean_atr": 0.04197523923654755,
+      "control_mean_atr": -0.1112340417205964,
+      "mean_edge_atr": 0.15320928095714395,
+      "median_edge_atr": 0.11598072500541154,
+      "positive_edge_rate": 0.5272727272727272,
+      "bootstrap_95ci": [
+        -0.0698319207793075,
+        0.3904297425252948
+      ],
+      "splits": {
+        "DISCOVERY": {
+          "status": "ESTIMABLE",
+          "signals": 32,
+          "signal_mean_atr": 0.06569925395126186,
+          "control_mean_atr": -0.14842996019469812,
+          "mean_edge_atr": 0.21412921414595995,
+          "median_edge_atr": 0.1753984854974592,
+          "positive_edge_rate": 0.59375,
+          "bootstrap_95ci": [
+            -0.08161110796786722,
+            0.5376942381641767
+          ]
+        },
+        "DEVELOPMENT": {
+          "status": "ESTIMABLE",
+          "signals": 15,
+          "signal_mean_atr": -0.09344946450996551,
+          "control_mean_atr": -0.14559751356906447,
+          "mean_edge_atr": 0.05214804905909894,
+          "median_edge_atr": -0.16563005282225118,
+          "positive_edge_rate": 0.4,
+          "bootstrap_95ci": [
+            -0.36557552614206157,
+            0.47285061867665446
+          ]
+        },
+        "OOS": {
+          "status": "ESTIMABLE",
+          "signals": 8,
+          "signal_mean_atr": 0.20100049990240235,
+          "control_mean_atr": 0.10198114189168807,
+          "mean_edge_atr": 0.09901935801071432,
+          "median_edge_atr": -0.08258782169741663,
+          "positive_edge_rate": 0.5,
+          "bootstrap_95ci": [
+            -0.5013760201582954,
+            0.7360901051894423
+          ]
+        }
+      },
+      "instrument": "AUDUSD",
+      "timeframe": "H4",
+      "data_rows": 10433,
+      "period": [
+        "2019-08-28T00:00:00",
+        "2026-07-31T16:00:00"
+      ]
+    },
+    {
+      "status": "ESTIMABLE",
+      "signals": 57,
+      "signal_mean_atr": 0.08431463509888695,
+      "control_mean_atr": -0.06632697409780978,
+      "mean_edge_atr": 0.15064160919669672,
+      "median_edge_atr": 0.1405983625141492,
+      "positive_edge_rate": 0.5789473684210527,
+      "bootstrap_95ci": [
+        -0.14281886731909513,
+        0.46567254018450227
+      ],
+      "splits": {
+        "DISCOVERY": {
+          "status": "ESTIMABLE",
+          "signals": 34,
+          "signal_mean_atr": -0.08954872186798396,
+          "control_mean_atr": -0.08317235035283488,
+          "mean_edge_atr": -0.006376371515149084,
+          "median_edge_atr": 0.13578102465236155,
+          "positive_edge_rate": 0.5588235294117647,
+          "bootstrap_95ci": [
+            -0.393502981917504,
+            0.3707856688841749
+          ]
+        },
+        "DEVELOPMENT": {
+          "status": "ESTIMABLE",
+          "signals": 12,
+          "signal_mean_atr": 0.5976320107496141,
+          "control_mean_atr": -0.12800979785482494,
+          "mean_edge_atr": 0.725641808604439,
+          "median_edge_atr": 0.2879185206381727,
+          "positive_edge_rate": 0.6666666666666666,
+          "bootstrap_95ci": [
+            0.010349728725422109,
+            1.5449827740780089
+          ]
+        },
+        "OOS": {
+          "status": "ESTIMABLE",
+          "signals": 11,
+          "signal_mean_atr": 0.06172787410478553,
+          "control_mean_atr": 0.05303090569810253,
+          "mean_edge_atr": 0.00869696840668301,
+          "median_edge_atr": 0.06706830713058354,
+          "positive_edge_rate": 0.5454545454545454,
+          "bootstrap_95ci": [
+            -0.38956730599640416,
+            0.43291553115657194
+          ]
+        }
+      },
+      "instrument": "EURUSD",
+      "timeframe": "H4",
+      "data_rows": 10434,
+      "period": [
+        "2019-08-28T00:00:00",
+        "2026-07-31T16:00:00"
+      ]
+    },
+    {
+      "status": "ESTIMABLE",
+      "signals": 183,
+      "signal_mean_atr": -0.05394956128598418,
+      "control_mean_atr": -0.11576954256153747,
+      "mean_edge_atr": 0.0618199812755533,
+      "median_edge_atr": 0.15979292292695102,
+      "positive_edge_rate": 0.5409836065573771,
+      "bootstrap_95ci": [
+        -0.10766665489498378,
+        0.25097337156993155
+      ],
+      "splits": {
+        "DISCOVERY": {
+          "status": "ESTIMABLE",
+          "signals": 93,
+          "signal_mean_atr": -0.1365128212955945,
+          "control_mean_atr": -0.1661635837628263,
+          "mean_edge_atr": 0.029650762467231816,
+          "median_edge_atr": 0.029864709235188053,
+          "positive_edge_rate": 0.5161290322580645,
+          "bootstrap_95ci": [
+            -0.23649037770235437,
+            0.2971100950928085
+          ]
+        },
+        "DEVELOPMENT": {
+          "status": "ESTIMABLE",
+          "signals": 47,
+          "signal_mean_atr": -0.057278738146675216,
+          "control_mean_atr": -0.04169010726631673,
+          "mean_edge_atr": -0.01558863088035848,
+          "median_edge_atr": 0.23492031015908316,
+          "positive_edge_rate": 0.5319148936170213,
+          "bootstrap_95ci": [
+            -0.3549773090414627,
+            0.3564587134780182
+          ]
+        },
+        "OOS": {
+          "status": "ESTIMABLE",
+          "signals": 43,
+          "signal_mean_atr": 0.12825635716392833,
+          "control_mean_atr": -0.08774832458840989,
+          "mean_edge_atr": 0.2160046817523382,
+          "median_edge_atr": 0.4053340639099439,
+          "positive_edge_rate": 0.6046511627906976,
+          "bootstrap_95ci": [
+            -0.12214470911770428,
+            0.5664257740403407
+          ]
+        }
+      },
+      "instrument": "AUDJPY",
+      "timeframe": "H1",
+      "data_rows": 43195,
+      "period": [
+        "2019-08-28T00:00:00",
+        "2026-07-31T20:00:00"
+      ]
+    },
+    {
+      "status": "ESTIMABLE",
+      "signals": 35,
+      "signal_mean_atr": 0.033505310326911446,
+      "control_mean_atr": -0.02699358468395889,
+      "mean_edge_atr": 0.06049889501087035,
+      "median_edge_atr": -0.0816156551902103,
+      "positive_edge_rate": 0.42857142857142855,
+      "bootstrap_95ci": [
+        -0.4516622266620052,
+        0.5641973969680812
+      ],
+      "splits": {
+        "DISCOVERY": {
+          "status": "ESTIMABLE",
+          "signals": 19,
+          "signal_mean_atr": -0.1437072220345127,
+          "control_mean_atr": 0.07733624697901041,
+          "mean_edge_atr": -0.22104346901352315,
+          "median_edge_atr": -0.2455923308448973,
+          "positive_edge_rate": 0.3157894736842105,
+          "bootstrap_95ci": [
+            -0.8838630685894288,
+            0.5299979175015475
+          ]
+        },
+        "DEVELOPMENT": {
+          "status": "ESTIMABLE",
+          "signals": 5,
+          "signal_mean_atr": -1.162307425306018,
+          "control_mean_atr": -0.1349638213985635,
+          "mean_edge_atr": -1.0273436039074544,
+          "median_edge_atr": -0.9600278427080847,
+          "positive_edge_rate": 0.0,
+          "bootstrap_95ci": [
+            -1.7818123809507285,
+            -0.41993909728642764
+          ]
+        },
+        "OOS": {
+          "status": "ESTIMABLE",
+          "signals": 11,
+          "signal_mean_atr": 0.8831509278752484,
+          "control_mean_atr": -0.15812227723154015,
+          "mean_edge_atr": 1.0412732051067886,
+          "median_edge_atr": 0.6229025054156335,
+          "positive_edge_rate": 0.8181818181818182,
+          "bootstrap_95ci": [
+            0.2973813889116356,
+            1.8047860638992541
+          ]
+        }
+      },
+      "instrument": "XAUUSD",
+      "timeframe": "H4",
+      "data_rows": 8896,
+      "period": [
+        "2019-08-28T00:00:00",
+        "2026-07-31T16:00:00"
+      ]
+    },
+    {
+      "status": "ESTIMABLE",
+      "signals": 56,
+      "signal_mean_atr": -0.09251891901786395,
+      "control_mean_atr": -0.13139596206829485,
+      "mean_edge_atr": 0.0388770430504309,
+      "median_edge_atr": 0.2844559433171734,
+      "positive_edge_rate": 0.6428571428571429,
+      "bootstrap_95ci": [
+        -0.23928593425896708,
+        0.31112783105872993
+      ],
+      "splits": {
+        "DISCOVERY": {
+          "status": "ESTIMABLE",
+          "signals": 27,
+          "signal_mean_atr": 0.1412689307404586,
+          "control_mean_atr": -0.07853375938844091,
+          "mean_edge_atr": 0.21980269012889952,
+          "median_edge_atr": 0.5908769974797266,
+          "positive_edge_rate": 0.7037037037037037,
+          "bootstrap_95ci": [
+            -0.19748453202341779,
+            0.5923351560137726
+          ]
+        },
+        "DEVELOPMENT": {
+          "status": "ESTIMABLE",
+          "signals": 18,
+          "signal_mean_atr": -0.07388349972861402,
+          "control_mean_atr": -0.1766683785315012,
+          "mean_edge_atr": 0.10278487880288717,
+          "median_edge_atr": 0.26236152922090655,
+          "positive_edge_rate": 0.7222222222222222,
+          "bootstrap_95ci": [
+            -0.40004585498612566,
+            0.45694445575842974
+          ]
+        },
+        "OOS": {
+          "status": "ESTIMABLE",
+          "signals": 11,
+          "signal_mean_atr": -0.6968561454434283,
+          "control_mean_atr": -0.18706650534268965,
+          "mean_edge_atr": -0.5097896401007387,
+          "median_edge_atr": -0.22972616106501356,
+          "positive_edge_rate": 0.36363636363636365,
+          "bootstrap_95ci": [
+            -1.235375246144718,
+            0.10217505472586375
+          ]
+        }
+      },
+      "instrument": "EURGBP",
+      "timeframe": "H4",
+      "data_rows": 10433,
+      "period": [
+        "2019-08-28T00:00:00",
+        "2026-07-31T16:00:00"
+      ]
+    },
+    {
+      "status": "ESTIMABLE",
+      "signals": 207,
+      "signal_mean_atr": -0.25825179491800915,
+      "control_mean_atr": -0.25152701062986393,
+      "mean_edge_atr": -0.006724784288145228,
+      "median_edge_atr": -0.06194946618207994,
+      "positive_edge_rate": 0.4975845410628019,
+      "bootstrap_95ci": [
+        -0.27251688560351495,
+        0.25141909423242675
+      ],
+      "splits": {
+        "DISCOVERY": {
+          "status": "ESTIMABLE",
+          "signals": 95,
+          "signal_mean_atr": -0.3348285562614911,
+          "control_mean_atr": -0.1997984001083691,
+          "mean_edge_atr": -0.13503015615312197,
+          "median_edge_atr": -0.07129891229453345,
+          "positive_edge_rate": 0.4842105263157895,
+          "bootstrap_95ci": [
+            -0.431584378174789,
+            0.14962073002602222
+          ]
+        },
+        "DEVELOPMENT": {
+          "status": "ESTIMABLE",
+          "signals": 81,
+          "signal_mean_atr": -0.2697176337804344,
+          "control_mean_atr": -0.4225723885618909,
+          "mean_edge_atr": 0.1528547547814565,
+          "median_edge_atr": 0.04904830908279992,
+          "positive_edge_rate": 0.5308641975308642,
+          "bootstrap_95ci": [
+            -0.3718591761538388,
+            0.6922746403419192
+          ]
+        },
+        "OOS": {
+          "status": "ESTIMABLE",
+          "signals": 31,
+          "signal_mean_atr": 0.006378052678353142,
+          "control_mean_atr": 0.0368748478524645,
+          "mean_edge_atr": -0.030496795174111354,
+          "median_edge_atr": -0.23801605620208655,
+          "positive_edge_rate": 0.45161290322580644,
+          "bootstrap_95ci": [
+            -0.5263583197745123,
+            0.4851518102476669
+          ]
+        }
+      },
+      "instrument": "XAGUSD",
+      "timeframe": "H1",
+      "data_rows": 40957,
+      "period": [
+        "2019-08-28T00:00:00",
+        "2026-07-31T20:00:00"
+      ]
+    },
+    {
+      "status": "ESTIMABLE",
+      "signals": 42,
+      "signal_mean_atr": -0.06726067635320075,
+      "control_mean_atr": -0.05855857153879712,
+      "mean_edge_atr": -0.008702104814403644,
+      "median_edge_atr": 0.15081501533767427,
+      "positive_edge_rate": 0.5476190476190477,
+      "bootstrap_95ci": [
+        -0.4544095724489471,
+        0.3781290334385524
+      ],
+      "splits": {
+        "DISCOVERY": {
+          "status": "ESTIMABLE",
+          "signals": 25,
+          "signal_mean_atr": 0.030712095539057058,
+          "control_mean_atr": -0.07389307770895093,
+          "mean_edge_atr": 0.10460517324800797,
+          "median_edge_atr": 0.17422166770216982,
+          "positive_edge_rate": 0.52,
+          "bootstrap_95ci": [
+            -0.35107849934816115,
+            0.5102118205279809
+          ]
+        },
+        "DEVELOPMENT": {
+          "status": "ESTIMABLE",
+          "signals": 13,
+          "signal_mean_atr": -0.38154972563770784,
+          "control_mean_atr": -0.04772764735755679,
+          "mean_edge_atr": -0.333822078280151,
+          "median_edge_atr": 0.1274083629731787,
+          "positive_edge_rate": 0.5384615384615384,
+          "bootstrap_95ci": [
+            -1.458247746087718,
+            0.6360447531934118
+          ]
+        },
+        "OOS": {
+          "status": "ESTIMABLE",
+          "signals": 4,
+          "signal_mean_atr": 0.3418489094948359,
+          "control_mean_atr": 0.002081588435633136,
+          "mean_edge_atr": 0.3397673210592027,
+          "median_edge_atr": 0.14702949976541702,
+          "positive_edge_rate": 0.75,
+          "bootstrap_95ci": [
+            0.0252904258705563,
+            0.8469820375416348
+          ]
+        }
+      },
+      "instrument": "GBPJPY",
+      "timeframe": "H4",
+      "data_rows": 10434,
+      "period": [
+        "2019-08-28T00:00:00",
+        "2026-07-31T16:00:00"
+      ]
+    },
+    {
+      "status": "ESTIMABLE",
+      "signals": 248,
+      "signal_mean_atr": -0.1754760835733915,
+      "control_mean_atr": -0.16364157982412875,
+      "mean_edge_atr": -0.011834503749262735,
+      "median_edge_atr": -0.11162225995344968,
+      "positive_edge_rate": 0.4838709677419355,
+      "bootstrap_95ci": [
+        -0.22170030830168663,
+        0.19806479971269028
+      ],
+      "splits": {
+        "DISCOVERY": {
+          "status": "ESTIMABLE",
+          "signals": 125,
+          "signal_mean_atr": -0.21373001301747765,
+          "control_mean_atr": -0.09185972378956318,
+          "mean_edge_atr": -0.12187028922791447,
+          "median_edge_atr": -0.16476426166679287,
+          "positive_edge_rate": 0.472,
+          "bootstrap_95ci": [
+            -0.47371363712813763,
+            0.22392138995351102
+          ]
+        },
+        "DEVELOPMENT": {
+          "status": "ESTIMABLE",
+          "signals": 87,
+          "signal_mean_atr": -0.1986402855315275,
+          "control_mean_atr": -0.18997733795325492,
+          "mean_edge_atr": -0.008662947578272606,
+          "median_edge_atr": -0.057436754270725685,
+          "positive_edge_rate": 0.4827586206896552,
+          "bootstrap_95ci": [
+            -0.34638876374900973,
+            0.30441452598175767
+          ]
+        },
+        "OOS": {
+          "status": "ESTIMABLE",
+          "signals": 36,
+          "signal_mean_atr": 0.013330215061847485,
+          "control_mean_atr": -0.34923938668764887,
+          "mean_edge_atr": 0.3625696017494963,
+          "median_edge_atr": 0.10236161089181015,
+          "positive_edge_rate": 0.5277777777777778,
+          "bootstrap_95ci": [
+            -0.08457147790766541,
+            0.8256637830972469
+          ]
+        }
+      },
+      "instrument": "EURGBP",
+      "timeframe": "H1",
+      "data_rows": 43196,
+      "period": [
+        "2019-08-28T00:00:00",
+        "2026-07-31T20:00:00"
+      ]
+    },
+    {
+      "status": "ESTIMABLE",
+      "signals": 185,
+      "signal_mean_atr": -0.017131327599622003,
+      "control_mean_atr": -0.0010076811063251903,
+      "mean_edge_atr": -0.01612364649329681,
+      "median_edge_atr": 0.05259538364402927,
+      "positive_edge_rate": 0.5135135135135135,
+      "bootstrap_95ci": [
+        -0.23372491555158526,
+        0.2017100166499916
+      ],
+      "splits": {
+        "DISCOVERY": {
+          "status": "ESTIMABLE",
+          "signals": 94,
+          "signal_mean_atr": 0.029909402914421936,
+          "control_mean_atr": 0.056755576549820524,
+          "mean_edge_atr": -0.02684617363539859,
+          "median_edge_atr": -0.32108231054804903,
+          "positive_edge_rate": 0.46808510638297873,
+          "bootstrap_95ci": [
+            -0.3240581609206803,
+            0.2696255334541629
+          ]
+        },
+        "DEVELOPMENT": {
+          "status": "ESTIMABLE",
+          "signals": 50,
+          "signal_mean_atr": -0.052852927510298,
+          "control_mean_atr": -0.05027517505425796,
+          "mean_edge_atr": -0.0025777524560400243,
+          "median_edge_atr": 0.33764926585271726,
+          "positive_edge_rate": 0.64,
+          "bootstrap_95ci": [
+            -0.4815741998735921,
+            0.4548553513624878
+          ]
+        },
+        "OOS": {
+          "status": "ESTIMABLE",
+          "signals": 41,
+          "signal_mean_atr": -0.08141788059441055,
+          "control_mean_atr": -0.07335820604000955,
+          "mean_edge_atr": -0.008059674554401007,
+          "median_edge_atr": -0.01658361966852906,
+          "positive_edge_rate": 0.4634146341463415,
+          "bootstrap_95ci": [
+            -0.36514199442777784,
+            0.3827528495455337
+          ]
+        }
+      },
+      "instrument": "EURJPY",
+      "timeframe": "H1",
+      "data_rows": 43197,
+      "period": [
+        "2019-08-28T00:00:00",
+        "2026-07-31T20:00:00"
+      ]
+    },
+    {
+      "status": "ESTIMABLE",
+      "signals": 247,
+      "signal_mean_atr": -0.18145857706514634,
+      "control_mean_atr": -0.15221673753680937,
+      "mean_edge_atr": -0.029241839528336984,
+      "median_edge_atr": 0.057209290587820406,
+      "positive_edge_rate": 0.5101214574898786,
+      "bootstrap_95ci": [
+        -0.28655899087470255,
+        0.244617634333798
+      ],
+      "splits": {
+        "DISCOVERY": {
+          "status": "ESTIMABLE",
+          "signals": 121,
+          "signal_mean_atr": -0.2496798503789238,
+          "control_mean_atr": -0.19761173143110594,
+          "mean_edge_atr": -0.05206811894781785,
+          "median_edge_atr": 0.14053854119783682,
+          "positive_edge_rate": 0.5371900826446281,
+          "bootstrap_95ci": [
+            -0.3988014544586654,
+            0.29260553423319774
+          ]
+        },
+        "DEVELOPMENT": {
+          "status": "ESTIMABLE",
+          "signals": 73,
+          "signal_mean_atr": -0.043133397030987695,
+          "control_mean_atr": -0.10462786900077516,
+          "mean_edge_atr": 0.061494471969787495,
+          "median_edge_atr": -0.12651599478207146,
+          "positive_edge_rate": 0.4794520547945205,
+          "bootstrap_95ci": [
+            -0.5337538212792483,
+            0.6309137656642102
+          ]
+        },
+        "OOS": {
+          "status": "ESTIMABLE",
+          "signals": 53,
+          "signal_mean_atr": -0.2162314840750805,
+          "control_mean_atr": -0.11412604210134918,
+          "mean_edge_atr": -0.10210544197373135,
+          "median_edge_atr": -0.19351926349260182,
+          "positive_edge_rate": 0.49056603773584906,
+          "bootstrap_95ci": [
+            -0.643965939723295,
+            0.4082352393956245
+          ]
+        }
+      },
+      "instrument": "GBPUSD",
+      "timeframe": "H1",
+      "data_rows": 43195,
+      "period": [
+        "2019-08-28T00:00:00",
+        "2026-07-31T20:00:00"
+      ]
+    },
+    {
+      "status": "ESTIMABLE",
+      "signals": 48,
+      "signal_mean_atr": -0.09417482051605587,
+      "control_mean_atr": -0.04706684892430014,
+      "mean_edge_atr": -0.04710797159175575,
+      "median_edge_atr": 0.059951687678655226,
+      "positive_edge_rate": 0.5208333333333334,
+      "bootstrap_95ci": [
+        -0.34088160898598824,
+        0.2386319221484778
+      ],
+      "splits": {
+        "DISCOVERY": {
+          "status": "ESTIMABLE",
+          "signals": 23,
+          "signal_mean_atr": -0.18207768613839115,
+          "control_mean_atr": -0.0765157704825141,
+          "mean_edge_atr": -0.10556191565587708,
+          "median_edge_atr": 0.04155618570399927,
+          "positive_edge_rate": 0.5217391304347826,
+          "bootstrap_95ci": [
+            -0.49570622898577216,
+            0.29009525459044766
+          ]
+        },
+        "DEVELOPMENT": {
+          "status": "ESTIMABLE",
+          "signals": 16,
+          "signal_mean_atr": -0.10245584622644044,
+          "control_mean_atr": -0.0053998173082929575,
+          "mean_edge_atr": -0.09705602891814748,
+          "median_edge_atr": -0.08331581648004222,
+          "positive_edge_rate": 0.5,
+          "bootstrap_95ci": [
+            -0.5335235275614297,
+            0.2654296096893624
+          ]
+        },
+        "OOS": {
+          "status": "ESTIMABLE",
+          "signals": 9,
+          "signal_mean_atr": 0.1451876595594846,
+          "control_mean_atr": -0.045883216703988344,
+          "mean_edge_atr": 0.19107087626347294,
+          "median_edge_atr": 0.13727433395823635,
+          "positive_edge_rate": 0.5555555555555556,
+          "bootstrap_95ci": [
+            -0.6693714721418232,
+            0.9861747365839401
+          ]
+        }
+      },
+      "instrument": "XAGUSD",
+      "timeframe": "H4",
+      "data_rows": 8895,
+      "period": [
+        "2019-08-28T00:00:00",
+        "2026-07-31T16:00:00"
+      ]
+    },
+    {
+      "status": "ESTIMABLE",
+      "signals": 215,
+      "signal_mean_atr": -0.16262386276995927,
+      "control_mean_atr": -0.10193492991745891,
+      "mean_edge_atr": -0.06068893285250035,
+      "median_edge_atr": 0.0018987342022151465,
+      "positive_edge_rate": 0.5023255813953489,
+      "bootstrap_95ci": [
+        -0.3359270743225655,
+        0.22148412542318244
+      ],
+      "splits": {
+        "DISCOVERY": {
+          "status": "ESTIMABLE",
+          "signals": 100,
+          "signal_mean_atr": -0.20583743842306754,
+          "control_mean_atr": -0.055434493233949264,
+          "mean_edge_atr": -0.15040294518911826,
+          "median_edge_atr": 0.05292364122730603,
+          "positive_edge_rate": 0.53,
+          "bootstrap_95ci": [
+            -0.604522341154616,
+            0.2644092863920434
+          ]
+        },
+        "DEVELOPMENT": {
+          "status": "ESTIMABLE",
+          "signals": 71,
+          "signal_mean_atr": -0.10558371243504047,
+          "control_mean_atr": -0.12333801188607985,
+          "mean_edge_atr": 0.017754299451039367,
+          "median_edge_atr": -0.05204560466496422,
+          "positive_edge_rate": 0.4507042253521127,
+          "bootstrap_95ci": [
+            -0.46982869887246004,
+            0.5382862730297311
+          ]
+        },
+        "OOS": {
+          "status": "ESTIMABLE",
+          "signals": 44,
+          "signal_mean_atr": -0.15645325159878665,
+          "control_mean_atr": -0.17308094920334247,
+          "mean_edge_atr": 0.016627697604555826,
+          "median_edge_atr": 0.1987307616871697,
+          "positive_edge_rate": 0.5227272727272727,
+          "bootstrap_95ci": [
+            -0.3492934235356384,
+            0.41774125383293104
+          ]
+        }
+      },
+      "instrument": "XAUUSD",
+      "timeframe": "H1",
+      "data_rows": 40961,
+      "period": [
+        "2019-08-28T00:00:00",
+        "2026-07-31T20:00:00"
+      ]
+    },
+    {
+      "status": "ESTIMABLE",
+      "signals": 220,
+      "signal_mean_atr": -0.1655647003014897,
+      "control_mean_atr": -0.06712246381205167,
+      "mean_edge_atr": -0.09844223648943803,
+      "median_edge_atr": -0.05122026529672158,
+      "positive_edge_rate": 0.4954545454545455,
+      "bootstrap_95ci": [
+        -0.3522389851390651,
+        0.14958693895180972
+      ],
+      "splits": {
+        "DISCOVERY": {
+          "status": "ESTIMABLE",
+          "signals": 101,
+          "signal_mean_atr": -0.21904174204813187,
+          "control_mean_atr": -0.007750176033971717,
+          "mean_edge_atr": -0.21129156601416016,
+          "median_edge_atr": -0.15751492887659124,
+          "positive_edge_rate": 0.48514851485148514,
+          "bootstrap_95ci": [
+            -0.5638878203608174,
+            0.12527039676048804
+          ]
+        },
+        "DEVELOPMENT": {
+          "status": "ESTIMABLE",
+          "signals": 75,
+          "signal_mean_atr": -0.049676780112211764,
+          "control_mean_atr": -0.1273305484279961,
+          "mean_edge_atr": 0.07765376831578436,
+          "median_edge_atr": 0.06212151979500016,
+          "positive_edge_rate": 0.5333333333333333,
+          "bootstrap_95ci": [
+            -0.4212167748349869,
+            0.5781072929337158
+          ]
+        },
+        "OOS": {
+          "status": "ESTIMABLE",
+          "signals": 44,
+          "signal_mean_atr": -0.24034680934205757,
+          "control_mean_atr": -0.10078143470728448,
+          "mean_edge_atr": -0.13956537463477312,
+          "median_edge_atr": -0.2167534596324754,
+          "positive_edge_rate": 0.45454545454545453,
+          "bootstrap_95ci": [
+            -0.5230909376702866,
+            0.27553146105729903
+          ]
+        }
+      },
+      "instrument": "GBPJPY",
+      "timeframe": "H1",
+      "data_rows": 43196,
+      "period": [
+        "2019-08-28T00:00:00",
+        "2026-07-31T20:00:00"
+      ]
+    },
+    {
+      "status": "ESTIMABLE",
+      "signals": 49,
+      "signal_mean_atr": -0.12999194785038506,
+      "control_mean_atr": -0.0007284979112288815,
+      "mean_edge_atr": -0.1292634499391562,
+      "median_edge_atr": -0.13345341974738134,
+      "positive_edge_rate": 0.3877551020408163,
+      "bootstrap_95ci": [
+        -0.4401002176962172,
+        0.20900830621205596
+      ],
+      "splits": {
+        "DISCOVERY": {
+          "status": "ESTIMABLE",
+          "signals": 24,
+          "signal_mean_atr": 0.15859200206448973,
+          "control_mean_atr": -0.0205640131898907,
+          "mean_edge_atr": 0.1791560152543804,
+          "median_edge_atr": 0.15201205023235914,
+          "positive_edge_rate": 0.5,
+          "bootstrap_95ci": [
+            -0.2855313512336695,
+            0.6875525426829848
+          ]
+        },
+        "DEVELOPMENT": {
+          "status": "ESTIMABLE",
+          "signals": 19,
+          "signal_mean_atr": -0.43747778440097074,
+          "control_mean_atr": -0.04557319286650817,
+          "mean_edge_atr": -0.39190459153446255,
+          "median_edge_atr": -0.29029714160819076,
+          "positive_edge_rate": 0.3157894736842105,
+          "bootstrap_95ci": [
+            -0.8562955329116744,
+            0.061631839720180805
+          ]
+        },
+        "OOS": {
+          "status": "ESTIMABLE",
+          "signals": 6,
+          "signal_mean_atr": -0.3106225984330297,
+          "control_mean_atr": 0.22062176389513613,
+          "mean_edge_atr": -0.5312443623281659,
+          "median_edge_atr": -0.5873665379418997,
+          "positive_edge_rate": 0.16666666666666666,
+          "bootstrap_95ci": [
+            -1.1104083799682394,
+            0.04891211625763222
+          ]
+        }
+      },
+      "instrument": "GBPUSD",
+      "timeframe": "H4",
+      "data_rows": 10433,
+      "period": [
+        "2019-08-28T00:00:00",
+        "2026-07-31T16:00:00"
+      ]
+    },
+    {
+      "status": "ESTIMABLE",
+      "signals": 207,
+      "signal_mean_atr": -0.21989522466482306,
+      "control_mean_atr": -0.07712950654564851,
+      "mean_edge_atr": -0.14276571811917452,
+      "median_edge_atr": -0.2536244048769223,
+      "positive_edge_rate": 0.42028985507246375,
+      "bootstrap_95ci": [
+        -0.4163015565316368,
+        0.13910430688274747
+      ],
+      "splits": {
+        "DISCOVERY": {
+          "status": "ESTIMABLE",
+          "signals": 99,
+          "signal_mean_atr": -0.07888574691743931,
+          "control_mean_atr": -0.16589378000687646,
+          "mean_edge_atr": 0.08700803308943715,
+          "median_edge_atr": -0.11807313868284963,
+          "positive_edge_rate": 0.45454545454545453,
+          "bootstrap_95ci": [
+            -0.3647033993130094,
+            0.544662911682422
+          ]
+        },
+        "DEVELOPMENT": {
+          "status": "ESTIMABLE",
+          "signals": 72,
+          "signal_mean_atr": -0.49600205354632165,
+          "control_mean_atr": -0.10351346595405381,
+          "mean_edge_atr": -0.3924885875922679,
+          "median_edge_atr": -0.3091484063123687,
+          "positive_edge_rate": 0.4166666666666667,
+          "bootstrap_95ci": [
+            -0.8052642905190556,
+            -0.013294886884434136
+          ]
+        },
+        "OOS": {
+          "status": "ESTIMABLE",
+          "signals": 36,
+          "signal_mean_atr": -0.055457630707130924,
+          "control_mean_atr": 0.21974016428953894,
+          "mean_edge_atr": -0.27519779499666985,
+          "median_edge_atr": -0.38901825831436143,
+          "positive_edge_rate": 0.3333333333333333,
+          "bootstrap_95ci": [
+            -0.7461889816794476,
+            0.18908754253410479
+          ]
+        }
+      },
+      "instrument": "EURUSD",
+      "timeframe": "H1",
+      "data_rows": 43197,
+      "period": [
+        "2019-08-28T00:00:00",
+        "2026-07-31T20:00:00"
+      ]
+    },
+    {
+      "status": "ESTIMABLE",
+      "signals": 193,
+      "signal_mean_atr": -0.1729575267379396,
+      "control_mean_atr": -0.026383887651057997,
+      "mean_edge_atr": -0.14657363908688156,
+      "median_edge_atr": -0.13209028941168413,
+      "positive_edge_rate": 0.46113989637305697,
+      "bootstrap_95ci": [
+        -0.35296865786960074,
+        0.057673474167668166
+      ],
+      "splits": {
+        "DISCOVERY": {
+          "status": "ESTIMABLE",
+          "signals": 98,
+          "signal_mean_atr": -0.21957784605088213,
+          "control_mean_atr": -0.04524073943122939,
+          "mean_edge_atr": -0.1743371066196527,
+          "median_edge_atr": -0.17757358346172758,
+          "positive_edge_rate": 0.4387755102040816,
+          "bootstrap_95ci": [
+            -0.48370919959358083,
+            0.1382454012108417
+          ]
+        },
+        "DEVELOPMENT": {
+          "status": "ESTIMABLE",
+          "signals": 54,
+          "signal_mean_atr": -0.177641284727483,
+          "control_mean_atr": -0.03482058677479477,
+          "mean_edge_atr": -0.14282069795268823,
+          "median_edge_atr": -0.0076147831173304925,
+          "positive_edge_rate": 0.5,
+          "bootstrap_95ci": [
+            -0.4879009830268459,
+            0.1878941056672433
+          ]
+        },
+        "OOS": {
+          "status": "ESTIMABLE",
+          "signals": 41,
+          "signal_mean_atr": -0.055354740784190525,
+          "control_mean_atr": 0.029800337401102547,
+          "mean_edge_atr": -0.08515507818529307,
+          "median_edge_atr": -0.07969618958271912,
+          "positive_edge_rate": 0.4634146341463415,
+          "bootstrap_95ci": [
+            -0.46170081190465745,
+            0.2830229226020679
+          ]
+        }
+      },
+      "instrument": "USDJPY",
+      "timeframe": "H1",
+      "data_rows": 43197,
+      "period": [
+        "2019-08-28T00:00:00",
+        "2026-07-31T20:00:00"
+      ]
+    },
+    {
+      "status": "ESTIMABLE",
+      "signals": 214,
+      "signal_mean_atr": -0.24578170459300572,
+      "control_mean_atr": -0.0799223288398177,
+      "mean_edge_atr": -0.165859375753188,
+      "median_edge_atr": -0.2102502969718908,
+      "positive_edge_rate": 0.42990654205607476,
+      "bootstrap_95ci": [
+        -0.37912495452649114,
+        0.05020277939784166
+      ],
+      "splits": {
+        "DISCOVERY": {
+          "status": "ESTIMABLE",
+          "signals": 103,
+          "signal_mean_atr": -0.12906605097429927,
+          "control_mean_atr": -0.023388429327269866,
+          "mean_edge_atr": -0.1056776216470294,
+          "median_edge_atr": -0.14147586752971864,
+          "positive_edge_rate": 0.4368932038834951,
+          "bootstrap_95ci": [
+            -0.4064704423308171,
+            0.20591373897624007
+          ]
+        },
+        "DEVELOPMENT": {
+          "status": "ESTIMABLE",
+          "signals": 67,
+          "signal_mean_atr": -0.36709999475151356,
+          "control_mean_atr": -0.10709439121376484,
+          "mean_edge_atr": -0.2600056035377487,
+          "median_edge_atr": -0.2607014499196939,
+          "positive_edge_rate": 0.40298507462686567,
+          "bootstrap_95ci": [
+            -0.6266412555962106,
+            0.053953670538018986
+          ]
+        },
+        "OOS": {
+          "status": "ESTIMABLE",
+          "signals": 44,
+          "signal_mean_atr": -0.3342677700954316,
+          "control_mean_atr": -0.17088740772022615,
+          "mean_edge_atr": -0.16338036237520548,
+          "median_edge_atr": -0.12916627647641826,
+          "positive_edge_rate": 0.45454545454545453,
+          "bootstrap_95ci": [
+            -0.6596791612131662,
+            0.3320979480387893
+          ]
+        }
+      },
+      "instrument": "AUDUSD",
+      "timeframe": "H1",
+      "data_rows": 43197,
+      "period": [
+        "2019-08-28T00:00:00",
+        "2026-07-31T20:00:00"
+      ]
+    },
+    {
+      "status": "ESTIMABLE",
+      "signals": 58,
+      "signal_mean_atr": -0.4016508705519847,
+      "control_mean_atr": -0.10093479028412931,
+      "mean_edge_atr": -0.30071608026785535,
+      "median_edge_atr": 0.03149142572603081,
+      "positive_edge_rate": 0.5,
+      "bootstrap_95ci": [
+        -0.713159839318594,
+        0.10049241769461585
+      ],
+      "splits": {
+        "DISCOVERY": {
+          "status": "ESTIMABLE",
+          "signals": 28,
+          "signal_mean_atr": -0.36477731863735813,
+          "control_mean_atr": -0.016685074988921935,
+          "mean_edge_atr": -0.3480922436484363,
+          "median_edge_atr": 0.15208611077890152,
+          "positive_edge_rate": 0.5357142857142857,
+          "bootstrap_95ci": [
+            -0.8186974377607154,
+            0.12086338049018563
+          ]
+        },
+        "DEVELOPMENT": {
+          "status": "ESTIMABLE",
+          "signals": 23,
+          "signal_mean_atr": -0.6677620583452422,
+          "control_mean_atr": -0.18061272646224602,
+          "mean_edge_atr": -0.48714933188299625,
+          "median_edge_atr": -0.5529223777696182,
+          "positive_edge_rate": 0.391304347826087,
+          "bootstrap_95ci": [
+            -1.323967928115866,
+            0.1522073522501916
+          ]
+        },
+        "OOS": {
+          "status": "ESTIMABLE",
+          "signals": 7,
+          "signal_mean_atr": 0.32522025311021274,
+          "control_mean_atr": -0.17613471830828967,
+          "mean_edge_atr": 0.5013549714185024,
+          "median_edge_atr": 1.117367388492912,
+          "positive_edge_rate": 0.7142857142857143,
+          "bootstrap_95ci": [
+            -0.5325889840591689,
+            1.5148872712900967
+          ]
+        }
+      },
+      "instrument": "USDJPY",
+      "timeframe": "H4",
+      "data_rows": 10433,
+      "period": [
+        "2019-08-28T00:00:00",
+        "2026-07-31T16:00:00"
+      ]
+    }
+  ],
+  "errors": []
+}
