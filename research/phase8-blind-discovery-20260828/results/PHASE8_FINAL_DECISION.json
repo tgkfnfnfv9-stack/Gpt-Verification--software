@@ -1,0 +1,34 @@
+{
+  "phase": "PHASE8_BLIND_DISCOVERY",
+  "status": "CLOSED",
+  "final_decision_counts": {
+    "REJECT_FOR_DEVELOPMENT": 15,
+    "WATCH": 0,
+    "DEVELOPMENT": 0
+  },
+  "last_candidate": {
+    "strategy_id": "STRAT-VV-104",
+    "previous_decision": "WATCH",
+    "final_decision": "REJECT_FOR_DEVELOPMENT",
+    "final_audit_run_id": 33213427085,
+    "matched_signals": 4968,
+    "globally_unified_unique_episodes": 1618,
+    "episode_weighted_mean_edge_atr": 0.2489843262915905,
+    "bootstrap_95ci": [-0.025461553402035934, 0.5193942718322244],
+    "one_sided_p": 0.03620121314971167,
+    "bh_fdr_adjusted_p": 0.543018197245675,
+    "positive_market_ratio": 0.6666666666666666,
+    "positive_timeframe_ratio": 0.6666666666666666,
+    "signal_return_clock_12h_atr": -0.3081978729972394,
+    "failed_gates": [
+      "bootstrap_ci_lower_gt_0",
+      "bh_fdr_lte_0_10",
+      "positive_timeframe_ratio_gte_0_67"
+    ]
+  },
+  "formal_hypotheses_including_pa002": 16,
+  "formal_hypotheses_rejected_for_development": 16,
+  "development_oos_final_holdout_accessed": false,
+  "mt5_implementation_allowed": false,
+  "authoritative_audit": "VV104_unified_episode_final_audit.json"
+}

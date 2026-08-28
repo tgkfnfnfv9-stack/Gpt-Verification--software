@@ -2,19 +2,40 @@
 
 更新日: 2026-08-28  
 評価範囲: Discoveryのみ（2019-08-28〜2022-08-28、Warm-upは2019-07-01から）  
-実行: GitHub Actions run `33210045954`
+初回実行: GitHub Actions run `33210045954`  
+最終統合監査: GitHub Actions run `33213427085`
 
 ## 結論
 
 | 判定 | 件数 | Strategy ID |
 |---|---:|---|
 | DEVELOPMENT | 0 | なし |
-| WATCH | 1 | STRAT-VV-104 |
-| REJECT | 14 | その他すべて |
+| WATCH | 0 | なし |
+| REJECT_FOR_DEVELOPMENT | 15 | 全候補 |
 
-`STRAT-VV-104`（Low-Participation Expansion Reversal）だけがM15とH1/H4の双方で
-episode-weighted mean edgeが正だった。ただし両方とも95% CIは0を跨ぎ、FDR Gateも
-未通過である。これは開発候補ではなく、定義を変えない統合episode監査だけを許すWATCHである。
+`STRAT-VV-104`（Low-Participation Expansion Reversal）は唯一WATCHだったが、
+全銘柄・M15/H1/H4を同一UTC日×方向episodeへ統合した最終監査で3 Gateに失敗した。
+よって`REJECT_FOR_DEVELOPMENT`へ確定し、Phase 8の生存候補は0となった。
+
+## VV-104最終統合監査
+
+| 指標 | 結果 |
+|---|---:|
+| Matched signals | 4,968 |
+| 統合unique episodes | 1,618 |
+| Episode-weighted Edge | +0.2490 ATR |
+| 95% CI | [-0.0255, 0.5194] |
+| One-sided p | 0.0362 |
+| BH-FDR adjusted p | 0.5430 |
+| 正の銘柄比率 | 66.67% |
+| 正の時間足比率 | 66.67% |
+| 12時間のSignal Return | -0.3082 ATR |
+| 最終判定 | REJECT_FOR_DEVELOPMENT |
+
+失敗Gateは、`95% CI下限 > 0`、`BH-FDR <= 0.10`、
+`正の時間足比率 >= 0.67`の3つ。H4 Edgeは`-0.0226 ATR`で、M15とH1だけを
+後付け採用することは禁止した。Signal Return自体も負であり、正のEdgeは
+matched controlがさらに悪かったことによる相対差である。
 
 ## 全15候補の横断結果
 
@@ -31,7 +52,7 @@ EdgeはPrimaryの実時間固定12時間、ATR単位。横断順位はM15とH1/H
 | Volume / Volatility | STRAT-VV-101 | Tick-Volume Range Shock Continuation | 1,654 | -0.2574 | 1,466 | -0.2443 | REJECT |
 | Volume / Volatility | STRAT-VV-102 | Low-Vol Squeeze Release | 1,741 | -0.4523 | 1,030 | -0.0873 | REJECT |
 | Volume / Volatility | STRAT-VV-103 | Climactic Wick Reversal | 410 | -0.3009 | 187 | +0.0197 | REJECT |
-| Volume / Volatility | STRAT-VV-104 | Low-Participation Expansion Reversal | 1,574 | +0.2501 | 444 | +0.1328 | WATCH |
+| Volume / Volatility | STRAT-VV-104 | Low-Participation Expansion Reversal | 1,574 | +0.2501 | 444 | +0.1328 | REJECT（最終統合監査） |
 | Volume / Volatility | STRAT-VV-105 | Volatility Regime Onset Continuation | 1,351 | -0.1488 | 642 | -0.1139 | REJECT |
 | Market Regime / Cross-Market | STRAT-MR-101 | USD Breadth Confirmation | 1,790 | -0.5675 | 1,595 | -0.4509 | REJECT |
 | Market Regime / Cross-Market | STRAT-MR-102 | JPY Cross Breadth Confirmation | 1,791 | -0.8578 | 1,435 | -0.6555 | REJECT |
@@ -55,6 +76,6 @@ EdgeはPrimaryの実時間固定12時間、ATR単位。横断順位はM15とH1/H
 - Final Holdout（2025-08-28〜2026-08-28）は未開封。
 - PA-002はREJECT_FOR_DEVELOPMENTのまま。再最適化、H4だけの採用、EA化は禁止。
 - Phase 8はDukascopyバーによるDiscovery screenであり、OANDA MT5 tick/cost検証ではない。
-- 次はSTRAT-VV-104のM15/H1/H4を同一calendar-day×side episodeへ統合して再集計する。
-  条件・閾値・銘柄・時間足は変更しない。通過しなければREJECT、通過した場合だけ
-  Development仕様を凍結する。
+- Phase 8の15候補はすべてREJECT_FOR_DEVELOPMENT。追加最適化・閾値変更・時間足選別をしない。
+- PA-002を含む正式検証16仮説すべてがDevelopment不採用。
+- 次に進む場合はPhase 8の答えを再利用せず、Phase 9として新しい独立仮説をOutcome閲覧前に登録する。

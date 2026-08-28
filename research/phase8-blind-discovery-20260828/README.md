@@ -51,20 +51,21 @@ GitHub Actions workflow:
 
 Raw市場データはRepositoryへ保存せず、取得manifest、SHA-256、検証結果だけをArtifactへ保存する。
 
-## Discovery結果
+## Discovery最終結果
 
 GitHub Actions run `33210045954` で、登録済み15候補をM15とH1/H4の両層で評価した。
 横断判定は有利な時間足だけを採用せず、両層のepisode-weighted mean edgeの小さい方を
 順位スコアとした。
 
 - DEVELOPMENT: 0
-- WATCH: 1（`STRAT-VV-104`）
-- REJECT: 14
+- WATCH: 0
+- REJECT_FOR_DEVELOPMENT: 15
 
-`STRAT-VV-104`はM15とH1/H4の平均Edgeがともに正だが、95% CIおよびBH-FDR Gateを
-通過していない。したがってDevelopmentへ進めず、同一条件での統合episode監査だけを
-次の許可作業とする。詳細は`results/RESULTS_SUMMARY.md`と
-`results/phase8_cross_timeframe_decision.json`を参照。
+`STRAT-VV-104`は最初の横断判定で唯一WATCHとなったため、run `33213427085`で
+全銘柄・M15/H1/H4を同一UTC日×方向episodeへ統合する最終監査を行った。統合Edgeは
+`+0.2490 ATR`だったが、95% CI下限、BH-FDR、正の時間足比率の3 Gateに失敗した。
+最終判定は`REJECT_FOR_DEVELOPMENT`であり、Phase 8の15候補に生存候補はない。
+詳細は`results/RESULTS_SUMMARY.md`と`results/VV104_unified_episode_final_audit.json`を参照。
 
 ## 禁止事項
 

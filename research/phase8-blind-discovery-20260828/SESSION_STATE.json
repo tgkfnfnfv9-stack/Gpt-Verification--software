@@ -1,7 +1,7 @@
 {
   "project": "auto-trading-multi-agent-research",
   "updated_at": "2026-08-28",
-  "phase": "PHASE8_DISCOVERY_COMPLETE",
+  "phase": "PHASE8_CLOSED_NO_DEVELOPMENT_CANDIDATES",
   "predecessor": {
     "strategy_id": "STRAT-PA-002",
     "decision": "REJECT_FOR_DEVELOPMENT",
@@ -27,12 +27,26 @@
     "registered_candidates_unchanged": true,
     "registered_instruments_unchanged": true,
     "registered_timeframes_unchanged": true,
+    "final_audit_workflow_run_id": 33213427085,
     "decision_counts": {
-      "REJECT": 14,
-      "WATCH": 1,
+      "REJECT_FOR_DEVELOPMENT": 15,
+      "WATCH": 0,
       "DEVELOPMENT": 0
     },
-    "watch_candidates": ["STRAT-VV-104"]
+    "watch_candidates": [],
+    "final_audited_candidate": {
+      "strategy_id": "STRAT-VV-104",
+      "decision": "REJECT_FOR_DEVELOPMENT",
+      "unified_episodes": 1618,
+      "episode_weighted_edge_atr": 0.2489843262915905,
+      "bootstrap_95ci": [-0.025461553402035934, 0.5193942718322244],
+      "bh_fdr_adjusted_p": 0.543018197245675,
+      "failed_gates": [
+        "bootstrap_ci_lower_gt_0",
+        "bh_fdr_lte_0_10",
+        "positive_timeframe_ratio_gte_0_67"
+      ]
+    }
   },
   "final_holdout": {
     "period": ["2025-08-28", "2026-08-28"],
@@ -44,7 +58,7 @@
     "account": "live-standard",
     "ea_allowed_after_all_gates_only": true
   },
-  "next_gate": "UNIFIED_DISCOVERY_EPISODE_AUDIT_FOR_STRAT_VV_104_WITHOUT_PARAMETER_CHANGES",
+  "next_gate": "START_NEW_INDEPENDENT_PHASE9_HYPOTHESIS_REGISTRATION_WITHOUT_REUSING_PHASE8_ANSWERS",
   "prohibited_next_actions": [
     "PA-002 optimization or threshold changes",
     "H4-only post-hoc selection",

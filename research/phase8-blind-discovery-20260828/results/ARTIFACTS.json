@@ -1,1 +1,34 @@
-{"workflow_run_id":33210045954,"workflow_head_sha":"809079db64943455ba3f157db975ffc13d6230fc","workflow_conclusion":"success","artifacts":[{"name":"phase8-discovery-M15","artifact_id":9702031286,"archive_sha256":"0573230b8a2bdcb8bf1fa4e9fbf38dc82ade89fdddcca57d164a8fff008e1486","repository_report":"phase8_M15_candidate_report.json","data_manifest":"phase8_M15_data_sha256.txt","row_counts":"phase8_M15_data_row_counts.txt"},{"name":"phase8-discovery-H1-H4","artifact_id":9701376752,"archive_sha256":"5354d26a2bf8a891083f836b0b767c0edc9b25108b685085bf8e2e70a15b9b67","repository_report":"phase8_H1H4_candidate_report.json","data_manifest":"phase8_H1H4_data_sha256.txt","row_counts":"phase8_H1H4_data_row_counts.txt"}],"raw_market_data_committed":false,"development_oos_final_holdout_accessed":false}
+{
+  "initial_discovery_run_id": 33210045954,
+  "final_unified_audit_run_id": 33213427085,
+  "final_unified_audit_head_sha": "2254808f4eacb34e9ce87bca2245d9c435478b6b",
+  "workflow_conclusion": "success",
+  "artifacts": [
+    {
+      "name": "phase8-discovery-M15",
+      "artifact_id": 9702031286,
+      "archive_sha256": "0573230b8a2bdcb8bf1fa4e9fbf38dc82ade89fdddcca57d164a8fff008e1486",
+      "repository_report": "phase8_M15_candidate_report.json",
+      "data_manifest": "phase8_M15_data_sha256.txt",
+      "row_counts": "phase8_M15_data_row_counts.txt"
+    },
+    {
+      "name": "phase8-discovery-H1-H4",
+      "artifact_id": 9701376752,
+      "archive_sha256": "5354d26a2bf8a891083f836b0b767c0edc9b25108b685085bf8e2e70a15b9b67",
+      "repository_report": "phase8_H1H4_candidate_report.json",
+      "data_manifest": "phase8_H1H4_data_sha256.txt",
+      "row_counts": "phase8_H1H4_data_row_counts.txt"
+    },
+    {
+      "name": "phase8-vv104-unified-final-audit",
+      "artifact_id": 9702980964,
+      "archive_sha256": "c92f5d300fe4f40871af3fd50f59d0a38fac0087ebef5b6b1631465dc6e7e10f",
+      "repository_report": "VV104_unified_episode_final_audit.json",
+      "data_manifest": "VV104_unified_data_sha256.txt",
+      "row_counts": "VV104_unified_data_row_counts.txt"
+    }
+  ],
+  "raw_market_data_committed": false,
+  "development_oos_final_holdout_accessed": false
+}
