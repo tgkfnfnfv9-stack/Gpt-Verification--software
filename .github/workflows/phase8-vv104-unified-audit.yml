@@ -1,0 +1,114 @@
+name: phase8-vv104-unified-audit
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/phase8-vv104-unified-audit.yml'
+      - 'research/phase8-blind-discovery-20260828/runner/vv104_unified_audit.py'
+      - 'research/phase8-blind-discovery-20260828/runner/blind_discovery.py'
+      - 'research/phase8-blind-discovery-20260828/tests/**'
+
+permissions:
+  contents: read
+
+jobs:
+  unified-audit:
+    name: VV-104 unified M15-H1-H4 audit
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+
+    steps:
+      - name: Checkout frozen source
+        uses: actions/checkout@v4
+
+      - name: Prove frozen registry and runner integrity
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m json.tool research/phase8-blind-discovery-20260828/spec/candidate_registry.json >/dev/null
+          python -m json.tool research/phase8-blind-discovery-20260828/policy/discovery_protocol.json >/dev/null
+          python -m unittest discover -s research/phase8-blind-discovery-20260828/tests -v
+          if grep -R --line-number -E '202[3-6]-|2022-08-2[89]' \
+            research/phase8-blind-discovery-20260828/runner/blind_discovery.py \
+            research/phase8-blind-discovery-20260828/runner/vv104_unified_audit.py; then
+            echo 'Audit runner contains a date outside the permitted Discovery boundary.' >&2
+            exit 1
+          fi
+
+      - name: Install pinned dukascopy-go v0.2.0
+        shell: bash
+        run: |
+          set -euo pipefail
+          url='https://github.com/Nosvemos/dukascopy-go/releases/download/v0.2.0/dukascopy-go_0.2.0_linux_amd64.tar.gz'
+          curl -L --fail --retry 3 -o /tmp/dukascopy-go.tar.gz "$url"
+          echo 'f78f621d747e7584be2ae6789f6b97e22ae656203cc9ab7a32766f699e455e4b  /tmp/dukascopy-go.tar.gz' | sha256sum -c -
+          install_dir="$(mktemp -d)"
+          tar -xzf /tmp/dukascopy-go.tar.gz -C "$install_dir"
+          binary="$(find "$install_dir" -type f -name dukascopy-go | head -1)"
+          chmod +x "$binary"
+          sudo install "$binary" /usr/local/bin/dukascopy-go
+
+      - name: Download BID and ASK Warm-up plus Discovery bars only
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p data results
+          symbols=(AUDJPY AUDUSD EURGBP EURJPY EURUSD GBPJPY GBPUSD USDJPY XAUUSD XAGUSD BRENTCMDUSD LIGHTCMDUSD)
+          for symbol in "${symbols[@]}"; do
+            for item in 'm15 M15' 'h1 H1'; do
+              read -r cli_timeframe file_timeframe <<< "$item"
+              for side in bid ask; do
+                output="data/${symbol}_${file_timeframe}_${side}.csv"
+                dukascopy-go download \
+                  --symbol "$symbol" \
+                  --timeframe "$cli_timeframe" \
+                  --side "$side" \
+                  --from '2019-07-01' \
+                  --to '2022-08-27 23:59' \
+                  --timezone UTC \
+                  --output "$output" \
+                  --engine jetta \
+                  --parallelism 4
+                test "$(wc -l < "$output")" -gt 500
+              done
+            done
+          done
+          sha256sum data/*.csv | sort > results/data_sha256.txt
+          wc -l data/*.csv | sort -k2 > results/data_row_counts.txt
+
+      - name: Run final unified episode audit
+        shell: bash
+        run: |
+          set -euo pipefail
+          python research/phase8-blind-discovery-20260828/runner/vv104_unified_audit.py \
+            --data-dir data \
+            --output-dir results
+
+      - name: Assert boundary and terminal decision
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          path = Path('results/VV104_unified_episode_final_audit.json')
+          report = json.loads(path.read_text(encoding='utf-8'))
+          assert report['evaluated_split'] == 'DISCOVERY_ONLY'
+          assert report['development_oos_final_holdout_accessed'] is False
+          assert report['candidate_definition_changed'] is False
+          assert report['instrument_or_timeframe_selection_changed'] is False
+          assert report['decision'] in {'DEVELOPMENT', 'REJECT_FOR_DEVELOPMENT'}
+          assert len(report['multiplicity_reference']) == 15
+          assert len(report['data_manifest']['series']) == 36
+          assert all(row['last'] < '2022-08-28T00:00:00' for row in report['data_manifest']['series'])
+          PY
+
+      - name: Upload final audit
+        uses: actions/upload-artifact@v4
+        with:
+          name: phase8-vv104-unified-final-audit
+          path: results/
+          if-no-files-found: error
+          retention-days: 14
