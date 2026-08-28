@@ -575,14 +575,21 @@ def cluster_stats(rows: list[dict], candidate_id: str) -> dict:
     groups=defaultdict(list)
     for row in rows: groups[(row["dt"].date().isoformat(),row["side"])].append(row["edge_primary"])
     episodes=[statistics.mean(values) for values in groups.values()]
-    if not episodes: return {"unique_episodes":0,"bootstrap_95ci":[None,None],"one_sided_p":None}
+    if not episodes: return {"unique_episodes":0,"episode_weighted_mean_edge_atr":None,"bootstrap_95ci":[None,None],"one_sided_p":None}
     rng=random.Random(int(hashlib.sha256(f"{candidate_id}|{SEED}".encode()).hexdigest()[:12],16)); means=[]
     for _ in range(10000): means.append(statistics.mean(rng.choice(episodes) for __ in episodes))
     means.sort(); ci=[means[int(.025*len(means))],means[int(.975*len(means))]]
     if len(episodes)>1 and statistics.stdev(episodes)>0:
         z=statistics.mean(episodes)/(statistics.stdev(episodes)/math.sqrt(len(episodes))); p=.5*math.erfc(z/math.sqrt(2))
     else: p=1.0
-    return {"unique_episodes":len(episodes),"bootstrap_95ci":ci,"one_sided_p":p}
+    return {"unique_episodes":len(episodes),"episode_weighted_mean_edge_atr":statistics.mean(episodes),"bootstrap_95ci":ci,"one_sided_p":p}
+
+
+def episode_weighted_effect(rows: list[dict]) -> float | None:
+    groups=defaultdict(list)
+    for row in rows:
+        groups[(row["dt"].date().isoformat(),row["side"])].append(row["edge_primary"])
+    return statistics.mean(statistics.mean(values) for values in groups.values()) if groups else None
 
 
 def bh_adjust(items: list[tuple[str,float]]) -> dict[str,float]:
@@ -648,21 +655,26 @@ def main() -> None:
         })
     adjusted=bh_adjust(pvalues)
     for report in reports:
-        cid=report["strategy_id"]; n=report["sample_size"]["unique_episodes"]; edge=report["primary_clock_12h"].get("mean_edge_atr",0) or 0
-        ci=report["cluster_inference"]["bootstrap_95ci"]; market_values=[x.get("mean_edge_atr") for x in report["by_instrument"].values() if x.get("matched_signals",0)>0]
-        tf_values=[x.get("mean_edge_atr") for x in report["by_timeframe"].values() if x.get("matched_signals",0)>0]
+        cid=report["strategy_id"]; n=report["sample_size"]["unique_episodes"]
+        ci=report["cluster_inference"]["bootstrap_95ci"]
+        candidate_rows=[x for x in matched if x["candidate_id"]==cid]
+        market_values=[episode_weighted_effect([x for x in candidate_rows if x["symbol"]==symbol]) for symbol in sorted({x["symbol"] for x in candidate_rows})]
+        tf_values=[episode_weighted_effect([x for x in candidate_rows if x["timeframe"]==tf]) for tf in sorted({x["timeframe"] for x in candidate_rows})]
+        market_values=[x for x in market_values if x is not None]; tf_values=[x for x in tf_values if x is not None]
         market_ratio=sum(x>0 for x in market_values)/len(market_values) if market_values else 0; tf_ratio=sum(x>0 for x in tf_values)/len(tf_values) if tf_values else 0
         report["cluster_inference"]["bh_fdr_adjusted_p"]=adjusted[cid]; sens=report["parameter_sensitivity"]["same_sign_ratio"]
-        if n>=100 and edge>=.05 and ci[0] is not None and ci[0]>0 and adjusted[cid]<=.10 and market_ratio>=.60 and tf_ratio>=.67 and sens>=.67:
+        episode_edge=report["cluster_inference"]["episode_weighted_mean_edge_atr"] or 0
+        report["primary_clock_12h"]["effect_note"]="mean_edge_atr is signal-weighted descriptive output; promotion uses episode_weighted_mean_edge_atr from cluster_inference."
+        if n>=100 and episode_edge>=.05 and ci[0] is not None and ci[0]>0 and adjusted[cid]<=.10 and market_ratio>=.60 and tf_ratio>=.67 and sens>=.67:
             report["decision"]="DEVELOPMENT"
-        elif n>=50 and edge>0 and sens>=.67:
+        elif n>=50 and episode_edge>0 and sens>=.67:
             report["decision"]="WATCH"
         else: report["decision"]="REJECT"
         report["decision_inputs"]={"positive_market_ratio":market_ratio,"positive_timeframe_ratio":tf_ratio,"sensitivity_same_sign_ratio":sens}
     ranked={}
     for family in ("PRICE_ACTION","VOLUME_VOLATILITY","MARKET_REGIME_CROSS_MARKET"):
         candidates=[x for x in reports if x["family"]==family]
-        ranked[family]=[x["strategy_id"] for x in sorted(candidates,key=lambda x:x["primary_clock_12h"].get("mean_edge_atr",-999) if x["primary_clock_12h"].get("matched_signals",0) else -999,reverse=True)]
+        ranked[family]=[x["strategy_id"] for x in sorted(candidates,key=lambda x:x["cluster_inference"].get("episode_weighted_mean_edge_atr") if x["cluster_inference"].get("episode_weighted_mean_edge_atr") is not None else -999,reverse=True)]
     manifest={"base_timeframe":args.base_timeframe,"series":[{"symbol":s.symbol,"timeframe":s.timeframe,"rows":len(s.bars),"first":s.bars[0].dt.isoformat(),"last":s.bars[-1].dt.isoformat()} for s in series_map.values()]}
     output={"phase":"PHASE8_BLIND_DISCOVERY","evaluated_split":"DISCOVERY_ONLY","evaluated_period":[DISCOVERY_START.isoformat(),DISCOVERY_END.isoformat()],"development_oos_final_holdout_accessed":False,"signal_basis":"BID_OHLC_AND_BID_TICK_VOLUME","primary_horizon":"CLOCK_12H","ranked_top5_per_family":ranked,"candidates":reports,"data_manifest":manifest}
     (args.output_dir/f"phase8_{args.base_timeframe.lower()}_candidate_report.json").write_text(json.dumps(output,ensure_ascii=False,indent=2),encoding="utf-8")

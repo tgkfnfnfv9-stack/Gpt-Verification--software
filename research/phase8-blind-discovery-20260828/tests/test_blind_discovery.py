@@ -76,6 +76,15 @@ class BlindDiscoveryTests(unittest.TestCase):
         result = MODULE.lagged_quantile(values, history=240, gap=8, quantile=0.2)
         self.assertEqual(result[259], 1.0)
 
+    def test_episode_weighting_caps_dense_day(self):
+        rows = []
+        for _ in range(100):
+            rows.append({"dt": datetime(2020, 1, 1, 12), "side": "BUY", "edge_primary": 1.0})
+        rows.append({"dt": datetime(2020, 1, 2, 12), "side": "BUY", "edge_primary": -1.0})
+        self.assertAlmostEqual(MODULE.episode_weighted_effect(rows), 0.0)
+        stats = MODULE.cluster_stats(rows, "TEST")
+        self.assertAlmostEqual(stats["episode_weighted_mean_edge_atr"], 0.0)
+
 
 if __name__ == "__main__":
     unittest.main()
