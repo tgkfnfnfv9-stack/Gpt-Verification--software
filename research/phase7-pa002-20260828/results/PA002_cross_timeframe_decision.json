@@ -1,0 +1,93 @@
+{
+  "strategy_id": "STRAT-PA-002",
+  "decision": "REJECT_FOR_DEVELOPMENT",
+  "scope": "PRELIMINARY_DUKASCOPY_BAR_SCREEN",
+  "run_date": "2026-08-28",
+  "github_repository": "tgkfnfnfv9-stack/Gpt-Verification--software",
+  "github_runs": {
+    "M15": 33167784417,
+    "H1_H4": 33175890338
+  },
+  "data": {
+    "source": "Dukascopy JForex via pinned dukascopy-go v0.2.0",
+    "instruments": [
+      "AUDJPY",
+      "AUDUSD",
+      "EURGBP",
+      "EURJPY",
+      "EURUSD",
+      "GBPJPY",
+      "GBPUSD",
+      "USDJPY",
+      "XAGUSD",
+      "XAUUSD"
+    ],
+    "timeframes": ["M15", "H1", "H4"],
+    "source_period": ["2019-08-28", "2026-08-28"],
+    "evaluated_until_exclusive": "2025-08-28",
+    "final_holdout": {
+      "period": ["2025-08-28", "2026-08-28"],
+      "status": "MASKED_NOT_EVALUATED"
+    }
+  },
+  "aggregate": {
+    "cells": 30,
+    "matched_signals": 11445,
+    "signal_weighted_mean_edge_atr": -0.027630813595128423,
+    "split_weighted_mean_edge_atr": {
+      "DISCOVERY": -0.03974933999769034,
+      "DEVELOPMENT": -0.04992436691658489,
+      "OOS": 0.05173168339908035
+    }
+  },
+  "timeframe_summary": [
+    {
+      "timeframe": "M15",
+      "cells": 10,
+      "matched_signals": 8836,
+      "weighted_mean_edge_atr": -0.023032216312235693,
+      "positive_full_period_cells": 2,
+      "full_period_ci_excludes_zero_positive": 0,
+      "positive_in_discovery_development_oos": 0
+    },
+    {
+      "timeframe": "H1",
+      "cells": 10,
+      "matched_signals": 2119,
+      "weighted_mean_edge_atr": -0.06194434859149578,
+      "positive_full_period_cells": 1,
+      "full_period_ci_excludes_zero_positive": 0,
+      "positive_in_discovery_development_oos": 0
+    },
+    {
+      "timeframe": "H4",
+      "cells": 10,
+      "matched_signals": 490,
+      "weighted_mean_edge_atr": 0.03783280898785585,
+      "positive_full_period_cells": 6,
+      "full_period_ci_excludes_zero_positive": 0,
+      "positive_in_discovery_development_oos": 3,
+      "positive_all_splits_cells": [
+        {"instrument": "AUDJPY", "oos_signals": 10},
+        {"instrument": "AUDUSD", "oos_signals": 8},
+        {"instrument": "EURJPY", "oos_signals": 1}
+      ]
+    }
+  ],
+  "gate_reasons": [
+    "No market-timeframe cell has a positive full-period bootstrap 95% confidence interval excluding zero.",
+    "M15 and H1 weighted effects are negative.",
+    "The three H4 cells positive in all splits have only 1 to 10 OOS signals.",
+    "The aggregate Development effect is negative and the OOS sign change is not stable across cells.",
+    "The provisional common-edge minimum of 200 unique OOS episodes and 70% positive markets is not met.",
+    "Energy markets were not acquired, so cross-asset common-edge recognition is not estimable."
+  ],
+  "method_limitations": [
+    "This is a bar-data screening run, not the final OANDA MT5 broker validation.",
+    "Signal midpoint OHLC was approximated from separate BID and ASK bars; synchronized tick-derived MID was not available.",
+    "Controls were matched by instrument, timeframe, year, UTC four-hour block, prior-only ATR/trend/spread deciles, and a plus/minus 60-day window; the temporary runner did not explicitly enforce the frozen split label during matching.",
+    "Bootstrap resampled signal edges independently and did not apply synchronized global-block clustering or familywise multiple-testing correction.",
+    "Therefore this run can reject promotion of this implementation but cannot establish that every valid implementation of the hypothesis has zero edge."
+  ],
+  "next_action": "Archive PA-002 as a rejected preliminary implementation. Return to blind discovery for new price, volume-volatility, and regime hypotheses; only qualifying candidates receive canonical OANDA MT5 tick/BID/ASK validation."
+}
