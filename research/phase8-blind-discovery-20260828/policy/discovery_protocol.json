@@ -1,0 +1,85 @@
+{
+  "version": "1.0.0",
+  "status": "FROZEN_BEFORE_PHASE8_OUTCOME_ACCESS",
+  "seed": 20260828,
+  "signal_basis": "BID_OHLC_AND_BID_TICK_VOLUME",
+  "execution": {
+    "decision_time": "SIGNAL_BAR_CLOSE",
+    "entry": "NEXT_TRADABLE_BAR_OPEN",
+    "buy_entry": "ASK_OPEN",
+    "buy_exit": "BID_OPEN",
+    "sell_entry": "BID_OPEN",
+    "sell_exit": "ASK_OPEN",
+    "slippage": "NOT_AVAILABLE_IN_PRELIMINARY_DUKASCOPY_BAR_SCREEN",
+    "commission_swap": "NOT_INCLUDED_IN_ENTRY_EDGE_SCREEN",
+    "promotion_requires_oanda_cost_revalidation": true
+  },
+  "splits": {
+    "DISCOVERY": ["2019-08-28T00:00:00Z", "2022-08-28T00:00:00Z"],
+    "DEVELOPMENT": ["2022-08-28T00:00:00Z", "2024-08-28T00:00:00Z"],
+    "OOS": ["2024-08-28T00:00:00Z", "2025-08-28T00:00:00Z"],
+    "FINAL_HOLDOUT": ["2025-08-28T00:00:00Z", "2026-08-28T00:00:00Z"]
+  },
+  "phase8_download_allowlist": ["WARMUP", "DISCOVERY"],
+  "horizons": {
+    "bar_fixed": [1, 3, 6],
+    "clock_fixed_hours": [4, 12, 24],
+    "primary": "CLOCK_12H"
+  },
+  "matched_control": {
+    "same": ["candidate_id", "instrument", "timeframe", "split_label", "hypothetical_side", "calendar_year", "utc_4h_block"],
+    "nearest_prior_only_deciles": ["ATR14", "ABS_8BAR_TREND_OVER_ATR", "SPREAD_OVER_ATR", "TICK_VOLUME_RATIO"],
+    "calendar_window_days": 90,
+    "requested_controls": 5,
+    "minimum_controls": 3,
+    "reuse_cap": 3,
+    "signal_control_overlap_exclusion_bars": 24,
+    "control_signal_status": "CANDIDATE_SIGNAL_FALSE",
+    "tie_break": "SHA256(candidate|instrument|timeframe|signal_index|control_index|seed)"
+  },
+  "episode": {
+    "id": "candidate_id + floor_utc_24h + direction_cluster",
+    "nested_timeframes_clustered": true,
+    "synchronized_markets_clustered": true,
+    "same_episode_total_weight_max": 1.0
+  },
+  "required_outputs": [
+    "sample_size",
+    "matched_sample_size",
+    "future_return",
+    "mfe",
+    "mae",
+    "by_year",
+    "by_instrument",
+    "by_timeframe",
+    "parameter_sensitivity",
+    "weaknesses",
+    "decision"
+  ],
+  "discovery_decision": {
+    "DEVELOPMENT": {
+      "matched_episodes_min": 100,
+      "primary_edge_atr_min": 0.05,
+      "cluster_bootstrap_ci_lower_gt": 0.0,
+      "positive_market_ratio_min": 0.60,
+      "positive_timeframe_ratio_min": 0.67,
+      "sensitivity_same_sign_ratio_min": 0.67
+    },
+    "WATCH": "Fails one DEVELOPMENT threshold but has matched_episodes >= 50, positive primary edge, and no integrity failure",
+    "REJECT": "Integrity failure, matched_episodes < 50, non-positive primary edge, or sensitivity sign instability"
+  },
+  "multiple_testing": {
+    "discovery_fdr_q": 0.10,
+    "note": "Discovery ranking is descriptive until synchronized block p-values and BH-FDR are emitted."
+  },
+  "promotion_sequence": [
+    "DISCOVERY",
+    "FREEZE_SURVIVORS",
+    "DEVELOPMENT",
+    "WALK_FORWARD",
+    "OOS",
+    "OANDA_MT5_COST_VALIDATION",
+    "FINAL_HOLDOUT_ONCE",
+    "EA_IMPLEMENTATION"
+  ]
+}

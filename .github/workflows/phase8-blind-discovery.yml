@@ -1,0 +1,124 @@
+name: phase8-blind-discovery
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/phase8-blind-discovery.yml'
+      - 'research/phase8-blind-discovery-20260828/**'
+
+permissions:
+  contents: read
+
+jobs:
+  discovery:
+    name: Discovery ${{ matrix.label }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - label: M15
+            cli_timeframe: m15
+            file_timeframe: M15
+          - label: H1-H4
+            cli_timeframe: h1
+            file_timeframe: H1
+
+    steps:
+      - name: Checkout frozen source
+        uses: actions/checkout@v4
+
+      - name: Prove phase boundary and validate files
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m json.tool research/phase8-blind-discovery-20260828/spec/candidate_registry.json >/dev/null
+          python -m json.tool research/phase8-blind-discovery-20260828/policy/discovery_protocol.json >/dev/null
+          python -m unittest discover -s research/phase8-blind-discovery-20260828/tests -v
+          if grep -R --line-number -E '202[3-6]-|2022-08-2[89]' research/phase8-blind-discovery-20260828/runner; then
+            echo 'Runner contains a date outside the permitted Discovery boundary.' >&2
+            exit 1
+          fi
+
+      - name: Install pinned dukascopy-go v0.2.0
+        shell: bash
+        run: |
+          set -euo pipefail
+          url='https://github.com/Nosvemos/dukascopy-go/releases/download/v0.2.0/dukascopy-go_0.2.0_linux_amd64.tar.gz'
+          curl -L --fail --retry 3 -o /tmp/dukascopy-go.tar.gz "$url"
+          echo 'f78f621d747e7584be2ae6789f6b97e22ae656203cc9ab7a32766f699e455e4b  /tmp/dukascopy-go.tar.gz' | sha256sum -c -
+          install_dir="$(mktemp -d)"
+          tar -xzf /tmp/dukascopy-go.tar.gz -C "$install_dir"
+          binary="$(find "$install_dir" -type f -name dukascopy-go | head -1)"
+          chmod +x "$binary"
+          sudo install "$binary" /usr/local/bin/dukascopy-go
+          dukascopy-go --version
+
+      - name: Verify registered Energy instrument codes
+        shell: bash
+        run: |
+          set -euo pipefail
+          dukascopy-go instruments --query brent
+          dukascopy-go instruments --query light
+
+      - name: Download BID and ASK Discovery bars only
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p data results
+          symbols=(AUDJPY AUDUSD EURGBP EURJPY EURUSD GBPJPY GBPUSD USDJPY XAUUSD XAGUSD BRENTCMDUSD LIGHTCMDUSD)
+          for symbol in "${symbols[@]}"; do
+            for side in bid ask; do
+              output="data/${symbol}_${{ matrix.file_timeframe }}_${side}.csv"
+              dukascopy-go download \
+                --symbol "$symbol" \
+                --timeframe '${{ matrix.cli_timeframe }}' \
+                --side "$side" \
+                --from '2019-07-01' \
+                --to '2022-08-27 23:59' \
+                --timezone UTC \
+                --output "$output" \
+                --engine jetta \
+                --parallelism 4
+              test "$(wc -l < "$output")" -gt 500
+            done
+          done
+          sha256sum data/*.csv | sort > results/data_sha256.txt
+          wc -l data/*.csv | sort -k2 > results/data_row_counts.txt
+
+      - name: Run frozen Discovery screen
+        shell: bash
+        run: |
+          set -euo pipefail
+          python research/phase8-blind-discovery-20260828/runner/blind_discovery.py \
+            --data-dir data \
+            --base-timeframe '${{ matrix.file_timeframe }}' \
+            --output-dir results
+
+      - name: Assert no later split was accessed
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          reports = list(Path('results').glob('phase8_*_candidate_report.json'))
+          assert len(reports) == 1, reports
+          report = json.loads(reports[0].read_text(encoding='utf-8'))
+          assert report['evaluated_split'] == 'DISCOVERY_ONLY'
+          assert report['development_oos_final_holdout_accessed'] is False
+          assert report['evaluated_period'][1].startswith('2022-08-28')
+          assert len(report['candidates']) == 15
+          assert all(c['decision'] in {'REJECT','WATCH','DEVELOPMENT'} for c in report['candidates'])
+          PY
+
+      - name: Upload auditable results
+        uses: actions/upload-artifact@v4
+        with:
+          name: phase8-discovery-${{ matrix.label }}
+          path: results/
+          if-no-files-found: error
+          retention-days: 14

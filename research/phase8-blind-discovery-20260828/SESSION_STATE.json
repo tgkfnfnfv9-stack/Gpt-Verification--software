@@ -1,0 +1,36 @@
+{
+  "project": "auto-trading-multi-agent-research",
+  "updated_at": "2026-08-28",
+  "phase": "PHASE8_BLIND_DISCOVERY_PREREGISTERED",
+  "predecessor": {
+    "strategy_id": "STRAT-PA-002",
+    "decision": "REJECT_FOR_DEVELOPMENT",
+    "optimization_allowed": false,
+    "mt5_implementation_allowed": false
+  },
+  "candidate_count": 15,
+  "families": {
+    "PRICE_ACTION": 5,
+    "VOLUME_VOLATILITY": 5,
+    "MARKET_REGIME_CROSS_MARKET": 5
+  },
+  "data_scope": {
+    "warmup_start": "2019-07-01T00:00:00Z",
+    "discovery_start": "2019-08-28T00:00:00Z",
+    "discovery_end_exclusive": "2022-08-28T00:00:00Z",
+    "development_downloaded": false,
+    "oos_downloaded": false,
+    "final_holdout_downloaded": false
+  },
+  "final_holdout": {
+    "period": ["2025-08-28", "2026-08-28"],
+    "status": "MASKED_NOT_DOWNLOADED_NOT_EVALUATED"
+  },
+  "target_execution": {
+    "platform": "MT5",
+    "broker": "OANDA",
+    "account": "live-standard",
+    "ea_allowed_after_all_gates_only": true
+  },
+  "next_gate": "RUN_DISCOVERY_M15_H1_H4_AND_AUDIT_OUTPUTS"
+}

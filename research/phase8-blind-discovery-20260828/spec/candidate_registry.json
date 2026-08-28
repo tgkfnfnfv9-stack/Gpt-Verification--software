@@ -1,0 +1,325 @@
+{
+  "registry_version": "1.0.0",
+  "status": "FROZEN_BEFORE_PHASE8_OUTCOME_ACCESS",
+  "frozen_at": "2026-08-28T00:00:00Z",
+  "forbidden_ancestry": ["LIQUIDITY_SWEEP", "STRAT-PA-002", "FAILED_BREAKOUT_REJECTION"],
+  "universe": {
+    "FX": ["AUDJPY", "AUDUSD", "EURGBP", "EURJPY", "EURUSD", "GBPJPY", "GBPUSD", "USDJPY"],
+    "PRECIOUS_METALS": ["XAUUSD", "XAGUSD"],
+    "ENERGY": ["BRENTCMDUSD", "LIGHTCMDUSD"],
+    "timeframes": ["M15", "H1", "H4"]
+  },
+  "common_information_rule": "Only completed BID bars, BID tick volume, completed ASK bars for spread, and synchronized completed bars of named companion markets at or before signal close are available.",
+  "common_entry": "Enter at the first bar open strictly after the completed signal bar; BUY at ASK open, SELL at BID open.",
+  "common_outcomes": {
+    "return": "Executable-side future open minus executable-side entry, divided by prior ATR14; BUY and SELL signs normalized positive when profitable.",
+    "mfe": "Best executable-side intrahorizon excursion divided by prior ATR14.",
+    "mae": "Worst executable-side intrahorizon excursion divided by prior ATR14; adverse values are negative.",
+    "bar_fixed": [1, 3, 6],
+    "clock_fixed_hours": [4, 12, 24],
+    "primary": "CLOCK_12H"
+  },
+  "candidates": [
+    {
+      "strategy_id": "STRAT-PA-101",
+      "family": "PRICE_ACTION",
+      "name": "Compression Range Break Continuation",
+      "hypothesis": "A narrow six-bar balance followed by a strong close beyond the prior 20-bar range has continuation, not rejection, over the next 12 hours.",
+      "targets": "ALL_UNIVERSE",
+      "timeframes": ["M15", "H1", "H4"],
+      "entry_conditions": [
+        "ATR14(t) uses BID true ranges t-14..t-1.",
+        "CompressionRange=max(H[t-6:t-1])-min(L[t-6:t-1]) <= 1.00*ATR14(t).",
+        "BUY: C[t] >= max(H[t-20:t-1])+0.10*ATR14(t); SELL symmetric below prior low.",
+        "abs(C[t]-O[t])/(H[t]-L[t]) >= 0.60.",
+        "BUY close location (C-L)/(H-L) >= 0.80; SELL (H-C)/(H-L) >= 0.80."
+      ],
+      "parameter_sensitivity": {
+        "compression_atr_max": [0.80, 1.00, 1.20],
+        "break_atr_min": [0.05, 0.10, 0.15],
+        "body_fraction_min": [0.50, 0.60, 0.70]
+      },
+      "weaknesses": ["Gapless FX bars can create many correlated signals.", "Breakout performance may be session-dependent."]
+    },
+    {
+      "strategy_id": "STRAT-PA-102",
+      "family": "PRICE_ACTION",
+      "name": "NR7 Inside-Bar Release",
+      "hypothesis": "An inside bar that is also the narrowest of seven bars stores short-term imbalance; a decisive break of the two-bar structure continues.",
+      "targets": "ALL_UNIVERSE",
+      "timeframes": ["M15", "H1", "H4"],
+      "entry_conditions": [
+        "H[t-1] <= H[t-2] and L[t-1] >= L[t-2].",
+        "Range[t-1] <= min(Range[t-7:t-1]).",
+        "BUY: C[t] >= max(H[t-1],H[t-2])+0.05*ATR14(t); SELL symmetric.",
+        "Directional body fraction on t >= 0.50 and directional close location >= 0.75."
+      ],
+      "parameter_sensitivity": {
+        "narrowest_lookback": [5, 7, 9],
+        "break_atr_min": [0.00, 0.05, 0.10],
+        "body_fraction_min": [0.40, 0.50, 0.60]
+      },
+      "weaknesses": ["Rare on H4.", "Inside-bar frequency depends on feed high/low construction."]
+    },
+    {
+      "strategy_id": "STRAT-PA-103",
+      "family": "PRICE_ACTION",
+      "name": "EMA Pullback Resumption",
+      "hypothesis": "A shallow pullback to a rising/falling EMA20 followed by a break of the pullback bar resumes an established EMA20/EMA50 trend.",
+      "targets": "ALL_UNIVERSE",
+      "timeframes": ["M15", "H1", "H4"],
+      "entry_conditions": [
+        "BUY: EMA20[t-1]-EMA50[t-1] >= 0.25*ATR14(t); SELL <= -0.25*ATR14(t).",
+        "BUY: EMA20[t-1]-EMA20[t-6] >= 0.10*ATR14(t); SELL symmetric.",
+        "BUY pullback: L[t-1] <= EMA20[t-1] and C[t-1] >= EMA20[t-1]-0.25*ATR14(t); SELL symmetric.",
+        "BUY trigger: C[t] >= H[t-1]+0.05*ATR14(t), C[t]>EMA20[t], bullish body fraction >=0.40; SELL symmetric."
+      ],
+      "parameter_sensitivity": {
+        "ema_separation_atr_min": [0.15, 0.25, 0.35],
+        "ema_slope_atr_min": [0.05, 0.10, 0.15],
+        "trigger_atr_min": [0.00, 0.05, 0.10]
+      },
+      "weaknesses": ["EMA lag can enter late.", "Trend clustering reduces independent episode count."]
+    },
+    {
+      "strategy_id": "STRAT-PA-104",
+      "family": "PRICE_ACTION",
+      "name": "Three-Bar Staircase Continuation",
+      "hypothesis": "Three consecutive directional closes with efficient net displacement and a final close beyond the preceding high/low indicate persistent order flow.",
+      "targets": "ALL_UNIVERSE",
+      "timeframes": ["M15", "H1", "H4"],
+      "entry_conditions": [
+        "BUY: C[t-2]<C[t-1]<C[t]; SELL: C[t-2]>C[t-1]>C[t].",
+        "abs(C[t]-C[t-3]) >= 1.00*ATR14(t).",
+        "Each of bars t-2..t has directional body fraction >=0.35.",
+        "BUY: C[t]>=H[t-1] and close location >=0.75; SELL symmetric."
+      ],
+      "parameter_sensitivity": {
+        "net_move_atr_min": [0.75, 1.00, 1.25],
+        "per_bar_body_fraction_min": [0.25, 0.35, 0.45],
+        "close_location_min": [0.65, 0.75, 0.85]
+      },
+      "weaknesses": ["May buy short-term exhaustion.", "Signals overlap strongly during trends."]
+    },
+    {
+      "strategy_id": "STRAT-PA-105",
+      "family": "PRICE_ACTION",
+      "name": "UTC Overnight Range Break",
+      "hypothesis": "A decisive break during 06:00-10:00 UTC of the fixed 00:00-06:00 UTC range continues during the active European session.",
+      "targets": "ALL_UNIVERSE",
+      "timeframes": ["M15", "H1"],
+      "entry_conditions": [
+        "Build each UTC day's range from completed bars with open time >=00:00 and bar close <=06:00 UTC.",
+        "Only bars closing after 06:00 and at or before 10:00 UTC are eligible.",
+        "BUY: C[t]>=OvernightHigh+0.15*ATR14(t); SELL <=OvernightLow-0.15*ATR14(t).",
+        "Directional close location >=0.75; take only the first signal per instrument/day/direction."
+      ],
+      "parameter_sensitivity": {
+        "range_end_utc_hour": [5, 6, 7],
+        "signal_end_utc_hour": [9, 10, 11],
+        "break_atr_min": [0.10, 0.15, 0.20]
+      },
+      "weaknesses": ["Not defined for H4 because the fixed clock window cannot be represented exactly.", "DST-independent UTC window may not align equally across years."]
+    },
+    {
+      "strategy_id": "STRAT-VV-101",
+      "family": "VOLUME_VOLATILITY",
+      "name": "Tick-Volume Range Shock Continuation",
+      "hypothesis": "A large directional bar accompanied by an exceptional tick-volume increase reflects participation that persists beyond the signal bar.",
+      "targets": "ALL_UNIVERSE",
+      "timeframes": ["M15", "H1", "H4"],
+      "entry_conditions": [
+        "BID tick volume V[t] >= 2.00*median(V[t-20:t-1]).",
+        "Range[t] >= 1.50*ATR14(t).",
+        "Directional body fraction >=0.60 and directional close location >=0.80.",
+        "Direction is sign(C[t]-O[t]); zero body is ineligible."
+      ],
+      "parameter_sensitivity": {
+        "volume_ratio_min": [1.60, 2.00, 2.40],
+        "range_atr_min": [1.25, 1.50, 1.75],
+        "body_fraction_min": [0.50, 0.60, 0.70]
+      },
+      "weaknesses": ["Dukascopy volume is tick volume, not centralized traded volume.", "Volume scales may change after feed changes."]
+    },
+    {
+      "strategy_id": "STRAT-VV-102",
+      "family": "VOLUME_VOLATILITY",
+      "name": "Low-Volatility Squeeze Release",
+      "hypothesis": "An unusually quiet eight-bar window followed by directional range expansion starts a new volatility impulse.",
+      "targets": "ALL_UNIVERSE",
+      "timeframes": ["M15", "H1", "H4"],
+      "entry_conditions": [
+        "median(TR[t-8:t-1]) <= 20th percentile of TR[t-248:t-9].",
+        "Range[t] >= 1.30*ATR14(t).",
+        "Directional body fraction >=0.55 and directional close location >=0.75.",
+        "Direction is sign(C[t]-O[t])."
+      ],
+      "parameter_sensitivity": {
+        "quiet_percentile_max": [0.15, 0.20, 0.25],
+        "quiet_bars": [6, 8, 10],
+        "release_range_atr_min": [1.10, 1.30, 1.50]
+      },
+      "weaknesses": ["Rolling percentile needs long warm-up.", "News shocks may dominate the release and increase slippage."]
+    },
+    {
+      "strategy_id": "STRAT-VV-103",
+      "family": "VOLUME_VOLATILITY",
+      "name": "Climactic Wick Reversal",
+      "hypothesis": "A high-volume, extreme-range bar with a dominant terminal wick after a three-bar impulse represents short-term exhaustion.",
+      "targets": "ALL_UNIVERSE",
+      "timeframes": ["M15", "H1", "H4"],
+      "entry_conditions": [
+        "Range[t] >= 2.50*ATR14(t) and V[t] >= 1.80*median(V[t-20:t-1]).",
+        "BUY: C[t-1]-C[t-4] <= -1.00*ATR14(t), lower wick >=0.45*Range[t], close location >=0.65.",
+        "SELL: C[t-1]-C[t-4] >= +1.00*ATR14(t), upper wick >=0.45*Range[t], sell close location >=0.65.",
+        "The wick and prior impulse must point in the same exhausted direction."
+      ],
+      "parameter_sensitivity": {
+        "range_atr_min": [2.00, 2.50, 3.00],
+        "volume_ratio_min": [1.50, 1.80, 2.10],
+        "wick_fraction_min": [0.35, 0.45, 0.55]
+      },
+      "weaknesses": ["Rare on H4.", "Large bars have high execution uncertainty not captured by bar opens."]
+    },
+    {
+      "strategy_id": "STRAT-VV-104",
+      "family": "VOLUME_VOLATILITY",
+      "name": "Low-Participation Expansion Reversal",
+      "hypothesis": "A large price expansion without confirming tick-volume participation is more likely to mean-revert.",
+      "targets": "ALL_UNIVERSE",
+      "timeframes": ["M15", "H1", "H4"],
+      "entry_conditions": [
+        "Range[t] >= 1.50*ATR14(t).",
+        "V[t] <= 0.70*median(V[t-20:t-1]).",
+        "abs(C[t]-O[t])/Range[t] >=0.50 and directional close location >=0.70.",
+        "Enter opposite sign(C[t]-O[t])."
+      ],
+      "parameter_sensitivity": {
+        "range_atr_min": [1.25, 1.50, 1.75],
+        "volume_ratio_max": [0.60, 0.70, 0.80],
+        "body_fraction_min": [0.40, 0.50, 0.60]
+      },
+      "weaknesses": ["Low volume can reflect holidays or bad data.", "True traded volume is unavailable in spot FX."]
+    },
+    {
+      "strategy_id": "STRAT-VV-105",
+      "family": "VOLUME_VOLATILITY",
+      "name": "Volatility Regime Onset Continuation",
+      "hypothesis": "The first jump from normal to high realized volatility, when aligned with six-bar direction, persists before volatility mean reverts.",
+      "targets": "ALL_UNIVERSE",
+      "timeframes": ["M15", "H1", "H4"],
+      "entry_conditions": [
+        "RV12[t]=sample_std(log(C[k]/C[k-1]), k=t-11..t).",
+        "Baseline=median(RV12[t-120:t-1]).",
+        "RV12[t] >=1.50*Baseline and RV12[t-1] <=1.20*median(RV12[t-121:t-2]).",
+        "abs(C[t]-C[t-6]) >=0.80*ATR14(t); enter sign(C[t]-C[t-6])."
+      ],
+      "parameter_sensitivity": {
+        "onset_ratio_min": [1.30, 1.50, 1.70],
+        "prior_ratio_max": [1.10, 1.20, 1.30],
+        "direction_move_atr_min": [0.60, 0.80, 1.00]
+      },
+      "weaknesses": ["RV estimates are timeframe-dependent.", "The first observable onset can occur after most of the move."]
+    },
+    {
+      "strategy_id": "STRAT-MR-101",
+      "family": "MARKET_REGIME_CROSS_MARKET",
+      "name": "USD Breadth Confirmation",
+      "hypothesis": "When at least three major USD pairs confirm the same six-bar USD direction, pair-level breakouts in that direction are less idiosyncratic and continue.",
+      "targets": ["AUDUSD", "EURUSD", "GBPUSD", "USDJPY"],
+      "timeframes": ["M15", "H1", "H4"],
+      "entry_conditions": [
+        "Compute six-bar return/ATR for AUDUSD, EURUSD, GBPUSD and USDJPY at synchronized completed bar t.",
+        "Orient returns as USD strength: negate AUDUSD/EURUSD/GBPUSD returns; keep USDJPY return.",
+        "At least 3 of 4 oriented returns share a nonzero sign and median absolute oriented return >=0.80 ATR.",
+        "Target oriented return has that sign with magnitude >=0.50 ATR and its close breaks the prior six-bar high/low in trade direction."
+      ],
+      "parameter_sensitivity": {
+        "confirming_markets_min": [2, 3, 4],
+        "basket_median_atr_min": [0.60, 0.80, 1.00],
+        "target_move_atr_min": [0.30, 0.50, 0.70]
+      },
+      "weaknesses": ["Four pairs share currencies and are not independent.", "Signals require synchronized bar availability."]
+    },
+    {
+      "strategy_id": "STRAT-MR-102",
+      "family": "MARKET_REGIME_CROSS_MARKET",
+      "name": "JPY Cross Breadth Confirmation",
+      "hypothesis": "A synchronized directional move in at least three JPY crosses identifies a broad yen regime that supports continuation in each confirming cross.",
+      "targets": ["AUDJPY", "EURJPY", "GBPJPY", "USDJPY"],
+      "timeframes": ["M15", "H1", "H4"],
+      "entry_conditions": [
+        "Compute six-bar return/ATR for AUDJPY, EURJPY, GBPJPY and USDJPY at synchronized t.",
+        "At least 3 of 4 returns share a sign and median absolute return >=0.80 ATR.",
+        "Target return shares that sign with magnitude >=0.50 ATR.",
+        "BUY target C[t]>=max(H[t-6:t-1]); SELL target C[t]<=min(L[t-6:t-1])."
+      ],
+      "parameter_sensitivity": {
+        "confirming_markets_min": [2, 3, 4],
+        "basket_median_atr_min": [0.60, 0.80, 1.00],
+        "target_move_atr_min": [0.30, 0.50, 0.70]
+      },
+      "weaknesses": ["JPY factor concentration can inflate apparent sample size.", "USDJPY belongs to both USD and JPY candidate families."]
+    },
+    {
+      "strategy_id": "STRAT-MR-103",
+      "family": "MARKET_REGIME_CROSS_MARKET",
+      "name": "Gold-Silver Co-Momentum",
+      "hypothesis": "When gold and silver both show sufficiently large 12-hour returns in the same direction, the shared precious-metals impulse continues.",
+      "targets": ["XAUUSD", "XAGUSD"],
+      "timeframes": ["M15", "H1", "H4"],
+      "entry_conditions": [
+        "Use the latest completed companion bar at or before t and the completed bar at or before t-12 clock hours.",
+        "Gold and silver 12-hour return/ATR have the same nonzero sign and each absolute return >=0.75 ATR.",
+        "Target C[t] breaks its prior six-bar high in BUY direction or low in SELL direction.",
+        "Enter the shared sign."
+      ],
+      "parameter_sensitivity": {
+        "clock_hours": [8, 12, 16],
+        "both_markets_move_atr_min": [0.50, 0.75, 1.00],
+        "break_lookback_bars": [4, 6, 8]
+      },
+      "weaknesses": ["Only two instruments, so cross-market breadth is narrow.", "Metal trading-hour gaps can desynchronize bars."]
+    },
+    {
+      "strategy_id": "STRAT-MR-104",
+      "family": "MARKET_REGIME_CROSS_MARKET",
+      "name": "Brent-WTI Relative-Move Reversion",
+      "hypothesis": "An extreme standardized 24-hour performance gap between Brent and WTI partially mean-reverts over the next 12 hours.",
+      "targets": ["BRENTCMDUSD", "LIGHTCMDUSD"],
+      "timeframes": ["M15", "H1", "H4"],
+      "entry_conditions": [
+        "Compute each market's 24-clock-hour return divided by its ATR14 at synchronized t.",
+        "Spread(t)=BrentNormalizedReturn-WTINormalizedReturn.",
+        "Z(t)=(Spread(t)-mean(Spread[t-120:t-1]))/sample_std(Spread[t-120:t-1]).",
+        "If Z>=2.00, SELL Brent and BUY WTI; if Z<=-2.00, BUY Brent and SELL WTI. Each leg is a separate episode sharing one cluster weight."
+      ],
+      "parameter_sensitivity": {
+        "clock_hours": [18, 24, 30],
+        "z_abs_min": [1.50, 2.00, 2.50],
+        "history_observations": [80, 120, 160]
+      },
+      "weaknesses": ["CFD roll and session conventions may create artificial spread moves.", "Paired-leg execution and correlation risk are not captured by single-leg entry edge."]
+    },
+    {
+      "strategy_id": "STRAT-MR-105",
+      "family": "MARKET_REGIME_CROSS_MARKET",
+      "name": "Commodity Cross-Family Breadth",
+      "hypothesis": "A common directional impulse across precious metals and energy is more persistent than an isolated commodity move.",
+      "targets": ["XAUUSD", "XAGUSD", "BRENTCMDUSD", "LIGHTCMDUSD"],
+      "timeframes": ["M15", "H1", "H4"],
+      "entry_conditions": [
+        "Compute synchronized 12-clock-hour return/ATR for all four commodity CFDs.",
+        "At least 3 of 4 returns share a sign and median absolute return >=0.60 ATR.",
+        "Target return shares the sign with magnitude >=0.40 ATR.",
+        "Target directional close location on t >=0.70; enter shared sign."
+      ],
+      "parameter_sensitivity": {
+        "confirming_markets_min": [2, 3, 4],
+        "basket_median_atr_min": [0.40, 0.60, 0.80],
+        "target_move_atr_min": [0.20, 0.40, 0.60]
+      },
+      "weaknesses": ["Gold, silver and oil do not always share an economic driver.", "Different trading sessions can reduce synchronized sample size."]
+    }
+  ]
+}
