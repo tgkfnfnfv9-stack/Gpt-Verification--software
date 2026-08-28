@@ -1,0 +1,57 @@
+strategy_id: STRAT-PA-002
+revision: 1
+spec_version: "1.0.0"
+status: REJECTED_FOR_DEVELOPMENT_AFTER_PRELIMINARY_DUKASCOPY_SCREEN
+outcomes_visible: true
+mechanism_family_id: FAILED_BREAKOUT_REJECTION
+
+definitions:
+  true_range_j: "max(H[j]-L[j], abs(H[j]-C[j-1]), abs(L[j]-C[j-1]))"
+  m40_t: "median(TRUE_RANGE[t-40:t-1])"
+  direction_s: "sign(C[t-1]-C[t-8]); zero is ineligible"
+  direction_efficiency: "abs(C[t-1]-C[t-8]) / sum(abs(C[k]-C[k-1]), k=t-7..t-1)"
+  directional_close_location:
+    positive_prior_move: "(C[t]-L[t])/(H[t]-L[t])"
+    negative_prior_move: "(H[t]-C[t])/(H[t]-L[t])"
+
+signal:
+  historical_cutoff: T_MINUS_1
+  condition_1:
+    direction_efficiency_min: 0.65
+    net_move_m40_min: 1.50
+  condition_2:
+    old_extreme_window_bars: 20
+    extreme_update_m40_min: 0.15
+    old_extreme_window: "t-20..t-1 inclusive"
+  condition_3:
+    signal_range_m40_min: 1.20
+    original_direction_close_location_max: 0.25
+    recovery_inside_old_extreme_m40_min: 0.05
+  order_side: OPPOSITE_PRIOR_MOVE
+  decision_time: "max(bar_close_utc[t], available_at_utc[t])"
+  earliest_entry: FIRST_TRADABLE_QUOTE_AFTER_DECISION
+  earliest_executable_timestamp_before_quote_join: null
+  primary_horizon: 3_BARS_FROM_ENTRY
+
+rounding:
+  price_representation: INTEGER_SOURCE_TICKS
+  upper_break_threshold: CEIL_TO_TICK
+  lower_break_threshold: FLOOR_TO_TICK
+  upper_inside_threshold: FLOOR_TO_TICK
+  lower_inside_threshold: CEIL_TO_TICK
+  equality: THRESHOLD_PASSES
+  zero_range: INELIGIBLE
+  zero_path_length: INELIGIBLE
+
+structural_control:
+  required: [CONDITION_1, CONDITION_2]
+  positive_prior_move: "rounded_close[t] > rounded_old_high20"
+  negative_prior_move: "rounded_close[t] < rounded_old_low20"
+  equality_to_old_extreme: NEITHER_SIGNAL_NOR_STRUCTURAL_CONTROL
+
+pilot:
+  purpose: SIGNAL_REPRODUCIBILITY_AND_LEAKAGE_TEST_ONLY
+  future_returns_exported: false
+  performance_metrics_exported: false
+  official_fx_cfd_signal_basis: SOURCE_MID_OR_SYNCHRONIZED_TICK_DERIVED_MID
+  forbidden_mid_construction: AVERAGING_SEPARATE_BID_ASK_BAR_HIGHS_OR_LOWS
