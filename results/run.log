@@ -1,0 +1,365 @@
+{
+  "symbols": [
+    "AUDJPY",
+    "AUDUSD",
+    "EURGBP",
+    "EURJPY",
+    "EURUSD",
+    "GBPJPY",
+    "GBPUSD",
+    "USDJPY",
+    "XAGUSD",
+    "XAUUSD"
+  ],
+  "cells": 10,
+  "estimable": 10,
+  "top": [
+    {
+      "status": "ESTIMABLE",
+      "signals": 846,
+      "signal_mean_atr": -0.10547293602551079,
+      "control_mean_atr": -0.10658885269101265,
+      "mean_edge_atr": 0.0011159166655018596,
+      "median_edge_atr": 0.057898357497297354,
+      "positive_edge_rate": 0.516548463356974,
+      "bootstrap_95ci": [
+        -0.11470095843479078,
+        0.11925463535461857
+      ],
+      "splits": {
+        "DISCOVERY": {
+          "status": "ESTIMABLE",
+          "signals": 429,
+          "signal_mean_atr": 0.029879213194108776,
+          "control_mean_atr": -0.07695793430961924,
+          "mean_edge_atr": 0.10683714750372802,
+          "median_edge_atr": 0.20957647325781764,
+          "positive_edge_rate": 0.5617715617715617,
+          "bootstrap_95ci": [
+            -0.05481458480818117,
+            0.2588751064903203
+          ]
+        },
+        "DEVELOPMENT": {
+          "status": "ESTIMABLE",
+          "signals": 272,
+          "signal_mean_atr": -0.26011586500665085,
+          "control_mean_atr": -0.14104409544767615,
+          "mean_edge_atr": -0.11907176955897467,
+          "median_edge_atr": -0.17462798974221966,
+          "positive_edge_rate": 0.4522058823529412,
+          "bootstrap_95ci": [
+            -0.32991678476537173,
+            0.08915297206445537
+          ]
+        },
+        "OOS": {
+          "status": "ESTIMABLE",
+          "signals": 145,
+          "signal_mean_atr": -0.2158398003865224,
+          "control_mean_atr": -0.12962221790346287,
+          "mean_edge_atr": -0.08621758248305955,
+          "median_edge_atr": 0.01651758898416536,
+          "positive_edge_rate": 0.503448275862069,
+          "bootstrap_95ci": [
+            -0.36549041717023156,
+            0.1738393519957707
+          ]
+        }
+      },
+      "instrument": "EURJPY",
+      "timeframe": "M15",
+      "data_rows": 174586,
+      "period": [
+        "2019-08-28T00:00:00",
+        "2026-08-27T23:45:00"
+      ]
+    },
+    {
+      "status": "ESTIMABLE",
+      "signals": 843,
+      "signal_mean_atr": -0.17459650357792042,
+      "control_mean_atr": -0.1747434152912604,
+      "mean_edge_atr": 0.00014691171333998986,
+      "median_edge_atr": -0.016141656230456047,
+      "positive_edge_rate": 0.49466192170818507,
+      "bootstrap_95ci": [
+        -0.12420877294807788,
+        0.11978480190936343
+      ],
+      "splits": {
+        "DISCOVERY": {
+          "status": "ESTIMABLE",
+          "signals": 417,
+          "signal_mean_atr": -0.056732567046071075,
+          "control_mean_atr": -0.15809241443463662,
+          "mean_edge_atr": 0.10135984738856553,
+          "median_edge_atr": 0.03288558240322553,
+          "positive_edge_rate": 0.5227817745803357,
+          "bootstrap_95ci": [
+            -0.07021624875036682,
+            0.26836286869915843
+          ]
+        },
+        "DEVELOPMENT": {
+          "status": "ESTIMABLE",
+          "signals": 296,
+          "signal_mean_atr": -0.283276221671446,
+          "control_mean_atr": -0.18239783192896866,
+          "mean_edge_atr": -0.10087838974247734,
+          "median_edge_atr": -0.1048538560569994,
+          "positive_edge_rate": 0.47297297297297297,
+          "bootstrap_95ci": [
+            -0.3118757004868649,
+            0.10923390629530677
+          ]
+        },
+        "OOS": {
+          "status": "ESTIMABLE",
+          "signals": 130,
+          "signal_mean_atr": -0.3052123880248251,
+          "control_mean_atr": -0.21072618477164876,
+          "mean_edge_atr": -0.09448620325317632,
+          "median_edge_atr": -0.2060585240851033,
+          "positive_edge_rate": 0.45384615384615384,
+          "bootstrap_95ci": [
+            -0.36749325843862873,
+            0.1903595219269894
+          ]
+        }
+      },
+      "instrument": "GBPJPY",
+      "timeframe": "M15",
+      "data_rows": 174572,
+      "period": [
+        "2019-08-28T00:00:00",
+        "2026-08-27T23:45:00"
+      ]
+    },
+    {
+      "status": "ESTIMABLE",
+      "signals": 898,
+      "signal_mean_atr": -0.08406384682636743,
+      "control_mean_atr": -0.0737127736393343,
+      "mean_edge_atr": -0.010351073187033115,
+      "median_edge_atr": 0.04288888300116117,
+      "positive_edge_rate": 0.512249443207127,
+      "bootstrap_95ci": [
+        -0.1251014341938499,
+        0.1119257929072851
+      ],
+      "splits": {
+        "DISCOVERY": {
+          "status": "ESTIMABLE",
+          "signals": 451,
+          "signal_mean_atr": -0.11421613832515996,
+          "control_mean_atr": -0.09793888476597827,
+          "mean_edge_atr": -0.01627725355918168,
+          "median_edge_atr": 0.1090187443756578,
+          "positive_edge_rate": 0.5299334811529933,
+          "bootstrap_95ci": [
+            -0.19663957504163954,
+            0.15800512637486003
+          ]
+        },
+        "DEVELOPMENT": {
+          "status": "ESTIMABLE",
+          "signals": 311,
+          "signal_mean_atr": -0.05029306218961236,
+          "control_mean_atr": -0.043445677062556316,
+          "mean_edge_atr": -0.006847385127056045,
+          "median_edge_atr": -0.04316419283105817,
+          "positive_edge_rate": 0.4855305466237942,
+          "bootstrap_95ci": [
+            -0.17996465910855663,
+            0.1840759320403142
+          ]
+        },
+        "OOS": {
+          "status": "ESTIMABLE",
+          "signals": 136,
+          "signal_mean_atr": -0.06129936562103941,
+          "control_mean_atr": -0.06258844214861022,
+          "mean_edge_atr": 0.0012890765275708036,
+          "median_edge_atr": 0.03889291166704878,
+          "positive_edge_rate": 0.5147058823529411,
+          "bootstrap_95ci": [
+            -0.230927266263812,
+            0.25120042108168855
+          ]
+        }
+      },
+      "instrument": "EURUSD",
+      "timeframe": "M15",
+      "data_rows": 174149,
+      "period": [
+        "2019-08-28T00:00:00",
+        "2026-08-27T23:45:00"
+      ]
+    },
+    {
+      "status": "ESTIMABLE",
+      "signals": 937,
+      "signal_mean_atr": -0.11670364927655857,
+      "control_mean_atr": -0.10542402025787552,
+      "mean_edge_atr": -0.011279629018683053,
+      "median_edge_atr": -0.019786779663049148,
+      "positive_edge_rate": 0.49413020277481323,
+      "bootstrap_95ci": [
+        -0.13228303574811284,
+        0.10599334033465142
+      ],
+      "splits": {
+        "DISCOVERY": {
+          "status": "ESTIMABLE",
+          "signals": 462,
+          "signal_mean_atr": -0.19986239750846474,
+          "control_mean_atr": -0.09952766995845866,
+          "mean_edge_atr": -0.10033472755000608,
+          "median_edge_atr": -0.019031009525959763,
+          "positive_edge_rate": 0.4935064935064935,
+          "bootstrap_95ci": [
+            -0.27192620425495995,
+            0.06684465499046018
+          ]
+        },
+        "DEVELOPMENT": {
+          "status": "ESTIMABLE",
+          "signals": 319,
+          "signal_mean_atr": -0.05305060307594824,
+          "control_mean_atr": -0.1120900653289752,
+          "mean_edge_atr": 0.059039462253026954,
+          "median_edge_atr": 0.022246040002512624,
+          "positive_edge_rate": 0.5015673981191222,
+          "bootstrap_95ci": [
+            -0.11559551064366351,
+            0.24336610379386842
+          ]
+        },
+        "OOS": {
+          "status": "ESTIMABLE",
+          "signals": 156,
+          "signal_mean_atr": -0.0005881368076741921,
+          "control_mean_atr": -0.10925508090306646,
+          "mean_edge_atr": 0.10866694409539225,
+          "median_edge_atr": -0.09206237427256797,
+          "positive_edge_rate": 0.4807692307692308,
+          "bootstrap_95ci": [
+            -0.17977233046732546,
+            0.4003703077800341
+          ]
+        }
+      },
+      "instrument": "GBPUSD",
+      "timeframe": "M15",
+      "data_rows": 174602,
+      "period": [
+        "2019-08-28T00:00:00",
+        "2026-08-27T23:45:00"
+      ]
+    },
+    {
+      "status": "ESTIMABLE",
+      "signals": 901,
+      "signal_mean_atr": -0.540363377316155,
+      "control_mean_atr": -0.5287083661718877,
+      "mean_edge_atr": -0.011655011144267287,
+      "median_edge_atr": 0.039841456732850666,
+      "positive_edge_rate": 0.5138734739178691,
+      "bootstrap_95ci": [
+        -0.115132019321899,
+        0.09327326195752815
+      ],
+      "splits": {
+        "DISCOVERY": {
+          "status": "ESTIMABLE",
+          "signals": 461,
+          "signal_mean_atr": -0.60242462355486,
+          "control_mean_atr": -0.5212726594755555,
+          "mean_edge_atr": -0.08115196407930458,
+          "median_edge_atr": 0.008883226174341258,
+          "positive_edge_rate": 0.5032537960954447,
+          "bootstrap_95ci": [
+            -0.23099015238055035,
+            0.07572089090811962
+          ]
+        },
+        "DEVELOPMENT": {
+          "status": "ESTIMABLE",
+          "signals": 292,
+          "signal_mean_atr": -0.5004194878077495,
+          "control_mean_atr": -0.5832090544696907,
+          "mean_edge_atr": 0.08278956666194132,
+          "median_edge_atr": 0.013082965497193275,
+          "positive_edge_rate": 0.5102739726027398,
+          "bootstrap_95ci": [
+            -0.09624085330233026,
+            0.283506256537787
+          ]
+        },
+        "OOS": {
+          "status": "ESTIMABLE",
+          "signals": 148,
+          "signal_mean_atr": -0.42585919637298847,
+          "control_mean_atr": -0.44434120268574334,
+          "mean_edge_atr": 0.01848200631275487,
+          "median_edge_atr": 0.15457595874501998,
+          "positive_edge_rate": 0.5540540540540541,
+          "bootstrap_95ci": [
+            -0.20872680191478135,
+            0.24466983547188476
+          ]
+        }
+      },
+      "instrument": "XAGUSD",
+      "timeframe": "M15",
+      "data_rows": 165503,
+      "period": [
+        "2019-08-28T00:00:00",
+        "2026-08-27T23:45:00"
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "instrument": "AUDJPY",
+      "error": "AttributeError: 'QBar' object has no attribute 'hour'"
+    },
+    {
+      "instrument": "AUDUSD",
+      "error": "AttributeError: 'QBar' object has no attribute 'hour'"
+    },
+    {
+      "instrument": "EURGBP",
+      "error": "AttributeError: 'QBar' object has no attribute 'hour'"
+    },
+    {
+      "instrument": "EURJPY",
+      "error": "AttributeError: 'QBar' object has no attribute 'hour'"
+    },
+    {
+      "instrument": "EURUSD",
+      "error": "AttributeError: 'QBar' object has no attribute 'hour'"
+    },
+    {
+      "instrument": "GBPJPY",
+      "error": "AttributeError: 'QBar' object has no attribute 'hour'"
+    },
+    {
+      "instrument": "GBPUSD",
+      "error": "AttributeError: 'QBar' object has no attribute 'hour'"
+    },
+    {
+      "instrument": "USDJPY",
+      "error": "AttributeError: 'QBar' object has no attribute 'hour'"
+    },
+    {
+      "instrument": "XAGUSD",
+      "error": "AttributeError: 'QBar' object has no attribute 'hour'"
+    },
+    {
+      "instrument": "XAUUSD",
+      "error": "AttributeError: 'QBar' object has no attribute 'hour'"
+    }
+  ]
+}
