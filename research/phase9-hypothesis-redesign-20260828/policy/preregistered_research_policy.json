@@ -1,0 +1,73 @@
+{
+  "policy_version": "phase9-preregistered-v1.0",
+  "status": "FROZEN_PREREGISTERED",
+  "as_of": "2026-08-29",
+  "canonical_registry": "research/phase9-hypothesis-redesign-20260828/spec/candidate_registry.frozen.json",
+  "canonical_data_requirements": "research/phase9-hypothesis-redesign-20260828/spec/data_requirements.frozen.json",
+  "allowed_next": [
+    "inventory source coverage and fields without any outcome calculation",
+    "pin provider, instrument mapping, trading calendar and downloader version",
+    "acquire only 2013-01-01 inclusive through 2019-08-28 exclusive",
+    "run data-integrity and count-only coverage Gates",
+    "after count Gates, run all 12 confirmatory questions in one locked Discovery run"
+  ],
+  "prohibited": [
+    "use Phase 8 subgroup outcomes to alter Phase 9",
+    "change a frozen threshold, target, timeframe, period, Gate profile, control, outcome, cost stress or episode rule",
+    "replace an underpowered or data-insufficient question in Phase 9",
+    "download, query availability for, cache, inspect or evaluate Development, OOS or Final Holdout",
+    "select instruments or timeframes after counts or outcomes",
+    "compute any forward return, MFE, MAE or edge before count-only Gates complete",
+    "implement MT5 EA"
+  ],
+  "periods": {
+    "warmup_proposed": {
+      "start_inclusive": "2013-01-01T00:00:00Z",
+      "end_exclusive": "2014-08-28T00:00:00Z",
+      "status": "FROZEN_NOT_DOWNLOADED"
+    },
+    "phase9_discovery_proposed": {
+      "start_inclusive": "2014-08-28T00:00:00Z",
+      "end_exclusive": "2019-08-28T00:00:00Z",
+      "status": "FROZEN_NOT_DOWNLOADED_AVAILABILITY_UNCONFIRMED"
+    },
+    "phase8_seen_period": {
+      "start_inclusive": "2019-08-28T00:00:00Z",
+      "end_exclusive": "2022-08-28T00:00:00Z",
+      "status": "CONTAMINATED_FOR_PHASE9_SPECIFICATION_NOT_A_PROMOTION_GATE"
+    },
+    "development_walk_forward": {
+      "start_inclusive": "2022-08-28T00:00:00Z",
+      "end_exclusive": "2024-08-28T00:00:00Z",
+      "status": "MASKED_NOT_DOWNLOADED"
+    },
+    "strict_oos": {
+      "start_inclusive": "2024-08-28T00:00:00Z",
+      "end_exclusive": "2025-08-28T00:00:00Z",
+      "status": "MASKED_NOT_DOWNLOADED"
+    },
+    "final_holdout": {
+      "start_inclusive": "2025-08-28T00:00:00Z",
+      "end_exclusive": "2026-08-28T00:00:00Z",
+      "status": "MASKED_NOT_DOWNLOADED_NOT_EVALUATED"
+    }
+  },
+  "status_labels": {
+    "UNTESTED_PREREGISTERED": "Frozen, no outcome viewed",
+    "REJECT_AS_UNDERPOWERED": "Count/coverage failure before outcomes",
+    "DATA_INSUFFICIENT": "Frozen required data unavailable before outcomes",
+    "REJECT_FOR_DEVELOPMENT": "Tested and failed at least one confirmatory Gate",
+    "DEVELOPMENT": "Passed every Discovery Gate",
+    "WATCH": "Only result-unseen operational/data hold; never a statistical near miss"
+  },
+  "promotion_sequence": [
+    "DISCOVERY",
+    "FREEZE_SURVIVORS",
+    "DEVELOPMENT",
+    "WALK_FORWARD",
+    "STRICT_OOS",
+    "OANDA_MT5_COST_VALIDATION",
+    "FINAL_HOLDOUT_ONCE",
+    "EA_IMPLEMENTATION"
+  ]
+}

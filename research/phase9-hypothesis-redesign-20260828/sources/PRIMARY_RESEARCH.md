@@ -24,7 +24,7 @@
 - Burnside, Eichenbaum and Rebelo, *Carry Trade and Momentum in Currency Markets*
   NBER Working Paper 16942: https://www.nber.org/system/files/working_papers/w16942/w16942.pdf
 - carryとmomentumは別のcurrency strategyとして検討され、両方のcost/riskを含める必要がある。
-- Phase 9への含意: RR-205ではspot OHLCからcarryを推測せず、historical forward pointsまたは再現可能なfinancing seriesを必須にする。
+- Phase 9への処置: この要件を満たすpoint-in-time carry seriesを事前登録前に確保できなかったため、draft RR-205はDATA_INSUFFICIENT_PRETESTとしてPhase 9から除外した。研究根拠は監査履歴として残す。
 - 限界: policy-rate differentialは実際のtradable carryの代用として不十分。
 
 ## 4. Order flow and FX price dynamics
@@ -63,3 +63,8 @@
 - institutional order-flow研究を根拠にtick volumeをsigned flowと呼ばない。
 - equity pairsの成績をBrent-WTIやGold-Silverの期待収益として入力しない。
 - carry候補をpolicy rateだけで検証しない。
+
+
+## Phase 9事前登録注記（2026-08-29）
+
+正式alphaは11件、risk overlayは1件。Phase 8-informed redesignは独立新規と区別し、Phase 8 subgroup outcomeによる閾値・銘柄・時間足選択を禁止した。

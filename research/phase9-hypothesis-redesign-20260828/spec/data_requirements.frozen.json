@@ -1,0 +1,154 @@
+{
+  "schema_version": "phase9-data-requirements-v1.0-frozen",
+  "status": "FROZEN_PREREGISTERED_NOT_DOWNLOADED",
+  "as_of": "2026-08-29",
+  "raw_market_data_committed_to_git": false,
+  "universe": {
+    "FX": [
+      "AUDJPY",
+      "AUDUSD",
+      "EURGBP",
+      "EURJPY",
+      "EURUSD",
+      "GBPJPY",
+      "GBPUSD",
+      "USDJPY"
+    ],
+    "PRECIOUS_METALS": [
+      "XAUUSD",
+      "XAGUSD"
+    ],
+    "ENERGY": [
+      "BRENTCMDUSD",
+      "LIGHTCMDUSD"
+    ]
+  },
+  "periods": {
+    "warmup_proposed": {
+      "start_inclusive": "2013-01-01T00:00:00Z",
+      "end_exclusive": "2014-08-28T00:00:00Z",
+      "status": "FROZEN_NOT_DOWNLOADED"
+    },
+    "phase9_discovery_proposed": {
+      "start_inclusive": "2014-08-28T00:00:00Z",
+      "end_exclusive": "2019-08-28T00:00:00Z",
+      "status": "FROZEN_NOT_DOWNLOADED_AVAILABILITY_UNCONFIRMED"
+    },
+    "phase8_seen_period": {
+      "start_inclusive": "2019-08-28T00:00:00Z",
+      "end_exclusive": "2022-08-28T00:00:00Z",
+      "status": "CONTAMINATED_FOR_PHASE9_SPECIFICATION_NOT_A_PROMOTION_GATE"
+    },
+    "development_walk_forward": {
+      "start_inclusive": "2022-08-28T00:00:00Z",
+      "end_exclusive": "2024-08-28T00:00:00Z",
+      "status": "MASKED_NOT_DOWNLOADED"
+    },
+    "strict_oos": {
+      "start_inclusive": "2024-08-28T00:00:00Z",
+      "end_exclusive": "2025-08-28T00:00:00Z",
+      "status": "MASKED_NOT_DOWNLOADED"
+    },
+    "final_holdout": {
+      "start_inclusive": "2025-08-28T00:00:00Z",
+      "end_exclusive": "2026-08-28T00:00:00Z",
+      "status": "MASKED_NOT_DOWNLOADED_NOT_EVALUATED"
+    }
+  },
+  "base_series": {
+    "source_timeframes": [
+      "M15",
+      "H1"
+    ],
+    "derived_timeframes": [
+      "H4",
+      "D1"
+    ],
+    "fields": [
+      "timestamp_utc_bar_open",
+      "bid_open",
+      "bid_high",
+      "bid_low",
+      "bid_close",
+      "ask_open",
+      "ask_high",
+      "ask_low",
+      "ask_close",
+      "tick_volume"
+    ],
+    "spread_rule": "ask_open_minus_bid_open; fixed spread substitution prohibited",
+    "aggregation_rule": "BID and ASK aggregated separately from canonical H1 for H4/D1; provider-scheduled incomplete buckets dropped; no forward fill; D1 boundary 00:00 UTC; DST ignored.",
+    "canonical_use": {
+      "M15": "provider M15 direct",
+      "H1": "provider H1 direct",
+      "H4": "derived only from canonical H1 in fixed UTC 4-hour buckets",
+      "D1": "derived only from canonical H1 in fixed UTC calendar days"
+    }
+  },
+  "candidate_specific": {
+    "STRAT-P9-PS-204": [
+      "complete 00:00-10:00 UTC intraday bars"
+    ],
+    "STRAT-P9-LV-201": [
+      "40 prior trading-day same-UTC-slot tick volume",
+      "point-in-time spread"
+    ],
+    "STRAT-P9-LV-203": [
+      "40 prior trading-day same-UTC-slot tick volume"
+    ],
+    "STRAT-P9-RR-201": [
+      "all eight FX pairs synchronized at D1 and H4"
+    ],
+    "STRAT-P9-RR-202": [
+      "all eight FX pairs synchronized at H1 and H4"
+    ],
+    "STRAT-P9-RR-203": [
+      "synchronized XAUUSD and XAGUSD H4/D1"
+    ],
+    "STRAT-P9-RR-204": [
+      "synchronized Brent and WTI H4/D1",
+      "roll and session metadata"
+    ],
+    "STRAT-P9-LV-202": [
+      "12-bar median true range",
+      "lagged 240-bar linear percentile",
+      "prior 20-bar boundary; all from OHLC only"
+    ],
+    "RISK-P9-RO-201": [
+      "exact H4 PS-205 timestamps",
+      "H4 RV20 through signal time",
+      "paired unit-notional and managed executable returns"
+    ]
+  },
+  "quality_gates_before_return_calculation": [
+    "strictly increasing timestamps and zero duplicates",
+    "valid OHLC geometry",
+    "positive prices and nonnegative tick volume",
+    "ask open greater than or equal to bid open",
+    "gap inventory",
+    "row counts and first/last timestamps",
+    "UTC-session missingness inventory",
+    "SHA-256 for every source file",
+    "cross-market synchronous bar counts",
+    "energy roll-date inventory",
+    "canonical M15/H1 reconciliation and deterministic H4/D1 bucket audit",
+    "provider trading-calendar version and scheduled-bar completeness",
+    "count-only candidate coverage Gate before any outcome calculation"
+  ],
+  "git_artifacts_after_acquisition": [
+    "source_versions.json",
+    "row_counts.txt",
+    "sha256.txt",
+    "gaps.json",
+    "cross_market_overlap.json",
+    "energy_roll_inventory.json",
+    "deterministic acquisition and validation scripts"
+  ],
+  "download_gate": "PREREGISTRATION_COMMIT_REQUIRED; ONLY_WARMUP_AND_PHASE9_DISCOVERY_INTERVAL_MAY_BE_ACQUIRED; COUNT_ONLY_QC_PRECEDES_ALL_OUTCOMES",
+  "allowed_acquisition": {
+    "start_inclusive": "2013-01-01T00:00:00Z",
+    "end_exclusive": "2019-08-28T00:00:00Z",
+    "rule": "Acquisition requests, caches and artifacts must be hard-clipped to this interval. Availability queries or bulk downloads for Development, OOS or Final Holdout are prohibited.",
+    "provider_selection": "May use coverage, field availability, licensing and reproducibility only; no return, MFE, MAE, edge or outcome may be inspected. Provider and downloader version must be committed before outcome calculation."
+  }
+}

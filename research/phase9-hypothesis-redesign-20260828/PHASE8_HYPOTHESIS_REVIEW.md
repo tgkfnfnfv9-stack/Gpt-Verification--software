@@ -51,3 +51,12 @@ Signal Return自体が負だった。改善は旧IDの再最適化ではなく�
 - VV-104のvolume閾値、range閾値、時間足を調整すること。
 - MR-104のH1/H4だけを使うこと。
 - 旧Discovery期間を繰り返し実行し、最も良い仕様をPhase 9として登録すること。
+
+
+## Phase 9事前登録時の追加処置（2026-08-29）
+
+- Draft PS-201は、結果未閲覧で統合LV-202へ吸収した。
+- Draft LV-204は、旧VV-104との独立性不足によりpretest削除した。
+- Draft RR-205は、point-in-time carry data未確保によりDATA_INSUFFICIENT_PRETESTとし、Phase 9で差し替えない。
+- Draft LV-205はPS-205とsignal generatorが重複するため、独立alphaではなくRISK-P9-RO-201へ移動した。
+- Phase 8で見た銘柄別・時間足別の成績は、これらの仕様・対象・Gate選択に使用していない。
