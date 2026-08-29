@@ -1,71 +1,17 @@
-name: temp-gbpjpy-h1-v7-3-crossasset
+name: archived-disabled-temp-gbpjpy-h1-v7-3-crossasset
 
 on:
-  push:
-    branches:
-      - main
+  workflow_dispatch:
 
 permissions:
   contents: read
 
 jobs:
-  backtest:
+  archived:
+    if: ${{ false }}
     runs-on: ubuntu-latest
-    timeout-minutes: 30
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Load research scripts
-        shell: bash
-        run: |
-          set -euo pipefail
-          git fetch origin tmp/gbpjpy-h1-v5
-          git show FETCH_HEAD:.tmp/gbpjpy_h1_v5_opt.py > /tmp/gbpjpy_h1_v5_opt.py
-          git show FETCH_HEAD:.tmp/gbpjpy_h1_v8_macro.py > /tmp/gbpjpy_h1_v8_macro.py
-          git show FETCH_HEAD:.tmp/gbpjpy_h1_v7_3_crossasset.py > /tmp/gbpjpy_h1_v7_3_crossasset.py
-          python -m py_compile /tmp/gbpjpy_h1_v5_opt.py /tmp/gbpjpy_h1_v8_macro.py /tmp/gbpjpy_h1_v7_3_crossasset.py
-
-      - name: Install pinned dukascopy-go v0.2.0
-        shell: bash
-        run: |
-          set -euo pipefail
-          URL="https://github.com/Nosvemos/dukascopy-go/releases/download/v0.2.0/dukascopy-go_0.2.0_linux_amd64.tar.gz"
-          curl -L --fail --retry 3 -o /tmp/dukascopy-go.tar.gz "$URL"
-          echo "f78f621d747e7584be2ae6789f6b97e22ae656203cc9ab7a32766f699e455e4b  /tmp/dukascopy-go.tar.gz" | sha256sum -c -
-          mkdir -p /tmp/dukascopy-go
-          tar -xzf /tmp/dukascopy-go.tar.gz -C /tmp/dukascopy-go
-          BIN="$(find /tmp/dukascopy-go -type f -name 'dukascopy-go' | head -1)"
-          chmod +x "$BIN"
-          sudo install "$BIN" /usr/local/bin/dukascopy-go
-
-      - name: Download 8y FX data
-        shell: bash
-        run: |
-          set -euo pipefail
-          mkdir -p data
-          dukascopy-go download --symbol GBPJPY --timeframe m15 --side bid --from 2018-08-27 --to 2026-08-27 --output data/GBPJPY_M15_bid.csv --engine jetta
-          dukascopy-go download --symbol GBPJPY --timeframe m15 --side ask --from 2018-08-27 --to 2026-08-27 --output data/GBPJPY_M15_ask.csv --engine jetta
-          dukascopy-go download --symbol USDJPY --timeframe m15 --side bid --from 2018-08-01 --to 2026-08-27 --output data/USDJPY_M15_bid.csv --engine jetta
-          dukascopy-go download --symbol GBPUSD --timeframe m15 --side bid --from 2018-08-01 --to 2026-08-27 --output data/GBPUSD_M15_bid.csv --engine jetta
-          wc -l data/*.csv
-
-      - name: Download FRED VIX daily history
-        shell: bash
-        run: |
-          set -euo pipefail
-          curl -L --fail --retry 3 'https://fred.stlouisfed.org/graph/fredgraph.csv?id=VIXCLS&cosd=2018-08-01&coed=2026-08-27' -o data/VIXCLS.csv
-
-      - name: Run V7.3 cross-asset regime research
-        shell: bash
-        run: |
-          set -euo pipefail
-          python /tmp/gbpjpy_h1_v7_3_crossasset.py
-
-      - name: Upload V7.3 JSON
-        uses: actions/upload-artifact@v4
-        with:
-          name: gbpjpy-h1-v7-3-crossasset-results
-          path: results/
-          if-no-files-found: error
-          retention-days: 7
+      - run: |
+          echo "This legacy workflow is permanently disabled."
+          echo "It accessed periods reserved by the Phase 9 policy."
+          exit 1

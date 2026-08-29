@@ -1,0 +1,30 @@
+# Python and test caches
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Local environments and credentials
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+credentials*.json
+secrets*.json
+
+# Market-data payloads and transient downloads
+data/
+downloads/
+artifacts/
+research/**/raw/
+research/**/raw_data/
+research/**/data/raw/
+research/**/cache/
+
+# Local logs and temporary files
+*.log
+*.tmp
+*.part

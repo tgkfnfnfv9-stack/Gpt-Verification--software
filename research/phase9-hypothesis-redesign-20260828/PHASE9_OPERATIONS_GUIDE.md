@@ -1,0 +1,386 @@
+# Phase 9 統合運用ガイド
+
+guide_version: `1.0.1`  
+status: `OPERATIONS_CANONICAL`  
+更新日: 2026-08-29  
+対象リポジトリ: `tgkfnfnfv9-stack/Gpt-Verification--software`  
+対象ブランチ: `main`  
+凍結仕様の基準コミット: `e94cd52a0ec5a990f32c3740ba83736beb95d709`
+
+凍結正本のGit blob anchor:
+
+- `candidate_registry.frozen.json`: `8740f58efe48c40ba0664606194b18b40cf14c27`
+- `data_requirements.frozen.json`: `7e6a476366140e07edac4e4316f8c08a6ab4ae92`
+- `preregistered_research_policy.json`: `8483418a6a75f5a6ea7d6b54ca54beb68896855f`
+
+> このファイルは「何を、どの順番で、どう実行・監査・更新するか」の正本です。数値条件を変更する権限はありません。矛盾時は`spec/*.frozen.json`と`policy/preregistered_research_policy.json`を優先します。
+
+## 1. 60秒で分かる現在地
+
+```text
+正式検証済み
+├─ STRAT-PA-002                 REJECT_FOR_DEVELOPMENT
+└─ Phase 8候補15件             全件REJECT_FOR_DEVELOPMENT
+
+Phase 9
+├─ Formal alpha                11件
+├─ Risk overlay                 1件
+├─ Confirmatory questions      12件
+├─ 状態                         全件UNTESTED_PREREGISTERED
+├─ 正式なPhase 9データ取得      未開始
+├─ Phase 9 return/backtest       0件
+└─ MT5 EA                       禁止
+```
+
+旧一時workflowによる境界事故があります。詳細は`POLICY_INCIDENT_20260829.md`を必ず読みます。Phase 9候補の結果は実行・閲覧していませんが、2022〜2026年を「一度も取得されていない」とは表現しません。
+
+## 2. 情報源の優先順位
+
+矛盾した場合は上ほど優先します。
+
+1. `policy/preregistered_research_policy.json`
+2. `spec/candidate_registry.frozen.json`
+3. `spec/data_requirements.frozen.json`
+4. `SESSION_STATE.json`
+5. `DESIGN_DECISIONS.md`
+6. `HYPOTHESIS_PORTFOLIO_FINAL.md`、`DATA_REQUIREMENTS.md`
+7. 本ガイド
+8. `NEXT_SESSION_HANDOFF.md`、`README.md`
+9. 履歴・draft
+
+本ガイドは手順正本ですが、研究数値・期間・Gateを上書きしません。
+
+### 実行禁止の旧草案
+
+- `HYPOTHESIS_PORTFOLIO.md`
+- `spec/candidate_registry.draft.json`
+- `spec/data_requirements.draft.json`
+- `policy/hypothesis_stage_policy.json`
+
+## 3. セッション開始時に読む順番
+
+1. `PHASE9_OPERATIONS_GUIDE.md`
+2. `POLICY_INCIDENT_20260829.md`
+3. Phase 8 `results/PHASE8_FINAL_DECISION.json`
+4. Phase 8 `results/RESULTS_SUMMARY.md`
+5. Phase 9 `README.md`
+6. `SESSION_STATE.json`
+7. `DESIGN_DECISIONS.md`
+8. `HYPOTHESIS_PORTFOLIO_FINAL.md`
+9. `spec/candidate_registry.frozen.json`
+10. `DATA_REQUIREMENTS.md`
+11. `spec/data_requirements.frozen.json`
+12. `policy/preregistered_research_policy.json`
+
+数値Entryは必ず`candidate_registry.frozen.json`、取得境界は`data_requirements.frozen.json`、許可・禁止は`preregistered_research_policy.json`から読みます。HandoffやMarkdown要約だけで実装しません。
+
+## 4. GitHubの最新状態を確認する
+
+### ChatGPT Workで作業する場合
+
+1. GitHub接続でrepository full nameを完全一致確認
+2. `main`の最新commitを取得
+3. 上記12ファイルをGitHubから直接読む
+4. 書込前に再度remote headを確認
+5. 変更は1つのatomic commitへまとめる
+6. push後にremote headと更新ファイルを再取得する
+
+### ローカルGitを使用する場合
+
+```bash
+git fetch origin
+git switch main
+git status --short --branch
+git pull --ff-only origin main
+git rev-parse HEAD
+```
+
+dirty worktreeを勝手にreset、checkout、削除しません。サブエージェントはcheckout・pull・commit・pushを行わず、主担当だけがGit操作します。
+
+### Gitへ追加するファイルの安全規則
+
+- `git add -A`、`git add .`、無確認globを使わず、確認済みpathだけを明示します。
+- `.gitignore`を維持し、raw market data、download/cache、`.env*`、秘密鍵、credential fileを拒否します。
+- push前にstaged path、diff、JSON/YAML、secret、raw data混入を検査します。
+- raw dataはGitおよび公開Artifactへ載せません。必要なら、ユーザーが許可した非公開保管先を別途決めます。
+- non-fast-forward、remote head変更、凍結正本blob SHA不一致のいずれかで停止して再監査します。
+
+## 5. サブエージェント運用
+
+8つの論理役割を使用します。同時実行上限を開始時に確認します。現在のChatGPT Work環境は主担当を含め最大7並列のため、8役割を2波に分けます。
+
+| ID | 役割 | 主な出力 |
+|---|---|---|
+| A0 | 主担当・統合・GitHub書込 | 計画、最終判断、atomic commit、検証 |
+| A1 | 凍結候補監査 | candidate ID、Entry、情報時点、重複 |
+| A2 | データ仕様監査 | 期間、fields、BID/ASK、集計、欠損 |
+| A3 | GitHub Actions監査 | workflow、trigger、取得範囲、Artifact |
+| A4 | Provider監査 | symbol mapping、calendar、version、license |
+| A5 | QC/Manifest監査 | row count、gap、SHA、同期、roll |
+| A6 | Count-only漏洩監査 | forward outcome非計算、coverage Gate |
+| A7 | Red-team | 過学習、future access、cost、再現性、事故 |
+
+### 固定ルール
+
+- サブエージェントは原則read-only監査
+- 同一ファイルを複数agentが同時編集しない
+- 各agentは入力、判断、未確認点を報告
+- 主担当が矛盾を解決し、最終内容だけをcommit
+- agentの多数決で凍結仕様を変更しない
+- 重大問題を発見したら実行を止め、incidentまたはdecision logへ残す
+
+## 6. Phase 9の検証仮説
+
+完全な数値条件は`spec/candidate_registry.frozen.json`が唯一の正本です。
+
+| ID | 対象・時間足 | 種別 | 要点 |
+|---|---|---|---|
+| PS-202 | 全12、M15/H1/H4 | 反転 | 20本高安の明確なbreak後、2本以内に旧境界内へ戻る失敗breakを反対方向へ取る |
+| PS-203 | 全12、M15/H1/H4 | 継続 | 完成済みH4/D1 trend中、限定pullback後の構造的再加速を取る |
+| PS-204 | FX8＋金銀、M15/H1 | 反転 | UTC 00:00〜06:00 rangeの欧州時間false breakを反対方向へ取る |
+| PS-205 | 全12、H1/H4 | 継続 | D1 20/60日trendとintraday pullback後の再開を取る |
+| LV-201 | 全12、M15/H1/H4 | 継続 | 同一UTC slot比の参加量shock、正常spread、次足確認で追随 |
+| LV-202 | 全12、M15/H1/H4 | 継続 | volatility圧縮20本balanceのbreak、retest保持、再確認で追随 |
+| LV-203 | 全12、M15/H1/H4 | 反転 | climactic range・volume・wick後のmidpoint回復で反転 |
+| RR-201 | FX8、H4 | 継続 | 5通貨の20/60日strength順位とH4 pullbackを組み合わせる |
+| RR-202 | FX8、H1/H4 | 相対反転 | 他7pairから推定した理論値への残差乖離が収束を始めた方向 |
+| RR-203 | 金銀、H4 | 相対反転 | Gold/Silverのdynamic hedge residual平均回帰 |
+| RR-204 | Brent/WTI、H4 | 相対反転 | Brent/WTIのdynamic hedge residual平均回帰 |
+| RISK-P9-RO-201 | PS-205 H4 signal共有 | Risk overlay | 年率10% target-vol、0.25〜1.50倍size。独立alphaではない |
+
+### 草案からの処置
+
+- PS-201 → LV-202へ結果未閲覧で統合
+- LV-204 → 旧VV-104との独立性不足でpretest削除
+- RR-205 → point-in-time carry data不足でpretest除外、差し替えなし
+- LV-205 → PS-205とsignalが重複するためrisk overlay化
+
+## 7. データ期間
+
+```text
+取得許可
+2013-01-01T00:00:00Z <= timestamp < 2019-08-28T00:00:00Z
+
+Warm-up
+2013-01-01 <= timestamp < 2014-08-28
+
+Phase 9 Discovery
+2014-08-28 <= timestamp < 2019-08-28
+```
+
+2019-08-28以降をPhase 9取得workflowから要求しません。終了境界はexclusiveです。
+
+2019〜2022年はPhase 8で使用済みです。2022〜2026年には旧戦略workflowのアクセス履歴があるため、厳格なDevelopment/OOS/Holdoutとしての有効性は後続protocolを凍結する前に再監査します。Phase 9候補結果はまだ計算していません。
+
+## 8. GitHub上にあるデータ取得方法
+
+### 再利用できる参考実装
+
+- `.github/workflows/phase8-blind-discovery.yml`
+- `.github/workflows/phase8-vv104-unified-audit.yml`
+
+両方ともPhase 8用の参考実装であり、Phase 9ではそのまま実行しません。
+
+### 既存の取得方式
+
+- Downloader: `dukascopy-go v0.2.0`
+- Archive SHA-256: `f78f621d747e7584be2ae6789f6b97e22ae656203cc9ab7a32766f699e455e4b`
+- Engine: `jetta`
+- Timezone: UTC
+- Source: M15、H1
+- Side: BID、ASK
+- 12銘柄
+- H4/D1: canonical H1から決定的集計
+- CSV名: `${symbol}_${M15|H1}_${bid|ask}.csv`
+
+### 12銘柄
+
+| Asset | 研究ID / Dukascopy確認対象 |
+|---|---|
+| FX | AUDJPY、AUDUSD、EURGBP、EURJPY、EURUSD、GBPJPY、GBPUSD、USDJPY |
+| Metals | XAUUSD、XAGUSD |
+| Energy | BRENTCMDUSD、LIGHTCMDUSD |
+
+OANDA MT5側のsymbol、contract size、lot、session、financing/rollは将来のcost protocol前に別途固定します。
+
+### Artifact方針
+
+既存Phase 8 workflowは`results/`だけを14日Artifact保存し、raw CSVはrunner一時領域で消えます。Phase 9でもraw巨大CSVをGitや公開Artifactへ載せず、runner一時領域またはユーザー承認済みの非公開保管だけを使います。再現用script、manifest、version、row counts、gap、SHA-256、同期、roll inventory、結果だけをGitへ保存します。
+
+### 使用禁止
+
+- `.github/workflows/tmp-gbpjpy-h1-v8.yml`
+- `.github/workflows/tmp-gbpjpy-h1-v8b.yml`
+
+この2本は本ガイド追加commitでfail-closedに無効化します。
+
+## 9. Phase 9の全工程
+
+```text
+S0 正本・事前登録確認
+ ↓
+S1 Provider / mapping / calendar / version固定
+ ↓
+S2 許可期間だけ取得
+ ↓
+S3 Data Quality Gate
+ ↓
+S4 Count-only Gate
+ ↓
+S5 12確認項目を同時Discovery
+ ↓
+S6 Survivor再凍結
+ ↓
+S7 Development protocolを結果未閲覧で新規凍結
+ ↓
+S8 Walk-Forward protocolを新規凍結・実行
+ ↓
+S9 Strict OOS protocolを新規凍結・一度だけ実行
+ ↓
+S10 OANDA MT5 cost protocolを新規凍結・実行
+ ↓
+S11 Final Holdout protocolを新規凍結・一度だけ実行
+ ↓
+S12 EA safety protocol・demo forward
+ ↓
+S13 live許可
+```
+
+Development以降は順序と候補期間だけが登録され、Phase 9専用の数値Gate・fold・合否規則は未確定です。次段階のavailability照会・取得前に、その段階専用protocolを結果未閲覧で別commitへ凍結します。旧`common_edge_policy.yaml`はprovisionalであり、Phase 9正式Gateとして使いません。
+
+## 10. Stage別手順
+
+| Stage | 入力 | 実施 | 出力・Gate |
+|---|---|---|---|
+| S0 | frozen registry/data/policy | head・JSON・hash・draft排除確認 | preregistration integrity |
+| S1 | provider metadata | provider、12 symbol、calendar、roll、version、binary SHAを結果なしで固定 | source manifest commit |
+| S2 | S1 manifest | 12×M15/H1×BID/ASK=48系列を許可期間だけ取得 | runner一時rawまたは承認済み非公開保管、row count、SHA |
+| S3 | 48系列 | timestamp、duplicate、OHLC、spread、gap、missingness、同期、roll、H1→H4/D1監査 | quality report |
+| S4 | quality通過data | signal flag、episode、control availability、group countだけ計算 | PASSまたはREJECT_AS_UNDERPOWERED |
+| S5 | count通過候補 | 12h return、control edge、cost、bootstrap、FDRをlocked run | DEVELOPMENTまたはREJECT |
+| S6 | Discovery survivor | code/data/hash/decision固定 | 次段階候補commit |
+| S7以降 | 前段階PASS | 次段階protocolを先に凍結してから当該splitだけ開く | stage terminal decision |
+
+### S1で固定するファイル
+
+- `source_versions.json`
+- `instrument_mapping.json`
+- `trading_calendar.json`
+- `energy_roll_rules.json`
+- Phase 9専用acquisition workflow
+- boundary tests
+
+### S2取得コマンドの原則
+
+日付をworkflow inputにしません。コードにhard-codeし、取得後にもassertします。
+
+```text
+--from 2013-01-01
+--to 2019-08-27 23:59
+assert max(timestamp) < 2019-08-28T00:00:00Z
+```
+
+取得jobでbacktest、return、MFE、MAE、edge、勝率を計算しません。
+
+### S3品質Gate
+
+- timestamp厳密昇順、duplicate 0
+- OHLC geometry正常、price > 0、volume >= 0
+- ASK open >= BID open
+- provider calendarに対するgap・session missingness
+- first/last timestamp、row count、SHA-256
+- FX8、金銀、原油の同期bar数
+- Energy roll-date inventory
+- H1→H4/D1完全bucket
+- no forward fill
+
+### S4 Count-only Gate
+
+計算可能なのはEntry feature、signal flag、episode ID、control availability、instrument/timeframe/block/date別件数だけです。forward return、MFE、MAE、edge、その符号は禁止です。
+
+不合格：
+
+```text
+REJECT_AS_UNDERPOWERED
+p = 1
+return非計算
+条件緩和・銘柄/時間足削除・期間延長・候補差替え禁止
+```
+
+候補profile別の完全な最低件数・coverageは`candidate_registry.frozen.json`を参照します。
+
+### S5 Discovery
+
+- Primary: executable BID/ASKによる12実時間return
+- prior-only matched control
+- UTC日cluster episode
+- Bootstrap 10,000回
+- 12確認項目を1 familyとしてBH-FDR `q<=0.10`
+- stressed raw return、CI、breadth、sensitivityを全てGate化
+- RR-203/RR-204は2脚portfolio risk unit
+- RISK-P9-RO-201はpaired Delta episode Sharpe
+- subgroupや最良sensitivityによる救済禁止
+
+## 11. 絶対禁止事項
+
+- PA-002、Phase 8候補の再最適化
+- frozen Entry・対象・時間足・期間・control・Gate変更
+- 2019-08-28以降をPhase 9取得jobで照会・download・cache
+- Count-only前のforward outcome計算
+- 結果後の銘柄・時間足・side選択
+- favorable subgroupやsensitivityによる救済
+- Underpowered/Data insufficient候補の差し替え
+- raw市場CSV、API key、GitHub token、OANDA/MT5認証情報のcommit
+- Final Holdoutの複数回実行
+- 全Gate前のMT5 EA実装
+- 旧tmp workflowの再有効化
+
+## 12. ファイルの役割と更新規則
+
+| ファイル | 役割 | 更新 |
+|---|---|---|
+| `PHASE9_OPERATIONS_GUIDE.md` | 手順・参照・GitHub・agent運用 | 運用変更時 |
+| `SESSION_STATE.json` | 現在状態・incident・次action | 各作業終了時 |
+| `NEXT_SESSION_HANDOFF.md` | 次回への差分・入口 | セッション終了時 |
+| `README.md` | 索引 | 正本追加時 |
+| `DESIGN_DECISIONS.md` | 研究設計判断 | 新しい事前判断時 |
+| `spec/*.frozen.json` | 凍結数値仕様 | 原則変更禁止 |
+| `policy/preregistered_research_policy.json` | 許可・禁止 | 原則変更禁止 |
+| `POLICY_INCIDENT_*.md` | 境界事故の監査記録 | 事故時に追記せず新規作成 |
+
+仕様変更が必要なら実行を止め、新version、理由、outcome access状況を記録し、ユーザー承認後に新しいpreregistration commitを作ります。
+
+## 13. GitHub更新手順
+
+1. remote headと対象repo/branch確認
+2. 変更対象と既存SHA確認
+3. unrelated fileを変更しない
+4. サブエージェント監査
+5. 主担当が変更を統合
+6. JSON parse、YAML trigger、link、secret scan、diff check
+7. 1つのatomic commitを作成
+8. non-forceで`main`更新
+9. remote headと各fileを再取得
+10. Actions runを確認し、意図しないworkflowが起動していないことを確認
+11. repo、branch、files、commit、tests、data access、outcome access、残作業を報告
+
+## 14. 次セッション引き継ぎテンプレート
+
+```text
+開始commit:
+終了commit:
+現在Stage:
+Formal alpha / overlay:
+Agent rolesと重要結論:
+更新ファイル:
+取得した期間:
+Manifest / SHA:
+Quality / Count Gate:
+Phase 9 outcome accessed:
+禁止期間access:
+Policy incident:
+Blocker:
+次に実行する1作業:
+```
+
+ガイド全文をHandoffへ複製せず、Handoffは今回の差分と次の1作業だけを書きます。

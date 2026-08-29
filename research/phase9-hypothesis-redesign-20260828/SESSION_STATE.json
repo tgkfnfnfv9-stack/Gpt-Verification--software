@@ -1,7 +1,7 @@
 {
   "project": "auto-trading-research",
   "updated_at": "2026-08-29",
-  "phase": "PHASE9_PREREGISTERED_NOT_DOWNLOADED",
+  "phase": "PHASE9_PREREGISTERED_AUTHORIZED_DOWNLOAD_NOT_STARTED",
   "phase8": {
     "formal_hypotheses_including_pa002": 16,
     "decision": "ALL_REJECT_FOR_DEVELOPMENT",
@@ -49,7 +49,9 @@
     ],
     "discovery_started": false,
     "data_download_started": false,
-    "outcome_accessed": false
+    "outcome_accessed": false,
+    "authorized_data_download_started": false,
+    "legacy_non_phase9_future_period_download_detected": true
   },
   "data_requirements": {
     "status": "FROZEN_PREREGISTERED_NOT_DOWNLOADED",
@@ -76,18 +78,19 @@
     "development_walk_forward": {
       "start_inclusive": "2022-08-28T00:00:00Z",
       "end_exclusive": "2024-08-28T00:00:00Z",
-      "status": "MASKED_NOT_DOWNLOADED"
+      "status": "RESERVED_BUT_PRIOR_NON_PHASE9_WORKFLOW_ACCESS_DETECTED_VALIDITY_REVIEW_REQUIRED"
     },
     "strict_oos": {
       "start_inclusive": "2024-08-28T00:00:00Z",
       "end_exclusive": "2025-08-28T00:00:00Z",
-      "status": "MASKED_NOT_DOWNLOADED"
+      "status": "RESERVED_BUT_PRIOR_NON_PHASE9_WORKFLOW_ACCESS_DETECTED_VALIDITY_REVIEW_REQUIRED"
     },
     "final_holdout": {
       "start_inclusive": "2025-08-28T00:00:00Z",
       "end_exclusive": "2026-08-28T00:00:00Z",
-      "status": "MASKED_NOT_DOWNLOADED_NOT_EVALUATED"
-    }
+      "status": "RESERVED_BUT_PRIOR_NON_PHASE9_WORKFLOW_ACCESS_DETECTED_VALIDITY_REVIEW_REQUIRED"
+    },
+    "future_split_access_status": "ACCESS_STATUS_UNDER_AUDIT"
   },
   "prohibited_next_actions": [
     "use Phase 8 subgroup outcomes to alter Phase 9",
@@ -99,15 +102,52 @@
     "implement MT5 EA"
   ],
   "next_actions": [
-    "pin provider, instrument mapping, trading calendar and downloader version without outcomes",
-    "acquire only 2013-01-01 inclusive through 2019-08-28 exclusive",
-    "run data integrity and count-only coverage Gates",
-    "only then run all 12 confirmatory questions together"
+    "use PHASE9_OPERATIONS_GUIDE.md as the procedural entrypoint",
+    "build a Phase 9 acquisition-only workflow with hard-coded 2013-01-01 inclusive to 2019-08-28 exclusive boundary",
+    "pin provider, instrument mapping, calendar, Energy roll metadata and downloader version without outcomes",
+    "run acquisition and quality checks only; no return calculation",
+    "run count-only coverage Gate before Discovery"
   ],
   "target_execution": {
     "platform": "MT5",
     "broker": "OANDA",
     "account": "live-standard",
     "ea_allowed_after_all_gates_only": true
-  }
+  },
+  "operations": {
+    "status": "OPERATIONS_CANONICAL",
+    "guide": "PHASE9_OPERATIONS_GUIDE.md",
+    "root_agent_instructions": "/AGENTS.md",
+    "guide_does_not_override_frozen_spec": true
+  },
+  "workflow_safety": {
+    "status": "REMEDIATED_IN_OPERATIONS_GUIDE_COMMIT",
+    "disabled_legacy_workflows": [
+      ".github/workflows/tmp-gbpjpy-h1-v8.yml",
+      ".github/workflows/tmp-gbpjpy-h1-v8b.yml"
+    ],
+    "phase8_workflows": "REFERENCE_ONLY_NOT_PHASE9_EXECUTION"
+  },
+  "policy_incidents": [
+    {
+      "incident_id": "PHASE9-INC-20260829-001",
+      "cause": "Two legacy temporary workflows triggered on every main push.",
+      "triggering_commit": "e94cd52a0ec5a990f32c3740ba83736beb95d709",
+      "action_runs": [
+        33231270189,
+        33231270148
+      ],
+      "observed_metadata": [
+        "prohibited-period download steps completed successfully",
+        "legacy research steps failed",
+        "artifact upload steps were skipped",
+        "GitHub API reports zero artifacts for both runs"
+      ],
+      "outcome_access_by_phase9": false,
+      "job_logs_opened_for_outcome_review": false,
+      "phase9_candidate_code_executed": false,
+      "scientific_status": "OPERATIONAL_BOUNDARY_BREACH; PHASE9-SPECIFIC OUTCOMES NOT ACCESSED; FUTURE SPLIT VALIDITY REVIEW REQUIRED",
+      "incident_log": "POLICY_INCIDENT_20260829.md"
+    }
+  ]
 }

@@ -4,46 +4,29 @@
 
 ## 最初に読む
 
-1. `research/phase8-blind-discovery-20260828/results/PHASE8_FINAL_DECISION.json`
-2. `research/phase8-blind-discovery-20260828/results/RESULTS_SUMMARY.md`
-3. `research/phase9-hypothesis-redesign-20260828/README.md`
-4. `research/phase9-hypothesis-redesign-20260828/SESSION_STATE.json`
-5. `research/phase9-hypothesis-redesign-20260828/DESIGN_DECISIONS.md`
-6. `research/phase9-hypothesis-redesign-20260828/HYPOTHESIS_PORTFOLIO_FINAL.md`
-7. `research/phase9-hypothesis-redesign-20260828/spec/candidate_registry.frozen.json`
-8. `research/phase9-hypothesis-redesign-20260828/DATA_REQUIREMENTS.md`
-9. `research/phase9-hypothesis-redesign-20260828/spec/data_requirements.frozen.json`
-10. `research/phase9-hypothesis-redesign-20260828/policy/preregistered_research_policy.json`
+1. `PHASE9_OPERATIONS_GUIDE.md`
+2. `POLICY_INCIDENT_20260829.md`
+3. Phase 8 `results/PHASE8_FINAL_DECISION.json`
+4. Phase 8 `results/RESULTS_SUMMARY.md`
+5. `README.md`
+6. `SESSION_STATE.json`
+7. `DESIGN_DECISIONS.md`
+8. `HYPOTHESIS_PORTFOLIO_FINAL.md`
+9. `spec/candidate_registry.frozen.json`
+10. `DATA_REQUIREMENTS.md`
+11. `spec/data_requirements.frozen.json`
+12. `policy/preregistered_research_policy.json`
 
 ## 現在地
 
-```text
-正式検証済み16件        全件REJECT_FOR_DEVELOPMENT
-Phase 9 formal alpha      11件・UNTESTED_PREREGISTERED
-Phase 9 risk overlay       1件・UNTESTED_PREREGISTERED
-Confirmatory family       12件・BH-FDR q=0.10
-市場データ取得            未開始
-return/backtest           0件
-Development/OOS/Holdout   未取得・未開封
-MT5 EA                    禁止
-```
+- Formal alpha 11件＋risk overlay 1件
+- Confirmatory family 12件、全件UNTESTED_PREREGISTERED
+- 正式なPhase 9データ取得、return、backtestは未開始
+- 旧tmp workflow 2本はfail-closedで無効化
+- Phase 9固有outcomeは未閲覧
+- 2022〜2026年は旧workflow accessのため後続split有効性の再監査が必要
+- EAは禁止
 
-PS-201はLV-202へ統合、LV-204は独立性不足でpretest削除、RR-205はcarry data不足でpretest除外、LV-205はPS-205と重複するためrisk overlayへ移動しました。いずれもPhase 9 outcomeを見た統計的REJECTではありません。
+## 次に実行する1作業
 
-## 次の順序
-
-```text
-provider・instrument mapping・calendar・versionを結果なしで固定
-  ↓
-2013-01-01 <= timestamp < 2019-08-28だけ取得
-  ↓
-品質Gate・manifest
-  ↓
-count-only sample/coverage Gate
-  ├─ 不足: REJECT_AS_UNDERPOWERED、p=1、return非計算
-  └─ 通過: 12 confirmatory questionsを同時実行
-  ↓
-BH-FDR・CI・cost・breadth・sensitivity Gate
-```
-
-禁止事項は、旧仮説再最適化、銘柄/時間足の後付け選択、Phase 8期間の再利用、Development/OOS/Final Holdoutの照会・取得、候補差し替え、EA実装です。旧draftは実行に使いません。
+Phase 9専用のacquisition-only workflow、source manifest、instrument mapping、calendar、Energy roll規則、境界testを結果なしで作成する。取得許可は`2013-01-01 <= timestamp < 2019-08-28`だけ。取得jobでreturnを計算しない。

@@ -3,15 +3,14 @@
 ```text
 GitHub Repository tgkfnfnfv9-stack/Gpt-Verification--software のPhase 9自動売買研究を引き継いでください。
 
-最初に research/phase9-hypothesis-redesign-20260828/NEXT_SESSION_HANDOFF.md の「最初に読む」10ファイルを順番に読んでください。
+最初に research/phase9-hypothesis-redesign-20260828/PHASE9_OPERATIONS_GUIDE.md を完全に読み、
+同ファイルの「セッション開始時に読む順番」に従ってください。
 
-現在の正本はfrozenファイルです。旧draftは使わないでください。
-Formal alphaは11件、risk overlayは1件、confirmatory familyは合計12件で、全件UNTESTED_PREREGISTEREDです。
-Phase 9のデータ取得、return計算、バックテストは未開始です。
-Development、OOS、Final Holdoutは未取得・未開封です。
+Formal alphaは11件、risk overlayは1件、全件UNTESTED_PREREGISTEREDです。
+旧tmp workflowのpolicy incidentがあるため POLICY_INCIDENT_20260829.md も必ず読んでください。
+正本はfrozen JSONとpreregistered policyです。draftを使わないでください。
 
-次は市場returnを見ずにprovider、instrument mapping、trading calendar、downloader versionを固定し、
-2013-01-01以上2019-08-28未満だけを取得してください。
-品質Gateとcount-only coverage Gateより前にforward return、MFE、MAE、edge、勝率を計算しないでください。
-旧仮説の再最適化、結果を見た銘柄・時間足選択、候補差し替え、MT5 EA実装は禁止です。
+次はPhase 9専用acquisition-only workflowとsource manifestを作成します。
+2013-01-01以上2019-08-28未満以外を照会・取得せず、Count-only前にreturn/MFE/MAE/edgeを計算しないでください。
+サブエージェントは8論理役割を、実際の並列上限に合わせて2波で使い、主担当だけがcommitしてください。
 ```
