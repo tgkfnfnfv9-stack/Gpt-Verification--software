@@ -37,7 +37,7 @@ Phase 9事前登録commit `e94cd52a0ec5a990f32c3740ba83736beb95d709` をmainへ�
 
 ## 是正
 
-本incidentと同じ運用ガイド更新commitで、両workflowを次の二重防御へ変更します。
+commit `b61e160faf353346c3d9f527e1fe551de5d765bf`で、両workflowを次の二重防御へ変更済みです。
 
 1. triggerを手動`workflow_dispatch`だけにする
 2. jobに`if: ${{ false }}`を設定して常にskipする

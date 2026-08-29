@@ -36,17 +36,29 @@ Phase 9
 
 ## 2. 情報源の優先順位
 
+情報の種類ごとに優先順位を分けます。
+
+### 研究仕様・許可・禁止
+
 矛盾した場合は上ほど優先します。
 
 1. `policy/preregistered_research_policy.json`
 2. `spec/candidate_registry.frozen.json`
 3. `spec/data_requirements.frozen.json`
-4. `SESSION_STATE.json`
-5. `DESIGN_DECISIONS.md`
-6. `HYPOTHESIS_PORTFOLIO_FINAL.md`、`DATA_REQUIREMENTS.md`
-7. 本ガイド
-8. `NEXT_SESSION_HANDOFF.md`、`README.md`
-9. 履歴・draft
+4. `DESIGN_DECISIONS.md`
+5. `HYPOTHESIS_PORTFOLIO_FINAL.md`、`DATA_REQUIREMENTS.md`
+6. 本ガイド
+7. `NEXT_SESSION_HANDOFF.md`、`README.md`
+8. 履歴・draft
+
+### 事故・実行履歴・データアクセスの観測事実
+
+1. 最新の`POLICY_INCIDENT_*.md`とGitHub run metadata
+2. `SESSION_STATE.json`
+3. Handoff/README
+4. 凍結時点のstatus label
+
+frozen JSON内の`MASKED_NOT_DOWNLOADED`等は基準commit時点の事前登録snapshotです。凍結後に判明したアクセス事故の事実だけは、incidentとSESSION_STATEの最新記録を優先します。この例外は数値仕様、許可期間、Gate、候補を変更しません。
 
 本ガイドは手順正本ですが、研究数値・期間・Gateを上書きしません。
 
@@ -212,7 +224,7 @@ OANDA MT5側のsymbol、contract size、lot、session、financing/rollは将来�
 - `.github/workflows/tmp-gbpjpy-h1-v8.yml`
 - `.github/workflows/tmp-gbpjpy-h1-v8b.yml`
 
-この2本は本ガイド追加commitでfail-closedに無効化します。
+この2本はcommit `b61e160faf353346c3d9f527e1fe551de5d765bf`でfail-closedに無効化済みです。
 
 ## 9. Phase 9の全工程
 
