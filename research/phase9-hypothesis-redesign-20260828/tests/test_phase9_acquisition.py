@@ -308,6 +308,7 @@ class Phase9AcquisitionTests(unittest.TestCase):
         self.assertIn("RuntimeClassOriginGuardSelfTest", workflow)
         self.assertIn("Phase 9 runtime class-origin guard is not active.", workflow)
         self.assertIn("uniq -d", workflow)
+        self.assertIn("META-INF/MANIFEST.MF | tr -d '\\r'", workflow)
         self.assertEqual(workflow.count('java -jar "$runner"'), 1)
         self.assertIn("guard_status=REJECTED", workflow)
         self.assertIn('test "$guard_status" = 86', workflow)

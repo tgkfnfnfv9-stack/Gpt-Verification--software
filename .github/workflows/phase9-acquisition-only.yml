@@ -93,7 +93,7 @@ jobs:
           test "$(git hash-object "$root/runner/jforex/src/main/java/org/phase9/Phase9JForexAcquirer.java")" = '3464b6623d6c8fa71ba2fdb098b7bf6050219963'
           test "$(git hash-object "$root/runner/jforex/src/main/java/org/phase9/RuntimeClassOriginGuard.java")" = '86b873c42522f8f398a9826836a9a07af762dd2e'
           test "$(git hash-object "$root/runner/jforex/src/main/java/org/phase9/RuntimeClassOriginGuardSelfTest.java")" = '82bad437e91e132e400461a36049981eb431d36b'
-          test "$(git hash-object "$root/tests/test_phase9_acquisition.py")" = 'b2221bf47797061870af12f5e9485be90748478d'
+          test "$(git hash-object "$root/tests/test_phase9_acquisition.py")" = '64b116173de9efb8d92e50728c75af26ce002b36'
           for manifest in source_versions instrument_mapping trading_calendar energy_roll_rules; do
             python -m json.tool "$root/data_manifest/${manifest}.json" >/dev/null
           done
@@ -184,7 +184,7 @@ jobs:
           positive_audit="$METADATA_DIR/class_origin_guard_positive.txt"
           negative_audit="$METADATA_DIR/class_origin_guard_negative.txt"
           manifest="$METADATA_DIR/runner_manifest.txt"
-          unzip -p "$runner" META-INF/MANIFEST.MF > "$manifest"
+          unzip -p "$runner" META-INF/MANIFEST.MF | tr -d '\r' > "$manifest"
           grep -Fx 'Premain-Class: org.phase9.RuntimeClassOriginGuard' "$manifest"
           grep -Fx 'Main-Class: org.phase9.Phase9JForexAcquirer' "$manifest"
           test "$(grep -Ec '^(Class-Path|Boot-Class-Path):' "$manifest")" = 0
