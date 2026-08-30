@@ -2,19 +2,13 @@ name: phase8-vv104-unified-audit
 
 on:
   workflow_dispatch:
-  push:
-    branches: [main]
-    paths:
-      - '.github/workflows/phase8-vv104-unified-audit.yml'
-      - 'research/phase8-blind-discovery-20260828/runner/vv104_unified_audit.py'
-      - 'research/phase8-blind-discovery-20260828/runner/blind_discovery.py'
-      - 'research/phase8-blind-discovery-20260828/tests/**'
 
 permissions:
   contents: read
 
 jobs:
   unified-audit:
+    if: ${{ false }}
     name: VV-104 unified M15-H1-H4 audit
     runs-on: ubuntu-latest
     timeout-minutes: 120

@@ -1,0 +1,42 @@
+{
+  "schema_version": "phase9-instrument-mapping-v1.0",
+  "status": "FROZEN_PRE_ACQUISITION_JFOREX",
+  "provider": "Dukascopy",
+  "mapping_rule": "No substitution, addition, deletion or provider-symbol remapping after this preregistered mapping commit. Field or symbol unavailability is handled candidate-by-candidate as DATA_INSUFFICIENT with p=1 and no same-Phase replacement.",
+  "source_timeframes": ["M15", "H1"],
+  "sides": ["bid", "ask"],
+  "instruments": [
+    {"research_symbol": "AUDJPY", "provider_symbol": "AUD/JPY", "asset_class": "FX", "acquisition_enabled": true},
+    {"research_symbol": "AUDUSD", "provider_symbol": "AUD/USD", "asset_class": "FX", "acquisition_enabled": true},
+    {"research_symbol": "EURGBP", "provider_symbol": "EUR/GBP", "asset_class": "FX", "acquisition_enabled": true},
+    {"research_symbol": "EURJPY", "provider_symbol": "EUR/JPY", "asset_class": "FX", "acquisition_enabled": true},
+    {"research_symbol": "EURUSD", "provider_symbol": "EUR/USD", "asset_class": "FX", "acquisition_enabled": true},
+    {"research_symbol": "GBPJPY", "provider_symbol": "GBP/JPY", "asset_class": "FX", "acquisition_enabled": true},
+    {"research_symbol": "GBPUSD", "provider_symbol": "GBP/USD", "asset_class": "FX", "acquisition_enabled": true},
+    {"research_symbol": "USDJPY", "provider_symbol": "USD/JPY", "asset_class": "FX", "acquisition_enabled": true},
+    {"research_symbol": "XAUUSD", "provider_symbol": "XAU/USD", "asset_class": "PRECIOUS_METALS", "acquisition_enabled": true},
+    {"research_symbol": "XAGUSD", "provider_symbol": "XAG/USD", "asset_class": "PRECIOUS_METALS", "acquisition_enabled": true},
+    {
+      "research_symbol": "BRENTCMDUSD",
+      "provider_symbol": "BRENT.CMD/USD",
+      "asset_class": "ENERGY",
+      "acquisition_enabled": true,
+      "continuous_series_metadata": "REQUIRED_BEFORE_RR204_OUTCOME"
+    },
+    {
+      "research_symbol": "LIGHTCMDUSD",
+      "provider_symbol": "LIGHT.CMD/USD",
+      "asset_class": "ENERGY",
+      "acquisition_enabled": true,
+      "continuous_series_metadata": "REQUIRED_BEFORE_RR204_OUTCOME"
+    }
+  ],
+  "expected_instrument_count": 12,
+  "expected_series_count": 48,
+  "outcome_access_blocked_until_mapping_and_quality_pass": true,
+  "energy_mapping_evidence": "Registered Phase 8 reference workflows used BRENTCMDUSD and LIGHTCMDUSD. The acquisition run must record provider inventory output before download.",
+  "oanda_mapping": {
+    "status": "DEFERRED_TO_OANDA_COST_PROTOCOL",
+    "may_not_change_phase9_discovery_universe": true
+  }
+}

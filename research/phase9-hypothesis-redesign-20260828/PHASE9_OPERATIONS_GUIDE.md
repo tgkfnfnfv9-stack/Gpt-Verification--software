@@ -1,10 +1,10 @@
 # Phase 9 統合運用ガイド
 
-guide_version: `1.0.1`  
-status: `OPERATIONS_CANONICAL`  
-更新日: 2026-08-29  
-対象リポジトリ: `tgkfnfnfv9-stack/Gpt-Verification--software`  
-対象ブランチ: `main`  
+guide_version: `1.1.0`
+status: `OPERATIONS_CANONICAL`
+更新日: 2026-08-30
+対象リポジトリ: `tgkfnfnfv9-stack/Gpt-Verification--software`
+対象ブランチ: `main`
 凍結仕様の基準コミット: `e94cd52a0ec5a990f32c3740ba83736beb95d709`
 
 凍結正本のGit blob anchor:
@@ -28,6 +28,7 @@ Phase 9
 ├─ Confirmatory questions      12件
 ├─ 状態                         全件UNTESTED_PREREGISTERED
 ├─ 正式なPhase 9データ取得      未開始
+├─ Provider acquisition         BUILD_PREFLIGHT_READY / PRICE_BLOCKED
 ├─ Phase 9 return/backtest       0件
 └─ MT5 EA                       禁止
 ```
@@ -51,6 +52,8 @@ Phase 9
 7. `NEXT_SESSION_HANDOFF.md`、`README.md`
 8. 履歴・draft
 
+`JFOREX_SOURCE_CHANNEL_AMENDMENT.md`と`data_manifest/*.json`は、凍結JSONのouter authorizationを拡大せず、より狭い取得範囲と実行経路を事前固定する運用正本です。矛盾時は、より狭くfail-closedな制約を採用し、期間・銘柄・Gateを拡大しません。
+
 ### 事故・実行履歴・データアクセスの観測事実
 
 1. 最新の`POLICY_INCIDENT_*.md`とGitHub run metadata
@@ -73,16 +76,18 @@ frozen JSON内の`MASKED_NOT_DOWNLOADED`等は基準commit時点の事前登録s
 
 1. `PHASE9_OPERATIONS_GUIDE.md`
 2. `POLICY_INCIDENT_20260829.md`
-3. Phase 8 `results/PHASE8_FINAL_DECISION.json`
-4. Phase 8 `results/RESULTS_SUMMARY.md`
-5. Phase 9 `README.md`
-6. `SESSION_STATE.json`
-7. `DESIGN_DECISIONS.md`
-8. `HYPOTHESIS_PORTFOLIO_FINAL.md`
-9. `spec/candidate_registry.frozen.json`
-10. `DATA_REQUIREMENTS.md`
-11. `spec/data_requirements.frozen.json`
-12. `policy/preregistered_research_policy.json`
+3. `PROVIDER_ACQUISITION_BLOCKER.md`
+4. `JFOREX_SOURCE_CHANNEL_AMENDMENT.md`
+5. Phase 8 `results/PHASE8_FINAL_DECISION.json`
+6. Phase 8 `results/RESULTS_SUMMARY.md`
+7. Phase 9 `README.md`
+8. `SESSION_STATE.json`
+9. `DESIGN_DECISIONS.md`
+10. `HYPOTHESIS_PORTFOLIO_FINAL.md`
+11. `spec/candidate_registry.frozen.json`
+12. `DATA_REQUIREMENTS.md`
+13. `spec/data_requirements.frozen.json`
+14. `policy/preregistered_research_policy.json`
 
 数値Entryは必ず`candidate_registry.frozen.json`、取得境界は`data_requirements.frozen.json`、許可・禁止は`preregistered_research_policy.json`から読みます。HandoffやMarkdown要約だけで実装しません。
 
@@ -92,7 +97,7 @@ frozen JSON内の`MASKED_NOT_DOWNLOADED`等は基準commit時点の事前登録s
 
 1. GitHub接続でrepository full nameを完全一致確認
 2. `main`の最新commitを取得
-3. 上記12ファイルをGitHubから直接読む
+3. 上記14項目をGitHubから直接読む
 4. 書込前に再度remote headを確認
 5. 変更は1つのatomic commitへまとめる
 6. push後にremote headと更新ファイルを再取得する
@@ -169,22 +174,26 @@ dirty worktreeを勝手にreset、checkout、削除しません。サブエー�
 
 ## 7. データ期間
 
-```text
-取得許可
-2013-01-01T00:00:00Z <= timestamp < 2019-08-28T00:00:00Z
+| Source timeframe | 取得開始（inclusive） | 取得終了（exclusive） | 処置 |
+|---|---|---|---|
+| M15 | `2013-01-01T00:00:00Z` | `2019-08-28T00:00:00Z` | 凍結outer intervalの上限まで |
+| H1 | `2013-01-01T00:00:00Z` | `2019-08-01T00:00:00Z` | 2019年8月を全12・BID/ASKで一律事前除外 |
 
-Warm-up
-2013-01-01 <= timestamp < 2014-08-28
+Warm-upは2013-01-01以上2014-08-28未満、Discoveryは2014-08-28以降で各source timeframeの取得終了未満です。終了境界はすべてexclusiveです。
 
-Phase 9 Discovery
-2014-08-28 <= timestamp < 2019-08-28
-```
+H1の`[2019-08-01, 2019-08-28)`は結果未閲覧で一律除外しました。同じPhase 9で後から取得、M15から生成、または個別銘柄だけ復活させません。M15も2019-08-28以降を要求・取得・cacheしません。
 
-2019-08-28以降をPhase 9取得workflowから要求しません。終了境界はexclusiveです。
+H4とD1はcanonical H1からの派生のみなので、最終的な対象終了はいずれも`2019-08-01T00:00:00Z`未満です。
 
 2019〜2022年はPhase 8で使用済みです。2022〜2026年には旧戦略workflowのアクセス履歴があるため、厳格なDevelopment/OOS/Holdoutとしての有効性は後続protocolを凍結する前に再監査します。Phase 9候補結果はまだ計算していません。
 
 ## 8. GitHub上にあるデータ取得方法
+
+### 現在の実行判断
+
+公開website endpointと`dukascopy-go`の組合せは、自動access条件、配布license、H1月単位requestの禁止境界超過の3点で廃止しました。詳細は`PROVIDER_ACQUISITION_BLOCKER.md`を参照します。
+
+代替として、公式認証JForex Tester APIと公式SDKを使う取得経路を`JFOREX_SOURCE_CHANNEL_AMENDMENT.md`で事前凍結しました。現在許可されるのは認証・price request前に停止するBuild preflightだけです。全依存とrunner JARのhash lock、および同一run full-QCまたは承認済み非公開raw保管が固定されるまで実取得しません。
 
 ### 再利用できる参考実装
 
@@ -193,17 +202,35 @@ Phase 9 Discovery
 
 両方ともPhase 8用の参考実装であり、Phase 9ではそのまま実行しません。
 
-### 既存の取得方式
+### 正式なPhase 9取得方式
 
-- Downloader: `dukascopy-go v0.2.0`
-- Archive SHA-256: `f78f621d747e7584be2ae6789f6b97e22ae656203cc9ab7a32766f699e455e4b`
-- Engine: `jetta`
+- Channel: authenticated Dukascopy JForex Tester API
+- Root client: `DDS2-jClient-JForex 3.6.51`
+- API: `JForex-API 2.13.99`
+- Root POM SHA-256: `ea80b6e0c938ca4831d723f29ec2ca311967788b00c6218c6768b91cbdb28bd9`
+- Root JAR SHA-256: `daf2d98cded0a8ff85276965f0c10eb01692acff7949a5898ab295708e2c26c2`
 - Timezone: UTC
 - Source: M15、H1
 - Side: BID、ASK
 - 12銘柄
-- H4/D1: canonical H1から決定的集計
+- Process: M15/H1 × BID/ASKの4回
+- Expected output: 48 CSV
 - CSV名: `${symbol}_${M15|H1}_${bid|ask}.csv`
+
+workflow inputに日付はありません。Java runnerがtimeframe別の境界をhard-codeし、Python validatorが48ファイルの境界、BID/ASK同期、OHLC、spreadなどを再検査します。H4/D1集計とCount-onlyはこの取得runで実行しません。
+
+### GitHub Actions実行手順
+
+1. Repository secretsに`DUKASCOPY_USERNAME`と`DUKASCOPY_PASSWORD`を登録する。
+2. `.github/workflows/phase9-acquisition-only.yml`を`workflow_dispatch`で開く。
+3. 取得境界確認とaccount terms確認の2入力に、workflowが指定する完全一致文字列を入力する。
+4. workflowが凍結anchor、manifest、runner test、official dependency SHAを検証する。
+5. account catalogで12銘柄を全て確認後、4回の固定取得を実行する。
+6. raw CSVやcacheはArtifact化せず、metadata QCのみを保存する。
+
+workflowはprice、return、edgeの実行ボタンを自動的に続けません。取得成功後も`full_quality_gate_passed=false`のまま停止し、calendar、H4/D1 bucket、Energy rollを別工程で監査します。
+
+凍結JNLPはdemo serviceです。Repository secretsにはJForex demo accountの認証情報だけを登録し、live accountの認証情報を使いません。単一の`tick_volume`はBID bar volumeをcanonicalとし、ASK volumeは不一致件数のQCだけに使います。
 
 ### 12銘柄
 
@@ -223,8 +250,10 @@ OANDA MT5側のsymbol、contract size、lot、session、financing/rollは将来�
 
 - `.github/workflows/tmp-gbpjpy-h1-v8.yml`
 - `.github/workflows/tmp-gbpjpy-h1-v8b.yml`
+- `.github/workflows/phase8-blind-discovery.yml`
+- `.github/workflows/phase8-vv104-unified-audit.yml`
 
-この2本はcommit `b61e160faf353346c3d9f527e1fe551de5d765bf`でfail-closedに無効化済みです。
+Phase 8の2本はfail-closedに無効化済みです。Phase 9 workflowは完全一致確認付きmanual Build preflightだけを先に許可し、dependency lockが無い限り認証前に停止します。
 
 ## 9. Phase 9の全工程
 
@@ -265,8 +294,8 @@ Development以降は順序と候補期間だけが登録され、Phase 9専用�
 | Stage | 入力 | 実施 | 出力・Gate |
 |---|---|---|---|
 | S0 | frozen registry/data/policy | head・JSON・hash・draft排除確認 | preregistration integrity |
-| S1 | provider metadata | provider、12 symbol、calendar、roll、version、binary SHAを結果なしで固定 | source manifest commit |
-| S2 | S1 manifest | 12×M15/H1×BID/ASK=48系列を許可期間だけ取得 | runner一時rawまたは承認済み非公開保管、row count、SHA |
+| S1 | provider metadata | 認証API、hard-clipped request、provider、12 symbol、calendar、roll、version、client SHAを結果なしで固定 | JForex経路凍結済み。Secrets/account terms確認待ち |
+| S2 | S1 manifest | 12×M15/H1×BID/ASK=48系列をtimeframe別の許可期間だけ取得 | runner一時raw、metadata row count・SHA、full QCは未通過で停止 |
 | S3 | 48系列 | timestamp、duplicate、OHLC、spread、gap、missingness、同期、roll、H1→H4/D1監査 | quality report |
 | S4 | quality通過data | signal flag、episode、control availability、group countだけ計算 | PASSまたはREJECT_AS_UNDERPOWERED |
 | S5 | count通過候補 | 12h return、control edge、cost、bootstrap、FDRをlocked run | DEVELOPMENTまたはREJECT |
@@ -287,9 +316,10 @@ Development以降は順序と候補期間だけが登録され、Phase 9専用�
 日付をworkflow inputにしません。コードにhard-codeし、取得後にもassertします。
 
 ```text
---from 2013-01-01
---to 2019-08-27 23:59
-assert max(timestamp) < 2019-08-28T00:00:00Z
+M15: [2013-01-01T00:00:00Z, 2019-08-28T00:00:00Z)
+H1:  [2013-01-01T00:00:00Z, 2019-08-01T00:00:00Z)
+assert no H1 row exists in 2019-08
+assert no row reaches 2019-08-28T00:00:00Z
 ```
 
 取得jobでbacktest、return、MFE、MAE、edge、勝率を計算しません。
@@ -337,7 +367,8 @@ return非計算
 
 - PA-002、Phase 8候補の再最適化
 - frozen Entry・対象・時間足・期間・control・Gate変更
-- 2019-08-28以降をPhase 9取得jobで照会・download・cache
+- M15で2019-08-28以降、またはH1で2019-08-01以降をPhase 9取得jobで照会・download・cache
+- H1の2019年8月tailをM15から後付け集計して復活
 - Count-only前のforward outcome計算
 - 結果後の銘柄・時間足・side選択
 - favorable subgroupやsensitivityによる救済

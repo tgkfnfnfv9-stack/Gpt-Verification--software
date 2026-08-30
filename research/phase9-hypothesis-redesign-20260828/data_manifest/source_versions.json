@@ -1,0 +1,107 @@
+{
+  "schema_version": "phase9-source-versions-v1.1-jforex",
+  "status": "FROZEN_BUILD_PREFLIGHT_READY_ACQUISITION_BLOCKED_PENDING_DEPENDENCY_LOCK_AND_FULL_QC_PATH",
+  "frozen_at": "2026-08-29",
+  "research_use_only": true,
+  "outcome_access_at_freeze": false,
+  "provider": {
+    "name": "Dukascopy Bank SA",
+    "access_channel": "Authenticated official JForex Tester API",
+    "api_page": "https://www.dukascopy.com/swiss/english/forex/api/jforex-api/",
+    "javadoc": "https://www.dukascopy.com/client/javadoc3/",
+    "demo_jnlp": "https://platform.dukascopy.com/demo_3/jforex_3.jnlp",
+    "timezone": "UTC",
+    "authorization_basis": "The official JForex API page explicitly provides an authenticated API client for customer systems and automated strategy testing.",
+    "account_terms_confirmation_required": true,
+    "public_endpoint_scraping_allowed": false
+  },
+  "client": {
+    "name": "DDS2-jClient-JForex",
+    "version": "3.6.51",
+    "jforex_api_version": "2.13.99",
+    "maven_repository": "https://www.dukascopy.com/client/jforexlib/publicrepo/",
+    "root_pom_sha256": "ea80b6e0c938ca4831d723f29ec2ca311967788b00c6218c6768b91cbdb28bd9",
+    "root_jar_sha256": "daf2d98cded0a8ff85276965f0c10eb01692acff7949a5898ab295708e2c26c2",
+    "official_sdk_archive": "https://www.dukascopy.com/client/jforexlib/JForex-3-SDK.zip",
+    "official_sdk_archive_sha256": "a7a2fb6c070f800145adf5d88a7de9ed37e7544878b12b4312ea006365947016",
+    "dependency_hash_inventory_required_each_run": true,
+    "complete_dependency_lock_required_before_credentials": true,
+    "reproducible_runner_jar_hash_required_before_credentials": true,
+    "production_dependency_allowed": false
+  },
+  "request": {
+    "start_inclusive": "2013-01-01T00:00:00Z",
+    "end_exclusive_by_timeframe": {
+      "M15": "2019-08-28T00:00:00Z",
+      "H1": "2019-08-01T00:00:00Z"
+    },
+    "h1_tail_exclusion": {
+      "start_inclusive": "2019-08-01T00:00:00Z",
+      "end_exclusive": "2019-08-28T00:00:00Z",
+      "scope": "ALL_12_INSTRUMENTS_BID_AND_ASK",
+      "reason": "Pre-outcome user decision to avoid any August 2019 H1 request; frozen uniformly before acquisition.",
+      "outcome_based": false,
+      "same_phase_reversal_allowed": false
+    },
+    "timeframes": ["M15", "H1"],
+    "sides": ["bid", "ask"],
+    "jforex_interpolation_method": "FOUR_TICKS",
+    "source_period_equals_output_period": true,
+    "derived_h1_from_m15_allowed": false,
+    "canonical_tick_volume": {
+      "side": "BID",
+      "reason": "Frozen before acquisition to map the single required tick_volume field without selecting between sides after data inspection.",
+      "ask_volume_use": "QUALITY_DIAGNOSTIC_ONLY",
+      "bid_ask_mismatch_action": "RECORD_IN_METADATA_AND_KEEP_FULL_QUALITY_GATE_FALSE_PENDING_REVIEW"
+    },
+    "expected_processes": 4,
+    "expected_series": 48,
+    "date_inputs_allowed": false
+  },
+  "storage": {
+    "raw_csv": "GITHUB_RUNNER_TEMP_ONLY_OR_USER_APPROVED_PRIVATE_STORAGE",
+    "jforex_cache": "GITHUB_RUNNER_TEMP_UNIQUE_DIRECTORY_PER_TIMEFRAME_AND_SIDE",
+    "raw_git_commit_allowed": false,
+    "raw_public_artifact_allowed": false,
+    "metadata_artifact_allowed": true,
+    "metadata_artifact_retention_days": 14,
+    "cross_stage_handoff": "REACQUIRE_AND_REQUIRE_EXACT_SHA256_MATCH_TO_COMMITTED_ACQUISITION_MANIFEST",
+    "hash_mismatch_action": "STOP_BEFORE_COUNTS_OR_OUTCOMES_AND_REGISTER_A_NEW_DATA_VERSION"
+  },
+  "github_actions": {
+    "runner_label": "ubuntu-24.04",
+    "checkout_action": "actions/checkout",
+    "checkout_commit_sha": "11bd71901bbe5b1630ceea73d27597364c9af683",
+    "setup_java_action": "actions/setup-java",
+    "setup_java_commit_sha": "c5195efecf7bdfc987ee8bae7a71cb8b11521c00",
+    "upload_artifact_action": "actions/upload-artifact",
+    "upload_artifact_commit_sha": "ea165f8d65b6e75b540449e92b4886f43607fa02",
+    "permissions": "contents: read",
+    "trigger": "workflow_dispatch only",
+    "required_secrets": ["DUKASCOPY_USERNAME", "DUKASCOPY_PASSWORD"]
+  },
+  "canonical_anchors": {
+    "preregistration_commit": "e94cd52a0ec5a990f32c3740ba83736beb95d709",
+    "candidate_registry_git_blob": "8740f58efe48c40ba0664606194b18b40cf14c27",
+    "data_requirements_git_blob": "7e6a476366140e07edac4e4316f8c08a6ab4ae92",
+    "preregistered_policy_git_blob": "8483418a6a75f5a6ea7d6b54ca54beb68896855f"
+  },
+  "prohibited_outputs": [
+    "forward return",
+    "MFE",
+    "MAE",
+    "edge",
+    "win rate",
+    "profit factor",
+    "trade list",
+    "strategy ranking"
+  ],
+  "stage_authorization": {
+    "build_and_synthetic_tests": "ALLOWED",
+    "build_preflight_without_credentials_or_prices": "ALLOWED",
+    "authenticated_acquisition_and_boundary_metadata": "BLOCKED_UNTIL_COMPLETE_DEPENDENCY_LOCK_AND_FULL_QC_OR_PRIVATE_RAW_PATH",
+    "full_quality_gate": "PENDING_PROVIDER_SCHEDULE_AND_ENERGY_INVENTORY",
+    "count_only": "BLOCKED_UNTIL_FULL_QUALITY_GATE",
+    "outcomes": "BLOCKED_UNTIL_COUNT_ONLY_GATE"
+  }
+}

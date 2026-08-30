@@ -1,7 +1,7 @@
 {
   "project": "auto-trading-research",
-  "updated_at": "2026-08-29",
-  "phase": "PHASE9_PREREGISTERED_AUTHORIZED_DOWNLOAD_NOT_STARTED",
+  "updated_at": "2026-08-30",
+  "phase": "PHASE9_PREREGISTERED_JFOREX_BUILD_PREFLIGHT_READY_ACQUISITION_BLOCKED",
   "phase8": {
     "formal_hypotheses_including_pa002": 16,
     "decision": "ALL_REJECT_FOR_DEVELOPMENT",
@@ -53,6 +53,22 @@
     "authorized_data_download_started": false,
     "legacy_non_phase9_future_period_download_detected": true
   },
+  "provider_acquisition": {
+    "status": "BUILD_PREFLIGHT_READY_ACQUISITION_BLOCKED_PENDING_DEPENDENCY_LOCK_AND_FULL_QC_PATH",
+    "decision_log": "PROVIDER_ACQUISITION_BLOCKER.md",
+    "source_channel_amendment": "JFOREX_SOURCE_CHANNEL_AMENDMENT.md",
+    "selected_channel": "DUKASCOPY_OFFICIAL_AUTHENTICATED_JFOREX_TESTER_API",
+    "public_endpoint_downloader_rejected": true,
+    "github_secrets_configured": false,
+    "dependency_lock_frozen": false,
+    "full_qc_same_run_or_private_raw_storage_decided": false,
+    "required_github_secrets": ["DUKASCOPY_USERNAME", "DUKASCOPY_PASSWORD"],
+    "h1_network_request_hard_clipped_before_2019_08_01": true,
+    "h1_uniform_tail_exclusion": "2019-08-01T00:00:00Z/2019-08-28T00:00:00Z",
+    "canonical_tick_volume_side": "BID",
+    "phase9_price_files_acquired": 0,
+    "phase9_outcomes_accessed": false
+  },
   "data_requirements": {
     "status": "FROZEN_PREREGISTERED_NOT_DOWNLOADED",
     "human_readable": "DATA_REQUIREMENTS.md",
@@ -68,6 +84,11 @@
     "phase9_discovery_proposed": {
       "start_inclusive": "2014-08-28T00:00:00Z",
       "end_exclusive": "2019-08-28T00:00:00Z",
+      "end_exclusive_by_source_timeframe": {
+        "M15": "2019-08-28T00:00:00Z",
+        "H1": "2019-08-01T00:00:00Z",
+        "H4_D1_DERIVED_FROM_H1": "2019-08-01T00:00:00Z"
+      },
       "status": "FROZEN_NOT_DOWNLOADED_AVAILABILITY_UNCONFIRMED"
     },
     "phase8_seen_period": {
@@ -103,9 +124,11 @@
   ],
   "next_actions": [
     "use PHASE9_OPERATIONS_GUIDE.md as the procedural entrypoint",
-    "build a Phase 9 acquisition-only workflow with hard-coded 2013-01-01 inclusive to 2019-08-28 exclusive boundary",
-    "pin provider, instrument mapping, calendar, Energy roll metadata and downloader version without outcomes",
-    "run acquisition and quality checks only; no return calculation",
+    "manually dispatch phase9-acquisition-only once for build preflight; it must stop before credentials or prices because dependency locks are intentionally absent",
+    "inspect the metadata artifact and freeze the complete dependency lock plus reproducible runner JAR hash",
+    "implement full provider-calendar/session/synchronization/H4-D1/Energy-roll QC in the same locked run or approve a private raw-data store",
+    "only then configure JForex demo credentials and authorize one acquisition run",
+    "complete provider-calendar, session-gap, cross-market synchronization, H4/D1 bucket and Energy roll metadata QC",
     "run count-only coverage Gate before Discovery"
   ],
   "target_execution": {
@@ -124,7 +147,9 @@
     "status": "REMEDIATED_IN_OPERATIONS_GUIDE_COMMIT",
     "disabled_legacy_workflows": [
       ".github/workflows/tmp-gbpjpy-h1-v8.yml",
-      ".github/workflows/tmp-gbpjpy-h1-v8b.yml"
+      ".github/workflows/tmp-gbpjpy-h1-v8b.yml",
+      ".github/workflows/phase8-blind-discovery.yml",
+      ".github/workflows/phase8-vv104-unified-audit.yml"
     ],
     "phase8_workflows": "REFERENCE_ONLY_NOT_PHASE9_EXECUTION"
   },

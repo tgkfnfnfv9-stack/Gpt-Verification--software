@@ -1,32 +1,39 @@
 # Phase 9 自動売買研究｜次セッション引き継ぎ
 
-更新日: 2026-08-29
+更新日: 2026-08-30
 
 ## 最初に読む
 
 1. `PHASE9_OPERATIONS_GUIDE.md`
 2. `POLICY_INCIDENT_20260829.md`
-3. Phase 8 `results/PHASE8_FINAL_DECISION.json`
-4. Phase 8 `results/RESULTS_SUMMARY.md`
-5. `README.md`
-6. `SESSION_STATE.json`
-7. `DESIGN_DECISIONS.md`
-8. `HYPOTHESIS_PORTFOLIO_FINAL.md`
-9. `spec/candidate_registry.frozen.json`
-10. `DATA_REQUIREMENTS.md`
-11. `spec/data_requirements.frozen.json`
-12. `policy/preregistered_research_policy.json`
+3. `PROVIDER_ACQUISITION_BLOCKER.md`
+4. `JFOREX_SOURCE_CHANNEL_AMENDMENT.md`
+5. Phase 8 `results/PHASE8_FINAL_DECISION.json`
+6. Phase 8 `results/RESULTS_SUMMARY.md`
+7. `README.md`
+8. `SESSION_STATE.json`
+9. `DESIGN_DECISIONS.md`
+10. `HYPOTHESIS_PORTFOLIO_FINAL.md`
+11. `spec/candidate_registry.frozen.json`
+12. `DATA_REQUIREMENTS.md`
+13. `spec/data_requirements.frozen.json`
+14. `policy/preregistered_research_policy.json`
 
 ## 現在地
 
 - Formal alpha 11件＋risk overlay 1件
-- Confirmatory family 12件、全件UNTESTED_PREREGISTERED
+- Confirmatory questions 12件（1 family）、全件UNTESTED_PREREGISTERED
 - 正式なPhase 9データ取得、return、backtestは未開始
-- 旧tmp workflow 2本はfail-closedで無効化
+- Phase 8旧workflowはfail-closedで無効化
 - Phase 9固有outcomeは未閲覧
+- Phase 9市場price fileは0件。取得は開始していない
+- 公開endpoint＋dukascopy-go経路は廃止
+- 公式認証JForex Tester API経路を凍結。Build preflight実行待ち
+- 実取得は依存lockとfull-QC/raw保管経路を固定するまでfail-closed
+- H1は全12・両side共通で2019-08-01以降を事前除外。M15は2019-08-28未満まで
 - 2022〜2026年は旧workflow accessのため後続split有効性の再監査が必要
 - EAは禁止
 
 ## 次に実行する1作業
 
-Phase 9専用のacquisition-only workflow、source manifest、instrument mapping、calendar、Energy roll規則、境界testを結果なしで作成する。取得許可は`2013-01-01 <= timestamp < 2019-08-28`だけ。取得jobでreturnを計算しない。
+`phase9-acquisition-only`を2つの完全一致文字列でmanual dispatchし、認証・price request前に意図的に停止するBuild preflightだけを行う。Artifactの全Maven依存SHAと再現build JAR SHAを監査・凍結し、同一runでfull QCする実装または承認済み非公開raw保管を決めるまで実取得しない。

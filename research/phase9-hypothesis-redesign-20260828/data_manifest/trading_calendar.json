@@ -1,0 +1,71 @@
+{
+  "schema_version": "phase9-trading-calendar-v1.0",
+  "status": "FROZEN_BAR_CONVENTION_PROVIDER_SCHEDULE_INVENTORY_REQUIRED",
+  "count_only_and_outcome_access_blocked": true,
+  "timezone": "UTC",
+  "dst_applied": false,
+  "bar_timestamp": "BAR_OPEN",
+  "source_series": {
+    "M15": "provider direct",
+    "H1": "provider direct"
+  },
+  "derived_series": {
+    "H4": {
+      "source": "canonical H1 only",
+      "buckets_utc": [
+        "[00:00,04:00)",
+        "[04:00,08:00)",
+        "[08:00,12:00)",
+        "[12:00,16:00)",
+        "[16:00,20:00)",
+        "[20:00,24:00)"
+      ]
+    },
+    "D1": {
+      "source": "canonical H1 only",
+      "bucket_utc": "[00:00,24:00)"
+    }
+  },
+  "completeness": {
+    "forward_fill_allowed": false,
+    "synthetic_missing_bars_allowed": false,
+    "incomplete_derived_bucket_action": "DROP",
+    "provider_scheduled_bar_inventory_required": true,
+    "gap_classification_before_outcomes": true
+  },
+  "period_labels": {
+    "WARMUP": {
+      "start_inclusive": "2013-01-01T00:00:00Z",
+      "end_exclusive": "2014-08-28T00:00:00Z",
+      "signal_generation_allowed": false,
+      "episode_generation_allowed": false,
+      "outcome_calculation_allowed": false
+    },
+    "DISCOVERY": {
+      "start_inclusive": "2014-08-28T00:00:00Z",
+      "end_exclusive": "2019-08-28T00:00:00Z"
+    }
+  },
+  "source_coverage_exclusions": {
+    "H1_ALL_INSTRUMENTS_ALL_SIDES": {
+      "start_inclusive": "2019-08-01T00:00:00Z",
+      "end_exclusive": "2019-08-28T00:00:00Z",
+      "frozen_before_acquisition": true,
+      "outcome_based": false,
+      "derived_replacement_allowed": false
+    }
+  },
+  "quality_inventory": {
+    "nominal_interval_gaps_recorded": true,
+    "weekend_or_holiday_assumptions": "NONE_UNTIL_PROVIDER_SCHEDULE_INVENTORY",
+    "session_missingness_report_required": true,
+    "first_last_timestamp_required": true,
+    "provider_schedule_version": "NO_VERSION_AVAILABLE_YET",
+    "required_runtime_evidence": [
+      "provider inventory access timestamp",
+      "per-instrument and timeframe observed schedule",
+      "inventory SHA-256",
+      "gap classification completed before Count-only"
+    ]
+  }
+}

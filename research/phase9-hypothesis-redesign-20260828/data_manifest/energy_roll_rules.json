@@ -1,0 +1,36 @@
+{
+  "schema_version": "phase9-energy-roll-rules-v1.0",
+  "status": "REGISTERED_FAIL_CLOSED",
+  "instruments": ["BRENTCMDUSD", "LIGHTCMDUSD"],
+  "purpose": "Prevent roll or CFD session discontinuities from being treated as tradable relative-value alpha.",
+  "required_before_rr204_outcome": [
+    "provider continuous-series construction",
+    "contract or CFD roll timestamps",
+    "roll adjustment method",
+    "session hours and closures",
+    "per-leg point-in-time spread",
+    "per-leg financing or roll cost when available"
+  ],
+  "prohibited": [
+    "infer roll dates from favorable or unfavorable price moves",
+    "backfill missing roll metadata after viewing RR-204 returns",
+    "replace Brent or WTI with another instrument in Phase 9",
+    "treat the two legs as two independent instruments for breadth"
+  ],
+  "missing_metadata_action": {
+    "candidate": "STRAT-P9-RR-204",
+    "decision": "DATA_INSUFFICIENT",
+    "p_value": 1,
+    "count_only_allowed": false,
+    "return_calculation_allowed": false,
+    "same_phase_replacement_allowed": false
+  },
+  "inventory_requirements": {
+    "timestamp_timezone": "UTC",
+    "source_and_version_required": true,
+    "inventory_sha256_required": true,
+    "roll_distortion_exclusion_window": "MUST_BE_FROZEN_FROM_PROVIDER_METADATA_BEFORE_RR204_COUNT_ONLY",
+    "price_inferred_roll_dates_allowed": false
+  },
+  "acquisition_note": "Raw BID/ASK acquisition for registered Energy symbols is allowed. RR-204 Count-only and outcome calculation remain blocked until this metadata inventory and exclusion rule are complete."
+}

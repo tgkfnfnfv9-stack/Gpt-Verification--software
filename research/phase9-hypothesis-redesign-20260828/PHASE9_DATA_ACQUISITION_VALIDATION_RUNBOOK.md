@@ -1,9 +1,12 @@
 # Phase 9 データ取得・仮説検証 実行手順書
 
-更新日: 2026-08-30  
-対象Repository: `tgkfnfnfv9-stack/Gpt-Verification--software`  
-対象Branch: `main`  
-基準main commit: `efda1604fc8776a033fea43982f113e2a2cdc6f4`
+更新日: 2026-08-30
+対象Repository: `tgkfnfnfv9-stack/Gpt-Verification--software`
+対象Branch: `main`
+基準main commit: `ff45fcb26dcd6e8e3f9d3eb9fb415e8eb09c9952`
+現在status: `BUILD_PREFLIGHT_READY_ACQUISITION_BLOCKED`
+
+> 2026-08-30 amendment: 公開endpointと`dukascopy-go v0.2.0`の実行経路は廃止しました。この文書の旧版にあった同toolのコマンドや実行指示は有効ではありません。理由は`PROVIDER_ACQUISITION_BLOCKER.md`、代替正本は`JFOREX_SOURCE_CHANNEL_AMENDMENT.md`です。
 
 ## 0. この文書の目的
 
@@ -41,8 +44,7 @@ Phase 9
 
 Phase 9は仮説討論段階ではなく、事前登録済みである。旧Draftを使ってはいけない。
 
-現在のGitHubにはPhase 9専用のデータ取得Workflow、Count-only Runner、Discovery Runnerがまだない。
-したがって、最初の実装作業はPhase 9専用取得・品質検査基盤の作成である。
+Phase 9専用JForex取得・境界QC基盤は実装済みだが、市場price fileは0件である。次は認証・price request前に停止するBuild preflightで、全Maven依存と再珫uild JARのSHAを凍結する。Count-only RunnerとDiscovery Runnerはまだ作らない。
 
 ---
 
@@ -53,12 +55,14 @@ Phase 9は仮説討論段階ではなく、事前登録済みである。旧Draf
 1. `AGENTS.md`
 2. `research/phase9-hypothesis-redesign-20260828/PHASE9_OPERATIONS_GUIDE.md`
 3. `research/phase9-hypothesis-redesign-20260828/POLICY_INCIDENT_20260829.md`
-4. `research/phase9-hypothesis-redesign-20260828/SESSION_STATE.json`
-5. `research/phase9-hypothesis-redesign-20260828/DESIGN_DECISIONS.md`
-6. `research/phase9-hypothesis-redesign-20260828/HYPOTHESIS_PORTFOLIO_FINAL.md`
-7. `research/phase9-hypothesis-redesign-20260828/spec/candidate_registry.frozen.json`
-8. `research/phase9-hypothesis-redesign-20260828/spec/data_requirements.frozen.json`
-9. `research/phase9-hypothesis-redesign-20260828/policy/preregistered_research_policy.json`
+4. `research/phase9-hypothesis-redesign-20260828/PROVIDER_ACQUISITION_BLOCKER.md`
+5. `research/phase9-hypothesis-redesign-20260828/JFOREX_SOURCE_CHANNEL_AMENDMENT.md`
+6. `research/phase9-hypothesis-redesign-20260828/SESSION_STATE.json`
+7. `research/phase9-hypothesis-redesign-20260828/DESIGN_DECISIONS.md`
+8. `research/phase9-hypothesis-redesign-20260828/HYPOTHESIS_PORTFOLIO_FINAL.md`
+9. `research/phase9-hypothesis-redesign-20260828/spec/candidate_registry.frozen.json`
+10. `research/phase9-hypothesis-redesign-20260828/spec/data_requirements.frozen.json`
+11. `research/phase9-hypothesis-redesign-20260828/policy/preregistered_research_policy.json`
 
 優先順位は次のとおり。
 
@@ -87,22 +91,14 @@ PHASE9_OPERATIONS_GUIDE.md
 
 # 3. 取得できる期間
 
-## 許可期間
+## 凍結取得期間
 
-```text
-2013-01-01T00:00:00Z <= timestamp < 2019-08-28T00:00:00Z
-```
-
-| 用途 | 開始 | 終了（exclusive） |
+| Source | 開始（inclusive） | 終了（exclusive） |
 |---|---|---|
-| Warm-up | 2013-01-01 | 2014-08-28 |
-| Phase 9 Discovery | 2014-08-28 | 2019-08-28 |
+| M15 BID/ASK、全12 | `2013-01-01T00:00:00Z` | `2019-08-28T00:00:00Z` |
+| H1 BID/ASK、全12 | `2013-01-01T00:00:00Z` | `2019-08-01T00:00:00Z` |
 
-取得コマンド上の終了は次とする。
-
-```text
---to '2019-08-27 23:59'
-```
+H1の`[2019-08-01, 2019-08-28)`はユーザー指示により結果未閲覧で一律除外済み。後から取得、M15から生成、銘柄別復活をしない。H4/D1はcanonical H1からの派生だけなので、対象終了も`2019-08-01T00:00:00Z`未満である。
 
 ## 絶対に取得しない期間
 
@@ -180,40 +176,16 @@ BIDとASKは別々に集計する。Provider予定barが1本でも欠けるbucke
 
 # 5. 使用する取得ツール
 
-Phase 8で再現実績がある次のバージョンを固定する。
+公式認証JForex Tester APIのみを使用する。
 
 | 項目 | 固定値 |
 |---|---|
-| Downloader | `dukascopy-go v0.2.0` |
-| Archive SHA-256 | `f78f621d747e7584be2ae6789f6b97e22ae656203cc9ab7a32766f699e455e4b` |
-| Engine | `jetta` |
+| Root client | `DDS2-jClient-JForex 3.6.51` |
+| JForex API | `2.13.99` |
+| Channel | authenticated official JForex Tester API, demo endpoint |
 | Timezone | `UTC` |
 
-インストール例：
-
-```bash
-set -euo pipefail
-
-url='https://github.com/Nosvemos/dukascopy-go/releases/download/v0.2.0/dukascopy-go_0.2.0_linux_amd64.tar.gz'
-curl -L --fail --retry 3 -o /tmp/dukascopy-go.tar.gz "$url"
-
-echo 'f78f621d747e7584be2ae6789f6b97e22ae656203cc9ab7a32766f699e455e4b  /tmp/dukascopy-go.tar.gz' \
-  | sha256sum -c -
-
-install_dir="$(mktemp -d)"
-tar -xzf /tmp/dukascopy-go.tar.gz -C "$install_dir"
-binary="$(find "$install_dir" -type f -name dukascopy-go | head -1)"
-chmod +x "$binary"
-sudo install "$binary" /usr/local/bin/dukascopy-go
-dukascopy-go --version
-```
-
-Energy symbolを結果計算前に確認する。
-
-```bash
-dukascopy-go instruments --query brent
-dukascopy-go instruments --query light
-```
+Public endpointと`dukascopy-go`は、自動access条件、pinned配布物のlicense、H1月単位requestが禁止境界後までresponse/cacheに入れる可能性により禁止する。
 
 ---
 
@@ -223,7 +195,7 @@ dukascopy-go instruments --query light
 
 ```text
 .github/workflows/
-└─ phase9-acquisition-qc.yml
+└─ phase9-acquisition-only.yml
 
 research/phase9-hypothesis-redesign-20260828/
 ├─ data_manifest/
@@ -232,12 +204,11 @@ research/phase9-hypothesis-redesign-20260828/
 │  ├─ trading_calendar.json
 │  └─ energy_roll_rules.json
 ├─ runner/
-│  ├─ validate_phase9_data.py
-│  └─ aggregate_phase9_timeframes.py
+│  ├─ acquire_phase9_data.py
+│  ├─ validate_phase9_acquisition.py
+│  └─ jforex/
 └─ tests/
-   ├─ test_phase9_boundary.py
-   ├─ test_phase9_data_quality.py
-   └─ test_phase9_aggregation.py
+   └─ test_phase9_acquisition.py
 ```
 
 まだ作らないもの：
@@ -271,49 +242,19 @@ permissions:
 Workflow DispatchのInputで日付を受け取らない。コードへ固定する。
 
 ```text
-FROM = 2013-01-01
-TO   = 2019-08-27 23:59
-END_EXCLUSIVE = 2019-08-28T00:00:00Z
+M15 = [2013-01-01T00:00:00Z, 2019-08-28T00:00:00Z)
+H1  = [2013-01-01T00:00:00Z, 2019-08-01T00:00:00Z)
 ```
 
-## 取得コマンド
+## 実行順序
 
-```bash
-set -euo pipefail
-mkdir -p data results
+1. `phase9-acquisition-only`を2つの完全一致文字列でmanual dispatchする。
+2. 最初のrunはBuild preflightだけを行い、依存lock不在により認証・price request前に意図的に停止する。
+3. Artifactの全Maven依存SHAと再珫uild JAR SHAを監査し、lockfileとして別commitで凍結する。
+4. 同一locked runにfull QCを追加するか、ユーザー承認済み非公開raw保管を決める。
+5. その後にJForex demo Secretsを設定し、一度の実取得を許可する。
 
-symbols=(
-  AUDJPY AUDUSD EURGBP EURJPY
-  EURUSD GBPJPY GBPUSD USDJPY
-  XAUUSD XAGUSD BRENTCMDUSD LIGHTCMDUSD
-)
-
-for timeframe_spec in 'm15:M15' 'h1:H1'; do
-  cli_timeframe="${timeframe_spec%%:*}"
-  file_timeframe="${timeframe_spec##*:}"
-
-  for symbol in "${symbols[@]}"; do
-    for side in bid ask; do
-      output="data/${symbol}_${file_timeframe}_${side}.csv"
-
-      dukascopy-go download \
-        --symbol "$symbol" \
-        --timeframe "$cli_timeframe" \
-        --side "$side" \
-        --from '2013-01-01' \
-        --to '2019-08-27 23:59' \
-        --timezone UTC \
-        --output "$output" \
-        --engine jetta \
-        --parallelism 4
-    done
-  done
-done
-```
-
-Providerが欠損区間でCommandを非0終了する場合は、年または月単位に分割取得する。
-分割範囲は許可期間内だけとし、結合時はHeader重複、timestamp重複、順序を検査する。
-取得できなかった区間は`gaps.json`に残す。
+取得runnerは日付引数を受け付けず、M15/H1×BID/ASKの4 processで48ファイルを出力する。不完全downloadは必ずfail-closedとする。
 
 ## 境界Assert
 
@@ -321,7 +262,8 @@ Providerが欠損区間でCommandを非0終了する場合は、年または月�
 
 ```text
 minimum timestamp >= 2013-01-01T00:00:00Z
-maximum timestamp < 2019-08-28T00:00:00Z
+M15 maximum timestamp < 2019-08-28T00:00:00Z
+H1 maximum timestamp < 2019-08-01T00:00:00Z
 ```
 
 1本でも範囲外ならWorkflow全体を失敗させる。
@@ -363,7 +305,7 @@ Return計算前に48系列すべてを検査する。
 | 4 | Price | 全て正 |
 | 5 | Volume | 0以上 |
 | 6 | BID/ASK | ASK Open≥BID Open |
-| 7 | Boundary | 全barが2013-01-01以上、2019-08-28未満 |
+| 7 | Boundary | 全barが2013-01-01以上、M15は2019-08-28未満、H1は2019-08-01未満 |
 | 8 | Gap | 全欠損を記録 |
 | 9 | First/Last | series別に記録 |
 | 10 | Row Count | series別に記録 |
@@ -643,12 +585,18 @@ Raw市場CSVは含めない。
 
 ```text
 Commit A
-Provider/Mapping/Calendar/Acquisition-QC Workflow/Tests
+Provider/Mapping/Calendar/JForex Workflow/Tests
         ↓
-Run A
-Acquisition + QCのみ
+Run A0
+Build preflightのみ（認証・priceの前に停止）
         ↓
-QC結果をGitHubへ保存
+Commit A1
+全依存lock・runner JAR SHA・full-QC/raw保管経路を凍結
+        ↓
+Run A1
+一度のAcquisition + QCのみ
+        ↓
+QC metadataをGitHubへ保存
         ↓
 Commit B
 Count-only Runner/Workflow/Tests
@@ -768,26 +716,27 @@ GitHub Repository tgkfnfnfv9-stack/Gpt-Verification--software のPhase 9自動�
 
 現在はFormal alpha 11件＋Risk overlay 1件、全12確認項目がUNTESTED_PREREGISTEREDです。Phase 9固有Returnは未計算です。
 
-今回実行する作業は、Phase 9専用のAcquisition/QC基盤の作成と実行です。
+今回実行する作業は、Phase 9専用JForex Acquisition/QC基盤のBuild preflightです。
 
 作成対象：
 
-- .github/workflows/phase9-acquisition-qc.yml
+- .github/workflows/phase9-acquisition-only.yml
 - data_manifest/source_versions.json
 - data_manifest/instrument_mapping.json
 - data_manifest/trading_calendar.json
 - data_manifest/energy_roll_rules.json
-- runner/validate_phase9_data.py
-- runner/aggregate_phase9_timeframes.py
-- 境界・品質・集計Tests
+- runner/acquire_phase9_data.py
+- runner/validate_phase9_acquisition.py
+- runner/jforex/
+- 境界・品質・安全Tests
 
-取得許可期間は2013-01-01 inclusiveから2019-08-28 exclusiveだけです。日付をWorkflow InputにせずHard-codeし、取得後にも全timestampをAssertしてください。
+実取得範囲はM15が2013-01-01 inclusiveから2019-08-28 exclusive、H1が2013-01-01 inclusiveから2019-08-01 exclusiveだけです。日付をWorkflow InputにせずHard-codeします。
 
-12銘柄、M15/H1、BID/ASKの48系列をdukascopy-go v0.2.0で取得します。2019年8月などProvider欠損があれば欠損として記録し、その区間だけ飛ばしてください。Forward Fill、期間延長、2019-08-28以降での穴埋めは禁止です。
+公開endpointとdukascopy-goは使用しません。公式認証JForex Tester APIを使います。最初のrunは全Maven依存と再現build JARのSHAを出力し、認証・price request前に意図的に停止します。
 
 今回はデータ品質検査だけを行い、Return、MFE、MAE、Edge、勝率、P値を計算しないでください。Raw CSVをGitや公開Artifactへ保存しないでください。
 
-実装、Tests、GitHub反映、Workflow実行、Run監査、QC結果保存まで進めてください。作業後はRepository、Branch、Commit、Run ID、取得期間、48系列の成否、欠損、SHA、Outcome未計算、禁止期間Accessの有無、次作業を日本語で報告してください。
+実装、Tests、GitHub反映、Build preflight Run監査まで進めてください。依存lockとfull-QC/raw保管経路が未凍結なら実price取得をしないでください。
 ```
 
 ---

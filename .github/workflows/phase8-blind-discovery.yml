@@ -2,17 +2,13 @@ name: phase8-blind-discovery
 
 on:
   workflow_dispatch:
-  push:
-    branches: [main]
-    paths:
-      - '.github/workflows/phase8-blind-discovery.yml'
-      - 'research/phase8-blind-discovery-20260828/**'
 
 permissions:
   contents: read
 
 jobs:
   discovery:
+    if: ${{ false }}
     name: Discovery ${{ matrix.label }}
     runs-on: ubuntu-latest
     timeout-minutes: 120

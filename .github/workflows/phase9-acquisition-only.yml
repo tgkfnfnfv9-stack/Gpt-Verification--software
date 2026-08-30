@@ -1,0 +1,183 @@
+name: phase9-acquisition-only
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirmation:
+        description: 'Type ACQUIRE_PHASE9_JFOREX_FROZEN_INTERVALS_ONLY'
+        required: true
+        type: string
+      account_terms_confirmation:
+        description: 'Type DUKASCOPY_JFOREX_ACCOUNT_TERMS_CONFIRMED'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: phase9-acquisition-only
+  cancel-in-progress: false
+
+jobs:
+  acquire:
+    if: ${{ github.ref == 'refs/heads/main' && inputs.confirmation == 'ACQUIRE_PHASE9_JFOREX_FROZEN_INTERVALS_ONLY' && inputs.account_terms_confirmation == 'DUKASCOPY_JFOREX_ACCOUNT_TERMS_CONFIRMED' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 360
+    env:
+      PHASE9_JFOREX_CONFIRM: ACQUIRE_PHASE9_JFOREX_FROZEN_INTERVALS_ONLY
+      RAW_DIR: ${{ runner.temp }}/phase9-raw
+      CACHE_ROOT: ${{ runner.temp }}/phase9-jforex-cache
+      METADATA_DIR: ${{ runner.temp }}/phase9-metadata
+
+    steps:
+      - name: Checkout exact triggering commit
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+          ref: ${{ github.sha }}
+
+      - name: Set up pinned Java toolchain action
+        uses: actions/setup-java@c5195efecf7bdfc987ee8bae7a71cb8b11521c00 # v4.7.1
+        with:
+          distribution: zulu
+          java-version: '8'
+
+      - name: Verify frozen specification and acquisition-only source
+        shell: bash
+        run: |
+          set -euo pipefail
+          root='research/phase9-hypothesis-redesign-20260828'
+          test "$(git hash-object "$root/spec/candidate_registry.frozen.json")" = '8740f58efe48c40ba0664606194b18b40cf14c27'
+          test "$(git hash-object "$root/spec/data_requirements.frozen.json")" = '7e6a476366140e07edac4e4316f8c08a6ab4ae92'
+          test "$(git hash-object "$root/policy/preregistered_research_policy.json")" = '8483418a6a75f5a6ea7d6b54ca54beb68896855f'
+          test "$(git hash-object "$root/data_manifest/source_versions.json")" = 'feae561b2cb29a01baada265a32ea0cd36e93a86'
+          test "$(git hash-object "$root/data_manifest/instrument_mapping.json")" = 'cb6622feaaa9e8b37e5ee47e82d70e1e0eebf2a3'
+          test "$(git hash-object "$root/data_manifest/trading_calendar.json")" = 'fd77135fdb4e7599bf38de039f3cfc0f5f51c827'
+          test "$(git hash-object "$root/data_manifest/energy_roll_rules.json")" = '9a40047e4498d87ccfe7cd4f1d0c903a9e4154cf'
+          test "$(git hash-object "$root/runner/acquire_phase9_data.py")" = '045dac5d1b3e3623f902f9deccba02deda6ff5ea'
+          test "$(git hash-object "$root/runner/validate_phase9_acquisition.py")" = 'cb2d7acd6cf899e085301ac7e4a59b8e051a340b'
+          test "$(git hash-object "$root/runner/jforex/pom.xml")" = 'aa2486b1d22afad98332fea5e60e56a74a584ace'
+          test "$(git hash-object "$root/runner/jforex/src/main/java/org/phase9/Phase9JForexAcquirer.java")" = '32314e830f2980f6b9ff930d617a242d6b911148'
+          test "$(git hash-object "$root/tests/test_phase9_acquisition.py")" = '36c9817d3da08f0832070471981c97cb2e1ad5e0'
+          for manifest in source_versions instrument_mapping trading_calendar energy_roll_rules; do
+            python -m json.tool "$root/data_manifest/${manifest}.json" >/dev/null
+          done
+          python -m unittest discover -s "$root/tests" -p 'test_phase9_acquisition.py' -v
+          python "$root/runner/acquire_phase9_data.py" \
+            --output-dir "$RAW_DIR" \
+            --cache-root "$CACHE_ROOT" \
+            --jar "$RUNNER_TEMP/phase9-jforex-acquirer.jar" \
+            --plan-only > "$RUNNER_TEMP/acquisition-plan.json"
+          test "$(python -c 'import json,sys; print(json.load(open(sys.argv[1]))["process_count"])' "$RUNNER_TEMP/acquisition-plan.json")" = 4
+          test "$(python -c 'import json,sys; print(json.load(open(sys.argv[1]))["series_count"])' "$RUNNER_TEMP/acquisition-plan.json")" = 48
+
+      - name: Build pinned JForex acquisition client
+        shell: bash
+        run: |
+          set -euo pipefail
+          project='research/phase9-hypothesis-redesign-20260828/runner/jforex'
+          mvn -B -ntp -f "$project/pom.xml" clean package
+          cp "$project/target/phase9-jforex-acquirer.jar" "$RUNNER_TEMP/phase9-jforex-acquirer.jar"
+          root_repo="$HOME/.m2/repository/com/dukascopy/dds2/DDS2-jClient-JForex/3.6.51"
+          echo 'daf2d98cded0a8ff85276965f0c10eb01692acff7949a5898ab295708e2c26c2  '"$root_repo/DDS2-jClient-JForex-3.6.51.jar" | sha256sum -c -
+          echo 'ea80b6e0c938ca4831d723f29ec2ca311967788b00c6218c6768b91cbdb28bd9  '"$root_repo/DDS2-jClient-JForex-3.6.51.pom" | sha256sum -c -
+          api_repo="$HOME/.m2/repository/com/dukascopy/api/JForex-API/2.13.99"
+          echo 'bad5923eb37b07aaf3f8f257eec1cfec57d645c1f61ea68ec2b7e179d3736ac2  '"$api_repo/JForex-API-2.13.99.jar" | sha256sum -c -
+          echo '3b66519706832fe4f29c6e0d42dc14b1882f02ffa5004d6af0287f73bbb1b04c  '"$api_repo/JForex-API-2.13.99.pom" | sha256sum -c -
+
+      - name: Record dependency identity before prices
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$METADATA_DIR"
+          (
+            cd "$HOME/.m2/repository"
+            find . -type f \( -name '*.jar' -o -name '*.pom' \) -print0 \
+              | sort -z \
+              | xargs -0 sha256sum
+          ) > "$METADATA_DIR/jforex_dependency_sha256.txt"
+          sha256sum "$RUNNER_TEMP/phase9-jforex-acquirer.jar" > "$METADATA_DIR/phase9_jforex_runner_sha256.txt"
+
+      - name: Enforce frozen dependency and runner locks
+        shell: bash
+        run: |
+          set -euo pipefail
+          project='research/phase9-hypothesis-redesign-20260828/runner/jforex'
+          if test ! -f "$project/dependency-lock.sha256" || test ! -f "$project/runner-jar.sha256"; then
+            echo 'PRE_ACQUISITION_STOP: inspect this run metadata, then commit the complete dependency and reproducible runner locks.' >&2
+            exit 1
+          fi
+          (
+            cd "$HOME/.m2/repository"
+            sha256sum -c "$GITHUB_WORKSPACE/$project/dependency-lock.sha256"
+          )
+          expected_runner=$(cut -d' ' -f1 "$project/runner-jar.sha256")
+          actual_runner=$(sha256sum "$RUNNER_TEMP/phase9-jforex-acquirer.jar" | cut -d' ' -f1)
+          test "$actual_runner" = "$expected_runner"
+
+      - name: Verify required GitHub secrets
+        shell: bash
+        env:
+          DUKASCOPY_USERNAME: ${{ secrets.DUKASCOPY_USERNAME }}
+          DUKASCOPY_PASSWORD: ${{ secrets.DUKASCOPY_PASSWORD }}
+        run: |
+          set -euo pipefail
+          if test -z "$DUKASCOPY_USERNAME" || test -z "$DUKASCOPY_PASSWORD"; then
+            echo 'Required Dukascopy JForex demo GitHub Secrets are not configured.' >&2
+            exit 1
+          fi
+
+      - name: Acquire frozen JForex bars only
+        shell: bash
+        env:
+          DUKASCOPY_USERNAME: ${{ secrets.DUKASCOPY_USERNAME }}
+          DUKASCOPY_PASSWORD: ${{ secrets.DUKASCOPY_PASSWORD }}
+        run: |
+          set -euo pipefail
+          root='research/phase9-hypothesis-redesign-20260828'
+          python "$root/runner/acquire_phase9_data.py" \
+            --output-dir "$RAW_DIR" \
+            --cache-root "$CACHE_ROOT" \
+            --jar "$RUNNER_TEMP/phase9-jforex-acquirer.jar"
+
+      - name: Validate boundaries and create metadata-only manifest
+        shell: bash
+        run: |
+          set -euo pipefail
+          root='research/phase9-hypothesis-redesign-20260828'
+          python "$root/runner/validate_phase9_acquisition.py" \
+            --data-dir "$RAW_DIR" \
+            --output-dir "$METADATA_DIR/validated"
+          test "$(find "$RAW_DIR" -maxdepth 1 -type f -name '*.csv' | wc -l)" = 48
+          if find "$METADATA_DIR" -type f -name '*.csv' -print -quit | grep -q .; then
+            echo 'Raw CSV found in metadata artifact directory.' >&2
+            exit 1
+          fi
+          git diff --exit-code
+
+      - name: Record runtime identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          {
+            echo "git_sha=$GITHUB_SHA"
+            echo "run_id=$GITHUB_RUN_ID"
+            echo "run_attempt=$GITHUB_RUN_ATTEMPT"
+            echo "runner_os=$RUNNER_OS"
+            echo "image_os=${ImageOS:-unknown}"
+            echo "image_version=${ImageVersion:-unknown}"
+            java -version 2>&1
+            mvn -version
+          } > "$METADATA_DIR/runtime_identity.txt"
+
+      - name: Upload metadata only
+        if: ${{ always() }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: phase9-jforex-acquisition-metadata-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/phase9-metadata/
+          if-no-files-found: error
+          retention-days: 14
+          include-hidden-files: false
