@@ -194,7 +194,7 @@ H4とD1はcanonical H1からの派生のみなので、最終的な対象終了�
 
 公開website endpointと`dukascopy-go`の組合せは、自動access条件、配布license、H1月単位requestの禁止境界超過の3点で廃止しました。詳細は`PROVIDER_ACQUISITION_BLOCKER.md`を参照します。
 
-代替として、公式認証JForex Tester APIと公式SDKを使う取得経路を`JFOREX_SOURCE_CHANNEL_AMENDMENT.md`で事前凍結しました。現在許可されるのは認証・price request前に停止するBuild preflightだけです。全依存とrunner JARのhash lock、および同一run full-QCまたは承認済み非公開raw保管が固定されるまで実取得しません。
+代替として、公式認証JForex Tester APIと公式SDKを使う取得経路を`JFOREX_SOURCE_CHANNEL_AMENDMENT.md`で事前凍結しました。現在許可されるのはcredential・price stepを一切含まないisolated reproducible Build preflightだけです。空の専用Maven repoとserver/mirror/profileを持たない最小user/global settingsを使い、online build 1回とoffline rebuild 2回を行い、3回の全file inventory完全一致とrunner JAR SHA一致を確認します。JNLP runtime code closure、および同一run full-QCまたは承認済み非公開raw保管が固定されるまで実取得しません。
 
 ### 再利用できる参考実装
 
@@ -222,12 +222,14 @@ workflow inputに日付はありません。Java runnerがtimeframe別の境界�
 
 ### GitHub Actions実行手順
 
-1. Repository secretsに`DUKASCOPY_USERNAME`と`DUKASCOPY_PASSWORD`を登録する。
-2. `.github/workflows/phase9-acquisition-only.yml`を`workflow_dispatch`で開く。
-3. 取得境界確認とaccount terms確認の2入力に、workflowが指定する完全一致文字列を入力する。
-4. workflowが凍結anchor、manifest、runner test、official dependency SHAを検証する。
-5. account catalogで12銘柄を全て確認後、4回の固定取得を実行する。
-6. raw CSVやcacheはArtifact化せず、metadata QCのみを保存する。
+1. `.github/workflows/phase9-acquisition-only.yml`を`workflow_dispatch`で開く。
+2. `confirmation`へ`BUILD_PHASE9_JFOREX_PREFLIGHT_ONLY`を入力する。
+3. workflowが凍結anchor、manifest、runner test、official root dependency SHAを検証する。
+4. 空の専用Maven repoでonline buildし、同じrepoだけを使うoffline rebuildを2回行う。
+5. 3回の依存inventory完全一致、3回のrunner JAR SHA一致、runtime identityをmetadata Artifactへ保存する。
+6. このworkflowにはSecrets、JForex認証、price request、raw CSV、QC、Outcomeのstepを置かない。
+
+このArtifactは依存とbuild再現性の監査資料であり、lockまたは取得許可そのものではありません。JNLP接続がMaven closure外の実行codeを追加取得しないことの検証と、full-QC/raw保管経路の決定後に、別のsecret-scoped acquisition/QC workflowを事前監査します。
 
 workflowはprice、return、edgeの実行ボタンを自動的に続けません。取得成功後も`full_quality_gate_passed=false`のまま停止し、calendar、H4/D1 bucket、Energy rollを別工程で監査します。
 
@@ -254,7 +256,7 @@ OANDA MT5側のsymbol、contract size、lot、session、financing/rollは将来�
 - `.github/workflows/phase8-blind-discovery.yml`
 - `.github/workflows/phase8-vv104-unified-audit.yml`
 
-Phase 8の2本はfail-closedに無効化済みです。Phase 9 workflowは完全一致確認付きmanual Build preflightだけを先に許可し、dependency lockが無い限り認証前に停止します。
+Phase 8の2本はfail-closedに無効化済みです。Phase 9 workflowは完全一致確認付きmanual Build preflightだけを許可し、workflow定義からcredential・price stepを除去しています。
 
 ## 9. Phase 9の全工程
 

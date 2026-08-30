@@ -1,7 +1,7 @@
 {
   "project": "auto-trading-research",
   "updated_at": "2026-08-30",
-  "phase": "PHASE9_PREREGISTERED_JFOREX_BUILD_PREFLIGHT_READY_ACQUISITION_BLOCKED",
+  "phase": "PHASE9_PREREGISTERED_JFOREX_ISOLATED_BUILD_PREFLIGHT_READY_ACQUISITION_BLOCKED",
   "phase8": {
     "formal_hypotheses_including_pa002": 16,
     "decision": "ALL_REJECT_FOR_DEVELOPMENT",
@@ -54,13 +54,18 @@
     "legacy_non_phase9_future_period_download_detected": true
   },
   "provider_acquisition": {
-    "status": "BUILD_PREFLIGHT_READY_ACQUISITION_BLOCKED_PENDING_DEPENDENCY_LOCK_AND_FULL_QC_PATH",
+    "status": "ISOLATED_REPRODUCIBLE_BUILD_PREFLIGHT_READY_ACQUISITION_BLOCKED_PENDING_RUNTIME_CLOSURE_AND_FULL_QC_PATH",
     "decision_log": "PROVIDER_ACQUISITION_BLOCKER.md",
     "source_channel_amendment": "JFOREX_SOURCE_CHANNEL_AMENDMENT.md",
     "selected_channel": "DUKASCOPY_OFFICIAL_AUTHENTICATED_JFOREX_TESTER_API",
     "public_endpoint_downloader_rejected": true,
     "github_secrets_configured": false,
     "dependency_lock_frozen": false,
+    "build_preflight_contains_credentials_or_price_steps": false,
+    "isolated_maven_repository_required": true,
+    "minimal_maven_user_and_global_settings_required": true,
+    "offline_build_repetitions_required": 2,
+    "runtime_code_closure_verified": false,
     "full_qc_same_run_or_private_raw_storage_decided": false,
     "required_github_secrets": ["DUKASCOPY_USERNAME", "DUKASCOPY_PASSWORD"],
     "h1_network_request_hard_clipped_before_2019_08_01": true,
@@ -124,8 +129,9 @@
   ],
   "next_actions": [
     "use PHASE9_OPERATIONS_GUIDE.md as the procedural entrypoint",
-    "manually dispatch phase9-acquisition-only once for build preflight; it must stop before credentials or prices because dependency locks are intentionally absent",
-    "inspect the metadata artifact and freeze the complete dependency lock plus reproducible runner JAR hash",
+    "manually dispatch phase9-acquisition-only once with BUILD_PHASE9_JFOREX_PREFLIGHT_ONLY; this workflow contains no credential or price step",
+    "inspect the isolated dependency inventories, runtime identity and three-build reproducible runner JAR SHA; treat them as audit evidence, not acquisition authorization",
+    "verify whether the JNLP connection adds executable runtime code beyond the Maven closure before any credential or price access",
     "implement full provider-calendar/session/synchronization/H4-D1/Energy-roll QC in the same locked run or approve a private raw-data store",
     "only then configure JForex demo credentials and authorize one acquisition run",
     "complete provider-calendar, session-gap, cross-market synchronization, H4/D1 bucket and Energy roll metadata QC",
@@ -144,7 +150,7 @@
     "guide_does_not_override_frozen_spec": true
   },
   "workflow_safety": {
-    "status": "REMEDIATED_IN_OPERATIONS_GUIDE_COMMIT",
+    "status": "MANUAL_BUILD_ONLY_PREFLIGHT_NO_SECRET_OR_PRICE_PATH",
     "disabled_legacy_workflows": [
       ".github/workflows/tmp-gbpjpy-h1-v8.yml",
       ".github/workflows/tmp-gbpjpy-h1-v8b.yml",
@@ -162,7 +168,7 @@
       "observed_metadata": [
         "workflow conclusion failure",
         "zero jobs and zero artifacts",
-        "schema annotation only; no credential or market-data step existed"
+        "zero jobs and zero steps; therefore no credential or market-data step executed"
       ],
       "phase9_price_access": false,
       "outcome_access_by_phase9": false,

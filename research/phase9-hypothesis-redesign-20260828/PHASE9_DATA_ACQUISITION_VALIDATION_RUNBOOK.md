@@ -248,11 +248,11 @@ H1  = [2013-01-01T00:00:00Z, 2019-08-01T00:00:00Z)
 
 ## 実行順序
 
-1. `phase9-acquisition-only`を2つの完全一致文字列でmanual dispatchする。
-2. 最初のrunはBuild preflightだけを行い、依存lock不在により認証・price request前に意図的に停止する。
-3. Artifactの全Maven依存SHAと再珫uild JAR SHAを監査し、lockfileとして別commitで凍結する。
-4. 同一locked runにfull QCを追加するか、ユーザー承認済み非公開raw保管を決める。
-5. その後にJForex demo Secretsを設定し、一度の実取得を許可する。
+1. `phase9-acquisition-only`を`BUILD_PHASE9_JFOREX_PREFLIGHT_ONLY`でmanual dispatchする。
+2. Build preflightはcredential・price stepを持たず、空の専用Maven repoでonline build 1回とoffline rebuild 2回を行う。
+3. Artifactの3つの完全依存inventory、runtime identity、3回一致したrunner JAR SHAを監査する。これは監査資料であり取得許可ではない。
+4. JNLP runtime code closureを検証し、同一locked runにfull QCを追加するか、ユーザー承認済み非公開raw保管を決める。
+5. その後に限り、buildと分離されたsecret-scoped acquisition/QC workflowを事前監査し、一度の実取得を許可する。
 
 取得runnerは日付引数を受け付けず、M15/H1×BID/ASKの4 processで48ファイルを出力する。不完全downloadは必ずfail-closedとする。
 
@@ -732,7 +732,7 @@ GitHub Repository tgkfnfnfv9-stack/Gpt-Verification--software のPhase 9自動�
 
 実取得範囲はM15が2013-01-01 inclusiveから2019-08-28 exclusive、H1が2013-01-01 inclusiveから2019-08-01 exclusiveだけです。日付をWorkflow InputにせずHard-codeします。
 
-公開endpointとdukascopy-goは使用しません。公式認証JForex Tester APIを使います。最初のrunは全Maven依存と再現build JARのSHAを出力し、認証・price request前に意図的に停止します。
+公開endpointとdukascopy-goは使用しません。公式認証JForex Tester APIを使います。最初のrunはcredential・price stepを含まないBuild preflightで、空の専用Maven repoの全file inventoryとonline 1回＋offline 2回で一致する再現build JAR SHAを出力します。
 
 今回はデータ品質検査だけを行い、Return、MFE、MAE、Edge、勝率、P値を計算しないでください。Raw CSVをGitや公開Artifactへ保存しないでください。
 

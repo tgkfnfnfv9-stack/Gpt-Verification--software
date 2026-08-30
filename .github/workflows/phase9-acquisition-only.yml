@@ -4,11 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       confirmation:
-        description: 'Type ACQUIRE_PHASE9_JFOREX_FROZEN_INTERVALS_ONLY'
-        required: true
-        type: string
-      account_terms_confirmation:
-        description: 'Type DUKASCOPY_JFOREX_ACCOUNT_TERMS_CONFIRMED'
+        description: 'Type BUILD_PHASE9_JFOREX_PREFLIGHT_ONLY'
         required: true
         type: string
 
@@ -20,12 +16,10 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  acquire:
-    if: ${{ github.ref == 'refs/heads/main' && inputs.confirmation == 'ACQUIRE_PHASE9_JFOREX_FROZEN_INTERVALS_ONLY' && inputs.account_terms_confirmation == 'DUKASCOPY_JFOREX_ACCOUNT_TERMS_CONFIRMED' }}
+  preflight:
+    if: ${{ github.ref == 'refs/heads/main' && inputs.confirmation == 'BUILD_PHASE9_JFOREX_PREFLIGHT_ONLY' }}
     runs-on: ubuntu-24.04
-    timeout-minutes: 360
-    env:
-      PHASE9_JFOREX_CONFIRM: ACQUIRE_PHASE9_JFOREX_FROZEN_INTERVALS_ONLY
+    timeout-minutes: 60
 
     steps:
       - name: Checkout exact triggering commit
@@ -46,10 +40,40 @@ jobs:
         run: |
           set -euo pipefail
           {
-            echo "RAW_DIR=$RUNNER_TEMP/phase9-raw"
-            echo "CACHE_ROOT=$RUNNER_TEMP/phase9-jforex-cache"
+            echo "PLAN_OUTPUT_DIR=$RUNNER_TEMP/phase9-plan-output"
+            echo "PLAN_CACHE_ROOT=$RUNNER_TEMP/phase9-plan-cache"
             echo "METADATA_DIR=$RUNNER_TEMP/phase9-metadata"
+            echo "M2_REPO=$RUNNER_TEMP/phase9-m2"
+            echo "MAVEN_USER_SETTINGS=$RUNNER_TEMP/phase9-maven-user-settings.xml"
+            echo "MAVEN_GLOBAL_SETTINGS=$RUNNER_TEMP/phase9-maven-global-settings.xml"
           } >> "$GITHUB_ENV"
+
+      - name: Record runtime identity before build
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$METADATA_DIR"
+          for settings in "$MAVEN_USER_SETTINGS" "$MAVEN_GLOBAL_SETTINGS"; do
+            printf '%s\n' \
+              '<?xml version="1.0" encoding="UTF-8"?>' \
+              '<settings xmlns="http://maven.apache.org/SETTINGS/1.2.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.2.0 https://maven.apache.org/xsd/settings-1.2.0.xsd">' \
+              '  <interactiveMode>false</interactiveMode>' \
+              '  <offline>false</offline>' \
+              '</settings>' > "$settings"
+          done
+          sha256sum "$MAVEN_USER_SETTINGS" "$MAVEN_GLOBAL_SETTINGS" \
+            > "$METADATA_DIR/maven_settings_sha256.txt"
+          {
+            echo "git_sha=$GITHUB_SHA"
+            echo "run_id=$GITHUB_RUN_ID"
+            echo "run_attempt=$GITHUB_RUN_ATTEMPT"
+            echo "runner_os=$RUNNER_OS"
+            echo "runner_arch=$RUNNER_ARCH"
+            echo "image_os=${ImageOS:-unknown}"
+            echo "image_version=${ImageVersion:-unknown}"
+            java -version 2>&1
+            mvn -version
+          } > "$METADATA_DIR/runtime_identity.txt"
 
       - name: Verify frozen specification and acquisition-only source
         shell: bash
@@ -67,117 +91,117 @@ jobs:
           test "$(git hash-object "$root/runner/validate_phase9_acquisition.py")" = 'cb2d7acd6cf899e085301ac7e4a59b8e051a340b'
           test "$(git hash-object "$root/runner/jforex/pom.xml")" = 'aa2486b1d22afad98332fea5e60e56a74a584ace'
           test "$(git hash-object "$root/runner/jforex/src/main/java/org/phase9/Phase9JForexAcquirer.java")" = '32314e830f2980f6b9ff930d617a242d6b911148'
-          test "$(git hash-object "$root/tests/test_phase9_acquisition.py")" = '36c9817d3da08f0832070471981c97cb2e1ad5e0'
+          test "$(git hash-object "$root/tests/test_phase9_acquisition.py")" = '2cb4b880a0c7340e5ba4d49695cc163301b09c87'
           for manifest in source_versions instrument_mapping trading_calendar energy_roll_rules; do
             python -m json.tool "$root/data_manifest/${manifest}.json" >/dev/null
           done
           python -m unittest discover -s "$root/tests" -p 'test_phase9_acquisition.py' -v
           python "$root/runner/acquire_phase9_data.py" \
-            --output-dir "$RAW_DIR" \
-            --cache-root "$CACHE_ROOT" \
+            --output-dir "$PLAN_OUTPUT_DIR" \
+            --cache-root "$PLAN_CACHE_ROOT" \
             --jar "$RUNNER_TEMP/phase9-jforex-acquirer.jar" \
             --plan-only > "$RUNNER_TEMP/acquisition-plan.json"
           test "$(python -c 'import json,sys; print(json.load(open(sys.argv[1]))["process_count"])' "$RUNNER_TEMP/acquisition-plan.json")" = 4
           test "$(python -c 'import json,sys; print(json.load(open(sys.argv[1]))["series_count"])' "$RUNNER_TEMP/acquisition-plan.json")" = 48
+          test ! -e "$PLAN_OUTPUT_DIR"
+          test ! -e "$PLAN_CACHE_ROOT"
+          cp "$RUNNER_TEMP/acquisition-plan.json" "$METADATA_DIR/acquisition-plan.json"
 
       - name: Build pinned JForex acquisition client
         shell: bash
         run: |
           set -euo pipefail
           project='research/phase9-hypothesis-redesign-20260828/runner/jforex'
-          mvn -B -ntp -f "$project/pom.xml" clean package
-          cp "$project/target/phase9-jforex-acquirer.jar" "$RUNNER_TEMP/phase9-jforex-acquirer.jar"
-          root_repo="$HOME/.m2/repository/com/dukascopy/dds2/DDS2-jClient-JForex/3.6.51"
+          unset MAVEN_ARGS MAVEN_OPTS
+          test ! -e "$M2_REPO"
+          mkdir -p "$M2_REPO"
+          mvn -B -ntp -s "$MAVEN_USER_SETTINGS" -gs "$MAVEN_GLOBAL_SETTINGS" \
+            -Dmaven.repo.local="$M2_REPO" -f "$project/pom.xml" clean package
+          cp "$project/target/phase9-jforex-acquirer.jar" "$RUNNER_TEMP/phase9-jforex-acquirer-first.jar"
+          root_repo="$M2_REPO/com/dukascopy/dds2/DDS2-jClient-JForex/3.6.51"
           echo 'daf2d98cded0a8ff85276965f0c10eb01692acff7949a5898ab295708e2c26c2  '"$root_repo/DDS2-jClient-JForex-3.6.51.jar" | sha256sum -c -
           echo 'ea80b6e0c938ca4831d723f29ec2ca311967788b00c6218c6768b91cbdb28bd9  '"$root_repo/DDS2-jClient-JForex-3.6.51.pom" | sha256sum -c -
-          api_repo="$HOME/.m2/repository/com/dukascopy/api/JForex-API/2.13.99"
+          api_repo="$M2_REPO/com/dukascopy/api/JForex-API/2.13.99"
           echo 'bad5923eb37b07aaf3f8f257eec1cfec57d645c1f61ea68ec2b7e179d3736ac2  '"$api_repo/JForex-API-2.13.99.jar" | sha256sum -c -
           echo '3b66519706832fe4f29c6e0d42dc14b1882f02ffa5004d6af0287f73bbb1b04c  '"$api_repo/JForex-API-2.13.99.pom" | sha256sum -c -
 
-      - name: Record dependency identity before prices
+      - name: Record isolated dependency identity
         shell: bash
         run: |
           set -euo pipefail
-          mkdir -p "$METADATA_DIR"
           (
-            cd "$HOME/.m2/repository"
-            find . -type f \( -name '*.jar' -o -name '*.pom' \) -print0 \
-              | sort -z \
+            cd "$M2_REPO"
+            find . -type f -print0 \
+              | LC_ALL=C sort -z \
               | xargs -0 sha256sum
-          ) > "$METADATA_DIR/jforex_dependency_sha256.txt"
-          sha256sum "$RUNNER_TEMP/phase9-jforex-acquirer.jar" > "$METADATA_DIR/phase9_jforex_runner_sha256.txt"
+          ) > "$METADATA_DIR/maven_repository_sha256.first.txt"
+          sha256sum "$RUNNER_TEMP/phase9-jforex-acquirer-first.jar" \
+            > "$METADATA_DIR/phase9_jforex_runner_sha256.first.txt"
 
-      - name: Enforce frozen dependency and runner locks
+      - name: Prove offline rebuild reproducibility
         shell: bash
         run: |
           set -euo pipefail
           project='research/phase9-hypothesis-redesign-20260828/runner/jforex'
-          if test ! -f "$project/dependency-lock.sha256" || test ! -f "$project/runner-jar.sha256"; then
-            echo 'PRE_ACQUISITION_STOP: inspect this run metadata, then commit the complete dependency and reproducible runner locks.' >&2
-            exit 1
-          fi
+          unset MAVEN_ARGS MAVEN_OPTS
+          mvn -B -ntp -o -s "$MAVEN_USER_SETTINGS" -gs "$MAVEN_GLOBAL_SETTINGS" \
+            -Dmaven.repo.local="$M2_REPO" -f "$project/pom.xml" clean package
+          cp "$project/target/phase9-jforex-acquirer.jar" "$RUNNER_TEMP/phase9-jforex-acquirer-second.jar"
           (
-            cd "$HOME/.m2/repository"
-            sha256sum -c "$GITHUB_WORKSPACE/$project/dependency-lock.sha256"
-          )
-          expected_runner=$(cut -d' ' -f1 "$project/runner-jar.sha256")
-          actual_runner=$(sha256sum "$RUNNER_TEMP/phase9-jforex-acquirer.jar" | cut -d' ' -f1)
-          test "$actual_runner" = "$expected_runner"
+            cd "$M2_REPO"
+            find . -type f -print0 \
+              | LC_ALL=C sort -z \
+              | xargs -0 sha256sum
+          ) > "$METADATA_DIR/maven_repository_sha256.second.txt"
+          cmp "$METADATA_DIR/maven_repository_sha256.first.txt" \
+            "$METADATA_DIR/maven_repository_sha256.second.txt"
+          mvn -B -ntp -o -s "$MAVEN_USER_SETTINGS" -gs "$MAVEN_GLOBAL_SETTINGS" \
+            -Dmaven.repo.local="$M2_REPO" -f "$project/pom.xml" clean package
+          cp "$project/target/phase9-jforex-acquirer.jar" "$RUNNER_TEMP/phase9-jforex-acquirer-third.jar"
+          (
+            cd "$M2_REPO"
+            find . -type f -print0 \
+              | LC_ALL=C sort -z \
+              | xargs -0 sha256sum
+          ) > "$METADATA_DIR/maven_repository_sha256.third.txt"
+          cmp "$METADATA_DIR/maven_repository_sha256.first.txt" \
+            "$METADATA_DIR/maven_repository_sha256.third.txt"
+          first_sha=$(sha256sum "$RUNNER_TEMP/phase9-jforex-acquirer-first.jar" | cut -d' ' -f1)
+          second_sha=$(sha256sum "$RUNNER_TEMP/phase9-jforex-acquirer-second.jar" | cut -d' ' -f1)
+          third_sha=$(sha256sum "$RUNNER_TEMP/phase9-jforex-acquirer-third.jar" | cut -d' ' -f1)
+          test "$first_sha" = "$second_sha"
+          test "$first_sha" = "$third_sha"
+          printf '%s  phase9-jforex-acquirer.jar\n' "$third_sha" \
+            > "$METADATA_DIR/phase9_jforex_runner_sha256.reproducible.txt"
 
-      - name: Verify required GitHub secrets
-        shell: bash
-        env:
-          DUKASCOPY_USERNAME: ${{ secrets.DUKASCOPY_USERNAME }}
-          DUKASCOPY_PASSWORD: ${{ secrets.DUKASCOPY_PASSWORD }}
-        run: |
-          set -euo pipefail
-          if test -z "$DUKASCOPY_USERNAME" || test -z "$DUKASCOPY_PASSWORD"; then
-            echo 'Required Dukascopy JForex demo GitHub Secrets are not configured.' >&2
-            exit 1
-          fi
-
-      - name: Acquire frozen JForex bars only
-        shell: bash
-        env:
-          DUKASCOPY_USERNAME: ${{ secrets.DUKASCOPY_USERNAME }}
-          DUKASCOPY_PASSWORD: ${{ secrets.DUKASCOPY_PASSWORD }}
-        run: |
-          set -euo pipefail
-          root='research/phase9-hypothesis-redesign-20260828'
-          python "$root/runner/acquire_phase9_data.py" \
-            --output-dir "$RAW_DIR" \
-            --cache-root "$CACHE_ROOT" \
-            --jar "$RUNNER_TEMP/phase9-jforex-acquirer.jar"
-
-      - name: Validate boundaries and create metadata-only manifest
+      - name: Record preflight authorization state
         shell: bash
         run: |
           set -euo pipefail
-          root='research/phase9-hypothesis-redesign-20260828'
-          python "$root/runner/validate_phase9_acquisition.py" \
-            --data-dir "$RAW_DIR" \
-            --output-dir "$METADATA_DIR/validated"
-          test "$(find "$RAW_DIR" -maxdepth 1 -type f -name '*.csv' | wc -l)" = 48
-          if find "$METADATA_DIR" -type f -name '*.csv' -print -quit | grep -q .; then
-            echo 'Raw CSV found in metadata artifact directory.' >&2
-            exit 1
-          fi
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          state = {
+              "workflow_mode": "BUILD_PREFLIGHT_ONLY",
+              "git_sha": os.environ["GITHUB_SHA"],
+              "run_id": int(os.environ["GITHUB_RUN_ID"]),
+              "dukascopy_credentials_referenced": False,
+              "market_price_request_attempted": False,
+              "phase9_price_files_acquired": 0,
+              "forbidden_market_period_request_attempted": False,
+              "research_outcomes_calculated": False,
+              "outcome_fields": [],
+              "acquisition_authorized": False,
+              "next_gate": "AUDIT_PREFLIGHT_METADATA_THEN_IMPLEMENT_FULL_QC_OR_APPROVE_PRIVATE_RAW_STORE",
+          }
+          target = Path(os.environ["METADATA_DIR"]) / "preflight_authorization_state.json"
+          target.write_text(json.dumps(state, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+          PY
+          test ! -e "$PLAN_OUTPUT_DIR"
+          test ! -e "$PLAN_CACHE_ROOT"
           git diff --exit-code
-
-      - name: Record runtime identity
-        shell: bash
-        run: |
-          set -euo pipefail
-          {
-            echo "git_sha=$GITHUB_SHA"
-            echo "run_id=$GITHUB_RUN_ID"
-            echo "run_attempt=$GITHUB_RUN_ATTEMPT"
-            echo "runner_os=$RUNNER_OS"
-            echo "image_os=${ImageOS:-unknown}"
-            echo "image_version=${ImageVersion:-unknown}"
-            java -version 2>&1
-            mvn -version
-          } > "$METADATA_DIR/runtime_identity.txt"
 
       - name: Upload metadata only
         if: ${{ always() }}

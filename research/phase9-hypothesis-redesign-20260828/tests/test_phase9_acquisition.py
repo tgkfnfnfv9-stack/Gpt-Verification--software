@@ -258,6 +258,29 @@ class Phase9AcquisitionTests(unittest.TestCase):
         state = json.loads((ROOT / "SESSION_STATE.json").read_text(encoding="utf-8"))
         self.assertFalse(state["phase9"]["outcome_accessed"])
 
+    def test_workflow_is_isolated_build_preflight_only(self):
+        workflow = (
+            ROOT.parents[1] / ".github/workflows/phase9-acquisition-only.yml"
+        ).read_text(encoding="utf-8")
+        self.assertIn("BUILD_PHASE9_JFOREX_PREFLIGHT_ONLY", workflow)
+        self.assertIn('M2_REPO=$RUNNER_TEMP/phase9-m2', workflow)
+        self.assertEqual(
+            workflow.count('mvn -B -ntp -o -s "$MAVEN_USER_SETTINGS"'), 2
+        )
+        self.assertEqual(workflow.count('-gs "$MAVEN_GLOBAL_SETTINGS"'), 3)
+        self.assertIn("maven_repository_sha256.third.txt", workflow)
+        self.assertIn("phase9_jforex_runner_sha256.reproducible.txt", workflow)
+        for prohibited in (
+            "secrets.",
+            "DUKASCOPY_USERNAME",
+            "DUKASCOPY_PASSWORD",
+            "PHASE9_JFOREX_CONFIRM",
+            "Acquire frozen JForex bars only",
+            'python "$root/runner/validate_phase9_acquisition.py"',
+            'java -jar',
+        ):
+            self.assertNotIn(prohibited, workflow)
+
 
 if __name__ == "__main__":
     unittest.main()
