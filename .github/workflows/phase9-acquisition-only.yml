@@ -87,11 +87,13 @@ jobs:
           test "$(git hash-object "$root/data_manifest/instrument_mapping.json")" = 'cb6622feaaa9e8b37e5ee47e82d70e1e0eebf2a3'
           test "$(git hash-object "$root/data_manifest/trading_calendar.json")" = 'fd77135fdb4e7599bf38de039f3cfc0f5f51c827'
           test "$(git hash-object "$root/data_manifest/energy_roll_rules.json")" = '9a40047e4498d87ccfe7cd4f1d0c903a9e4154cf'
-          test "$(git hash-object "$root/runner/acquire_phase9_data.py")" = '045dac5d1b3e3623f902f9deccba02deda6ff5ea'
+          test "$(git hash-object "$root/runner/acquire_phase9_data.py")" = '3fb37bca9daad07e6a4ff4a612ccdc59b0ac2045'
           test "$(git hash-object "$root/runner/validate_phase9_acquisition.py")" = 'cb2d7acd6cf899e085301ac7e4a59b8e051a340b'
-          test "$(git hash-object "$root/runner/jforex/pom.xml")" = 'aa2486b1d22afad98332fea5e60e56a74a584ace'
-          test "$(git hash-object "$root/runner/jforex/src/main/java/org/phase9/Phase9JForexAcquirer.java")" = '32314e830f2980f6b9ff930d617a242d6b911148'
-          test "$(git hash-object "$root/tests/test_phase9_acquisition.py")" = '8dea89576ebf79ac8eec73bd8194f13863df4651'
+          test "$(git hash-object "$root/runner/jforex/pom.xml")" = 'd77481673c4e7817983f0ff11d3dc427e9524cb5'
+          test "$(git hash-object "$root/runner/jforex/src/main/java/org/phase9/Phase9JForexAcquirer.java")" = '3464b6623d6c8fa71ba2fdb098b7bf6050219963'
+          test "$(git hash-object "$root/runner/jforex/src/main/java/org/phase9/RuntimeClassOriginGuard.java")" = '86b873c42522f8f398a9826836a9a07af762dd2e'
+          test "$(git hash-object "$root/runner/jforex/src/main/java/org/phase9/RuntimeClassOriginGuardSelfTest.java")" = '82bad437e91e132e400461a36049981eb431d36b'
+          test "$(git hash-object "$root/tests/test_phase9_acquisition.py")" = 'b2221bf47797061870af12f5e9485be90748478d'
           for manifest in source_versions instrument_mapping trading_calendar energy_roll_rules; do
             python -m json.tool "$root/data_manifest/${manifest}.json" >/dev/null
           done
@@ -174,6 +176,62 @@ jobs:
           printf '%s  phase9-jforex-acquirer.jar\n' "$third_sha" \
             > "$METADATA_DIR/phase9_jforex_runner_sha256.reproducible.txt"
 
+      - name: Exercise class-origin guard without credentials or market access
+        shell: bash
+        run: |
+          set -euo pipefail
+          runner="$RUNNER_TEMP/phase9-jforex-acquirer-third.jar"
+          positive_audit="$METADATA_DIR/class_origin_guard_positive.txt"
+          negative_audit="$METADATA_DIR/class_origin_guard_negative.txt"
+          manifest="$METADATA_DIR/runner_manifest.txt"
+          unzip -p "$runner" META-INF/MANIFEST.MF > "$manifest"
+          grep -Fx 'Premain-Class: org.phase9.RuntimeClassOriginGuard' "$manifest"
+          grep -Fx 'Main-Class: org.phase9.Phase9JForexAcquirer' "$manifest"
+          test "$(grep -Ec '^(Class-Path|Boot-Class-Path):' "$manifest")" = 0
+          test -z "$(unzip -Z1 "$runner" | LC_ALL=C sort | uniq -d | grep -E '\.class$' || true)"
+          for injection in CLASSPATH JAVA_TOOL_OPTIONS _JAVA_OPTIONS JDK_JAVA_OPTIONS; do
+            test -z "${!injection:-}"
+          done
+
+          set +e
+          java -jar "$runner" > "$METADATA_DIR/no_agent_stdout.txt" \
+            2> "$METADATA_DIR/no_agent_stderr.txt"
+          no_agent_status=$?
+          set -e
+          test "$no_agent_status" -ne 0
+          grep -F 'Phase 9 runtime class-origin guard is not active.' \
+            "$METADATA_DIR/no_agent_stderr.txt"
+
+          java "-javaagent:$runner=$positive_audit" \
+            -cp "$runner" org.phase9.RuntimeClassOriginGuardSelfTest
+          grep -Fx 'guard_status=ACTIVE' "$positive_audit"
+          grep -Fx 'guard_status=PASSED' "$positive_audit"
+          test "$(grep -Fc 'guard_status=REJECTED' "$positive_audit")" = 0
+
+          probe="$RUNNER_TEMP/phase9-external-class-probe"
+          mkdir -p "$probe/src/org/phase9/guardprobe" "$probe/classes"
+          printf '%s\n' \
+            'package org.phase9.guardprobe;' \
+            'import java.nio.file.Files;' \
+            'import java.nio.file.Paths;' \
+            'public final class ExternalProbe {' \
+            '  static { try { Files.write(Paths.get(System.getProperty("phase9.guardSentinel")), new byte[] {1}); } catch (Exception e) { throw new RuntimeException(e); } }' \
+            '  public static void main(String[] args) {}' \
+            '}' > "$probe/src/org/phase9/guardprobe/ExternalProbe.java"
+          javac -source 8 -target 8 -d "$probe/classes" \
+            "$probe/src/org/phase9/guardprobe/ExternalProbe.java"
+          jar cf "$probe/external-probe.jar" -C "$probe/classes" .
+          set +e
+          java "-Dphase9.guardSentinel=$probe/sentinel" \
+            "-javaagent:$runner=$negative_audit" \
+            -cp "$runner:$probe/external-probe.jar" org.phase9.guardprobe.ExternalProbe
+          guard_status=$?
+          set -e
+          test "$guard_status" = 86
+          grep -Fx 'guard_status=REJECTED' "$negative_audit"
+          grep -Fx 'rejected_class=org/phase9/guardprobe/ExternalProbe' "$negative_audit"
+          test ! -e "$probe/sentinel"
+
       - name: Record preflight authorization state
         shell: bash
         run: |
@@ -194,7 +252,7 @@ jobs:
               "research_outcomes_calculated": False,
               "outcome_fields": [],
               "acquisition_authorized": False,
-              "next_gate": "AUDIT_PREFLIGHT_METADATA_THEN_IMPLEMENT_FULL_QC_OR_APPROVE_PRIVATE_RAW_STORE",
+              "next_gate": "AUDIT_RUNTIME_GUARD_THEN_CLOSE_OS_NATIVE_JNLP_AND_FULL_QC_GAPS",
           }
           target = Path(os.environ["METADATA_DIR"]) / "preflight_authorization_state.json"
           target.write_text(json.dumps(state, indent=2, sort_keys=True) + "\n", encoding="utf-8")

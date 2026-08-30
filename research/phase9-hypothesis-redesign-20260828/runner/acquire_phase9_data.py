@@ -32,6 +32,12 @@ EXPECTED_MAPPING = {
     "BRENTCMDUSD": "BRENT.CMD/USD",
     "LIGHTCMDUSD": "LIGHT.CMD/USD",
 }
+JAVA_INJECTION_ENVIRONMENT = (
+    "CLASSPATH",
+    "JAVA_TOOL_OPTIONS",
+    "_JAVA_OPTIONS",
+    "JDK_JAVA_OPTIONS",
+)
 
 
 def read_json(name: str) -> dict:
@@ -93,14 +99,22 @@ def checked_external_dir(value: str, label: str) -> Path:
     return output
 
 
+def assert_no_java_injection_environment() -> None:
+    present = [name for name in JAVA_INJECTION_ENVIRONMENT if os.environ.get(name)]
+    if present:
+        raise RuntimeError(f"Java injection environment is prohibited: {present}")
+
+
 def build_plan(output_dir: Path, cache_root: Path, jar_path: Path) -> list[dict]:
     plan = []
     symbols = [research for research, _ in registered_symbols()]
     for timeframe in TIMEFRAMES:
         for side in SIDES:
             cache_dir = cache_root / f"{timeframe}-{side}"
+            audit_path = cache_root / "runtime-origin-audit" / f"{timeframe}-{side}.txt"
             command = [
                 "java",
+                f"-javaagent:{jar_path}={audit_path}",
                 "-jar",
                 str(jar_path),
                 "--output-dir",
@@ -149,12 +163,13 @@ def main() -> None:
 
     if os.environ.get("PHASE9_JFOREX_CONFIRM") != CONFIRMATION:
         raise RuntimeError("Exact JForex acquisition confirmation is required.")
+    assert_no_java_injection_environment()
     if not jar_path.is_file():
         raise RuntimeError("Pinned Phase 9 JForex acquisition jar is not built.")
     if output_dir.exists() or cache_root.exists():
         raise RuntimeError("Raw output and cache roots must not exist before acquisition.")
     output_dir.mkdir(parents=True)
-    cache_root.parent.mkdir(parents=True, exist_ok=True)
+    (cache_root / "runtime-origin-audit").mkdir(parents=True)
     for row in plan:
         subprocess.run(row["command"], check=True)
 

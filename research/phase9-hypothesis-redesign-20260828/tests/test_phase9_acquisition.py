@@ -3,6 +3,7 @@ from __future__ import annotations
 import csv
 import importlib.util
 import json
+import os
 import subprocess
 import sys
 import tempfile
@@ -87,7 +88,9 @@ class Phase9AcquisitionTests(unittest.TestCase):
                             f"{symbol}_{timeframe}_{side}.csv" for symbol in FROZEN_SYMBOLS
                         ],
                         "command": [
-                            "java", "-jar", str(jar_path),
+                            "java",
+                            f"-javaagent:{jar_path}={cache_root / 'runtime-origin-audit' / f'{timeframe}-{side}.txt'}",
+                            "-jar", str(jar_path),
                             "--output-dir", str(output_dir),
                             "--cache-dir", str(cache_root / f"{timeframe}-{side}"),
                             "--timeframe", timeframe,
@@ -138,6 +141,38 @@ class Phase9AcquisitionTests(unittest.TestCase):
             self.assertNotIn(prohibited, source)
         self.assertIn('Instant.parse("2019-08-01T00:00:00Z")', source)
         self.assertIn('Instant.parse("2019-08-28T00:00:00Z")', source)
+
+    def test_java_runner_requires_class_origin_guard(self):
+        guard = (
+            ROOT
+            / "runner/jforex/src/main/java/org/phase9/RuntimeClassOriginGuard.java"
+        ).read_text(encoding="utf-8")
+        acquirer = (
+            ROOT
+            / "runner/jforex/src/main/java/org/phase9/Phase9JForexAcquirer.java"
+        ).read_text(encoding="utf-8")
+        pom = (ROOT / "runner/jforex/pom.xml").read_text(encoding="utf-8")
+        self.assertIn("Runtime.getRuntime().halt(86)", guard)
+        self.assertIn("instrumentation.getAllLoadedClasses()", guard)
+        self.assertIn("approvedClassHashes", guard)
+        self.assertIn("approvedOrigins.contains(origin)", guard)
+        self.assertIn("RuntimeClassOriginGuard.assertActive();", acquirer)
+        self.assertIn("<Premain-Class>org.phase9.RuntimeClassOriginGuard</Premain-Class>", pom)
+        self.assertIn("<Can-Redefine-Classes>false</Can-Redefine-Classes>", pom)
+        self.assertIn("<Can-Retransform-Classes>false</Can-Retransform-Classes>", pom)
+
+    def test_java_injection_environment_is_fail_closed(self):
+        original = dict(os.environ)
+        try:
+            for name in acquire.JAVA_INJECTION_ENVIRONMENT:
+                os.environ.clear()
+                os.environ.update(original)
+                os.environ[name] = "injected"
+                with self.assertRaisesRegex(RuntimeError, "Java injection environment"):
+                    acquire.assert_no_java_injection_environment()
+        finally:
+            os.environ.clear()
+            os.environ.update(original)
 
     def test_raw_output_inside_repository_is_rejected(self):
         with self.assertRaises(ValueError):
@@ -270,6 +305,13 @@ class Phase9AcquisitionTests(unittest.TestCase):
         self.assertEqual(workflow.count('-gs "$MAVEN_GLOBAL_SETTINGS"'), 3)
         self.assertIn("maven_repository_sha256.third.txt", workflow)
         self.assertIn("phase9_jforex_runner_sha256.reproducible.txt", workflow)
+        self.assertIn("RuntimeClassOriginGuardSelfTest", workflow)
+        self.assertIn("Phase 9 runtime class-origin guard is not active.", workflow)
+        self.assertIn("uniq -d", workflow)
+        self.assertEqual(workflow.count('java -jar "$runner"'), 1)
+        self.assertIn("guard_status=REJECTED", workflow)
+        self.assertIn('test "$guard_status" = 86', workflow)
+        self.assertIn('test ! -e "$probe/sentinel"', workflow)
         for prohibited in (
             "secrets.",
             "DUKASCOPY_USERNAME",
@@ -277,7 +319,6 @@ class Phase9AcquisitionTests(unittest.TestCase):
             "PHASE9_JFOREX_CONFIRM",
             "Acquire frozen JForex bars only",
             'python "$root/runner/validate_phase9_acquisition.py"',
-            'java -jar',
         ):
             self.assertNotIn(prohibited, workflow)
 

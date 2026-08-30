@@ -66,6 +66,7 @@ public final class Phase9JForexAcquirer {
     private Phase9JForexAcquirer() {}
 
     public static void main(String[] args) throws Exception {
+        RuntimeClassOriginGuard.assertActive();
         Arguments parsed = Arguments.parse(args);
         if (!CONFIRMATION.equals(System.getenv("PHASE9_JFOREX_CONFIRM"))) {
             throw new IllegalStateException("Exact Phase 9 JForex acquisition confirmation is required.");
