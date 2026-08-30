@@ -6,18 +6,19 @@
 
 1. `PHASE9_OPERATIONS_GUIDE.md`
 2. `POLICY_INCIDENT_20260829.md`
-3. `PROVIDER_ACQUISITION_BLOCKER.md`
-4. `JFOREX_SOURCE_CHANNEL_AMENDMENT.md`
-5. Phase 8 `results/PHASE8_FINAL_DECISION.json`
-6. Phase 8 `results/RESULTS_SUMMARY.md`
-7. `README.md`
-8. `SESSION_STATE.json`
-9. `DESIGN_DECISIONS.md`
-10. `HYPOTHESIS_PORTFOLIO_FINAL.md`
-11. `spec/candidate_registry.frozen.json`
-12. `DATA_REQUIREMENTS.md`
-13. `spec/data_requirements.frozen.json`
-14. `policy/preregistered_research_policy.json`
+3. `POLICY_INCIDENT_20260830.md`
+4. `PROVIDER_ACQUISITION_BLOCKER.md`
+5. `JFOREX_SOURCE_CHANNEL_AMENDMENT.md`
+6. Phase 8 `results/PHASE8_FINAL_DECISION.json`
+7. Phase 8 `results/RESULTS_SUMMARY.md`
+8. `README.md`
+9. `SESSION_STATE.json`
+10. `DESIGN_DECISIONS.md`
+11. `HYPOTHESIS_PORTFOLIO_FINAL.md`
+12. `spec/candidate_registry.frozen.json`
+13. `DATA_REQUIREMENTS.md`
+14. `spec/data_requirements.frozen.json`
+15. `policy/preregistered_research_policy.json`
 
 ## 現在地
 
@@ -33,6 +34,7 @@
 - H1は全12・両side共通で2019-08-01以降を事前除外。M15は2019-08-28未満まで
 - 2022〜2026年は旧workflow accessのため後続split有効性の再監査が必要
 - EAは禁止
+- Run `33289406745`はworkflow schema検証失敗。job 0、artifact 0、price/outcome access 0で是正済み
 
 ## 次に実行する1作業
 

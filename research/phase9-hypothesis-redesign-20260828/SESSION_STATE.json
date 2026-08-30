@@ -155,6 +155,21 @@
   },
   "policy_incidents": [
     {
+      "incident_id": "PHASE9-INC-20260830-001",
+      "cause": "GitHub rejected runner.temp expressions in job-level env during workflow schema validation.",
+      "triggering_commit": "b7a9b6239aa38e44f076ad15fcbe8d5c472c9dc1",
+      "action_runs": [33289406745],
+      "observed_metadata": [
+        "workflow conclusion failure",
+        "zero jobs and zero artifacts",
+        "schema annotation only; no credential or market-data step existed"
+      ],
+      "phase9_price_access": false,
+      "outcome_access_by_phase9": false,
+      "scientific_status": "OPERATIONAL_SCHEMA_FAILURE_ONLY; NO DATA OR OUTCOME ACCESS",
+      "incident_log": "POLICY_INCIDENT_20260830.md"
+    },
+    {
       "incident_id": "PHASE9-INC-20260829-001",
       "cause": "Two legacy temporary workflows triggered on every main push.",
       "triggering_commit": "e94cd52a0ec5a990f32c3740ba83736beb95d709",

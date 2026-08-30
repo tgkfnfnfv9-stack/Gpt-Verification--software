@@ -26,9 +26,6 @@ jobs:
     timeout-minutes: 360
     env:
       PHASE9_JFOREX_CONFIRM: ACQUIRE_PHASE9_JFOREX_FROZEN_INTERVALS_ONLY
-      RAW_DIR: ${{ runner.temp }}/phase9-raw
-      CACHE_ROOT: ${{ runner.temp }}/phase9-jforex-cache
-      METADATA_DIR: ${{ runner.temp }}/phase9-metadata
 
     steps:
       - name: Checkout exact triggering commit
@@ -43,6 +40,16 @@ jobs:
         with:
           distribution: zulu
           java-version: '8'
+
+      - name: Initialize runner temporary paths
+        shell: bash
+        run: |
+          set -euo pipefail
+          {
+            echo "RAW_DIR=$RUNNER_TEMP/phase9-raw"
+            echo "CACHE_ROOT=$RUNNER_TEMP/phase9-jforex-cache"
+            echo "METADATA_DIR=$RUNNER_TEMP/phase9-metadata"
+          } >> "$GITHUB_ENV"
 
       - name: Verify frozen specification and acquisition-only source
         shell: bash

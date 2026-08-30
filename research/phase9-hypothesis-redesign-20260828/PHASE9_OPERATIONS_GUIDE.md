@@ -76,18 +76,19 @@ frozen JSON内の`MASKED_NOT_DOWNLOADED`等は基準commit時点の事前登録s
 
 1. `PHASE9_OPERATIONS_GUIDE.md`
 2. `POLICY_INCIDENT_20260829.md`
-3. `PROVIDER_ACQUISITION_BLOCKER.md`
-4. `JFOREX_SOURCE_CHANNEL_AMENDMENT.md`
-5. Phase 8 `results/PHASE8_FINAL_DECISION.json`
-6. Phase 8 `results/RESULTS_SUMMARY.md`
-7. Phase 9 `README.md`
-8. `SESSION_STATE.json`
-9. `DESIGN_DECISIONS.md`
-10. `HYPOTHESIS_PORTFOLIO_FINAL.md`
-11. `spec/candidate_registry.frozen.json`
-12. `DATA_REQUIREMENTS.md`
-13. `spec/data_requirements.frozen.json`
-14. `policy/preregistered_research_policy.json`
+3. `POLICY_INCIDENT_20260830.md`
+4. `PROVIDER_ACQUISITION_BLOCKER.md`
+5. `JFOREX_SOURCE_CHANNEL_AMENDMENT.md`
+6. Phase 8 `results/PHASE8_FINAL_DECISION.json`
+7. Phase 8 `results/RESULTS_SUMMARY.md`
+8. Phase 9 `README.md`
+9. `SESSION_STATE.json`
+10. `DESIGN_DECISIONS.md`
+11. `HYPOTHESIS_PORTFOLIO_FINAL.md`
+12. `spec/candidate_registry.frozen.json`
+13. `DATA_REQUIREMENTS.md`
+14. `spec/data_requirements.frozen.json`
+15. `policy/preregistered_research_policy.json`
 
 数値Entryは必ず`candidate_registry.frozen.json`、取得境界は`data_requirements.frozen.json`、許可・禁止は`preregistered_research_policy.json`から読みます。HandoffやMarkdown要約だけで実装しません。
 
@@ -97,7 +98,7 @@ frozen JSON内の`MASKED_NOT_DOWNLOADED`等は基準commit時点の事前登録s
 
 1. GitHub接続でrepository full nameを完全一致確認
 2. `main`の最新commitを取得
-3. 上記14項目をGitHubから直接読む
+3. 上記15項目をGitHubから直接読む
 4. 書込前に再度remote headを確認
 5. 変更は1つのatomic commitへまとめる
 6. push後にremote headと更新ファイルを再取得する
