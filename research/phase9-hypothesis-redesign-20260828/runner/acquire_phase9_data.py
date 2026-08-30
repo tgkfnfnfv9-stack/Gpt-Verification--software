@@ -114,6 +114,7 @@ def build_plan(output_dir: Path, cache_root: Path, jar_path: Path) -> list[dict]
             audit_path = cache_root / "runtime-origin-audit" / f"{timeframe}-{side}.txt"
             command = [
                 "java",
+                "-Dsun.reflect.inflationThreshold=2147483647",
                 f"-javaagent:{jar_path}={audit_path}",
                 "-jar",
                 str(jar_path),

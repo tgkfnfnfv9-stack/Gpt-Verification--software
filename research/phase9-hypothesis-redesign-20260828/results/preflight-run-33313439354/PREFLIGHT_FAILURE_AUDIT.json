@@ -1,0 +1,44 @@
+{
+  "artifact": {
+    "artifact_id": 9732767036,
+    "artifact_name": "phase9-jforex-acquisition-metadata-206dc71b72a0e5e4b2ff89f7e33dfb80dde0a64f-33313439354-1",
+    "artifact_zip_sha256": "e3f295a51b6e699c587ebf65c3af82b4701114426253195922341dbd0e414624",
+    "expires_at": "2026-09-13T13:15:36Z"
+  },
+  "conclusion": "FAIL_CLOSED",
+  "evidence": {
+    "approved_class_names": 42688,
+    "guard_active_marker_recorded": true,
+    "guard_passed_marker_recorded": false,
+    "guard_rejected_marker_recorded": true,
+    "no_agent_refusal_verified": true,
+    "rejected_class": "sun/reflect/GeneratedConstructorAccessor1",
+    "rejected_origin": null,
+    "runner_jar_sha256": "49bc14f6af629f4c48ba3a2bad0a0dc5a90e5a9f84acdff0d0d7fc28507b63a2"
+  },
+  "head_sha": "206dc71b72a0e5e4b2ff89f7e33dfb80dde0a64f",
+  "job_id": 99262466206,
+  "policy_status": {
+    "acquisition_authorized": false,
+    "dukascopy_credentials_referenced": false,
+    "forbidden_market_period_request_attempted": false,
+    "market_price_request_attempted": false,
+    "outcome_fields": [],
+    "phase9_price_files_acquired": 0,
+    "research_outcomes_calculated": false,
+    "runtime_code_closure_verified": false
+  },
+  "remediation": {
+    "allow_null_code_source_classes": false,
+    "allow_sun_reflect_prefix": false,
+    "cache_sha256_instance": true,
+    "fail_closed_on_guard_or_audit_exception": true,
+    "manual_hex_encoding": true,
+    "origin_class_hash_binding": true,
+    "pinned_java8_reflection_inflation_threshold": 2147483647,
+    "remove_acquisition_row_string_format": true,
+    "status": "IMPLEMENTED_PENDING_NEW_WORKFLOW_RUN"
+  },
+  "run_id": 33313439354,
+  "workflow_mode": "BUILD_PREFLIGHT_ONLY"
+}

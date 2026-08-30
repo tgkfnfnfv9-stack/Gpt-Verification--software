@@ -81,6 +81,37 @@
       "outcomes_calculated": false,
       "audit": "results/preflight-run-33300116235/PREFLIGHT_AUDIT.json"
     },
+    "runtime_guard_preflight_attempts": [
+      {
+        "run_id": 33313187478,
+        "job_id": 99261792142,
+        "artifact_id": 9732632772,
+        "head_sha": "3f3fd813b43b90325f4e1ac9abad21ed9fad9f2c",
+        "conclusion": "failure",
+        "failure_stage": "runner manifest CRLF normalization",
+        "artifact_zip_sha256": "193a68728cfaa9b140cc6c55cb79465867a1035c92727a39c39908de3b22ef43",
+        "phase9_price_files": 0,
+        "market_price_request_attempted": false,
+        "outcomes_calculated": false
+      },
+      {
+        "run_id": 33313439354,
+        "job_id": 99262466206,
+        "artifact_id": 9732767036,
+        "head_sha": "206dc71b72a0e5e4b2ff89f7e33dfb80dde0a64f",
+        "conclusion": "failure",
+        "failure_stage": "positive runtime class-origin guard",
+        "rejected_class": "sun/reflect/GeneratedConstructorAccessor1",
+        "rejected_origin": null,
+        "artifact_zip_sha256": "e3f295a51b6e699c587ebf65c3af82b4701114426253195922341dbd0e414624",
+        "runner_jar_sha256": "49bc14f6af629f4c48ba3a2bad0a0dc5a90e5a9f84acdff0d0d7fc28507b63a2",
+        "phase9_price_files": 0,
+        "market_price_request_attempted": false,
+        "forbidden_market_period_request_attempted": false,
+        "outcomes_calculated": false,
+        "audit": "results/preflight-run-33313439354/PREFLIGHT_FAILURE_AUDIT.json"
+      }
+    ],
     "full_qc_same_run_or_private_raw_storage_decided": false,
     "required_github_secrets": ["DUKASCOPY_USERNAME", "DUKASCOPY_PASSWORD"],
     "h1_network_request_hard_clipped_before_2019_08_01": true,

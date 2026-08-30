@@ -89,6 +89,7 @@ class Phase9AcquisitionTests(unittest.TestCase):
                         ],
                         "command": [
                             "java",
+                            "-Dsun.reflect.inflationThreshold=2147483647",
                             f"-javaagent:{jar_path}={cache_root / 'runtime-origin-audit' / f'{timeframe}-{side}.txt'}",
                             "-jar", str(jar_path),
                             "--output-dir", str(output_dir),
@@ -139,6 +140,8 @@ class Phase9AcquisitionTests(unittest.TestCase):
         self.assertNotIn('"--to"', source)
         for prohibited in ("submitOrder", "getLastTick", "getReportData", "createReport"):
             self.assertNotIn(prohibited, source)
+        self.assertNotIn("String.format", source)
+        self.assertIn("setScale(10, RoundingMode.HALF_UP)", source)
         self.assertIn('Instant.parse("2019-08-01T00:00:00Z")', source)
         self.assertIn('Instant.parse("2019-08-28T00:00:00Z")', source)
 
@@ -155,7 +158,17 @@ class Phase9AcquisitionTests(unittest.TestCase):
         self.assertIn("Runtime.getRuntime().halt(86)", guard)
         self.assertIn("instrumentation.getAllLoadedClasses()", guard)
         self.assertIn("approvedClassHashes", guard)
-        self.assertIn("approvedOrigins.contains(origin)", guard)
+        self.assertIn("approvedClassHashes.get(origin)", guard)
+        self.assertNotIn("approvedOrigins", guard)
+        self.assertIn('private static final char[] HEX = "0123456789abcdef".toCharArray();', guard)
+        self.assertIn("private static final MessageDigest SHA_256 = newSha256();", guard)
+        self.assertEqual(guard.count('MessageDigest.getInstance("SHA-256")'), 1)
+        self.assertIn("ba7816bf8f01cfea414140de5dae2223", guard)
+        self.assertIn('System.getProperty("sun.reflect.inflationThreshold")', guard)
+        self.assertIn("reflection_inflation_threshold=", guard)
+        self.assertNotIn("String.format", guard)
+        self.assertIn("catch (Throwable error)", guard)
+        self.assertIn("Runtime halt is mandatory even when audit evidence cannot be written.", guard)
         self.assertIn("RuntimeClassOriginGuard.assertActive();", acquirer)
         self.assertIn("<Premain-Class>org.phase9.RuntimeClassOriginGuard</Premain-Class>", pom)
         self.assertIn("<Can-Redefine-Classes>false</Can-Redefine-Classes>", pom)
@@ -306,6 +319,13 @@ class Phase9AcquisitionTests(unittest.TestCase):
         self.assertIn("maven_repository_sha256.third.txt", workflow)
         self.assertIn("phase9_jforex_runner_sha256.reproducible.txt", workflow)
         self.assertIn("RuntimeClassOriginGuardSelfTest", workflow)
+        self.assertIn('test "$positive_status" = 0', workflow)
+        self.assertIn("class_origin_guard_self_test=PASS", workflow)
+        self.assertIn("class_origin_guard_positive_stdout.txt", workflow)
+        self.assertIn("class_origin_guard_positive_stderr.txt", workflow)
+        self.assertGreaterEqual(
+            workflow.count("-Dsun.reflect.inflationThreshold=2147483647"), 2
+        )
         self.assertIn("Phase 9 runtime class-origin guard is not active.", workflow)
         self.assertIn("uniq -d", workflow)
         self.assertIn("META-INF/MANIFEST.MF | tr -d '\\r'", workflow)

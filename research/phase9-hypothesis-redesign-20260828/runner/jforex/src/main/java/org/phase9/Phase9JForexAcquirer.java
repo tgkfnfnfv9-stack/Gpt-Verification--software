@@ -17,6 +17,8 @@ import com.dukascopy.api.system.TesterFactory;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -295,16 +297,27 @@ public final class Phase9JForexAcquirer {
             }
             try {
                 BufferedWriter writer = writers.get(instrument);
-                writer.write(String.format(
-                        Locale.ROOT,
-                        "%s,%.10f,%.10f,%.10f,%.10f,%.10f%n",
-                        ISO.format(Instant.ofEpochMilli(timestamp)),
-                        bar.getOpen(), bar.getHigh(), bar.getLow(), bar.getClose(), bar.getVolume()));
+                writer.write(ISO.format(Instant.ofEpochMilli(timestamp)));
+                writer.write(',');
+                writer.write(fixedDecimal(bar.getOpen()));
+                writer.write(',');
+                writer.write(fixedDecimal(bar.getHigh()));
+                writer.write(',');
+                writer.write(fixedDecimal(bar.getLow()));
+                writer.write(',');
+                writer.write(fixedDecimal(bar.getClose()));
+                writer.write(',');
+                writer.write(fixedDecimal(bar.getVolume()));
+                writer.newLine();
                 rows.put(instrument, rows.get(instrument) + 1L);
             } catch (IOException error) {
                 failure = error;
                 throw new JFException("Cannot write canonical CSV row.");
             }
+        }
+
+        private static String fixedDecimal(double value) {
+            return BigDecimal.valueOf(value).setScale(10, RoundingMode.HALF_UP).toPlainString();
         }
 
         @Override public void onStop() throws JFException {

@@ -87,13 +87,13 @@ jobs:
           test "$(git hash-object "$root/data_manifest/instrument_mapping.json")" = 'cb6622feaaa9e8b37e5ee47e82d70e1e0eebf2a3'
           test "$(git hash-object "$root/data_manifest/trading_calendar.json")" = 'fd77135fdb4e7599bf38de039f3cfc0f5f51c827'
           test "$(git hash-object "$root/data_manifest/energy_roll_rules.json")" = '9a40047e4498d87ccfe7cd4f1d0c903a9e4154cf'
-          test "$(git hash-object "$root/runner/acquire_phase9_data.py")" = '3fb37bca9daad07e6a4ff4a612ccdc59b0ac2045'
+          test "$(git hash-object "$root/runner/acquire_phase9_data.py")" = '5995127399012decc03dbdae2dfe1ceb4fe9d2e0'
           test "$(git hash-object "$root/runner/validate_phase9_acquisition.py")" = 'cb2d7acd6cf899e085301ac7e4a59b8e051a340b'
           test "$(git hash-object "$root/runner/jforex/pom.xml")" = 'd77481673c4e7817983f0ff11d3dc427e9524cb5'
-          test "$(git hash-object "$root/runner/jforex/src/main/java/org/phase9/Phase9JForexAcquirer.java")" = '3464b6623d6c8fa71ba2fdb098b7bf6050219963'
-          test "$(git hash-object "$root/runner/jforex/src/main/java/org/phase9/RuntimeClassOriginGuard.java")" = '86b873c42522f8f398a9826836a9a07af762dd2e'
+          test "$(git hash-object "$root/runner/jforex/src/main/java/org/phase9/Phase9JForexAcquirer.java")" = 'aa2737601bb3eb1b308ec61708618977d825266e'
+          test "$(git hash-object "$root/runner/jforex/src/main/java/org/phase9/RuntimeClassOriginGuard.java")" = '290675fad63cb27e9cb009e2eeae99d65c88cdef'
           test "$(git hash-object "$root/runner/jforex/src/main/java/org/phase9/RuntimeClassOriginGuardSelfTest.java")" = '82bad437e91e132e400461a36049981eb431d36b'
-          test "$(git hash-object "$root/tests/test_phase9_acquisition.py")" = '64b116173de9efb8d92e50728c75af26ce002b36'
+          test "$(git hash-object "$root/tests/test_phase9_acquisition.py")" = 'ee01704c819973e19a0f9690ba9e1556cc909e71'
           for manifest in source_versions instrument_mapping trading_calendar energy_roll_rules; do
             python -m json.tool "$root/data_manifest/${manifest}.json" >/dev/null
           done
@@ -202,9 +202,19 @@ jobs:
           grep -F 'Phase 9 runtime class-origin guard is not active.' \
             "$METADATA_DIR/no_agent_stderr.txt"
 
-          java "-javaagent:$runner=$positive_audit" \
-            -cp "$runner" org.phase9.RuntimeClassOriginGuardSelfTest
+          set +e
+          java -Dsun.reflect.inflationThreshold=2147483647 \
+            "-javaagent:$runner=$positive_audit" \
+            -cp "$runner" org.phase9.RuntimeClassOriginGuardSelfTest \
+            > "$METADATA_DIR/class_origin_guard_positive_stdout.txt" \
+            2> "$METADATA_DIR/class_origin_guard_positive_stderr.txt"
+          positive_status=$?
+          set -e
+          test "$positive_status" = 0
+          grep -Fx 'class_origin_guard_self_test=PASS' \
+            "$METADATA_DIR/class_origin_guard_positive_stdout.txt"
           grep -Fx 'guard_status=ACTIVE' "$positive_audit"
+          grep -Fx 'reflection_inflation_threshold=2147483647' "$positive_audit"
           grep -Fx 'guard_status=PASSED' "$positive_audit"
           test "$(grep -Fc 'guard_status=REJECTED' "$positive_audit")" = 0
 
@@ -223,6 +233,7 @@ jobs:
           jar cf "$probe/external-probe.jar" -C "$probe/classes" .
           set +e
           java "-Dphase9.guardSentinel=$probe/sentinel" \
+            -Dsun.reflect.inflationThreshold=2147483647 \
             "-javaagent:$runner=$negative_audit" \
             -cp "$runner:$probe/external-probe.jar" org.phase9.guardprobe.ExternalProbe
           guard_status=$?

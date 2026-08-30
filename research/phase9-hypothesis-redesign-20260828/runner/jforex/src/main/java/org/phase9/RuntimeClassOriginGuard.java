@@ -33,12 +33,14 @@ import java.util.jar.JarFile;
  * the reproducibly built shaded runner JAR or the pinned Java runtime.
  */
 public final class RuntimeClassOriginGuard {
+    private static final String REQUIRED_INFLATION_THRESHOLD = "2147483647";
+    private static final char[] HEX = "0123456789abcdef".toCharArray();
+    private static final MessageDigest SHA_256 = newSha256();
     private static final AtomicLong CHECKED = new AtomicLong();
     private static volatile Path auditPath;
     private static volatile URI runnerOrigin;
     private static volatile Path javaHome;
-    private static volatile Map<String, Set<String>> approvedClassHashes;
-    private static volatile Set<URI> approvedOrigins;
+    private static volatile Map<URI, Map<String, Set<String>>> approvedClassHashes;
     private static volatile boolean active;
 
     private RuntimeClassOriginGuard() {}
@@ -53,17 +55,27 @@ public final class RuntimeClassOriginGuard {
             if (parent == null || !Files.isDirectory(parent) || Files.exists(auditPath)) {
                 throw new IllegalArgumentException("Class-origin audit path must be new in an existing directory.");
             }
+            if (!REQUIRED_INFLATION_THRESHOLD.equals(
+                    System.getProperty("sun.reflect.inflationThreshold"))) {
+                throw new IllegalStateException(
+                        "Java 8 reflection inflation must be disabled by the pinned threshold.");
+            }
             runnerOrigin = normalizedOrigin(RuntimeClassOriginGuard.class.getProtectionDomain());
             javaHome = Paths.get(System.getProperty("java.home")).toAbsolutePath().normalize();
             if (runnerOrigin == null || !"file".equalsIgnoreCase(runnerOrigin.getScheme())) {
                 throw new IllegalStateException("Runner must have an exact local file origin.");
             }
             approvedClassHashes = loadApprovedClassHashes(Paths.get(runnerOrigin));
+            if (!"ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad"
+                    .equals(sha256("abc".getBytes(StandardCharsets.US_ASCII)))) {
+                throw new IllegalStateException("SHA-256 self-test failed.");
+            }
             append(
                     "guard_status=ACTIVE\n"
                             + "runner_origin=" + runnerOrigin + "\n"
                             + "java_home=" + javaHome + "\n"
-                            + "approved_class_names=" + approvedClassHashes.size() + "\n");
+                            + "reflection_inflation_threshold=" + REQUIRED_INFLATION_THRESHOLD + "\n"
+                            + "approved_class_names=" + approvedClassNameCount(approvedClassHashes) + "\n");
 
             verifyAlreadyLoaded(instrumentation);
             instrumentation.addTransformer(new Guard(), false);
@@ -104,7 +116,17 @@ public final class RuntimeClassOriginGuard {
                 ProtectionDomain protectionDomain,
                 byte[] classfileBuffer) {
             CHECKED.incrementAndGet();
-            if (!allowed(loader, className, protectionDomain, classfileBuffer)) {
+            boolean permitted;
+            try {
+                permitted = allowed(loader, className, protectionDomain, classfileBuffer);
+            } catch (Throwable error) {
+                rejectAndHalt(
+                        className,
+                        protectionDomain,
+                        "guard_exception:" + error.getClass().getName());
+                return null;
+            }
+            if (!permitted) {
                 rejectAndHalt(className, protectionDomain);
             }
             return null;
@@ -132,9 +154,10 @@ public final class RuntimeClassOriginGuard {
             return true;
         }
         URI origin = normalizedOrigin(domain);
-        boolean approvedOrigin = origin != null && approvedOrigins.contains(origin);
-        Set<String> hashes = approvedClassHashes.get(className);
-        return approvedOrigin
+        Map<String, Set<String>> archiveHashes =
+                origin == null ? null : approvedClassHashes.get(origin);
+        Set<String> hashes = archiveHashes == null ? null : archiveHashes.get(className);
+        return archiveHashes != null
                 && classBytes != null
                 && hashes != null
                 && hashes.contains(sha256(classBytes));
@@ -156,21 +179,35 @@ public final class RuntimeClassOriginGuard {
     }
 
     private static void rejectAndHalt(String className, ProtectionDomain domain) {
-        URI origin = normalizedOrigin(domain);
-        append(
-                "guard_status=REJECTED\n"
-                        + "rejected_class=" + String.valueOf(className) + "\n"
-                        + "rejected_origin=" + String.valueOf(origin) + "\n");
+        rejectAndHalt(className, domain, "policy_mismatch");
+    }
+
+    private static void rejectAndHalt(
+            String className, ProtectionDomain domain, String reason) {
+        String origin;
+        try {
+            origin = String.valueOf(normalizedOrigin(domain));
+        } catch (Throwable error) {
+            origin = "unavailable:" + error.getClass().getName();
+        }
+        try {
+            append(
+                    "guard_status=REJECTED\n"
+                            + "rejection_reason=" + reason + "\n"
+                            + "rejected_class=" + String.valueOf(className) + "\n"
+                            + "rejected_origin=" + origin + "\n");
+        } catch (Throwable ignored) {
+            // Runtime halt is mandatory even when audit evidence cannot be written.
+        }
         Runtime.getRuntime().halt(86);
         throw new AssertionError("Runtime.halt unexpectedly returned.");
     }
 
-    private static Map<String, Set<String>> loadApprovedClassHashes(Path runner) throws IOException {
-        Map<String, Set<String>> hashes = new HashMap<>();
-        Set<URI> origins = new HashSet<>();
+    private static Map<URI, Map<String, Set<String>>> loadApprovedClassHashes(Path runner)
+            throws IOException {
+        Map<URI, Map<String, Set<String>>> archives = new HashMap<>();
         Path exactRunner = runner.toRealPath();
-        addJarClassHashes(exactRunner, hashes);
-        origins.add(exactRunner.toUri().normalize());
+        addApprovedArchive(exactRunner, archives);
         final List<Path> runtimeArchives = new ArrayList<>();
         Files.walkFileTree(javaHome, new SimpleFileVisitor<Path>() {
             @Override
@@ -184,15 +221,36 @@ public final class RuntimeClassOriginGuard {
         Collections.sort(runtimeArchives);
         for (Path archive : runtimeArchives) {
             Path exactArchive = archive.toRealPath();
-            addJarClassHashes(exactArchive, hashes);
-            origins.add(exactArchive.toUri().normalize());
+            addApprovedArchive(exactArchive, archives);
         }
+        return Collections.unmodifiableMap(
+                new HashMap<URI, Map<String, Set<String>>>(archives));
+    }
+
+    private static void addApprovedArchive(
+            Path archive, Map<URI, Map<String, Set<String>>> archives) throws IOException {
+        URI origin = archive.toUri().normalize();
+        if (archives.containsKey(origin)) {
+            throw new IllegalStateException("Duplicate approved archive origin: " + origin);
+        }
+        Map<String, Set<String>> hashes = new HashMap<>();
+        addJarClassHashes(archive, hashes);
         Map<String, Set<String>> frozen = new HashMap<>();
         for (Map.Entry<String, Set<String>> entry : hashes.entrySet()) {
-            frozen.put(entry.getKey(), Collections.unmodifiableSet(new HashSet<>(entry.getValue())));
+            frozen.put(
+                    entry.getKey(),
+                    Collections.unmodifiableSet(new HashSet<String>(entry.getValue())));
         }
-        approvedOrigins = Collections.unmodifiableSet(new HashSet<>(origins));
-        return Collections.unmodifiableMap(frozen);
+        archives.put(origin, Collections.unmodifiableMap(frozen));
+    }
+
+    private static int approvedClassNameCount(
+            Map<URI, Map<String, Set<String>>> archives) {
+        Set<String> names = new HashSet<>();
+        for (Map<String, Set<String>> archive : archives.values()) {
+            names.addAll(archive.keySet());
+        }
+        return names.size();
     }
 
     private static void addJarClassHashes(Path archive, Map<String, Set<String>> hashes) throws IOException {
@@ -237,17 +295,23 @@ public final class RuntimeClassOriginGuard {
         return output.toByteArray();
     }
 
-    private static String sha256(byte[] bytes) {
+    private static MessageDigest newSha256() {
         try {
-            byte[] digest = MessageDigest.getInstance("SHA-256").digest(bytes);
-            StringBuilder value = new StringBuilder(digest.length * 2);
-            for (byte item : digest) {
-                value.append(String.format("%02x", item & 0xff));
-            }
-            return value.toString();
+            return MessageDigest.getInstance("SHA-256");
         } catch (java.security.NoSuchAlgorithmException error) {
             throw new IllegalStateException("SHA-256 is unavailable.", error);
         }
+    }
+
+    private static synchronized String sha256(byte[] bytes) {
+        byte[] digest = SHA_256.digest(bytes);
+        char[] value = new char[digest.length * 2];
+        for (int index = 0; index < digest.length; index++) {
+            int item = digest[index] & 0xff;
+            value[index * 2] = HEX[item >>> 4];
+            value[index * 2 + 1] = HEX[item & 0x0f];
+        }
+        return new String(value);
     }
 
     private static synchronized void append(String value) {

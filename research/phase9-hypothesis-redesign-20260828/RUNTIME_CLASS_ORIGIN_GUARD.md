@@ -1,6 +1,6 @@
 # Phase 9 Java class bytecode execution gate
 
-Status: `PREFLIGHT_IMPLEMENTED_NOT_YET_RUN`
+Status: `PREFLIGHT_RUN_4_FAILED_CLOSED_FIX_PENDING_RERUN`
 
 This gate is acquisition-only infrastructure. It does not authorize credentials,
 market-price access, Count-only, or outcome calculation.
@@ -36,6 +36,29 @@ The manual preflight performs both checks without credentials or market access:
 
 The audit files and runner manifest are metadata artifacts. They contain no raw price
 data and no research outcomes.
+
+## Java 8 reflection-inflation control
+
+Run `33313439354` stopped with exit code 86 while inventorying the pinned runtime.
+The rejected class was `sun/reflect/GeneratedConstructorAccessor1` with no
+CodeSource. The guard itself had repeatedly called `MessageDigest.getInstance` and
+`String.format` while hashing 42,688 class names, which can trigger Java 8 reflection
+inflation.
+
+The remediation does not allow null-CodeSource classes or add a `sun.reflect`
+exception. Instead it:
+
+- creates the SHA-256 implementation once and reuses it under synchronization;
+- converts digests to hexadecimal without `String.format`;
+- requires `-Dsun.reflect.inflationThreshold=2147483647` in every guarded JVM;
+- removes per-price-row `String.format` from the future acquisition path;
+- captures positive guard stdout/stderr and requires an explicit PASS marker.
+- binds every class name and hash to the same exact archive origin;
+- halts with code 86 even if policy evaluation or audit writing fails.
+
+The exact threshold is recorded in the guard audit. Missing or different threshold
+configuration fails during premain. This remains a build-only preflight and requires
+a new successful workflow run before any runtime-closure claim can advance.
 
 ## Scope limit
 
