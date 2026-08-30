@@ -1,7 +1,7 @@
 {
   "project": "auto-trading-research",
   "updated_at": "2026-08-30",
-  "phase": "PHASE9_PREREGISTERED_JFOREX_ISOLATED_BUILD_PREFLIGHT_READY_ACQUISITION_BLOCKED",
+  "phase": "PHASE9_PREREGISTERED_JFOREX_BUILD_PREFLIGHT_AUDITED_ACQUISITION_BLOCKED",
   "phase8": {
     "formal_hypotheses_including_pa002": 16,
     "decision": "ALL_REJECT_FOR_DEVELOPMENT",
@@ -54,7 +54,7 @@
     "legacy_non_phase9_future_period_download_detected": true
   },
   "provider_acquisition": {
-    "status": "ISOLATED_REPRODUCIBLE_BUILD_PREFLIGHT_READY_ACQUISITION_BLOCKED_PENDING_RUNTIME_CLOSURE_AND_FULL_QC_PATH",
+    "status": "BUILD_PREFLIGHT_AUDITED_ACQUISITION_BLOCKED_PENDING_RUNTIME_CLOSURE_AND_FULL_QC_PATH",
     "decision_log": "PROVIDER_ACQUISITION_BLOCKER.md",
     "source_channel_amendment": "JFOREX_SOURCE_CHANNEL_AMENDMENT.md",
     "selected_channel": "DUKASCOPY_OFFICIAL_AUTHENTICATED_JFOREX_TESTER_API",
@@ -66,6 +66,21 @@
     "minimal_maven_user_and_global_settings_required": true,
     "offline_build_repetitions_required": 2,
     "runtime_code_closure_verified": false,
+    "build_preflight_audit": {
+      "run_id": 33300116235,
+      "job_id": 99226544365,
+      "artifact_id": 9728657818,
+      "head_sha": "07e81626bbe482a3f01b93f5e2269e876b8ff186",
+      "conclusion": "success",
+      "unit_tests": "16/16 PASS",
+      "repository_inventory_files_each_build": 930,
+      "repository_inventories_identical": true,
+      "runner_jar_sha256": "0be2a82d99a584a0d299f77d2c74e2802c0c82920963341371ac6b38044e2b3d",
+      "acquisition_authorized": false,
+      "phase9_price_files": 0,
+      "outcomes_calculated": false,
+      "audit": "results/preflight-run-33300116235/PREFLIGHT_AUDIT.json"
+    },
     "full_qc_same_run_or_private_raw_storage_decided": false,
     "required_github_secrets": ["DUKASCOPY_USERNAME", "DUKASCOPY_PASSWORD"],
     "h1_network_request_hard_clipped_before_2019_08_01": true,
@@ -129,8 +144,6 @@
   ],
   "next_actions": [
     "use PHASE9_OPERATIONS_GUIDE.md as the procedural entrypoint",
-    "manually dispatch phase9-acquisition-only once with BUILD_PHASE9_JFOREX_PREFLIGHT_ONLY; this workflow contains no credential or price step",
-    "inspect the isolated dependency inventories, runtime identity and three-build reproducible runner JAR SHA; treat them as audit evidence, not acquisition authorization",
     "verify whether the JNLP connection adds executable runtime code beyond the Maven closure before any credential or price access",
     "implement full provider-calendar/session/synchronization/H4-D1/Energy-roll QC in the same locked run or approve a private raw-data store",
     "only then configure JForex demo credentials and authorize one acquisition run",

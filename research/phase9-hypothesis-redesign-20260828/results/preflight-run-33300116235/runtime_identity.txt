@@ -1,0 +1,15 @@
+git_sha=07e81626bbe482a3f01b93f5e2269e876b8ff186
+run_id=33300116235
+run_attempt=1
+runner_os=Linux
+runner_arch=X64
+image_os=ubuntu24
+image_version=20260823.283.1
+openjdk version "1.8.0_504"
+OpenJDK Runtime Environment (Zulu 8.96.0.205-CA-linux64) (build 1.8.0_504-b01)
+OpenJDK 64-Bit Server VM (Zulu 8.96.0.205-CA-linux64) (build 25.504-b01, mixed mode)
+Apache Maven 3.9.16 (2bdd9fddda4b155ebf8000e807eb73fd829a51d5)
+Maven home: /usr/share/apache-maven-3.9.16
+Java version: 1.8.0_504, vendor: Azul Systems, Inc., runtime: /opt/hostedtoolcache/Java_Zulu_jdk/8.0.504-1/x64/jre
+Default locale: en, platform encoding: UTF-8
+OS name: "linux", version: "6.17.0-1022-azure", arch: "amd64", family: "unix"

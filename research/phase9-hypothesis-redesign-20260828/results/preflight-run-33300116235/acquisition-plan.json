@@ -1,0 +1,138 @@
+{
+  "process_count": 4,
+  "series_count": 48,
+  "plan": [
+    {
+      "timeframe": "M15",
+      "side": "bid",
+      "start_inclusive": "2013-01-01T00:00:00Z",
+      "end_exclusive": "2019-08-28T00:00:00Z",
+      "output_files": [
+        "AUDJPY_M15_bid.csv",
+        "AUDUSD_M15_bid.csv",
+        "EURGBP_M15_bid.csv",
+        "EURJPY_M15_bid.csv",
+        "EURUSD_M15_bid.csv",
+        "GBPJPY_M15_bid.csv",
+        "GBPUSD_M15_bid.csv",
+        "USDJPY_M15_bid.csv",
+        "XAUUSD_M15_bid.csv",
+        "XAGUSD_M15_bid.csv",
+        "BRENTCMDUSD_M15_bid.csv",
+        "LIGHTCMDUSD_M15_bid.csv"
+      ],
+      "command": [
+        "java",
+        "-jar",
+        "/home/runner/work/_temp/phase9-jforex-acquirer.jar",
+        "--output-dir",
+        "/home/runner/work/_temp/phase9-plan-output",
+        "--cache-dir",
+        "/home/runner/work/_temp/phase9-plan-cache/M15-bid",
+        "--timeframe",
+        "M15",
+        "--side",
+        "bid"
+      ]
+    },
+    {
+      "timeframe": "M15",
+      "side": "ask",
+      "start_inclusive": "2013-01-01T00:00:00Z",
+      "end_exclusive": "2019-08-28T00:00:00Z",
+      "output_files": [
+        "AUDJPY_M15_ask.csv",
+        "AUDUSD_M15_ask.csv",
+        "EURGBP_M15_ask.csv",
+        "EURJPY_M15_ask.csv",
+        "EURUSD_M15_ask.csv",
+        "GBPJPY_M15_ask.csv",
+        "GBPUSD_M15_ask.csv",
+        "USDJPY_M15_ask.csv",
+        "XAUUSD_M15_ask.csv",
+        "XAGUSD_M15_ask.csv",
+        "BRENTCMDUSD_M15_ask.csv",
+        "LIGHTCMDUSD_M15_ask.csv"
+      ],
+      "command": [
+        "java",
+        "-jar",
+        "/home/runner/work/_temp/phase9-jforex-acquirer.jar",
+        "--output-dir",
+        "/home/runner/work/_temp/phase9-plan-output",
+        "--cache-dir",
+        "/home/runner/work/_temp/phase9-plan-cache/M15-ask",
+        "--timeframe",
+        "M15",
+        "--side",
+        "ask"
+      ]
+    },
+    {
+      "timeframe": "H1",
+      "side": "bid",
+      "start_inclusive": "2013-01-01T00:00:00Z",
+      "end_exclusive": "2019-08-01T00:00:00Z",
+      "output_files": [
+        "AUDJPY_H1_bid.csv",
+        "AUDUSD_H1_bid.csv",
+        "EURGBP_H1_bid.csv",
+        "EURJPY_H1_bid.csv",
+        "EURUSD_H1_bid.csv",
+        "GBPJPY_H1_bid.csv",
+        "GBPUSD_H1_bid.csv",
+        "USDJPY_H1_bid.csv",
+        "XAUUSD_H1_bid.csv",
+        "XAGUSD_H1_bid.csv",
+        "BRENTCMDUSD_H1_bid.csv",
+        "LIGHTCMDUSD_H1_bid.csv"
+      ],
+      "command": [
+        "java",
+        "-jar",
+        "/home/runner/work/_temp/phase9-jforex-acquirer.jar",
+        "--output-dir",
+        "/home/runner/work/_temp/phase9-plan-output",
+        "--cache-dir",
+        "/home/runner/work/_temp/phase9-plan-cache/H1-bid",
+        "--timeframe",
+        "H1",
+        "--side",
+        "bid"
+      ]
+    },
+    {
+      "timeframe": "H1",
+      "side": "ask",
+      "start_inclusive": "2013-01-01T00:00:00Z",
+      "end_exclusive": "2019-08-01T00:00:00Z",
+      "output_files": [
+        "AUDJPY_H1_ask.csv",
+        "AUDUSD_H1_ask.csv",
+        "EURGBP_H1_ask.csv",
+        "EURJPY_H1_ask.csv",
+        "EURUSD_H1_ask.csv",
+        "GBPJPY_H1_ask.csv",
+        "GBPUSD_H1_ask.csv",
+        "USDJPY_H1_ask.csv",
+        "XAUUSD_H1_ask.csv",
+        "XAGUSD_H1_ask.csv",
+        "BRENTCMDUSD_H1_ask.csv",
+        "LIGHTCMDUSD_H1_ask.csv"
+      ],
+      "command": [
+        "java",
+        "-jar",
+        "/home/runner/work/_temp/phase9-jforex-acquirer.jar",
+        "--output-dir",
+        "/home/runner/work/_temp/phase9-plan-output",
+        "--cache-dir",
+        "/home/runner/work/_temp/phase9-plan-cache/H1-ask",
+        "--timeframe",
+        "H1",
+        "--side",
+        "ask"
+      ]
+    }
+  ]
+}

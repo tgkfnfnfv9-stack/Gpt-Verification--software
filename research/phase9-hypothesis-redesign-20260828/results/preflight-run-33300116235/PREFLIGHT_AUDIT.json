@@ -1,0 +1,97 @@
+{
+  "schema_version": "phase9-jforex-build-preflight-audit-v1",
+  "audited_at": "2026-08-30",
+  "status": "PASS_BUILD_AUDIT_ONLY_ACQUISITION_NOT_AUTHORIZED",
+  "run": {
+    "run_id": 33300116235,
+    "run_number": 2,
+    "run_attempt": 1,
+    "event": "workflow_dispatch",
+    "head_branch": "main",
+    "head_sha": "07e81626bbe482a3f01b93f5e2269e876b8ff186",
+    "job_id": 99226544365,
+    "job_name": "preflight",
+    "conclusion": "success",
+    "created_at": "2026-08-30T07:49:44Z",
+    "completed_at": "2026-08-30T07:50:42Z"
+  },
+  "artifact": {
+    "artifact_id": 9728657818,
+    "name": "phase9-jforex-acquisition-metadata-07e81626bbe482a3f01b93f5e2269e876b8ff186-33300116235-1",
+    "size_bytes": 126728,
+    "archive_sha256": "447ed4ad6a20e5ce642405775648f01560c532a9817aba38008bfb93603818ce",
+    "expires_at": "2026-09-13T07:50:38Z"
+  },
+  "build": {
+    "online_build_count": 1,
+    "offline_rebuild_count": 2,
+    "maven_build_success_count": 3,
+    "isolated_repository_file_count_each_build": 930,
+    "all_three_repository_inventories_byte_identical": true,
+    "repository_inventory_sha256": "d0c37ea7dd7da471bc7d0123cfba5053a6b09bccedd5fbbe5f7d067d2335f908",
+    "runner_jar_sha256": "0be2a82d99a584a0d299f77d2c74e2802c0c82920963341371ac6b38044e2b3d",
+    "all_three_runner_jar_hashes_equal": true,
+    "unit_tests_passed": 16,
+    "unit_tests_failed": 0
+  },
+  "runtime": {
+    "runner_os": "Linux",
+    "runner_arch": "X64",
+    "image_os": "ubuntu24",
+    "image_version": "20260823.283.1",
+    "java": "Zulu OpenJDK 1.8.0_504-b01",
+    "maven": "Apache Maven 3.9.16",
+    "runtime_identity_file_sha256": "2e811fd67b4f61c9ea5aa88dfeadcd97ac38b3f4a22de962161acfbae5947fa1"
+  },
+  "acquisition_plan": {
+    "process_count": 4,
+    "series_count": 48,
+    "unique_file_count": 48,
+    "instruments": [
+      "AUDJPY",
+      "AUDUSD",
+      "EURGBP",
+      "EURJPY",
+      "EURUSD",
+      "GBPJPY",
+      "GBPUSD",
+      "USDJPY",
+      "XAUUSD",
+      "XAGUSD",
+      "BRENTCMDUSD",
+      "LIGHTCMDUSD"
+    ],
+    "m15_interval": "[2013-01-01T00:00:00Z,2019-08-28T00:00:00Z)",
+    "h1_interval": "[2013-01-01T00:00:00Z,2019-08-01T00:00:00Z)",
+    "sides": ["BID", "ASK"],
+    "date_arguments_present": false,
+    "plan_file_sha256": "5a206b2daa9ec6d87f31e3e965449864a23312e72d8de7f857ee3410b627f6eb"
+  },
+  "scientific_access": {
+    "dukascopy_credentials_referenced": false,
+    "jforex_java_runner_executed": false,
+    "market_price_request_attempted": false,
+    "phase9_price_files_acquired": 0,
+    "forbidden_market_period_request_attempted": false,
+    "actual_market_data_qc_executed": false,
+    "missing_intervals_observed": [],
+    "research_outcomes_calculated": false,
+    "outcome_fields": [],
+    "return_calculated": false,
+    "mfe_calculated": false,
+    "mae_calculated": false,
+    "edge_calculated": false,
+    "win_rate_calculated": false,
+    "p_value_calculated": false
+  },
+  "authorization": {
+    "dependency_lock_frozen": false,
+    "runtime_code_closure_verified": false,
+    "full_qc_same_run_or_private_raw_storage_decided": false,
+    "acquisition_authorized": false,
+    "count_only_authorized": false,
+    "outcome_access_authorized": false
+  },
+  "evidence_scope": "No provider authentication, java -jar execution, market-price request, raw file, QC, or outcome step exists in this workflow. This proves no such step was executed by Run 33300116235. It is not a packet capture and does not promote the Maven inventory to a trusted acquisition runtime closure.",
+  "next_gate": "VERIFY_JNLP_RUNTIME_CODE_CLOSURE_AND_IMPLEMENT_FULL_QC_OR_APPROVE_PRIVATE_RAW_STORE"
+}

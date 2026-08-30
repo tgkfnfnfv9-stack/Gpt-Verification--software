@@ -281,6 +281,21 @@ class Phase9AcquisitionTests(unittest.TestCase):
         ):
             self.assertNotIn(prohibited, workflow)
 
+    def test_preflight_audit_does_not_authorize_acquisition_or_outcomes(self):
+        audit = json.loads(
+            (
+                ROOT
+                / "results/preflight-run-33300116235/PREFLIGHT_AUDIT.json"
+            ).read_text(encoding="utf-8")
+        )
+        self.assertEqual(audit["run"]["run_id"], 33300116235)
+        self.assertEqual(audit["run"]["conclusion"], "success")
+        self.assertEqual(audit["acquisition_plan"]["series_count"], 48)
+        self.assertEqual(audit["scientific_access"]["phase9_price_files_acquired"], 0)
+        self.assertFalse(audit["scientific_access"]["research_outcomes_calculated"])
+        self.assertFalse(audit["authorization"]["acquisition_authorized"])
+        self.assertFalse(audit["authorization"]["outcome_access_authorized"])
+
 
 if __name__ == "__main__":
     unittest.main()

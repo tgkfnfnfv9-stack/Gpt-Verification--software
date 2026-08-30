@@ -91,7 +91,7 @@ jobs:
           test "$(git hash-object "$root/runner/validate_phase9_acquisition.py")" = 'cb2d7acd6cf899e085301ac7e4a59b8e051a340b'
           test "$(git hash-object "$root/runner/jforex/pom.xml")" = 'aa2486b1d22afad98332fea5e60e56a74a584ace'
           test "$(git hash-object "$root/runner/jforex/src/main/java/org/phase9/Phase9JForexAcquirer.java")" = '32314e830f2980f6b9ff930d617a242d6b911148'
-          test "$(git hash-object "$root/tests/test_phase9_acquisition.py")" = '2cb4b880a0c7340e5ba4d49695cc163301b09c87'
+          test "$(git hash-object "$root/tests/test_phase9_acquisition.py")" = '8dea89576ebf79ac8eec73bd8194f13863df4651'
           for manifest in source_versions instrument_mapping trading_calendar energy_roll_rules; do
             python -m json.tool "$root/data_manifest/${manifest}.json" >/dev/null
           done
