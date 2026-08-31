@@ -27,7 +27,6 @@ done
 mkdir -m 0700 "$work_root" "$evidence_root"
 chown "$target_uid:$target_gid" "$work_root"
 
-mount --bind / /
 mount --make-rprivate /
 mount --bind "$work_root" "$work_root"
 mount --bind "$evidence_root" "$evidence_root"

@@ -164,6 +164,7 @@ class GateCInventoryTests(unittest.TestCase):
         self.assertIn("--clear-groups", sandbox)
         self.assertIn("--no-new-privs", sandbox)
         self.assertIn("remount,bind,ro /", sandbox)
+        self.assertNotIn("mount --bind / /", sandbox)
         self.assertIn("findmnt -rn -o TARGET", sandbox)
         self.assertIn("mount_inventory", sandbox)
         self.assertIn("raw_mountinfo.txt", sandbox)
