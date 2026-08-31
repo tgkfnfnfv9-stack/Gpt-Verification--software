@@ -1,0 +1,17 @@
+{
+  "artifact_exact_allowlist_required": true,
+  "authorization_effect": "NONE",
+  "contents_read_only": true,
+  "dukascopy_or_market_credentials_referenced": false,
+  "external_jnlp_network_step_present": false,
+  "github_checkout_credentials_persisted": false,
+  "github_checkout_ephemeral_token_used": true,
+  "java_executed": false,
+  "jforex_acquirer_invocation_present": false,
+  "locked_dependency_bytes_only": true,
+  "manual_dispatch_only": true,
+  "market_price_step_present": false,
+  "maven_executed": false,
+  "schema_version": "phase9-s1b-workflow-policy-audit-v2.0",
+  "synthetic_qc_only": true
+}

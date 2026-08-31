@@ -1,0 +1,25 @@
+{
+  "authorization_effect": "NONE",
+  "initial_url": "https://platform.dukascopy.com:443/demo_3/jforex_3.jnlp",
+  "jforex_connect_invoked": false,
+  "jnlp_launch_invoked": false,
+  "network_fetch_attempted": false,
+  "raw_bytes": 363,
+  "raw_sha256": "dfaab0dd2b90d7a8b9d5ce2e346a557b7e7584ebb804fd76aaf524d2a347dd45",
+  "resources": [
+    {
+      "kind": "jar",
+      "url": "https://platform.dukascopy.com:443/demo_3/synthetic-client.jar"
+    },
+    {
+      "kind": "nativelib",
+      "url": "https://platform.dukascopy.com:443/demo_3/synthetic-native.jar"
+    },
+    {
+      "kind": "extension",
+      "url": "https://platform.dukascopy.com:443/demo_3/synthetic-extension.jnlp"
+    }
+  ],
+  "schema_version": "phase9-local-jnlp-static-audit-v1.0",
+  "status": "LOCAL_SYNTHETIC_DESCRIPTOR_PARSED_NO_NETWORK"
+}

@@ -1,0 +1,9 @@
+git_sha=951c38aaa875180fa7dbbe498866a4e3ece50e9c
+run_id=33376110507
+run_attempt=1
+runner_os=Linux
+runner_arch=X64
+image_os=ubuntu24
+image_version=20260823.283.1
+python_version=3.12.3
+python_executable=/usr/bin/python

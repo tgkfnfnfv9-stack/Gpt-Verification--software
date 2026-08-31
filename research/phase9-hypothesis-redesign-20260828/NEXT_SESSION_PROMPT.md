@@ -1,17 +1,66 @@
 # 次セッションへ送る文章
 
+以下をそのままコピーして、新しいセッションへ送る。
+
 ```text
 GitHub Repository tgkfnfnfv9-stack/Gpt-Verification--software のPhase 9自動売買研究を引き継いでください。
 
-最初に research/phase9-hypothesis-redesign-20260828/PHASE9_OPERATIONS_GUIDE.md を完全に読み、
-同ファイルの「セッション開始時に読む順番」に従ってください。
+最初に以下を完全に読んでください。
 
-Formal alphaは11件、risk overlayは1件、全件UNTESTED_PREREGISTEREDです。
-旧tmp workflowのpolicy incidentがあるため POLICY_INCIDENT_20260829.md も必ず読んでください。
-公開endpoint廃止とJForexへの切替え理由は PROVIDER_ACQUISITION_BLOCKER.md と JFOREX_SOURCE_CHANNEL_AMENDMENT.md を必ず読んでください。
-正本はfrozen JSONとpreregistered policyです。draftを使わないでください。
+1. AGENTS.md
+2. research/phase9-hypothesis-redesign-20260828/PHASE9_OPERATIONS_GUIDE.md
+3. research/phase9-hypothesis-redesign-20260828/PHASE9_DATA_ACQUISITION_VALIDATION_RUNBOOK.md
+4. research/phase9-hypothesis-redesign-20260828/POLICY_INCIDENT_20260829.md
+5. research/phase9-hypothesis-redesign-20260828/POLICY_INCIDENT_20260830.md
+6. research/phase9-hypothesis-redesign-20260828/PROVIDER_ACQUISITION_BLOCKER.md
+7. research/phase9-hypothesis-redesign-20260828/JFOREX_SOURCE_CHANNEL_AMENDMENT.md
+8. research/phase8-blind-discovery-20260828/results/PHASE8_FINAL_DECISION.json
+9. research/phase8-blind-discovery-20260828/results/RESULTS_SUMMARY.md
+10. research/phase9-hypothesis-redesign-20260828/README.md
+11. research/phase9-hypothesis-redesign-20260828/SESSION_STATE.json
+12. research/phase9-hypothesis-redesign-20260828/DESIGN_DECISIONS.md
+13. research/phase9-hypothesis-redesign-20260828/HYPOTHESIS_PORTFOLIO_FINAL.md
+14. research/phase9-hypothesis-redesign-20260828/spec/candidate_registry.frozen.json
+15. research/phase9-hypothesis-redesign-20260828/DATA_REQUIREMENTS.md
+16. research/phase9-hypothesis-redesign-20260828/spec/data_requirements.frozen.json
+17. research/phase9-hypothesis-redesign-20260828/policy/preregistered_research_policy.json
+18. research/phase9-hypothesis-redesign-20260828/results/s1b-run-33376110507/S1B_AUDIT.json
 
-公開endpointとdukascopy-go経路は廃止済みです。公式認証JForex Tester API、同一の12銘柄、M15/H1×BID/ASKの4runは結果未閲覧で凍結済みです。
-次はphase9-acquisition-onlyをmanual dispatchし、認証・price request前に停止するBuild preflightで全Maven依存SHAと再珫uild JAR SHAを取得・凍結します。同一run full-QCまたは承認済み非公開raw保管の固定前に実取得しないでください。実取得時はM15が2019-08-28未満、H1が2019-08-01未満のみで、Count-only前にreturn/MFE/MAE/edgeを計算しません。
-サブエージェントは8論理役割を、実際の並列上限に合わせて2波で使い、主担当だけがcommitしてください。
+8つの論理役割A0〜A7を使用してください。同時実行上限が7なら2波に分け、サブエージェントはread-only監査、主担当だけがGitHubへCommitしてください。作業前後にremote mainを確認し、force push、reset --hard、ユーザー変更の破棄、git add .、git add -Aは禁止です。
+
+現在はFormal alpha 11件＋Risk overlay 1件、全12確認項目がUNTESTED_PREREGISTEREDです。Phase 9の正式取得、Actual Full-QC、Count-only、Return検証は未開始で、価格ファイル0件、確認済み優位性0件です。
+
+S1B Gate A Run 33376110507はcompleted/successです。
+
+- Head SHA: 951c38aaa875180fa7dbbe498866a4e3ece50e9c
+- Job ID: 99437846539
+- Artifact ID: 9751919672
+- Artifact ZIP SHA-256: ad72a646f91ec4e15fb7df564bbc7fd0fb4133c3c8999f8bf8a0468e4af0094a
+- 116 locked JARすべてSHA一致
+- Native候補28件
+- Run 1のJava .class CAFEBABE誤分類28,088件は除外済み
+- Dukascopy/market credential、外部JNLP、JForex connect、market request、禁止期間requestはすべてなし
+- Phase 9価格ファイル0、Outcome未計算
+- acquisition_authorized=false
+
+Run 2はlocked-JAR静的棚卸しの工学的PASSであり、実データ取得許可ではありません。
+
+今回の単一作業は、Run 2の28 native entryを監査し、別CommitでGate B exact-match allowlistを凍結することです。
+
+Gate BにはRun ID、head SHA、116-JAR manifest SHA、Artifact ZIP SHA、各archive path/SHA、entry path/SHA/size/magic、対象OS/arch、未知・追加・欠落・重複・case collisionを拒否するfail-closed規則を固定してください。同一Runのinventoryで自己認可しないでください。Gate Bだけでacquisition_authorized=trueに変更しないでください。
+
+Gate B後にも、shaded runner、native load/mapped DSO、child process/OS egress、remote JNLP lock、streaming 48-series Full-QC、raw custodyが未解決なら、demo secrets設定、外部JNLP接続、availability照会、JForex connect、price取得をしないでください。
+
+将来の正式取得範囲は次だけです。
+
+- 12銘柄 × M15/H1 × BID/ASK = 48系列
+- M15: 2013-01-01 inclusiveから2019-08-28 exclusive
+- H1: 2013-01-01 inclusiveから2019-08-01 exclusive
+- H4/D1はcanonical H1から完全UTC bucketだけを派生
+- 欠損は記録し、Forward Fill、期間延長、H1 tailの復活は禁止
+- Raw市場CSV、cache、資格情報をGitや公開Artifactへ保存しない
+
+Count-only完了前はReturn、Return符号、MFE、MAE、Edge、勝敗、勝率、Profit Factor、Drawdown、累積R、P値、信頼区間、順位、Outcome chartを計算・表示・閲覧しないでください。Phase 9 JSONを既存Outcome viewerへ読み込まないでください。Development、OOS、Final Holdoutの先行照会・取得、旧仮説の再最適化、結果を見た銘柄・時間足選択、MT5 EA実装は禁止です。
+
+実装、Tests、A7 red-team、GitHubへのatomic Commit、remote head・Actions監査まで進め、Commit SHA、変更ファイル、残Blocker、価格アクセス、禁止期間アクセス、Outcome未計算を報告してください。
 ```

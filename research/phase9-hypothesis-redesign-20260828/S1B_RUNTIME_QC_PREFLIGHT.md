@@ -1,14 +1,24 @@
 # Phase 9 S1B runtime/QC preflight
 
-Status: `RUN_1_NATIVE_INVENTORY_INVALID_CLASS_MAGIC_FIX_PENDING_RERUN`
+Status: `RUN_2_STATIC_NATIVE_INVENTORY_PASS_GATE_B_PENDING_ACQUISITION_BLOCKED`
 
-Run `33374751888` completed successfully at the workflow level and verified all
-116 locked JAR SHA-256 values before parsing. Its native inventory is not valid:
-28,088 Java `.class` entries beginning with `CAFEBABE` were misclassified as Mach-O
-fat binaries. Acquisition remained blocked, no market data or outcomes were accessed,
-and this inventory must not be used as a Gate B allowlist. The canonical fail-closed
-audit is `results/s1b-run-33374751888/S1B_AUDIT.json`. The classifier now explicitly
-excludes this Java-class collision and requires a new workflow run.
+Run #1 `33374751888` verified all 116 locked JAR SHA-256 values before parsing, but
+its native inventory was invalid because 28,088 Java `.class` entries beginning with
+`CAFEBABE` were misclassified as Mach-O fat binaries. Its canonical fail-closed audit
+is `results/s1b-run-33374751888/S1B_AUDIT.json`.
+
+The classifier now excludes that Java-class collision. Corrected Run #2
+`33376110507` completed successfully on head
+`951c38aaa875180fa7dbbe498866a4e3ece50e9c`, verified all 116 locked JARs before
+parsing, and recorded 28 native candidates. The exact metadata Artifact ZIP SHA-256 is
+`ad72a646f91ec4e15fb7df564bbc7fd0fb4133c3c8999f8bf8a0468e4af0094a`.
+The canonical audit and preserved metadata are in
+`results/s1b-run-33376110507/`.
+
+Run #2 is a Gate A static-inventory engineering pass only. Acquisition remains
+blocked, no market data or outcomes were accessed, and the 28 entries must be
+reviewed and frozen in a separate Gate B commit before they can be used as an
+exact-match allowlist.
 
 ## Purpose
 
@@ -81,10 +91,10 @@ request.
 Until later gates pass:
 
 ```text
-runtime_code_closure_verified              = false
+runtime_code_closure_verified               = false
 acquisition_authorized                     = false
 phase9_price_files_acquired                = 0
 actual_market_data_full_quality_gate_passed = false
-count_only_authorized                      = false
-research_outcomes_calculated               = false
+count_only_authorized                       = false
+research_outcomes_calculated                = false
 ```

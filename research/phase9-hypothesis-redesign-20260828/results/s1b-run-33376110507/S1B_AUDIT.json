@@ -1,0 +1,116 @@
+{
+  "audited_at": "2026-08-31",
+  "schema_version": "phase9-s1b-gate-a-audit-v2.0",
+  "conclusion": "S1B_GATE_A_STATIC_INVENTORY_PASS_ACQUISITION_BLOCKED",
+  "workflow": {
+    "run_id": 33376110507,
+    "run_number": 2,
+    "run_attempt": 1,
+    "status": "completed",
+    "conclusion": "success",
+    "event": "workflow_dispatch",
+    "created_at": "2026-08-31T09:07:25Z",
+    "updated_at": "2026-08-31T09:07:44Z",
+    "job_id": 99437846539,
+    "head_sha": "951c38aaa875180fa7dbbe498866a4e3ece50e9c",
+    "url": "https://github.com/tgkfnfnfv9-stack/Gpt-Verification--software/actions/runs/33376110507",
+    "all_job_steps_successful": true
+  },
+  "artifact": {
+    "artifact_id": 9751919672,
+    "artifact_name": "phase9-s1b-runtime-qc-metadata-951c38aaa875180fa7dbbe498866a4e3ece50e9c-33376110507-1",
+    "artifact_zip_sha256": "ad72a646f91ec4e15fb7df564bbc7fd0fb4133c3c8999f8bf8a0468e4af0094a",
+    "size_in_bytes": 21330,
+    "exact_allowed_file_count": 9,
+    "manifest_rows": 8,
+    "manifest_sha256": "6ee13c8fedad21d1d818036e1f07bf0ac5b0b395441ef7c043d75ab15798049e",
+    "manifest_hashes_match": true,
+    "forbidden_suffix_count": 0,
+    "raw_market_file_count": 0,
+    "metadata_files_preserved_in_this_directory": true
+  },
+  "tests": {
+    "phase9_acquisition": "19/19 PASS",
+    "s1b": "31/31 PASS",
+    "java_class_cafebabe_regression_passed": true
+  },
+  "dependency_bytes": {
+    "locked_jar_count": 116,
+    "locked_jar_manifest_line_count": 116,
+    "locked_jar_manifest_sha256": "8a6fca0cf65d80fc7ca0459ff56cf35ec6f92fe89b8f516de7bc8905ab941aeb",
+    "all_sha256_match": true,
+    "verified_before_archive_parse": true,
+    "total_bytes": 66837102,
+    "maven_central_jar_count": 94,
+    "dukascopy_repository_jar_count": 22,
+    "redirects_allowed": false,
+    "environment_proxy_used": false,
+    "maven_executed": false,
+    "java_executed": false
+  },
+  "native_inventory": {
+    "authoritative_gate_a_inventory_available": true,
+    "native_entry_count": 28,
+    "archive_count": 2,
+    "archive_breakdown": {
+      "zstd-jni": 18,
+      "jna": 10
+    },
+    "magic_breakdown": {
+      "ELF": 18,
+      "MACHO": 3,
+      "PE": 6,
+      "SUFFIX_ONLY": 1
+    },
+    "suffix_match_count": 28,
+    "java_class_cafebabe_collision_excluded": true,
+    "run1_false_positive_count_removed": 28088,
+    "gate_b_allowlist_committed": false,
+    "same_run_self_authorization_prohibited": true,
+    "source_file": "native_library_inventory.json"
+  },
+  "synthetic_qc": {
+    "status": "SYNTHETIC_PRIMITIVES_PASS_ACTUAL_DATA_NOT_EVALUATED",
+    "synthetic_fixture_only": true,
+    "forward_fill_count": 0,
+    "actual_market_data_evaluated": false,
+    "provider_calendar_actual_coverage_verified": false,
+    "provider_no_synthetic_bars_verified": false,
+    "actual_market_data_full_quality_gate_passed": false,
+    "outcomes_calculated": false
+  },
+  "policy_status": {
+    "github_checkout_ephemeral_token_used": true,
+    "github_checkout_credentials_persisted": false,
+    "dukascopy_or_market_credentials_referenced": false,
+    "external_jnlp_request_attempted": false,
+    "actual_jnlp_launch_invoked": false,
+    "jforex_connect_invoked": false,
+    "market_price_request_attempted": false,
+    "forbidden_market_period_request_attempted": false,
+    "phase9_price_files_acquired": 0,
+    "research_outcomes_calculated": false,
+    "outcome_fields": [],
+    "count_only_authorized": false,
+    "runtime_code_closure_verified": false,
+    "shaded_runner_scanned": false,
+    "acquisition_authorized": false
+  },
+  "remaining_blockers": [
+    "NATIVE_ENTRY_ALLOWLIST_NOT_YET_COMMITTED",
+    "SHADED_RUNNER_NOT_SCANNED_IN_GATE_A",
+    "NATIVE_LOAD_AND_MAPPED_DSO_NOT_TESTED",
+    "CHILD_PROCESS_AND_OS_EGRESS_NOT_ENFORCED",
+    "REMOTE_JNLP_NOT_OBSERVED_OR_LOCKED",
+    "ACTUAL_MARKET_DATA_FULL_QC_NOT_EXECUTED",
+    "SAME_RUN_FULL_QC_OR_APPROVED_PRIVATE_IMMUTABLE_RAW_CUSTODY_NOT_FIXED"
+  ],
+  "scientific_status": {
+    "phase9_confirmatory_questions_tested": 0,
+    "confirmed_phase9_edge_count": 0,
+    "count_only_started": false,
+    "return_mfe_mae_edge_win_rate_p_value_calculated": false,
+    "interpretation": "Engineering evidence for the locked-JAR static inventory only. This run does not authorize acquisition, Count-only, or research outcomes."
+  },
+  "next_single_action": "Review the 28 native entries and freeze a separate exact-match Gate B allowlist commit anchored to this run, head SHA, locked-JAR manifest SHA, and artifact ZIP SHA. Gate B alone must not authorize price acquisition."
+}

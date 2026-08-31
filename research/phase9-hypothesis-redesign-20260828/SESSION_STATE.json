@@ -1,7 +1,7 @@
 {
   "project": "auto-trading-research",
   "updated_at": "2026-08-31",
-  "phase": "PHASE9_PREREGISTERED_S1B_RUN1_NATIVE_INVENTORY_INVALID_FIX_PENDING_RERUN_ACQUISITION_BLOCKED",
+  "phase": "PHASE9_PREREGISTERED_S1B_GATE_A_RUN2_PASS_GATE_B_PENDING_ACQUISITION_BLOCKED",
   "phase8": {
     "formal_hypotheses_including_pa002": 16,
     "decision": "ALL_REJECT_FOR_DEVELOPMENT",
@@ -54,7 +54,7 @@
     "legacy_non_phase9_future_period_download_detected": true
   },
   "provider_acquisition": {
-    "status": "S1B_RUN1_NATIVE_INVENTORY_INVALID_FIX_PENDING_RERUN_ACQUISITION_BLOCKED",
+    "status": "S1B_GATE_A_RUN2_PASS_GATE_B_PENDING_ACQUISITION_BLOCKED",
     "decision_log": "PROVIDER_ACQUISITION_BLOCKER.md",
     "source_channel_amendment": "JFOREX_SOURCE_CHANNEL_AMENDMENT.md",
     "selected_channel": "DUKASCOPY_OFFICIAL_AUTHENTICATED_JFOREX_TESTER_API",
@@ -71,7 +71,7 @@
     "runtime_code_closure_verified": false,
     "java_nonbootstrap_class_origin_guard_self_test_passed": true,
     "s1b_runtime_qc_gate_a": {
-      "status": "RUN1_NATIVE_INVENTORY_INVALID_CLASS_MAGIC_FIX_PENDING_RERUN",
+      "status": "RUN2_STATIC_NATIVE_INVENTORY_PASS_AUTHORIZATION_BLOCKED",
       "workflow": ".github/workflows/phase9-s1b-runtime-qc-preflight.yml",
       "confirmation": "RUN_PHASE9_S1B_NO_SECRET_NO_PRICE_PREFLIGHT",
       "github_checkout_ephemeral_token_used": true,
@@ -87,6 +87,12 @@
       "verify_jar_sha256_before_archive_parse": true,
       "redirects_allowed": false,
       "environment_proxy_allowed": false,
+      "latest_run_id": 33376110507,
+      "latest_head_sha": "951c38aaa875180fa7dbbe498866a4e3ece50e9c",
+      "latest_artifact_zip_sha256": "ad72a646f91ec4e15fb7df564bbc7fd0fb4133c3c8999f8bf8a0468e4af0094a",
+      "native_entry_count": 28,
+      "java_class_cafebabe_collision_excluded": true,
+      "gate_b_allowlist_committed": false,
       "shaded_runner_scanned": false,
       "runtime_code_closure_verified": false,
       "acquisition_authorized": false,
@@ -110,6 +116,27 @@
         "outcomes_calculated": false,
         "acquisition_authorized": false,
         "audit": "results/s1b-run-33374751888/S1B_AUDIT.json"
+      },
+      {
+        "run_id": 33376110507,
+        "run_number": 2,
+        "job_id": 99437846539,
+        "artifact_id": 9751919672,
+        "head_sha": "951c38aaa875180fa7dbbe498866a4e3ece50e9c",
+        "workflow_conclusion": "success",
+        "artifact_zip_sha256": "ad72a646f91ec4e15fb7df564bbc7fd0fb4133c3c8999f8bf8a0468e4af0094a",
+        "locked_jar_count": 116,
+        "locked_jar_sha_all_match": true,
+        "native_entry_count": 28,
+        "java_class_cafebabe_collision_excluded": true,
+        "authoritative_gate_a_inventory_available": true,
+        "gate_b_allowlist_committed": false,
+        "phase9_price_files": 0,
+        "market_price_request_attempted": false,
+        "forbidden_market_period_request_attempted": false,
+        "outcomes_calculated": false,
+        "acquisition_authorized": false,
+        "audit": "results/s1b-run-33376110507/S1B_AUDIT.json"
       }
     ],
     "build_preflight_audit": {
@@ -238,16 +265,16 @@
     "replace an underpowered or data-insufficient question in Phase 9",
     "download, query availability for, cache, inspect or evaluate Development, OOS or Final Holdout",
     "select instruments or timeframes after counts or outcomes",
-    "compute any forward return, MFE, MAE or edge before count-only Gates complete",
+    "compute or inspect any forward return, return sign, MFE, MAE, edge, win/loss, win rate, profit factor, drawdown, cumulative R, p-value, confidence interval, outcome ranking or outcome chart before count-only Gates complete",
     "implement MT5 EA"
   ],
   "next_actions": [
     "use PHASE9_OPERATIONS_GUIDE.md as the procedural entrypoint",
-    "commit the S1B Java-class CAFEBABE collision fix and rerun Gate A without Dukascopy or market credentials, external JNLP, or market access",
-    "freeze the audited native inventory in a separate Gate B allowlist; do not authorize from same-run discovery",
-    "complete streaming 48-series provider-calendar/session/synchronization/H4-D1/Energy-roll QC or approve a private raw-data store",
-    "only then configure JForex demo credentials and authorize one acquisition run",
-    "complete provider-calendar, session-gap, cross-market synchronization, H4/D1 bucket and Energy roll metadata QC",
+    "review the 28 Run 2 native entries and freeze a separate exact-match Gate B allowlist anchored to Run 33376110507, head SHA, locked-JAR manifest SHA and artifact ZIP SHA; Gate B alone does not authorize acquisition",
+    "before any credential or price access, separately verify the shaded runner, native load and mapped DSO set, child-process and OS-egress controls, and remote JNLP lock after terms confirmation and explicit manual authorization",
+    "freeze the streaming 48-series Full-QC execution path and same-run ephemeral raw custody, or obtain explicit approval for private immutable raw storage",
+    "only after every blocker and a separate manual authorization, configure JForex demo credentials and run one acquisition plus same-run Full-QC with M15 before 2019-08-28 and H1 before 2019-08-01",
+    "complete actual provider-calendar, session-gap, BID/ASK, cross-market synchronization, H4/D1 bucket, Energy roll and no-forward-fill QC",
     "run count-only coverage Gate before Discovery"
   ],
   "target_execution": {

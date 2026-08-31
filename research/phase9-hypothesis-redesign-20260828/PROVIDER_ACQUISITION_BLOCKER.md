@@ -1,6 +1,6 @@
 # Phase 9 Provider / Acquisition Blocker
 
-Status: `PUBLIC_ENDPOINT_PATH_REJECTED; JFOREX_SELECTED; PRICE_BLOCKED_PENDING_DEPENDENCY_LOCK_AND_FULL_QC_PATH`
+Status: `PUBLIC_ENDPOINT_PATH_REJECTED; JFOREX_SELECTED; S1B_GATE_A_PASS; PRICE_BLOCKED_PENDING_GATE_B_AND_REMAINING_RUNTIME_CONTROLS`
 
 Recorded: 2026-08-29 UTC
 
@@ -11,8 +11,9 @@ edge, signal count, or candidate outcome was acquired or inspected.
 
 Do not use the rejected `dukascopy-go` public-endpoint path. Phase 8 data
 workflows remain disabled. The replacement Phase 9 workflow uses Dukascopy's
-official authenticated JForex Tester API and may be dispatched only after the
-two required GitHub Secrets and both exact manual confirmations are configured.
+official authenticated JForex Tester API. Market-data acquisition remains
+blocked; configuring Secrets or giving manual confirmations does not by itself
+authorize dispatch.
 
 ## Rejected public-endpoint P0 blockers
 
@@ -86,17 +87,32 @@ and Energy symbols.
 
 ## Resume conditions
 
-Resume acquisition only after the complete dependency inventory and reproducible
-runner JAR are hash-locked, and either full QC is implemented in the same run or
-a user-approved private raw-data store is configured. After that,
-`DUKASCOPY_USERNAME` and `DUKASCOPY_PASSWORD` may be stored as GitHub Secrets and
-the user may confirm the JForex demo-account terms in manual dispatch. See
-`JFOREX_SOURCE_CHANNEL_AMENDMENT.md`.
+S1B Gate A Run `33376110507` completed the locked 116-JAR static inventory and
+recorded 28 native entries. This is evidence only, not acquisition authorization.
+
+Resume acquisition only after all of the following have been completed and
+separately audited:
+
+1. Freeze the 28 native entries in a later commit as a Gate B exact-match
+   allowlist; do not self-authorize from the same discovery run.
+2. Scan the shaded runner and prove actual native loading/mapped-DSO behavior.
+3. Enforce child-process and OS-level egress controls.
+4. After terms confirmation and a separate manual authorization, observe and
+   hash-lock the remote JNLP/runtime closure without requesting market prices.
+5. Implement streaming Full-QC for all 48 direct series in the acquisition run.
+6. Configure a user-approved private raw-data custody path if raw persistence is
+   required; raw prices must not enter Git or public Artifacts.
+7. Complete a final pre-dispatch audit. Only then may credentials and the exact
+   manual confirmations be used for a single acquisition/QC dispatch.
+
+See `JFOREX_SOURCE_CHANNEL_AMENDMENT.md`, `S1B_RUNTIME_QC_PREFLIGHT.md`, and
+`results/s1b-run-33376110507/S1B_AUDIT.json`.
 
 Until then:
 
-- build preflight: `READY_NO_CREDENTIALS_NO_PRICES`
-- acquisition: `BLOCKED_PENDING_DEPENDENCY_LOCK_AND_FULL_QC_PATH`
+- S1B Gate A static inventory: `PASS_EVIDENCE_ONLY`
+- Gate B exact-match allowlist: `PENDING_SEPARATE_COMMIT`
+- acquisition: `BLOCKED_PENDING_GATE_B_AND_REMAINING_RUNTIME_CONTROLS`
 - full quality gate: `BLOCKED`
 - Count-only Gate: `BLOCKED`
 - return/MFE/MAE/edge backtest: `BLOCKED`

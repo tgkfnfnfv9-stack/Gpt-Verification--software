@@ -1,6 +1,6 @@
 # Phase 9 統合運用ガイド
 
-guide_version: `1.2.0`
+guide_version: `1.3.0`
 status: `OPERATIONS_CANONICAL`
 更新日: 2026-08-31
 対象リポジトリ: `tgkfnfnfv9-stack/Gpt-Verification--software`
@@ -28,7 +28,7 @@ Phase 9
 ├─ Confirmatory questions      12件
 ├─ 状態                         全件UNTESTED_PREREGISTERED
 ├─ 正式なPhase 9データ取得      未開始
-├─ Provider acquisition         S1B_RUN1_INVALID_FIX_PENDING_RERUN / PRICE_BLOCKED
+├─ Provider acquisition         S1B_GATE_A_RUN2_PASS / GATE_B_PENDING / PRICE_BLOCKED
 ├─ Phase 9 return/backtest       0件
 └─ MT5 EA                       禁止
 ```
@@ -194,7 +194,7 @@ H4とD1はcanonical H1からの派生のみなので、最終的な対象終了�
 
 公開website endpointと`dukascopy-go`の組合せは、自動access条件、配布license、H1月単位requestの禁止境界超過の3点で廃止しました。詳細は`PROVIDER_ACQUISITION_BLOCKER.md`を参照します。
 
-代替として、公式認証JForex Tester APIと公式SDKを使う取得経路を`JFOREX_SOURCE_CHANNEL_AMENDMENT.md`で事前凍結しました。Build preflight Run `33336895081`はpre-connect non-bootstrap class-origin試験に成功しました。現在許可される次工程は、Dukascopy・市場資格情報、外部JNLP、price stepを一切含まないS1B Gate Aだけです。Run 5から固定した116個のJARをMaven/Javaを実行せず取得し、各SHA一致後にだけnative payloadを静的列挙し、repository-local synthetic JNLPとsynthetic Full-QC primitivesを試験します。shaded runnerはGate Aでは未検査です。S1B成功も取得許可ではありません。Gate B native allowlist、JNLP/OS egress、actual full-QCまたは承認済み非公開raw保管が固定されるまで実取得しません。
+代替として、公式認証JForex Tester APIと公式SDKを使う取得経路を`JFOREX_SOURCE_CHANNEL_AMENDMENT.md`で事前凍結しました。Build preflight Run `33336895081`はpre-connect non-bootstrap class-origin試験に成功しました。S1B Gate A Run `33376110507`は、Run 5から固定した116個のJARをMaven/Javaを実行せず取得し、全SHA一致後に28 native entryを静的列挙し、repository-local synthetic JNLPとsynthetic Full-QC primitivesを完了しました。現在許可される次工程は、この28件を別commitのexact-match Gate B allowlistとして凍結することだけです。Shaded runner、native load/mapped DSO、child process/OS egress、remote JNLP、streaming actual Full-QC、raw custodyが未解決であり、S1B成功もGate B成功も実取得許可ではありません。
 
 ### 再利用できる参考実装
 
@@ -231,7 +231,9 @@ workflow inputに日付はありません。Java runnerがtimeframe別の境界�
 
 Run 5監査後のS1B Gate Aは`.github/workflows/phase9-s1b-runtime-qc-preflight.yml`を使い、confirmationへ`RUN_PHASE9_S1B_NO_SECRET_NO_PRICE_PREFLIGHT`を完全一致入力します。GitHub checkoutのscoped ephemeral tokenは使用しますが永続化せず、Dukascopy・市場資格情報は参照しません。Maven、Java、外部JNLP request、JForex connect、market request、native executionは行いません。116個のlocked JARはredirect/proxyなしで取得し、SHA一致後にだけ静的に開きます。Artifactはdata custody policyの完全allowlistを全検査した成功時だけuploadします。
 
-S1B Run `33374751888`は116 JARの全SHA一致まで成功しましたが、Java `.class`の`CAFEBABE`をMach-O fat magicと誤認しました。28,088件のfalse positiveを含むため同Runのnative inventoryは無効で、Gate B allowlistに使いません。取得・価格・禁止期間・Outcomeへのaccessは0で、全認可はfalseです。`.class`衝突除外とregression testをcommitしてS1Bを再Runします。
+S1B Run #1 `33374751888`は116 JARの全SHA一致まで成功しましたが、Java `.class`の`CAFEBABE`をMach-O fat magicと誤認しました。28,088件のfalse positiveを含むため同Runのnative inventoryは無効で、Gate B allowlistに使いません。
+
+衝突除外とregression testを反映したRun #2 `33376110507`はcompleted/successです。116 JARの全SHA一致、28 native entry、Java class衝突除外、exact 9-file metadata Artifactを確認しました。Artifact ZIP SHA-256は`ad72a646f91ec4e15fb7df564bbc7fd0fb4133c3c8999f8bf8a0468e4af0094a`です。取得・価格・禁止期間・Outcomeへのaccessは0で、全認可はfalseです。正本監査は`results/s1b-run-33376110507/S1B_AUDIT.json`です。
 
 このArtifactはlocked JAR/native inventoryとsynthetic QCの監査資料であり、取得許可そのものではありません。shaded runner、JNLP接続がMaven closure外の実行codeを追加取得しないことの検証と、full-QC/raw保管経路の決定後に、別のsecret-scoped acquisition/QC workflowを事前監査します。
 
@@ -376,7 +378,8 @@ return非計算
 - frozen Entry・対象・時間足・期間・control・Gate変更
 - M15で2019-08-28以降、またはH1で2019-08-01以降をPhase 9取得jobで照会・download・cache
 - H1の2019年8月tailをM15から後付け集計して復活
-- Count-only前のforward outcome計算
+- Count-only前のreturn、return符号、MFE、MAE、edge、勝敗、勝率、Profit Factor、Drawdown、累積R、p値、信頼区間、順位、Outcome chartの生成・閲覧
+- Count-only前のPhase 9 JSONを既存Outcome viewerへ読ませること
 - 結果後の銘柄・時間足・side選択
 - favorable subgroupやsensitivityによる救済
 - Underpowered/Data insufficient候補の差し替え

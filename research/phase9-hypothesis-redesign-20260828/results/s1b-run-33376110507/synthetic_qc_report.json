@@ -1,0 +1,42 @@
+{
+  "actual_market_data_full_quality_gate_passed": false,
+  "count_only_authorized": false,
+  "forward_fill_count": 0,
+  "h4_created_count": 1,
+  "m15_h1_reconciliation": {
+    "bucket_open": "2014-08-28T00:00:00Z",
+    "differences": {
+      "close": 0.0,
+      "high": 0.0,
+      "low": 0.0,
+      "open": 0.0,
+      "volume": 0
+    },
+    "expected_m15_slots": 4,
+    "lineage_sha256": "548685cbbb3b728325b7e93d409c45343d1b9493f84455875cb23d604d4fd021",
+    "present_m15_slots": 4,
+    "status": "ELIGIBLE_MATCH"
+  },
+  "missingness": {
+    "classification_coverage": 1.0,
+    "expected_scheduled_slots": 8,
+    "missing_segments": [
+      {
+        "classification": "SCHEDULED_BAR_MISSING",
+        "end_exclusive": "2014-08-28T01:00:00Z",
+        "slot_count": 1,
+        "start": "2014-08-28T00:45:00Z"
+      }
+    ],
+    "observed_slots": 7,
+    "scheduled_missing_slots": 1,
+    "segments_truncated": false
+  },
+  "outcome_fields": [],
+  "provider_calendar_actual_coverage_verified": false,
+  "provider_no_synthetic_bars_verified": false,
+  "research_outcomes_calculated": false,
+  "schema_version": "phase9-synthetic-full-qc-report-v1.0",
+  "status": "SYNTHETIC_PRIMITIVES_PASS_ACTUAL_DATA_NOT_EVALUATED",
+  "synthetic_fixture_only": true
+}
