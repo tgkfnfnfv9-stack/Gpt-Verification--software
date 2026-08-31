@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-set -euo pipefail
+set -Eeuo pipefail
+trap 'status=$?; printf "gate_c_sandbox_failure_line=%s exit_status=%s\n" "$LINENO" "$status" >&2' ERR
 
 [[ $# -eq 7 ]]
 [[ "$(id -u)" == 0 ]]

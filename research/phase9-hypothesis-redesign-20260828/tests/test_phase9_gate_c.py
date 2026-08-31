@@ -170,6 +170,7 @@ class GateCInventoryTests(unittest.TestCase):
         self.assertIn('evidence_root="$gate_root/evidence-private"', sandbox)
         self.assertIn('work_root="$gate_root/probe-work"', sandbox)
         self.assertIn('strace -s 0 -v -ff -o "$evidence_root/trace"', sandbox)
+        self.assertIn("gate_c_sandbox_failure_line=", sandbox)
         self.assertIn('chown -R "$target_uid:$target_gid" "$evidence_root"', sandbox)
         self.assertLess(sandbox.index("strace -s 0 -v -ff"), sandbox.index("--reuid="))
         self.assertIn("mount_inventory.txt", workflow)
