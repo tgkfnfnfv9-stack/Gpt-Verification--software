@@ -516,11 +516,44 @@ class GateCInventoryTests(unittest.TestCase):
                     self.EXEC_CHAIN + f'{call} = -1 EPERM\n'
                 )
                 syscall_name = call.split("(", 1)[0]
+                family = "AF_INET" if "AF_INET" in call else "AF_UNIX" if "AF_UNIX" in call else "FAMILY_NOT_VISIBLE"
                 with self.assertRaisesRegex(
                     gate_c.GateCError,
-                    rf"network syscalls: {syscall_name}$",
+                    rf"network syscall classes: {syscall_name}:{family}:FAILURE$",
                 ):
                     gate_c.validate_runtime(inventory, maps, traces, supervisor, root / "output.json")
+
+    def test_network_diagnostics_never_repeat_addresses_or_arguments(self):
+        sensitive = "/secret/socket-name"
+        trace = (
+            f'connect(7, {{sa_family=AF_UNIX, sun_path="{sensitive}"}}, 110) = -1 ENOENT\n'
+            "socketpair(AF_UNIX, SOCK_STREAM, 0, [8, 9]) = 0\n"
+            "getsockname(8, {sa_family=AF_UNIX}, [128 => 2]) = 0\n"
+        )
+        observed = gate_c.bounded_network_diagnostics(trace)
+        self.assertEqual(
+            observed,
+            [
+                "connect:AF_UNIX:FAILURE",
+                "getsockname:AF_UNIX:SUCCESS",
+                "socketpair:AF_UNIX:SUCCESS",
+            ],
+        )
+        self.assertNotIn(sensitive, json.dumps(observed))
+
+    def test_network_diagnostics_map_untrusted_tokens_to_fixed_classes(self):
+        trace = (
+            'sendto(3, "AF_API_TOKEN_123", 16, 0, NULL, 0) = -1 API_SECRET_99\n'
+            'connect(3, {sa_family=AF_UNIX, sun_path="AF_CUSTOMER_SECRET"}, 99) = -1 EPERM\n'
+        )
+        observed = gate_c.bounded_network_diagnostics(trace)
+        self.assertEqual(
+            observed,
+            ["connect:AF_UNIX:FAILURE", "sendto:FAMILY_OTHER:FAILURE"],
+        )
+        rendered = json.dumps(observed)
+        for secret in ("API_TOKEN", "API_SECRET", "CUSTOMER_SECRET"):
+            self.assertNotIn(secret, rendered)
 
 
 if __name__ == "__main__":

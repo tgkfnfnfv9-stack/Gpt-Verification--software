@@ -300,6 +300,50 @@ def classify_exec_argv_shape(line: str) -> str:
     return "UNKNOWN"
 
 
+NETWORK_SYSCALL_PATTERN = re.compile(
+    r"\b(accept|accept4|bind|connect|getpeername|getsockname|getsockopt|listen|recv|recvfrom|"
+    r"recvmmsg|recvmsg|send|sendmmsg|sendmsg|sendto|setsockopt|shutdown|socket|socketcall|"
+    r"socketpair)\("
+)
+KNOWN_SOCKET_FAMILIES = {
+    "AF_ALG", "AF_APPLETALK", "AF_AX25", "AF_BLUETOOTH", "AF_BRIDGE", "AF_CAN",
+    "AF_DECnet", "AF_IB", "AF_IEEE802154", "AF_INET", "AF_INET6", "AF_IPX",
+    "AF_IRDA", "AF_ISDN", "AF_IUCV", "AF_KCM", "AF_KEY", "AF_LLC", "AF_LOCAL",
+    "AF_MCTP", "AF_MPLS", "AF_NETBEUI", "AF_NETLINK", "AF_NETROM", "AF_NFC",
+    "AF_PACKET", "AF_PHONET", "AF_PPPOX", "AF_QIPCRTR", "AF_RDS", "AF_ROSE",
+    "AF_RXRPC", "AF_SECURITY", "AF_SMC", "AF_TIPC", "AF_UNIX", "AF_UNSPEC",
+    "AF_VSOCK", "AF_WANPIPE", "AF_X25", "AF_XDP",
+}
+
+
+def bounded_network_diagnostics(trace_text: str) -> list[str]:
+    """Return argument-free syscall/family/result classes for failure diagnosis."""
+    observations = set()
+    for line in trace_text.splitlines():
+        match = NETWORK_SYSCALL_PATTERN.search(line)
+        if match is None:
+            continue
+        family_tokens = re.findall(r"\b(AF_[A-Za-z0-9_]+)\b", line)
+        known_families = sorted(set(family_tokens).intersection(KNOWN_SOCKET_FAMILIES))
+        if len(known_families) == 1:
+            family = known_families[0]
+        elif len(known_families) > 1:
+            family = "MULTIPLE_KNOWN_FAMILIES"
+        elif family_tokens:
+            family = "FAMILY_OTHER"
+        else:
+            family = "FAMILY_NOT_VISIBLE"
+        result_match = re.search(r"\)\s+=\s+(-?\d+)(?:\s+([A-Z][A-Z0-9_]+))?", line)
+        if result_match is None:
+            result = "RESULT_NOT_VISIBLE"
+        elif result_match.group(1) == "0" or int(result_match.group(1)) > 0:
+            result = "SUCCESS"
+        else:
+            result = "FAILURE"
+        observations.add(f"{match.group(1)}:{family}:{result}")
+    return sorted(observations)
+
+
 def validate_runtime(
     inventory_path: Path,
     maps_path: Path,
@@ -389,14 +433,10 @@ def validate_runtime(
                 process_creations.append(line)
     if process_creations:
         raise GateCError("Probe attempted a non-thread process creation syscall")
-    prohibited_network = re.findall(
-        r"\b(?:accept|accept4|bind|connect|getpeername|getsockname|getsockopt|listen|recv|recvfrom|recvmmsg|recvmsg|send|sendmmsg|sendmsg|sendto|setsockopt|shutdown|socket|socketcall|socketpair)\(",
-        trace_text,
-    )
+    prohibited_network = bounded_network_diagnostics(trace_text)
     if prohibited_network:
         raise GateCError(
-            "Probe attempted network syscalls: "
-            + ",".join(sorted({match[:-1] for match in prohibited_network}))
+            "Probe attempted network syscall classes: " + ",".join(prohibited_network)
         )
     result = {
         "schema_version": "phase9-gate-c1-runtime-observation-v1.0",
