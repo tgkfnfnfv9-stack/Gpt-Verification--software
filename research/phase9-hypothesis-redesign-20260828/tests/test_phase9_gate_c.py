@@ -393,6 +393,50 @@ class GateCInventoryTests(unittest.TestCase):
         self.assertFalse(result["acquisition_authorized"])
         self.assertEqual(result["setpriv_argv_observation"], "FULL_REQUIRED_ARGUMENTS_VERIFIED")
 
+    def test_runtime_observation_accepts_exact_prior_run_inert_signature_multiset(self):
+        inert = (
+            ("socket(AF_UNIX, SOCK_STREAM|SOCK_CLOEXEC|SOCK_NONBLOCK, 0) = 7\n" * 6)
+            + ("connect(7, {{sa_family=AF_UNIX}}, 2) = -1 ENOENT\n" * 6)
+            + "getsockname(7, NULL, NULL) = -1 EBADF\n"
+            + "socket(AF_INET6, SOCK_STREAM, IPPROTO_IP) = 8\n"
+            + "socketpair(AF_UNIX, SOCK_STREAM, 0, [9, 10]) = 0\n"
+        )
+        root, inventory, maps, traces, supervisor = self.runtime_fixture(self.EXEC_CHAIN + inert)
+        result = gate_c.validate_runtime(inventory, maps, traces, supervisor, root / "output.json")
+        self.assertTrue(result["network_syscall_attempted"])
+        self.assertTrue(result["network_socket_created"])
+        self.assertFalse(result["external_network_io_succeeded"])
+        self.assertEqual(
+            result["observed_inert_network_syscall_signatures"],
+            gate_c.EXPECTED_INERT_NETWORK_SIGNATURES,
+        )
+        self.assertEqual(result["inert_network_signatures_source_run_id"], 33450855370)
+        self.assertEqual(result["inert_network_signatures_source_job_id"], 99680178747)
+        self.assertEqual(
+            result["inert_network_signatures_source_head_sha"],
+            "bf9c89a75b8744337f92eb98f365166967159af9",
+        )
+
+    def test_runtime_observation_rejects_inert_signature_count_or_socket_shape_change(self):
+        cases = (
+            "socket(AF_UNIX, SOCK_STREAM|SOCK_CLOEXEC|SOCK_NONBLOCK, 0) = 7\n",
+            "socket(AF_INET6, SOCK_DGRAM, IPPROTO_UDP) = 7\n",
+            "socket(AF_INET6, SOCK_RAW, IPPROTO_RAW) = 7\n",
+            "connect(7, {{sa_family=AF_UNIX}}, 2) = 0\n",
+        )
+        for trace in cases:
+            with self.subTest(trace=trace):
+                root, inventory, maps, traces, supervisor = self.runtime_fixture(
+                    self.EXEC_CHAIN + trace
+                )
+                with self.assertRaisesRegex(
+                    gate_c.GateCError,
+                    "differ from prior-run inert inventory",
+                ):
+                    gate_c.validate_runtime(
+                        inventory, maps, traces, supervisor, root / "output.json"
+                    )
+
     def test_runtime_observation_rejects_child_exec(self):
         root, inventory, maps, traces, supervisor = self.runtime_fixture(
             self.EXEC_CHAIN + 'execve("/bin/sh", ["sh"], 0) = 0\n'
@@ -519,7 +563,7 @@ class GateCInventoryTests(unittest.TestCase):
                 family = "AF_INET" if "AF_INET" in call else "AF_UNIX" if "AF_UNIX" in call else "FAMILY_NOT_VISIBLE"
                 with self.assertRaisesRegex(
                     gate_c.GateCError,
-                    rf"network syscall signatures: {syscall_name}:{family}(?::[^,]+)?:FAILURE:COUNT_1$",
+                    rf"differ from prior-run inert inventory: {syscall_name}:{family}(?::[^,]+)?:FAILURE:COUNT_1$",
                 ):
                     gate_c.validate_runtime(inventory, maps, traces, supervisor, root / "output.json")
 
@@ -549,11 +593,29 @@ class GateCInventoryTests(unittest.TestCase):
         observed = gate_c.bounded_network_diagnostics(trace)
         self.assertEqual(
             observed,
-            ["connect:AF_UNIX:FAILURE:COUNT_1", "sendto:FAMILY_OTHER:FAILURE:COUNT_1"],
+            ["connect:AF_UNIX:FAILURE:COUNT_1", "sendto:FAMILY_NOT_VISIBLE:FAILURE:COUNT_1"],
         )
         rendered = json.dumps(observed)
         for secret in ("API_TOKEN", "API_SECRET", "CUSTOMER_SECRET"):
             self.assertNotIn(secret, rendered)
+
+    def test_network_diagnostics_use_real_line_end_result_and_structured_family(self):
+        trace = (
+            'connect(7, {sa_family=AF_UNIX, sun_path=") = -1 EPERM"}, 32) = 0\n'
+        )
+        self.assertEqual(
+            gate_c.bounded_network_diagnostics(trace),
+            ["connect:AF_UNIX:SUCCESS:COUNT_1"],
+        )
+        escaped_trace = trace.replace("{", "{{").replace("}", "}}")
+        root, inventory, maps, traces, supervisor = self.runtime_fixture(
+            self.EXEC_CHAIN + escaped_trace
+        )
+        with self.assertRaisesRegex(
+            gate_c.GateCError,
+            "connect:AF_UNIX:SUCCESS:COUNT_1",
+        ):
+            gate_c.validate_runtime(inventory, maps, traces, supervisor, root / "output.json")
 
     def test_network_diagnostics_fix_socket_type_protocol_and_count(self):
         trace = (

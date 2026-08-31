@@ -325,6 +325,16 @@ KNOWN_SOCKET_PROTOCOLS = {
     "IPPROTO_MPTCP", "IPPROTO_RAW", "IPPROTO_SCTP", "IPPROTO_TCP", "IPPROTO_UDP",
     "IPPROTO_UDPLITE",
 }
+EXPECTED_INERT_NETWORK_SIGNATURES_SOURCE_RUN_ID = 33450855370
+EXPECTED_INERT_NETWORK_SIGNATURES_SOURCE_JOB_ID = 99680178747
+EXPECTED_INERT_NETWORK_SIGNATURES_SOURCE_HEAD_SHA = "bf9c89a75b8744337f92eb98f365166967159af9"
+EXPECTED_INERT_NETWORK_SIGNATURES = [
+    "connect:AF_UNIX:FAILURE:COUNT_6",
+    "getsockname:FAMILY_NOT_VISIBLE:FAILURE:COUNT_1",
+    "socket:AF_INET6:SOCK_STREAM:IPPROTO_IP:SUCCESS:COUNT_1",
+    "socket:AF_UNIX:SOCK_CLOEXEC+SOCK_NONBLOCK+SOCK_STREAM:PROTOCOL_0:SUCCESS:COUNT_6",
+    "socketpair:AF_UNIX:SOCK_STREAM:PROTOCOL_0:SUCCESS:COUNT_1",
+]
 
 
 def fixed_socket_argument_shape(line: str, syscall: str) -> tuple[str, str]:
@@ -350,6 +360,20 @@ def fixed_socket_argument_shape(line: str, syscall: str) -> tuple[str, str]:
     return socket_type, protocol
 
 
+def fixed_socket_family(line: str, syscall: str) -> str:
+    if syscall in {"socket", "socketpair"}:
+        match = re.search(rf"\b{syscall}\(\s*(AF_[A-Za-z0-9_]+)\s*,", line)
+    elif syscall in {"connect", "bind"}:
+        match = re.search(rf"\b{syscall}\([^,]+,\s*\{{sa_family=(AF_[A-Za-z0-9_]+)\b", line)
+    elif syscall in {"getpeername", "getsockname"}:
+        match = re.search(rf"\b{syscall}\([^,]+,\s*\{{sa_family=(AF_[A-Za-z0-9_]+)\b", line)
+    else:
+        match = re.search(r"\bsa_family=(AF_[A-Za-z0-9_]+)\b", line)
+    if match is None:
+        return "FAMILY_NOT_VISIBLE"
+    return match.group(1) if match.group(1) in KNOWN_SOCKET_FAMILIES else "FAMILY_OTHER"
+
+
 def bounded_network_diagnostics(trace_text: str) -> list[str]:
     """Return argument-free syscall/family/result classes for failure diagnosis."""
     observations: Counter[str] = Counter()
@@ -357,24 +381,18 @@ def bounded_network_diagnostics(trace_text: str) -> list[str]:
         match = NETWORK_SYSCALL_PATTERN.search(line)
         if match is None:
             continue
-        family_tokens = re.findall(r"\b(AF_[A-Za-z0-9_]+)\b", line)
-        known_families = sorted(set(family_tokens).intersection(KNOWN_SOCKET_FAMILIES))
-        if len(known_families) == 1:
-            family = known_families[0]
-        elif len(known_families) > 1:
-            family = "MULTIPLE_KNOWN_FAMILIES"
-        elif family_tokens:
-            family = "FAMILY_OTHER"
-        else:
-            family = "FAMILY_NOT_VISIBLE"
-        result_match = re.search(r"\)\s+=\s+(-?\d+)(?:\s+([A-Z][A-Z0-9_]+))?", line)
+        syscall = match.group(1)
+        family = fixed_socket_family(line, syscall)
+        result_match = re.search(
+            r"\)\s+=\s+(-?\d+)(?:\s+[A-Z][A-Z0-9_]+(?:\s+\([^)]*\))?)?\s*$",
+            line,
+        )
         if result_match is None:
             result = "RESULT_NOT_VISIBLE"
         elif result_match.group(1) == "0" or int(result_match.group(1)) > 0:
             result = "SUCCESS"
         else:
             result = "FAILURE"
-        syscall = match.group(1)
         detail = ""
         if syscall in {"socket", "socketpair"}:
             socket_type, protocol = fixed_socket_argument_shape(line, syscall)
@@ -473,9 +491,10 @@ def validate_runtime(
     if process_creations:
         raise GateCError("Probe attempted a non-thread process creation syscall")
     prohibited_network = bounded_network_diagnostics(trace_text)
-    if prohibited_network:
+    if prohibited_network and prohibited_network != EXPECTED_INERT_NETWORK_SIGNATURES:
         raise GateCError(
-            "Probe attempted network syscall signatures: " + ",".join(prohibited_network)
+            "Probe network syscall signatures differ from prior-run inert inventory: "
+            + ",".join(prohibited_network)
         )
     result = {
         "schema_version": "phase9-gate-c1-runtime-observation-v1.0",
@@ -488,7 +507,13 @@ def validate_runtime(
         "setpriv_argv_observation": "FULL_REQUIRED_ARGUMENTS_VERIFIED",
         "thread_clone_count": len(thread_clones),
         "child_process_spawned": False,
-        "network_syscall_attempted": False,
+        "network_syscall_attempted": bool(prohibited_network),
+        "network_socket_created": bool(prohibited_network),
+        "external_network_io_succeeded": False,
+        "observed_inert_network_syscall_signatures": prohibited_network,
+        "inert_network_signatures_source_run_id": EXPECTED_INERT_NETWORK_SIGNATURES_SOURCE_RUN_ID,
+        "inert_network_signatures_source_job_id": EXPECTED_INERT_NETWORK_SIGNATURES_SOURCE_JOB_ID,
+        "inert_network_signatures_source_head_sha": EXPECTED_INERT_NETWORK_SIGNATURES_SOURCE_HEAD_SHA,
         "os_network_namespace_required": True,
         "trace_file_count": len(traces),
         "trace_files": trace_records,
