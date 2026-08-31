@@ -20,7 +20,7 @@
 | Confirmatory questions | 12 |
 | Phase 9 outcome access | なし |
 | 正式なPhase 9データ取得 | 未開始 |
-| Provider acquisition | S1B Gate A Run 33376110507の28 native entryを別commitのGate B exact-match allowlistへ凍結・検証済み。JNLP/shaded runner/native load/OS egress/full-QC/raw保管経路待ちで実取得は未認可 |
+| Provider acquisition | Gate C1 Run 33451221995でexact shaded runner scan、JNA native load、15 executable mapping、child processなし、外部network I/O成功なしを確認し、別commitのGate C2 exact runtime allowlistへ凍結。Full acquirer closure、取得時egress、remote JNLP、full-QC、raw保管経路待ちで実取得は未認可 |
 | Discovery | 未開始 |
 | MT5 EA | 禁止 |
 
@@ -32,6 +32,8 @@
 
 S1B Run #1 `33374751888`はworkflowとしてSuccessでしたが、Java `.class`とMach-Oの`CAFEBABE` magic衝突により28,088件を誤検出したためnative inventoryを無効としました。分類器とregression testを修正し、Run #2 `33376110507`で116 JARの全SHA一致、28 native entry、Java class衝突除外、metadata-only 9-file Artifactを確認しました。Artifact ZIP SHA-256は`ad72a646f91ec4e15fb7df564bbc7fd0fb4133c3c8999f8bf8a0468e4af0094a`です。Price file 0、禁止期間requestなし、Outcome未計算、取得認可falseのままです。正本監査は`results/s1b-run-33376110507/S1B_AUDIT.json`です。
 
-Gate B監査正本は`results/gate-b-native-allowlist/GATE_B_AUDIT.json`です。Run ID、head SHA、116-JAR manifest SHA、Artifact ZIP SHA、2 archiveと28 entryのpath/SHA/size/magic/OS/archを固定し、未知・追加・欠落・重複・case collisionを拒否します。同一Runのinventoryによる自己認可は行っておらず、`acquisition_authorized=false`です。次の単一作業は、exact shaded runnerの静的scanと、native load/mapped DSO・child process・OS egressをno-secret/no-priceで検証する次Gateの設計です。Remote JNLP lock、streaming 48-series Full-QC、raw custodyも別途未解決です。
+Gate B監査正本は`results/gate-b-native-allowlist/GATE_B_AUDIT.json`です。Run ID、head SHA、116-JAR manifest SHA、Artifact ZIP SHA、2 archiveと28 entryのpath/SHA/size/magic/OS/archを固定し、未知・追加・欠落・重複・case collisionを拒否します。同一Runのinventoryによる自己認可は行っておらず、`acquisition_authorized=false`です。
+
+Gate C1 Run `33451221995`（Job `99681326258`、head `9699c64b9133482caf22cef07dc9b3bc2fe33a1a`、Artifact `9779840519`、ZIP SHA-256 `d5ea84805732209e85340376de98788f897eba411a3170b300600767252d60f0`）はsuccessです。Artifact 18 filesとmanifest 17 payload hashを独立再検証し、exact shaded runner SHA、JNA load、15 executable mapping、子プロセス0、外部network I/O成功0、price file 0、Outcome空を確認しました。別commitの`data_manifest/runtime_mapping_allowlist.run33451221995.json`と`runner/verify_phase9_gate_c2.py`がpath scope/path/SHA/size/OS/arch、inert syscall type/protocol/countを完全一致で凍結します。Gate C2は取得を認可せず、full acquirer runtime closure、取得時child-process/egress enforcement、remote JNLP lock、streaming 48-series Full-QC、raw custodyが未解決です。
 
 `HYPOTHESIS_PORTFOLIO.md`、`spec/*.draft.json`、`policy/hypothesis_stage_policy.json`は履歴であり、実行に使用しません。

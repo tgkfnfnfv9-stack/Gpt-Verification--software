@@ -54,7 +54,7 @@
     "legacy_non_phase9_future_period_download_detected": true
   },
   "provider_acquisition": {
-    "status": "S1B_GATE_A_PASS_GATE_B_FROZEN_ACQUISITION_BLOCKED",
+    "status": "GATE_C1_PASS_GATE_C2_FROZEN_ACQUISITION_BLOCKED",
     "decision_log": "PROVIDER_ACQUISITION_BLOCKER.md",
     "source_channel_amendment": "JFOREX_SOURCE_CHANNEL_AMENDMENT.md",
     "selected_channel": "DUKASCOPY_OFFICIAL_AUTHENTICATED_JFOREX_TESTER_API",
@@ -96,7 +96,7 @@
       "gate_b_allowlist": "data_manifest/native_entry_allowlist.run33376110507.json",
       "gate_b_audit": "results/gate-b-native-allowlist/GATE_B_AUDIT.json",
       "gate_b_exact_match_tests": "18/18 PASS",
-      "shaded_runner_scanned": false,
+      "shaded_runner_scanned": true,
       "runtime_code_closure_verified": false,
       "acquisition_authorized": false,
       "actual_market_data_full_quality_gate_passed": false
@@ -223,6 +223,25 @@
       "native_archive_count": 2,
       "native_entry_count": 28,
       "same_run_self_authorization_used": false,
+      "acquisition_authorized": false,
+      "phase9_price_files_acquired": 0,
+      "outcomes_calculated": false
+    },
+    "gate_c_runtime_allowlist": {
+      "status": "EXACT_MATCH_PASS_ACQUISITION_BLOCKED",
+      "allowlist": "data_manifest/runtime_mapping_allowlist.run33451221995.json",
+      "verifier": "runner/verify_phase9_gate_c2.py",
+      "audit": "results/gate-c-runtime-allowlist/GATE_C_AUDIT.json",
+      "source_run_id": 33451221995,
+      "source_job_id": 99681326258,
+      "source_artifact_id": 9779840519,
+      "source_head_sha": "9699c64b9133482caf22cef07dc9b3bc2fe33a1a",
+      "source_artifact_zip_sha256": "d5ea84805732209e85340376de98788f897eba411a3170b300600767252d60f0",
+      "executable_mapping_count": 15,
+      "child_process_spawned": false,
+      "external_network_io_succeeded": false,
+      "same_run_self_authorization_used": false,
+      "runtime_code_closure_verified": false,
       "acquisition_authorized": false,
       "phase9_price_files_acquired": 0,
       "outcomes_calculated": false

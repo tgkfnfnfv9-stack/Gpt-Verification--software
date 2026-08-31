@@ -1,0 +1,69 @@
+{
+  "schema_version": "phase9-gate-c2-audit-v1.0",
+  "conclusion": "GATE_C2_EXACT_MATCH_PASS_ACQUISITION_BLOCKED",
+  "source_evidence": {
+    "run_id": 33451221995,
+    "run_attempt": 1,
+    "job_id": 99681326258,
+    "head_sha": "9699c64b9133482caf22cef07dc9b3bc2fe33a1a",
+    "artifact_id": 9779840519,
+    "artifact_name": "phase9-gate-c1-runtime-inventory-9699c64b9133482caf22cef07dc9b3bc2fe33a1a-33451221995-1",
+    "artifact_size_bytes": 1041038,
+    "artifact_zip_sha256": "d5ea84805732209e85340376de98788f897eba411a3170b300600767252d60f0",
+    "artifact_manifest_sha256": "c66b968c1b9eee2897ce02995d08a3f65f054a150cfffc262585d9f1905944d5",
+    "runtime_observation_sha256": "0cc0f2eaff9c5e5a3508abd24992075072cd30e3620fb8ff8a0fabe235e3fa99",
+    "shaded_runner_inventory_sha256": "45c94ddfd3cf7d02938a3fb8be68c0edce64546be9470c0503a0a97f36f64c46",
+    "authorization_state_sha256": "0d4ac3efcfa44b3de32099668986e5598e178192fcb45d00945325be849ea07d",
+    "runtime_identity_sha256": "cf6fec16e2e5e0c140a953ca1b09b3184246d022a2f7f317b2d59a3a6bea863d",
+    "syscall_trace_sha256": "bc3f3da963a8502f474d54a075cf86bb315f827b344e9a6c05a82adc9db2a24b"
+  },
+  "independent_checks": {
+    "artifact_zip_sha256_verified": true,
+    "artifact_manifest_all_17_payload_hashes_verified": true,
+    "runtime_identity_run_head_os_arch_verified": true,
+    "executable_mapping_count_verified": 15,
+    "executable_mapping_path_sha256_size_verified": true,
+    "inert_network_signature_multiset_verified": true,
+    "child_process_spawned": false,
+    "external_network_io_succeeded": false,
+    "credentials_or_market_access_observed": false,
+    "phase9_price_files_acquired": 0,
+    "outcome_fields": []
+  },
+  "implementation": {
+    "allowlist": "data_manifest/runtime_mapping_allowlist.run33451221995.json",
+    "verifier": "runner/verify_phase9_gate_c2.py",
+    "tests": "tests/test_phase9_gate_c2.py",
+    "same_run_inventory_self_authorization_used": false
+  },
+  "authorization_state": {
+    "acquisition_authorized": false,
+    "count_only_authorized": false,
+    "outcomes_authorized": false,
+    "runtime_code_closure_verified": false,
+    "remote_jnlp_locked": false,
+    "acquisition_egress_allowlist_enforced": false,
+    "actual_market_data_full_quality_gate_passed": false,
+    "raw_custody_approved": false,
+    "credentials_referenced": false,
+    "availability_request_attempted": false,
+    "external_jnlp_request_attempted": false,
+    "jforex_connect_invoked": false,
+    "market_price_request_attempted": false,
+    "forbidden_market_period_request_attempted": false,
+    "phase9_price_files_acquired": 0,
+    "research_outcomes_calculated": false,
+    "same_run_inventory_may_authorize": false,
+    "outcome_fields": []
+  },
+  "remaining_blockers": [
+    "FULL_ACQUIRER_RUNTIME_CODE_CLOSURE_NOT_VERIFIED",
+    "ACQUISITION_CHILD_PROCESS_SECCOMP_NOT_ENFORCED",
+    "ACQUISITION_OS_EGRESS_ALLOWLIST_NOT_ENFORCED",
+    "ACQUIRER_OUTPUT_CACHE_REALPATH_GUARD_NOT_FIXED",
+    "REMOTE_JNLP_NOT_OBSERVED_OR_LOCKED",
+    "STREAMING_48_SERIES_FULL_QC_NOT_FROZEN",
+    "ACTUAL_MARKET_DATA_FULL_QC_NOT_EXECUTED",
+    "RAW_CUSTODY_PATH_NOT_APPROVED"
+  ]
+}

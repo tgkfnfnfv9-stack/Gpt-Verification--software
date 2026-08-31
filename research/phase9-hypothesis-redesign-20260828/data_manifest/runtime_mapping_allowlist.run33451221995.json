@@ -1,0 +1,228 @@
+{
+  "schema_version": "phase9-gate-c2-runtime-exact-allowlist-v1.0",
+  "status": "GATE_C2_EXACT_RUNTIME_ALLOWLIST_FROZEN_ACQUISITION_BLOCKED",
+  "frozen_at": "2026-08-31",
+  "source_evidence": {
+    "run_id": 33451221995,
+    "run_attempt": 1,
+    "job_id": 99681326258,
+    "head_sha": "9699c64b9133482caf22cef07dc9b3bc2fe33a1a",
+    "artifact_id": 9779840519,
+    "artifact_name": "phase9-gate-c1-runtime-inventory-9699c64b9133482caf22cef07dc9b3bc2fe33a1a-33451221995-1",
+    "artifact_size_bytes": 1041038,
+    "artifact_zip_sha256": "d5ea84805732209e85340376de98788f897eba411a3170b300600767252d60f0",
+    "artifact_manifest_sha256": "c66b968c1b9eee2897ce02995d08a3f65f054a150cfffc262585d9f1905944d5",
+    "runtime_observation_sha256": "0cc0f2eaff9c5e5a3508abd24992075072cd30e3620fb8ff8a0fabe235e3fa99",
+    "shaded_runner_inventory_sha256": "45c94ddfd3cf7d02938a3fb8be68c0edce64546be9470c0503a0a97f36f64c46",
+    "authorization_state_sha256": "0d4ac3efcfa44b3de32099668986e5598e178192fcb45d00945325be849ea07d",
+    "runtime_identity_sha256": "cf6fec16e2e5e0c140a953ca1b09b3184246d022a2f7f317b2d59a3a6bea863d",
+    "syscall_trace_sha256": "bc3f3da963a8502f474d54a075cf86bb315f827b344e9a6c05a82adc9db2a24b"
+  },
+  "scope": {
+    "purpose": "Separate-commit exact-match Gate C2 for the successful Gate C1 executable runtime mappings and inert socket inventory.",
+    "observed_runner_os": "linux",
+    "observed_runner_arch": "x86_64",
+    "runner_image_os": "ubuntu24",
+    "runner_image_version": "20260823.283.1",
+    "java_home": "/opt/hostedtoolcache/Java_Zulu_jdk/8.0.504-1/x64",
+    "shaded_runner_sha256": "545bb9601d547b0edd5476886474a9affb541df5dc1c3fe172cb544c7c1f8204",
+    "executable_mapping_count": 15,
+    "thread_clone_count": 14,
+    "child_process_spawned": false,
+    "external_network_io_succeeded": false,
+    "acquisition_or_market_access_allowed": false
+  },
+  "observed_inert_network_syscall_signatures": [
+    "connect:AF_UNIX:FAILURE:COUNT_6",
+    "getsockname:FAMILY_NOT_VISIBLE:FAILURE:COUNT_1",
+    "socket:AF_INET6:SOCK_STREAM:IPPROTO_IP:SUCCESS:COUNT_1",
+    "socket:AF_UNIX:SOCK_CLOEXEC+SOCK_NONBLOCK+SOCK_STREAM:PROTOCOL_0:SUCCESS:COUNT_6",
+    "socketpair:AF_UNIX:SOCK_STREAM:PROTOCOL_0:SUCCESS:COUNT_1"
+  ],
+  "fail_closed_rules": {
+    "source_run_must_precede_freeze_commit": true,
+    "source_head_sha_exact_match_required": true,
+    "artifact_zip_sha256_exact_match_required": true,
+    "artifact_payload_sha256_exact_match_required": true,
+    "unknown_mapping_rejected": true,
+    "additional_mapping_rejected": true,
+    "missing_mapping_rejected": true,
+    "duplicate_mapping_rejected": true,
+    "case_collision_rejected": true,
+    "path_scope_exact_match_required": true,
+    "path_exact_match_required": true,
+    "sha256_exact_match_required": true,
+    "size_exact_match_required": true,
+    "network_signature_multiset_exact_match_required": true,
+    "child_process_rejected": true,
+    "same_run_inventory_self_authorization_prohibited": true,
+    "gate_c2_must_not_authorize_acquisition": true
+  },
+  "executable_file_mappings": [
+    {
+      "path_scope": "GATE_C_ROOT_RELATIVE",
+      "path": "native/libjnidispatch.so",
+      "observed_path": "/home/runner/work/_temp/phase9-gate-c1-33451221995-1/native/libjnidispatch.so",
+      "sha256": "e889ff70bf84bbac0abc161201da1c2c054df9f0313f0bc65601e48b43651691",
+      "bytes": 110967,
+      "target_os": "linux",
+      "target_arch": "x86_64"
+    },
+    {
+      "path_scope": "ABSOLUTE",
+      "path": "/opt/hostedtoolcache/Java_Zulu_jdk/8.0.504-1/x64/bin/java",
+      "observed_path": "/opt/hostedtoolcache/Java_Zulu_jdk/8.0.504-1/x64/bin/java",
+      "sha256": "fb161b5d5cafb223f1ce680eb121f04ab5ea9ca172f51053942df64cbd587e78",
+      "bytes": 8824,
+      "target_os": "linux",
+      "target_arch": "x86_64"
+    },
+    {
+      "path_scope": "ABSOLUTE",
+      "path": "/opt/hostedtoolcache/Java_Zulu_jdk/8.0.504-1/x64/jre/lib/amd64/libjava.so",
+      "observed_path": "/opt/hostedtoolcache/Java_Zulu_jdk/8.0.504-1/x64/jre/lib/amd64/libjava.so",
+      "sha256": "01fb205bdc5aae02bd2a7165aa33f5903e703d5d8046f86afc104fd31fe450c5",
+      "bytes": 212176,
+      "target_os": "linux",
+      "target_arch": "x86_64"
+    },
+    {
+      "path_scope": "ABSOLUTE",
+      "path": "/opt/hostedtoolcache/Java_Zulu_jdk/8.0.504-1/x64/jre/lib/amd64/libnet.so",
+      "observed_path": "/opt/hostedtoolcache/Java_Zulu_jdk/8.0.504-1/x64/jre/lib/amd64/libnet.so",
+      "sha256": "ad20817935ad7887131df96223c981e8550ca7e5173a23183336784edfa3ec0a",
+      "bytes": 121136,
+      "target_os": "linux",
+      "target_arch": "x86_64"
+    },
+    {
+      "path_scope": "ABSOLUTE",
+      "path": "/opt/hostedtoolcache/Java_Zulu_jdk/8.0.504-1/x64/jre/lib/amd64/libnio.so",
+      "observed_path": "/opt/hostedtoolcache/Java_Zulu_jdk/8.0.504-1/x64/jre/lib/amd64/libnio.so",
+      "sha256": "cfdcf2f9828d8ca7b7e9f3629f5b44b1638f89b23260fe99af14edd02da18a49",
+      "bytes": 93048,
+      "target_os": "linux",
+      "target_arch": "x86_64"
+    },
+    {
+      "path_scope": "ABSOLUTE",
+      "path": "/opt/hostedtoolcache/Java_Zulu_jdk/8.0.504-1/x64/jre/lib/amd64/libverify.so",
+      "observed_path": "/opt/hostedtoolcache/Java_Zulu_jdk/8.0.504-1/x64/jre/lib/amd64/libverify.so",
+      "sha256": "ef179fb4375f7b87ed41984fc15decac3f7c0dc629a3c250ef344d3dfc466408",
+      "bytes": 65552,
+      "target_os": "linux",
+      "target_arch": "x86_64"
+    },
+    {
+      "path_scope": "ABSOLUTE",
+      "path": "/opt/hostedtoolcache/Java_Zulu_jdk/8.0.504-1/x64/jre/lib/amd64/libzip.so",
+      "observed_path": "/opt/hostedtoolcache/Java_Zulu_jdk/8.0.504-1/x64/jre/lib/amd64/libzip.so",
+      "sha256": "9d17af7dac198b3fb639d6ef69cc16eb7bea3552526329c0cc45ea3f920f8aac",
+      "bytes": 131648,
+      "target_os": "linux",
+      "target_arch": "x86_64"
+    },
+    {
+      "path_scope": "ABSOLUTE",
+      "path": "/opt/hostedtoolcache/Java_Zulu_jdk/8.0.504-1/x64/jre/lib/amd64/server/libjvm.so",
+      "observed_path": "/opt/hostedtoolcache/Java_Zulu_jdk/8.0.504-1/x64/jre/lib/amd64/server/libjvm.so",
+      "sha256": "7dceaae3bb6b19f1a953ecd52fb806cc799d0ed36097465f1f25211968c90e43",
+      "bytes": 17629528,
+      "target_os": "linux",
+      "target_arch": "x86_64"
+    },
+    {
+      "path_scope": "ABSOLUTE",
+      "path": "/opt/hostedtoolcache/Java_Zulu_jdk/8.0.504-1/x64/lib/amd64/jli/libjli.so",
+      "observed_path": "/opt/hostedtoolcache/Java_Zulu_jdk/8.0.504-1/x64/lib/amd64/jli/libjli.so",
+      "sha256": "aaf52da0419a0e3a81925deac8cc0ca67fab40d9e2bd4199e4ff58c4055eaca6",
+      "bytes": 462408,
+      "target_os": "linux",
+      "target_arch": "x86_64"
+    },
+    {
+      "path_scope": "ABSOLUTE",
+      "path": "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2",
+      "observed_path": "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2",
+      "sha256": "cd4df4f3c7b83673d61189bf2eaebd33ca4f2853ab9772b8a25e025ef99b1e81",
+      "bytes": 236616,
+      "target_os": "linux",
+      "target_arch": "x86_64"
+    },
+    {
+      "path_scope": "ABSOLUTE",
+      "path": "/usr/lib/x86_64-linux-gnu/libc.so.6",
+      "observed_path": "/usr/lib/x86_64-linux-gnu/libc.so.6",
+      "sha256": "8db37cf3f2169f59a0f07ef1fea308c35656668c64c8ff294e1860f4121eb161",
+      "bytes": 2125328,
+      "target_os": "linux",
+      "target_arch": "x86_64"
+    },
+    {
+      "path_scope": "ABSOLUTE",
+      "path": "/usr/lib/x86_64-linux-gnu/libdl.so.2",
+      "observed_path": "/usr/lib/x86_64-linux-gnu/libdl.so.2",
+      "sha256": "292d5f5af2e7360b3e18c56591a4960115373ecf40627660f9149b6c68a33f80",
+      "bytes": 14408,
+      "target_os": "linux",
+      "target_arch": "x86_64"
+    },
+    {
+      "path_scope": "ABSOLUTE",
+      "path": "/usr/lib/x86_64-linux-gnu/libm.so.6",
+      "observed_path": "/usr/lib/x86_64-linux-gnu/libm.so.6",
+      "sha256": "e9c4b28d340e415b8137480ec442662f981e1399386c5931dae0e886e3639e91",
+      "bytes": 952616,
+      "target_os": "linux",
+      "target_arch": "x86_64"
+    },
+    {
+      "path_scope": "ABSOLUTE",
+      "path": "/usr/lib/x86_64-linux-gnu/libpthread.so.0",
+      "observed_path": "/usr/lib/x86_64-linux-gnu/libpthread.so.0",
+      "sha256": "a27ffa9bf233d61a5f02ddb0cf770dd6579021afc1aa8aec0fb58ee4a965281a",
+      "bytes": 14408,
+      "target_os": "linux",
+      "target_arch": "x86_64"
+    },
+    {
+      "path_scope": "ABSOLUTE",
+      "path": "/usr/lib/x86_64-linux-gnu/librt.so.1",
+      "observed_path": "/usr/lib/x86_64-linux-gnu/librt.so.1",
+      "sha256": "c6e6288545e24b0b3cfbf33320bda9236521625d8c3d628f3444f1ed40e5c7c5",
+      "bytes": 14624,
+      "target_os": "linux",
+      "target_arch": "x86_64"
+    }
+  ],
+  "authorization_state": {
+    "acquisition_authorized": false,
+    "count_only_authorized": false,
+    "outcomes_authorized": false,
+    "runtime_code_closure_verified": false,
+    "remote_jnlp_locked": false,
+    "acquisition_egress_allowlist_enforced": false,
+    "actual_market_data_full_quality_gate_passed": false,
+    "raw_custody_approved": false,
+    "credentials_referenced": false,
+    "availability_request_attempted": false,
+    "external_jnlp_request_attempted": false,
+    "jforex_connect_invoked": false,
+    "market_price_request_attempted": false,
+    "forbidden_market_period_request_attempted": false,
+    "phase9_price_files_acquired": 0,
+    "research_outcomes_calculated": false,
+    "same_run_inventory_may_authorize": false,
+    "outcome_fields": []
+  },
+  "remaining_blockers": [
+    "FULL_ACQUIRER_RUNTIME_CODE_CLOSURE_NOT_VERIFIED",
+    "ACQUISITION_CHILD_PROCESS_SECCOMP_NOT_ENFORCED",
+    "ACQUISITION_OS_EGRESS_ALLOWLIST_NOT_ENFORCED",
+    "ACQUIRER_OUTPUT_CACHE_REALPATH_GUARD_NOT_FIXED",
+    "REMOTE_JNLP_NOT_OBSERVED_OR_LOCKED",
+    "STREAMING_48_SERIES_FULL_QC_NOT_FROZEN",
+    "ACTUAL_MARKET_DATA_FULL_QC_NOT_EXECUTED",
+    "RAW_CUSTODY_PATH_NOT_APPROVED"
+  ]
+}
