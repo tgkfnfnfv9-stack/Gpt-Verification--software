@@ -94,7 +94,7 @@ chown "$target_uid:$target_gid" "$home_path" "$cache_path" "$config_path" "$data
 
 setpriv_exact=$(command -v setpriv)
 env_exact=$(command -v env)
-strace -s 0 -v -ff -o "$evidence_root/trace" -e trace=process,network \
+strace -s 4096 -v -ff -o "$evidence_root/trace" -e trace=process,network \
   "$setpriv_exact" --reuid="$target_uid" --regid="$target_gid" --clear-groups --no-new-privs -- \
   "$env_exact" -i HOME="$home_path" XDG_CACHE_HOME="$cache_path" \
   XDG_CONFIG_HOME="$config_path" XDG_DATA_HOME="$data_path" PATH=/usr/bin:/bin \

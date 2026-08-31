@@ -176,14 +176,14 @@ class GateCInventoryTests(unittest.TestCase):
         self.assertIn("/proc/self/mountinfo", sandbox)
         self.assertIn('findmnt -T "$target"', sandbox)
         self.assertIn("gate_c_effective_mount=", sandbox)
-        self.assertIn("strace -s 0 -v -ff", sandbox)
+        self.assertIn("strace -s 4096 -v -ff", sandbox)
         self.assertIn("-e trace=process,network", sandbox)
         self.assertIn('evidence_root="$gate_root/evidence-private"', sandbox)
         self.assertIn('work_root="$gate_root/probe-work"', sandbox)
-        self.assertIn('strace -s 0 -v -ff -o "$evidence_root/trace"', sandbox)
+        self.assertIn('strace -s 4096 -v -ff -o "$evidence_root/trace"', sandbox)
         self.assertIn("gate_c_sandbox_failure_line=", sandbox)
         self.assertIn('chown -R "$target_uid:$target_gid" "$evidence_root"', sandbox)
-        self.assertLess(sandbox.index("strace -s 0 -v -ff"), sandbox.index("--reuid="))
+        self.assertLess(sandbox.index("strace -s 4096 -v -ff"), sandbox.index("--reuid="))
         self.assertIn("mount_inventory.txt", workflow)
         self.assertIn("effective_mount_inventory.txt", workflow)
         self.assertIn("raw_mountinfo.txt", workflow)
@@ -387,6 +387,7 @@ class GateCInventoryTests(unittest.TestCase):
         self.assertFalse(result["child_process_spawned"])
         self.assertFalse(result["network_syscall_attempted"])
         self.assertFalse(result["acquisition_authorized"])
+        self.assertEqual(result["setpriv_argv_observation"], "FULL_REQUIRED_ARGUMENTS_VERIFIED")
 
     def test_runtime_observation_rejects_child_exec(self):
         root, inventory, maps, traces, supervisor = self.runtime_fixture(
@@ -439,29 +440,23 @@ class GateCInventoryTests(unittest.TestCase):
             with self.subTest(line=line):
                 self.assertEqual(gate_c.classify_exec_argv_shape(line), expected)
 
-    def test_runtime_observation_accepts_abbreviated_setpriv_argv_with_kernel_postconditions(self):
+    def test_runtime_observation_rejects_abbreviated_setpriv_argv_despite_kernel_postconditions(self):
         abbreviated = self.EXEC_CHAIN.replace(
             '["setpriv", "--reuid=1000", "--regid=1000", "--clear-groups", "--no-new-privs"]',
             "[...]",
         )
         root, inventory, maps, traces, supervisor = self.runtime_fixture(abbreviated)
-        result = gate_c.validate_runtime(inventory, maps, traces, supervisor, root / "output.json")
-        self.assertEqual(
-            result["setpriv_argv_observation"],
-            "STRACE_ABBREVIATED_KERNEL_POSTCONDITIONS_VERIFIED",
-        )
+        with self.assertRaisesRegex(gate_c.GateCError, "setpriv launcher arguments are incomplete"):
+            gate_c.validate_runtime(inventory, maps, traces, supervisor, root / "output.json")
 
-    def test_runtime_observation_accepts_trailing_ellipsis_with_kernel_postconditions(self):
+    def test_runtime_observation_rejects_trailing_ellipsis_despite_kernel_postconditions(self):
         abbreviated = self.EXEC_CHAIN.replace(
             '["setpriv", "--reuid=1000", "--regid=1000", "--clear-groups", "--no-new-privs"]',
             '["setpriv", ...]',
         )
         root, inventory, maps, traces, supervisor = self.runtime_fixture(abbreviated)
-        result = gate_c.validate_runtime(inventory, maps, traces, supervisor, root / "output.json")
-        self.assertEqual(
-            result["setpriv_argv_observation"],
-            "STRACE_ABBREVIATED_KERNEL_POSTCONDITIONS_VERIFIED",
-        )
+        with self.assertRaisesRegex(gate_c.GateCError, "setpriv launcher arguments are incomplete"):
+            gate_c.validate_runtime(inventory, maps, traces, supervisor, root / "output.json")
 
     def test_runtime_observation_rejects_incomplete_kernel_identity_postconditions(self):
         abbreviated = self.EXEC_CHAIN.replace(

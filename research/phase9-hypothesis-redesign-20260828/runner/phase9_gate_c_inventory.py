@@ -366,13 +366,7 @@ def validate_runtime(
         token for token in required_setpriv_arguments if token not in exec_records[0]["line"]
     ]
     setpriv_argv_shape = classify_exec_argv_shape(exec_records[0]["line"])
-    setpriv_argv_abbreviated = setpriv_argv_shape in {
-        "BRACKET_ELLIPSIS",
-        "ARRAY_TRAILING_ELLIPSIS",
-    }
-    if missing_setpriv_arguments and not (
-        missing_setpriv_arguments == list(required_setpriv_arguments) and setpriv_argv_abbreviated
-    ):
+    if missing_setpriv_arguments:
         raise GateCError(
             "setpriv launcher arguments are incomplete: "
             + ",".join(missing_setpriv_arguments)
@@ -409,11 +403,7 @@ def validate_runtime(
         "executable_file_mappings": executable_dso_inventory,
         "launcher_and_java_exec_count": len(exec_records),
         "launcher_and_java_exec_paths": expected_exec_paths,
-        "setpriv_argv_observation": (
-            "STRACE_ABBREVIATED_KERNEL_POSTCONDITIONS_VERIFIED"
-            if setpriv_argv_abbreviated
-            else "FULL_REQUIRED_ARGUMENTS_VERIFIED"
-        ),
+        "setpriv_argv_observation": "FULL_REQUIRED_ARGUMENTS_VERIFIED",
         "thread_clone_count": len(thread_clones),
         "child_process_spawned": False,
         "network_syscall_attempted": False,
