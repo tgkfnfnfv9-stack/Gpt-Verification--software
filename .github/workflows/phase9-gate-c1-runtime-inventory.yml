@@ -1,0 +1,250 @@
+name: phase9-gate-c1-runtime-inventory
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirmation:
+        description: 'Type RUN_PHASE9_GATE_C1_NO_SECRET_NO_PRICE'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: phase9-gate-c1-runtime-inventory
+  cancel-in-progress: false
+
+jobs:
+  inventory:
+    if: ${{ github.ref == 'refs/heads/main' && inputs.confirmation == 'RUN_PHASE9_GATE_C1_NO_SECRET_NO_PRICE' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+
+    steps:
+      - name: Checkout exact triggering commit
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+          ref: ${{ github.sha }}
+
+      - name: Set up pinned Java toolchain action
+        uses: actions/setup-java@c5195efecf7bdfc987ee8bae7a71cb8b11521c00 # v4.7.1
+        with:
+          distribution: zulu
+          java-version: '8'
+
+      - name: Initialize isolated paths and authorization boundary
+        shell: bash
+        run: |
+          set -euo pipefail
+          for name in DUKASCOPY_USERNAME DUKASCOPY_PASSWORD; do
+            test -z "${!name:-}"
+          done
+          for injection in CLASSPATH JAVA_TOOL_OPTIONS _JAVA_OPTIONS JDK_JAVA_OPTIONS; do
+            test -z "${!injection:-}"
+          done
+          {
+            echo "GATE_C_ROOT=$RUNNER_TEMP/phase9-gate-c1-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+            echo "M2_REPO=$RUNNER_TEMP/phase9-gate-c1-m2-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          } >> "$GITHUB_ENV"
+
+      - name: Verify immutable authorities and Gate B
+        shell: bash
+        run: |
+          set -euo pipefail
+          root='research/phase9-hypothesis-redesign-20260828'
+          test "$(git hash-object "$root/spec/candidate_registry.frozen.json")" = '8740f58efe48c40ba0664606194b18b40cf14c27'
+          test "$(git hash-object "$root/spec/data_requirements.frozen.json")" = '7e6a476366140e07edac4e4316f8c08a6ab4ae92'
+          test "$(git hash-object "$root/policy/preregistered_research_policy.json")" = '8483418a6a75f5a6ea7d6b54ca54beb68896855f'
+          test "$(sha256sum "$root/data_manifest/native_entry_allowlist.run33376110507.json" | cut -d' ' -f1)" = 'a0932eee2fe2c7019e838cce1557e78b19be42048af0474bbceb6b692b30602c'
+          test "$(sha256sum "$root/data_manifest/maven_jar_sha256.run33336895081.lock.txt" | cut -d' ' -f1)" = '8a6fca0cf65d80fc7ca0459ff56cf35ec6f92fe89b8f516de7bc8905ab941aeb'
+          test "$(sha256sum "$root/data_manifest/maven_build_artifact_sha256.run33336895081.lock.txt" | cut -d' ' -f1)" = '94838ee9280ba2f02adb456129c01bb32bd7e17d4909ac3e43a1556f74c8964c'
+          test "$(sha256sum "$root/runner/jforex/pom.xml" | cut -d' ' -f1)" = '70817e4f1a6e5d1fca72e99e601db82b676271b6922674a75c28016ff48ddd7b'
+          test "$(sha256sum "$root/runner/jforex/src/main/java/org/phase9/Phase9JForexAcquirer.java" | cut -d' ' -f1)" = '13a6d279c50f133946110697142e4af64ea1df239c15a1f22138b3ff9ff9197b'
+          test "$(sha256sum "$root/runner/jforex/src/main/java/org/phase9/RuntimeClassOriginGuard.java" | cut -d' ' -f1)" = 'e24e7972afed11b814971737eeaa6fcf34980e346381dc0bcc95f6ff43a725c9'
+          test "$(sha256sum "$root/runner/jforex/src/main/java/org/phase9/RuntimeClassOriginGuardSelfTest.java" | cut -d' ' -f1)" = 'f4031c228ebec0da823201f721caa90f5c99c7e1d46a9ad84ecf2a4803262726'
+          python "$root/runner/verify_phase9_gate_b.py" >/dev/null
+          python -m unittest discover -s "$root/tests" -p 'test_phase9_gate_b.py' -v
+          python -m unittest discover -s "$root/tests" -p 'test_phase9_gate_c.py' -v
+
+      - name: Prefetch and verify every Maven build artifact before execution
+        shell: bash
+        run: |
+          set -euo pipefail
+          root='research/phase9-hypothesis-redesign-20260828'
+          mkdir -m 0700 "$GATE_C_ROOT"
+          cp -a "$root/runner/jforex" "$GATE_C_ROOT/jforex-project"
+          python "$root/runner/prefetch_phase9_maven_closure.py" \
+            --lock "$root/data_manifest/maven_build_artifact_sha256.run33336895081.lock.txt" \
+            --output-root "$M2_REPO" \
+            --audit "$GATE_C_ROOT/maven_prefetch_audit.json"
+
+      - name: Build exact historical shaded runner offline and reproducibly
+        shell: bash
+        run: |
+          set -euo pipefail
+          root='research/phase9-hypothesis-redesign-20260828'
+          project="$GATE_C_ROOT/jforex-project"
+          unset MAVEN_ARGS MAVEN_OPTS
+          for build in first second third; do
+            mvn -B -ntp -o -Dmaven.repo.local="$M2_REPO" -f "$project/pom.xml" clean package
+            cp "$project/target/phase9-jforex-acquirer.jar" "$GATE_C_ROOT/runner-${build}.jar"
+            (
+              cd "$M2_REPO"
+              find . -type f -print0 | LC_ALL=C sort -z | xargs -0 sha256sum
+            ) > "$GATE_C_ROOT/maven_repository_sha256.${build}.txt"
+            (
+              cd "$M2_REPO"
+              find . -type f \( -name '*.jar' -o -name '*.pom' \) -print0 \
+                | LC_ALL=C sort -z | xargs -0 sha256sum
+            ) > "$GATE_C_ROOT/maven_build_artifact_sha256.${build}.txt"
+            cmp "$GATE_C_ROOT/maven_build_artifact_sha256.${build}.txt" \
+              "$GITHUB_WORKSPACE/$root/data_manifest/maven_build_artifact_sha256.run33336895081.lock.txt"
+            if test "$build" != first; then
+              cmp "$GATE_C_ROOT/maven_repository_sha256.first.txt" "$GATE_C_ROOT/maven_repository_sha256.${build}.txt"
+            fi
+          done
+          for runner in "$GATE_C_ROOT"/runner-*.jar; do
+            test "$(sha256sum "$runner" | cut -d' ' -f1)" = '545bb9601d547b0edd5476886474a9affb541df5dc1c3fe172cb544c7c1f8204'
+          done
+
+      - name: Inventory exact shaded runner and extract two exact host natives
+        shell: bash
+        run: |
+          set -euo pipefail
+          root='research/phase9-hypothesis-redesign-20260828'
+          mkdir -m 0700 "$GATE_C_ROOT/metadata"
+          python "$root/runner/phase9_gate_c_inventory.py" scan \
+            --runner "$GATE_C_ROOT/runner-third.jar" \
+            --allowlist "$root/data_manifest/native_entry_allowlist.run33376110507.json" \
+            --extract-dir "$GATE_C_ROOT/native" \
+            --output "$GATE_C_ROOT/metadata/shaded_runner_inventory.json"
+          cp "$GATE_C_ROOT/maven_prefetch_audit.json" "$GATE_C_ROOT/metadata/maven_prefetch_audit.json"
+          cp "$GATE_C_ROOT/maven_repository_sha256.first.txt" "$GATE_C_ROOT/metadata/maven_repository_sha256.txt"
+          cp "$GATE_C_ROOT/maven_build_artifact_sha256.first.txt" "$GATE_C_ROOT/metadata/maven_build_artifact_sha256.txt"
+
+      - name: Observe exact native mappings in a new no-network namespace
+        shell: bash
+        run: |
+          set -euo pipefail
+          root='research/phase9-hypothesis-redesign-20260828'
+          probe="$GATE_C_ROOT/probe"
+          mkdir -m 0700 "$probe"
+          javac -source 8 -target 8 -d "$probe" "$root/tests/fixtures/GateCNativeMapProbe.java"
+          host_ns=$(readlink /proc/self/ns/net)
+          jna="$GATE_C_ROOT/native/libjnidispatch.so"
+          zstd="$GATE_C_ROOT/native/libzstd-jni-1.5.7-6.so"
+          java_exe=$(command -v java)
+          target_uid=$(id -u)
+          target_gid=$(id -g)
+          test "$target_uid" != 0
+          test -z "$(git status --porcelain)"
+          sudo unshare --net --mount --propagation private -- \
+            bash "$root/runner/run_gate_c_probe_sandbox.sh" \
+            "$target_uid" "$target_gid" "$GATE_C_ROOT" "$host_ns" \
+            "$java_exe" "$probe" "$jna" "$zstd" \
+            > "$GATE_C_ROOT/metadata/probe_stdout.txt" \
+            2> "$GATE_C_ROOT/metadata/probe_stderr.txt"
+          grep -Fx 'gate_c_native_map_probe=PASS' "$GATE_C_ROOT/metadata/probe_stdout.txt"
+          evidence="$GATE_C_ROOT/evidence-private"
+          (cd "$evidence" && sha256sum -c sandbox_evidence_manifest.txt)
+          for name in mount_inventory.txt network_namespace.txt probe_proc_maps.txt supervisor_identity.txt sandbox_evidence_manifest.txt; do
+            cp "$evidence/$name" "$GATE_C_ROOT/metadata/$name"
+          done
+          python - <<'PY'
+          import os
+          from pathlib import Path
+          root = Path(os.environ["GATE_C_ROOT"])
+          chunks = []
+          for path in sorted((root / "evidence-private").glob("trace*")):
+              chunks.append(f"===== {path.name} =====\n".encode() + path.read_bytes())
+          if not chunks:
+              raise SystemExit("No syscall traces to preserve")
+          (root / "metadata" / "syscall_trace.txt").write_bytes(b"\n".join(chunks))
+          PY
+          python "$root/runner/phase9_gate_c_inventory.py" runtime \
+            --inventory "$GATE_C_ROOT/metadata/shaded_runner_inventory.json" \
+            --maps "$GATE_C_ROOT/metadata/probe_proc_maps.txt" \
+            --trace-dir "$evidence" \
+            --supervisor-identity "$GATE_C_ROOT/metadata/supervisor_identity.txt" \
+            --output "$GATE_C_ROOT/metadata/runtime_observation.json"
+          test -z "$(git status --porcelain)"
+
+      - name: Seal metadata-only evidence and blocked authorization
+        shell: bash
+        run: |
+          set -euo pipefail
+          metadata="$GATE_C_ROOT/metadata"
+          printf '%s\n' \
+            "git_sha=$GITHUB_SHA" \
+            "run_id=$GITHUB_RUN_ID" \
+            "run_attempt=$GITHUB_RUN_ATTEMPT" \
+            "runner_os=$RUNNER_OS" \
+            "runner_arch=$RUNNER_ARCH" \
+            "image_os=${ImageOS:-unknown}" \
+            "image_version=${ImageVersion:-unknown}" \
+            "java_home=$JAVA_HOME" \
+            "java_sha256=$(sha256sum "$JAVA_HOME/bin/java" | cut -d' ' -f1)" \
+            > "$metadata/runtime_identity.txt"
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          target = Path(os.environ["GATE_C_ROOT"]) / "metadata" / "authorization_state.json"
+          value = {
+              "schema_version": "phase9-gate-c1-authorization-v1.0",
+              "status": "EVIDENCE_ONLY_ACQUISITION_BLOCKED",
+              "credentials_referenced": False,
+              "external_jnlp_request_attempted": False,
+              "jforex_connect_invoked": False,
+              "availability_request_attempted": False,
+              "market_price_request_attempted": False,
+              "forbidden_market_period_request_attempted": False,
+              "phase9_price_files_acquired": 0,
+              "research_outcomes_calculated": False,
+              "outcome_fields": [],
+              "runtime_code_closure_verified": False,
+              "acquisition_authorized": False,
+              "count_only_authorized": False,
+              "outcomes_authorized": False,
+              "same_run_inventory_may_authorize": False,
+          }
+          target.write_text(json.dumps(value, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+          PY
+          payloads=$(printf '%s\n' \
+            authorization_state.json \
+            maven_build_artifact_sha256.txt \
+            maven_prefetch_audit.json \
+            maven_repository_sha256.txt \
+            mount_inventory.txt \
+            network_namespace.txt \
+            probe_proc_maps.txt \
+            probe_stderr.txt \
+            probe_stdout.txt \
+            runtime_identity.txt \
+            runtime_observation.json \
+            shaded_runner_inventory.json \
+            supervisor_identity.txt \
+            sandbox_evidence_manifest.txt \
+            syscall_trace.txt | LC_ALL=C sort)
+          actual=$(find "$metadata" -mindepth 1 -maxdepth 1 -type f -printf '%f\n' | LC_ALL=C sort)
+          test "$actual" = "$payloads"
+          (cd "$metadata" && sha256sum $payloads) > "$GATE_C_ROOT/artifact_manifest_sha256.txt"
+          mv "$GATE_C_ROOT/artifact_manifest_sha256.txt" "$metadata/artifact_manifest_sha256.txt"
+          allowed=$(printf '%s\n%s\n' "$payloads" artifact_manifest_sha256.txt | LC_ALL=C sort)
+          actual=$(find "$metadata" -mindepth 1 -maxdepth 1 -type f -printf '%f\n' | LC_ALL=C sort)
+          test "$actual" = "$allowed"
+          test "$(find "$metadata" -mindepth 1 -maxdepth 1 ! -type f -print -quit)" = ''
+          test "$(find "$metadata" -type f -links +1 -print -quit)" = ''
+          test -z "$(find "$metadata" -type f \( -iname '*.csv' -o -iname '*.jar' -o -iname '*.jnlp' \) -print -quit)"
+          git diff --exit-code
+
+      - name: Upload exact metadata only after all gates pass
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: phase9-gate-c1-runtime-inventory-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ env.GATE_C_ROOT }}/metadata/
+          if-no-files-found: error
+          retention-days: 14
+          include-hidden-files: false
