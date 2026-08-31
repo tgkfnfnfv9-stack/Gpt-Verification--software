@@ -1,6 +1,16 @@
 name: phase9-gate-c1-runtime-inventory
 
 on:
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/phase9-gate-c1-runtime-inventory.yml'
+      - 'research/phase9-hypothesis-redesign-20260828/runner/phase9_gate_c_inventory.py'
+      - 'research/phase9-hypothesis-redesign-20260828/runner/prefetch_phase9_maven_closure.py'
+      - 'research/phase9-hypothesis-redesign-20260828/runner/run_gate_c_probe_sandbox.sh'
+      - 'research/phase9-hypothesis-redesign-20260828/tests/fixtures/GateCNativeMapProbe.java'
+      - 'research/phase9-hypothesis-redesign-20260828/tests/test_phase9_gate_c.py'
   workflow_dispatch:
     inputs:
       confirmation:
@@ -17,7 +27,7 @@ concurrency:
 
 jobs:
   inventory:
-    if: ${{ github.ref == 'refs/heads/main' && inputs.confirmation == 'RUN_PHASE9_GATE_C1_NO_SECRET_NO_PRICE' }}
+    if: ${{ github.ref == 'refs/heads/main' && (github.event_name == 'push' || inputs.confirmation == 'RUN_PHASE9_GATE_C1_NO_SECRET_NO_PRICE') }}
     runs-on: ubuntu-24.04
     timeout-minutes: 60
 
@@ -110,7 +120,7 @@ jobs:
             test "$(sha256sum "$runner" | cut -d' ' -f1)" = '545bb9601d547b0edd5476886474a9affb541df5dc1c3fe172cb544c7c1f8204'
           done
 
-      - name: Inventory exact shaded runner and extract two exact host natives
+      - name: Inventory exact shaded runner and extract its exact host native
         shell: bash
         run: |
           set -euo pipefail
@@ -140,12 +150,17 @@ jobs:
           target_gid=$(id -g)
           test "$target_uid" != 0
           test -z "$(git status --porcelain)"
-          sudo unshare --net --mount --propagation private -- \
-            bash "$root/runner/run_gate_c_probe_sandbox.sh" \
-            "$target_uid" "$target_gid" "$GATE_C_ROOT" "$host_ns" \
-            "$java_exe" "$probe" "$jna" \
-            > "$GATE_C_ROOT/metadata/probe_stdout.txt" \
-            2> "$GATE_C_ROOT/metadata/probe_stderr.txt"
+          if ! sudo unshare --net --mount --propagation private -- \
+              bash "$root/runner/run_gate_c_probe_sandbox.sh" \
+              "$target_uid" "$target_gid" "$GATE_C_ROOT" "$host_ns" \
+              "$java_exe" "$probe" "$jna" \
+              > "$GATE_C_ROOT/metadata/probe_stdout.txt" \
+              2> "$GATE_C_ROOT/metadata/probe_stderr.txt"; then
+            echo 'Gate C1 sandbox failed; bounded no-secret probe diagnostics follow.' >&2
+            sed -n '1,200p' "$GATE_C_ROOT/metadata/probe_stdout.txt" >&2
+            sed -n '1,200p' "$GATE_C_ROOT/metadata/probe_stderr.txt" >&2
+            exit 1
+          fi
           grep -Fx 'gate_c_native_map_probe=PASS' "$GATE_C_ROOT/metadata/probe_stdout.txt"
           evidence="$GATE_C_ROOT/evidence-private"
           (cd "$evidence" && sha256sum -c sandbox_evidence_manifest.txt)

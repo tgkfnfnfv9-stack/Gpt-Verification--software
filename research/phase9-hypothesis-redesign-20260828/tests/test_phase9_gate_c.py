@@ -136,6 +136,8 @@ class GateCInventoryTests(unittest.TestCase):
             encoding="utf-8"
         )
         self.assertIn("workflow_dispatch:", workflow)
+        self.assertIn("  push:\n    branches:\n      - main", workflow)
+        self.assertIn("github.event_name == 'push'", workflow)
         self.assertIn("RUN_PHASE9_GATE_C1_NO_SECRET_NO_PRICE", workflow)
         self.assertIn("permissions:\n  contents: read", workflow)
         self.assertIn("persist-credentials: false", workflow)
@@ -145,6 +147,7 @@ class GateCInventoryTests(unittest.TestCase):
         self.assertNotIn("mvn -B -ntp -Dmaven.repo.local", workflow)
         self.assertEqual(workflow.count("mvn -B -ntp -o"), 1)
         self.assertNotIn("if: ${{ always() }}", workflow)
+        self.assertIn("bounded no-secret probe diagnostics", workflow)
         self.assertNotIn("secrets.", workflow)
         self.assertNotIn("org.phase9.Phase9JForexAcquirer", workflow)
         self.assertNotIn("TesterFactory", workflow)
