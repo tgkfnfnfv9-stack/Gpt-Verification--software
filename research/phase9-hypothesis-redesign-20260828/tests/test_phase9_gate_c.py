@@ -353,9 +353,11 @@ class GateCInventoryTests(unittest.TestCase):
         supervisor = root / "supervisor.txt"
         supervisor.write_text(
             "trace_supervisor_uid=0\n"
-            "tracee_uid=1000\n"
+            "tracee_uids_observed=1000,1000,1000,1000\n"
+            "tracee_gids_observed=1000,1000,1000,1000\n"
             "tracee_pid=123\n"
-            "no_new_privs_expected=1\n"
+            "no_new_privs_observed=1\n"
+            "supplementary_groups_observed=NONE\n"
             f"setpriv_path={executables['setpriv']}\n"
             f"env_path={executables['env']}\n"
             f"java_path={executables['java']}\n",
@@ -407,6 +409,41 @@ class GateCInventoryTests(unittest.TestCase):
             gate_c.GateCError,
             r"setpriv launcher arguments are incomplete: --clear-groups$",
         ):
+            gate_c.validate_runtime(inventory, maps, traces, supervisor, root / "output.json")
+
+    def test_runtime_observation_accepts_abbreviated_setpriv_argv_with_kernel_postconditions(self):
+        abbreviated = self.EXEC_CHAIN.replace(
+            '["setpriv", "--reuid=1000", "--regid=1000", "--clear-groups", "--no-new-privs"]',
+            "[...]",
+        )
+        root, inventory, maps, traces, supervisor = self.runtime_fixture(abbreviated)
+        result = gate_c.validate_runtime(inventory, maps, traces, supervisor, root / "output.json")
+        self.assertEqual(
+            result["setpriv_argv_observation"],
+            "STRACE_ABBREVIATED_KERNEL_POSTCONDITIONS_VERIFIED",
+        )
+
+    def test_runtime_observation_rejects_incomplete_kernel_identity_postconditions(self):
+        abbreviated = self.EXEC_CHAIN.replace(
+            '["setpriv", "--reuid=1000", "--regid=1000", "--clear-groups", "--no-new-privs"]',
+            "[...]",
+        )
+        root, inventory, maps, traces, supervisor = self.runtime_fixture(abbreviated)
+        text = supervisor.read_text(encoding="utf-8").replace(
+            "tracee_uids_observed=1000,1000,1000,1000",
+            "tracee_uids_observed=1000,1000,0,1000",
+        )
+        supervisor.write_text(text, encoding="utf-8")
+        with self.assertRaisesRegex(gate_c.GateCError, "privilege boundary mismatch"):
+            gate_c.validate_runtime(inventory, maps, traces, supervisor, root / "output.json")
+
+    def test_runtime_observation_rejects_abbreviation_marker_outside_argv(self):
+        misplaced = self.EXEC_CHAIN.replace(
+            '["setpriv", "--reuid=1000", "--regid=1000", "--clear-groups", "--no-new-privs"]',
+            '["setpriv"]',
+        ) + "unrelated [...]\n"
+        root, inventory, maps, traces, supervisor = self.runtime_fixture(misplaced)
+        with self.assertRaisesRegex(gate_c.GateCError, "setpriv launcher arguments are incomplete"):
             gate_c.validate_runtime(inventory, maps, traces, supervisor, root / "output.json")
 
     def test_runtime_observation_rejects_fork_without_exec(self):

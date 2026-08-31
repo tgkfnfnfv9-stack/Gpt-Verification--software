@@ -6,6 +6,8 @@ trap 'status=$?; printf "gate_c_sandbox_failure_line=%s exit_status=%s\n" "$LINE
 [[ "$(id -u)" == 0 ]]
 target_uid=$1
 target_gid=$2
+[[ "$target_uid" != 0 ]]
+[[ "$target_gid" != 0 ]]
 gate_root=$3
 host_namespace=$4
 java_exact=$5
@@ -109,14 +111,20 @@ done
 read -r java_pid < "$ready_path"
 [[ "$java_pid" =~ ^[0-9]+$ ]]
 kill -0 "$java_pid"
-[[ "$(awk '/^Uid:/ {print $2}' "/proc/$java_pid/status")" == "$target_uid" ]]
-[[ "$(awk '/^NoNewPrivs:/ {print $2}' "/proc/$java_pid/status")" == 1 ]]
-[[ -z "$(awk '/^Groups:/ {for (index = 2; index <= NF; index++) printf $index}' "/proc/$java_pid/status")" ]]
+observed_uids=$(awk '/^Uid:/ {print $2 "," $3 "," $4 "," $5}' "/proc/$java_pid/status")
+observed_gids=$(awk '/^Gid:/ {print $2 "," $3 "," $4 "," $5}' "/proc/$java_pid/status")
+observed_no_new_privs=$(awk '/^NoNewPrivs:/ {print $2}' "/proc/$java_pid/status")
+observed_groups=$(awk '/^Groups:/ {for (index = 2; index <= NF; index++) printf $index}' "/proc/$java_pid/status")
+[[ "$observed_uids" == "$target_uid,$target_uid,$target_uid,$target_uid" ]]
+[[ "$observed_gids" == "$target_gid,$target_gid,$target_gid,$target_gid" ]]
+[[ "$observed_no_new_privs" == 1 ]]
+[[ -z "$observed_groups" ]]
 [[ "$(readlink -f "/proc/$java_pid/exe")" == "$(readlink -f "$java_exact")" ]]
 grep -azF 'org.phase9.gatec.GateCNativeMapProbe' "/proc/$java_pid/cmdline" >/dev/null
 cp "/proc/$java_pid/maps" "$evidence_root/probe_proc_maps.txt"
-printf 'trace_supervisor_uid=%s\ntracee_uid=%s\ntracee_pid=%s\nno_new_privs_expected=1\nsetpriv_path=%s\nenv_path=%s\njava_path=%s\n' \
-  "$(id -u)" "$target_uid" "$java_pid" "$setpriv_exact" "$env_exact" "$java_exact" \
+printf 'trace_supervisor_uid=%s\ntracee_uids_observed=%s\ntracee_gids_observed=%s\ntracee_pid=%s\nno_new_privs_observed=%s\nsupplementary_groups_observed=NONE\nsetpriv_path=%s\nenv_path=%s\njava_path=%s\n' \
+  "$(id -u)" "$observed_uids" "$observed_gids" "$java_pid" "$observed_no_new_privs" \
+  "$setpriv_exact" "$env_exact" "$java_exact" \
   > "$evidence_root/supervisor_identity.txt"
 touch "$release_path"
 chmod 0644 "$release_path"

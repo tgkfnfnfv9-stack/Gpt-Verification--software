@@ -252,12 +252,24 @@ def parse_supervisor_identity(path: Path) -> dict[str, str]:
             raise GateCError("Duplicate or empty supervisor identity field")
         values[key] = value
     expected_keys = {
-        "trace_supervisor_uid", "tracee_uid", "tracee_pid", "no_new_privs_expected",
+        "trace_supervisor_uid", "tracee_uids_observed", "tracee_gids_observed", "tracee_pid",
+        "no_new_privs_observed",
+        "supplementary_groups_observed",
         "setpriv_path", "env_path", "java_path",
     }
     if set(values) != expected_keys:
         raise GateCError("Supervisor identity schema mismatch")
-    if values["trace_supervisor_uid"] != "0" or values["tracee_uid"] == "0" or values["no_new_privs_expected"] != "1":
+    observed_uids = values["tracee_uids_observed"].split(",")
+    observed_gids = values["tracee_gids_observed"].split(",")
+    if (
+        values["trace_supervisor_uid"] != "0"
+        or len(observed_uids) != 4
+        or len(observed_gids) != 4
+        or any(value == "0" or value != observed_uids[0] for value in observed_uids)
+        or any(value == "0" or value != observed_gids[0] for value in observed_gids)
+        or values["no_new_privs_observed"] != "1"
+        or values["supplementary_groups_observed"] != "NONE"
+    ):
         raise GateCError("Supervisor/tracee privilege boundary mismatch")
     for key in ("setpriv_path", "env_path", "java_path"):
         require_regular(Path(values[key]), key)
@@ -329,7 +341,16 @@ def validate_runtime(
     missing_setpriv_arguments = [
         token for token in required_setpriv_arguments if token not in exec_records[0]["line"]
     ]
-    if missing_setpriv_arguments:
+    setpriv_argv_abbreviated = bool(
+        re.search(r'\bexecve\("[^"]+",\s*\[\.\.\.\],', exec_records[0]["line"])
+        or re.search(
+            r'\bexecveat\([^,]+,\s*"[^"]+",\s*\[\.\.\.\],',
+            exec_records[0]["line"],
+        )
+    )
+    if missing_setpriv_arguments and not (
+        missing_setpriv_arguments == list(required_setpriv_arguments) and setpriv_argv_abbreviated
+    ):
         raise GateCError(
             "setpriv launcher arguments are incomplete: " + ",".join(missing_setpriv_arguments)
         )
@@ -363,6 +384,11 @@ def validate_runtime(
         "executable_file_mappings": executable_dso_inventory,
         "launcher_and_java_exec_count": len(exec_records),
         "launcher_and_java_exec_paths": expected_exec_paths,
+        "setpriv_argv_observation": (
+            "STRACE_ABBREVIATED_KERNEL_POSTCONDITIONS_VERIFIED"
+            if setpriv_argv_abbreviated
+            else "FULL_REQUIRED_ARGUMENTS_VERIFIED"
+        ),
         "thread_clone_count": len(thread_clones),
         "child_process_spawned": False,
         "network_syscall_attempted": False,
