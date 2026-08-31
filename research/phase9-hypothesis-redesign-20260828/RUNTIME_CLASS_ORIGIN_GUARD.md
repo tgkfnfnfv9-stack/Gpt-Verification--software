@@ -1,6 +1,6 @@
 # Phase 9 Java class bytecode execution gate
 
-Status: `PREFLIGHT_RUN_4_FAILED_CLOSED_FIX_PENDING_RERUN`
+Status: `PREFLIGHT_RUN_5_PASSED_BUILD_ONLY_ACQUISITION_BLOCKED`
 
 This gate is acquisition-only infrastructure. It does not authorize credentials,
 market-price access, Count-only, or outcome calculation.
@@ -58,12 +58,34 @@ exception. Instead it:
 
 The exact threshold is recorded in the guard audit. Missing or different threshold
 configuration fails during premain. This remains a build-only preflight and requires
-a new successful workflow run before any runtime-closure claim can advance.
+a successful workflow run before any runtime-closure claim can advance.
+
+## Run 5 result
+
+Build-only Run `33336895081` passed all steps on commit
+`5392bb18ed4a8db9dc76aa882f7bc41b89ed0ff9`:
+
+- positive guard: `ACTIVE` then `PASSED`, 25 transformed classes checked;
+- positive self-test: PASS with empty stderr;
+- negative external probe: rejected with exit code 86 before its sentinel existed;
+- approved class-name inventory: 42,688;
+- runner SHA-256: `545bb9601d547b0edd5476886474a9affb541df5dc1c3fe172cb544c7c1f8204`;
+- Maven repository inventory: 930 files and identical across all three builds;
+- artifact ZIP SHA-256: `fbf204bb048f795463a46910c669c8bcc9226705cad631798948ef7ca4c6e635`.
+
+The artifact contains 16 metadata files and zero CSV files. Within the completed
+workflow steps and emitted metadata, Dukascopy/market credentials, market requests,
+forbidden-period access, and research outcomes were not used. This is not an
+OS-level packet-capture or egress-closure claim. The canonical audit is
+`results/preflight-run-33336895081/PREFLIGHT_AUDIT.json`.
 
 ## Scope limit
 
-A passing run proves only `JAVA_CLASS_BYTECODE_EXECUTION_CLOSURE` for the tested
-runtime. It does not by itself prove closure for JNI/native libraries, child
+A passing run proves only that the pre-connect self-test activated the guard,
+accepted the approved non-bootstrap classes exercised in that test, and rejected the
+external probe before its side effect. Bootstrap-loaded classes are outside the
+guard's archive/hash check. This is not a Java bytecode-closure claim. It also does
+not prove closure for the actual JNLP connection, JNI/native libraries, child
 processes, downloaded-but-not-loaded files, remote configuration interpreted by
 already-approved code, or OS-level network egress. It must not set
 `runtime_code_closure_verified` or `acquisition_authorized` to true.

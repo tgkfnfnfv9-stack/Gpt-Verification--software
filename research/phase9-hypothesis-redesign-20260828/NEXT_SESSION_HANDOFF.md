@@ -36,7 +36,9 @@
 - EAは禁止
 - Run `33289406745`はworkflow schema検証失敗。job 0、artifact 0、price/outcome access 0で是正済み
 - Run `33300116235`はbuild-only Success。16/16 tests、3-build一致、930-file inventory一致。price/QC/outcome access 0
+- Run `33336895081`はJava class-origin guard preflight Success。19/19 tests、正規guard ACTIVE→PASSED、外部probeはexit 86で拒否、3-build・930-file inventory一致。price/QC/outcome access 0
+- Java bytecode guardのpreflightは通過したが、JNI/native、child process、JNLP、OS-level network egress、full QC/raw保管は未解決
 
 ## 次に実行する1作業
 
-`results/preflight-run-33300116235/PREFLIGHT_AUDIT.json`を正本として、JNLP runtime code closureを検証する。その後、同一run full QCを実装するか承認済み非公開raw保管を決めるまで実取得しない。
+`results/preflight-run-33336895081/PREFLIGHT_AUDIT.json`をJava guard正本として、資格情報・価格アクセスなしの`S1B_RUNTIME_ENVELOPE_AND_DATA_CUSTODY_PREFLIGHT`を設計する。JNI/native・child process・JNLP固定・OS-level network egress・書込先/cache mutationをfail-closed化し、provider calendar/session missingness、M15/H1 reconciliation、H4/D1 buckets、cross-market synchronization、Energy rollを含むfull QCをsynthetic/adversarial dataで先に実装する。同一run full QCまたは明示承認済みの非公開immutable raw保管が決まるまで実取得しない。

@@ -1,0 +1,77 @@
+{
+  "audited_at": "2026-08-30",
+  "artifact": {
+    "artifact_id": 9739411958,
+    "artifact_name": "phase9-jforex-acquisition-metadata-5392bb18ed4a8db9dc76aa882f7bc41b89ed0ff9-33336895081-1",
+    "artifact_zip_sha256": "fbf204bb048f795463a46910c669c8bcc9226705cad631798948ef7ca4c6e635",
+    "expires_at": "2026-09-13T21:45:18Z",
+    "metadata_file_count": 16,
+    "raw_csv_file_count": 0,
+    "size_in_bytes": 128752
+  },
+  "build": {
+    "maven_repository_inventory_files_each_build": 930,
+    "maven_repository_inventory_sha256": "604f29b030b6f54f1e5d42d132b39784295dd1c6b633998a3a768e680fe557ab",
+    "maven_repository_inventories_identical": true,
+    "offline_rebuild_count": 2,
+    "runner_jar_reproducible": true,
+    "runner_jar_sha256": "545bb9601d547b0edd5476886474a9affb541df5dc1c3fe172cb544c7c1f8204",
+    "unit_tests": "19/19 PASS"
+  },
+  "conclusion": "SUCCESS_BUILD_ONLY",
+  "evidence_scope": "Run 33336895081 proves only that the pre-connect self-test activated the guard, accepted the approved non-bootstrap classes exercised by that test, refused acquisition startup without the agent, and rejected the external probe before its sentinel side effect. Bootstrap-loaded classes are outside the archive/hash check. Actual JNLP connection, JNI/native execution, child processes, OS network egress, cache mutation, remote interpreted configuration, market-data quality, and acquisition authorization were not tested.",
+  "guard": {
+    "approved_class_names": 42688,
+    "java_home": "/opt/hostedtoolcache/Java_Zulu_jdk/8.0.504-1/x64/jre",
+    "negative": {
+      "audit_sha256": "2135aab8698b1342319d7d28d883b5448eb62038985082ef65e8d3ffc1a0e904",
+      "exit_code": 86,
+      "rejected_class": "org/phase9/guardprobe/ExternalProbe",
+      "rejected_origin": "file:/home/runner/work/_temp/phase9-external-class-probe/external-probe.jar",
+      "rejection_reason": "policy_mismatch",
+      "sentinel_created": false,
+      "status": "REJECTED"
+    },
+    "no_agent_startup_refused": true,
+    "positive": {
+      "audit_sha256": "312249874df8a75332ce174647bb63726ed7dd89a1b20da7a4784fe222d546c6",
+      "checked_classes": 25,
+      "loaded_class": "com.dukascopy.api.system.TesterFactory",
+      "self_test": "PASS",
+      "status_sequence": ["ACTIVE", "PASSED"],
+      "stderr_bytes": 0
+    },
+    "reflection_inflation_threshold": 2147483647
+  },
+  "head_sha": "5392bb18ed4a8db9dc76aa882f7bc41b89ed0ff9",
+  "job_id": 99325311860,
+  "plan_only": {
+    "acquisition_plan_sha256": "183668ad3dc0034ffd9c6fdefb1ef415469e451a0b22ac4fd95dc30970d83372",
+    "expected_processes": 4,
+    "expected_series": 48,
+    "output_or_cache_directories_created": false
+  },
+  "policy_status": {
+    "acquisition_authorized": false,
+    "actual_jforex_connect_invoked": false,
+    "actual_market_data_qc_executed": false,
+    "count_only_gate_executed": false,
+    "dukascopy_credentials_referenced": false,
+    "forbidden_market_period_request_attempted": false,
+    "full_quality_gate_passed": false,
+    "java_nonbootstrap_class_origin_guard_self_test_passed": true,
+    "market_price_request_attempted": false,
+    "missingness_evaluated": false,
+    "missingness_status": "NOT_EVALUATED_NO_MARKET_DATA",
+    "missing_segments_recorded": 0,
+    "os_network_egress_verified": false,
+    "outcome_fields": [],
+    "phase9_price_files_acquired": 0,
+    "phase9_series_acquired": 0,
+    "research_outcomes_calculated": false,
+    "runtime_code_closure_verified": false
+  },
+  "run_id": 33336895081,
+  "schema_version": "phase9-java-class-origin-build-preflight-audit-v1",
+  "workflow_mode": "BUILD_PREFLIGHT_ONLY"
+}

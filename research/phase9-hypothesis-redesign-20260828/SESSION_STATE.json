@@ -1,7 +1,7 @@
 {
   "project": "auto-trading-research",
   "updated_at": "2026-08-30",
-  "phase": "PHASE9_PREREGISTERED_JFOREX_BUILD_PREFLIGHT_AUDITED_ACQUISITION_BLOCKED",
+  "phase": "PHASE9_PREREGISTERED_JFOREX_JAVA_GUARD_PREFLIGHT_PASSED_ACQUISITION_BLOCKED",
   "phase8": {
     "formal_hypotheses_including_pa002": 16,
     "decision": "ALL_REJECT_FOR_DEVELOPMENT",
@@ -54,7 +54,7 @@
     "legacy_non_phase9_future_period_download_detected": true
   },
   "provider_acquisition": {
-    "status": "BUILD_PREFLIGHT_AUDITED_ACQUISITION_BLOCKED_PENDING_RUNTIME_CLOSURE_AND_FULL_QC_PATH",
+    "status": "JAVA_CLASS_GUARD_PREFLIGHT_PASSED_ACQUISITION_BLOCKED_PENDING_NATIVE_JNLP_CLOSURE_AND_FULL_QC_PATH",
     "decision_log": "PROVIDER_ACQUISITION_BLOCKER.md",
     "source_channel_amendment": "JFOREX_SOURCE_CHANNEL_AMENDMENT.md",
     "selected_channel": "DUKASCOPY_OFFICIAL_AUTHENTICATED_JFOREX_TESTER_API",
@@ -66,6 +66,7 @@
     "minimal_maven_user_and_global_settings_required": true,
     "offline_build_repetitions_required": 2,
     "runtime_code_closure_verified": false,
+    "java_nonbootstrap_class_origin_guard_self_test_passed": true,
     "build_preflight_audit": {
       "run_id": 33300116235,
       "job_id": 99226544365,
@@ -110,6 +111,28 @@
         "forbidden_market_period_request_attempted": false,
         "outcomes_calculated": false,
         "audit": "results/preflight-run-33313439354/PREFLIGHT_FAILURE_AUDIT.json"
+      },
+      {
+        "run_id": 33336895081,
+        "job_id": 99325311860,
+        "artifact_id": 9739411958,
+        "head_sha": "5392bb18ed4a8db9dc76aa882f7bc41b89ed0ff9",
+        "conclusion": "success",
+        "artifact_zip_sha256": "fbf204bb048f795463a46910c669c8bcc9226705cad631798948ef7ca4c6e635",
+        "runner_jar_sha256": "545bb9601d547b0edd5476886474a9affb541df5dc1c3fe172cb544c7c1f8204",
+        "positive_guard_status": "ACTIVE_THEN_PASSED",
+        "positive_checked_classes": 25,
+        "negative_probe_status": "REJECTED_EXIT_86_SENTINEL_ABSENT",
+        "actual_jnlp_connection_tested": false,
+        "evidence_scope": "PRECONNECT_NONBOOTSTRAP_CLASS_ORIGIN_SELF_TEST_ONLY",
+        "maven_repository_inventory_files_each_build": 930,
+        "maven_repository_inventories_identical": true,
+        "phase9_price_files": 0,
+        "market_price_request_attempted": false,
+        "forbidden_market_period_request_attempted": false,
+        "outcomes_calculated": false,
+        "acquisition_authorized": false,
+        "audit": "results/preflight-run-33336895081/PREFLIGHT_AUDIT.json"
       }
     ],
     "full_qc_same_run_or_private_raw_storage_decided": false,
