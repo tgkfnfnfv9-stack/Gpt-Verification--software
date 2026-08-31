@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import importlib.util
+import io
 import json
 import sys
 import tempfile
@@ -41,6 +42,94 @@ class GateCInventoryTests(unittest.TestCase):
         source = (ROOT / "runner/prefetch_phase9_maven_closure.py").read_text(encoding="utf-8")
         for prohibited in ("subprocess", "TesterFactory", "jforex_3.jnlp", "client.connect", "downloadData"):
             self.assertNotIn(prohibited, source)
+
+    def test_prefetch_uses_only_the_repository_copy_matching_the_frozen_sha(self):
+        class Response:
+            def __init__(self, url, body):
+                self.url = url
+                self.body = io.BytesIO(body)
+                self.headers = {"Content-Length": str(len(body))}
+
+            def __enter__(self):
+                return self
+
+            def __exit__(self, *_):
+                return False
+
+            def geturl(self):
+                return self.url
+
+            def read(self, size):
+                return self.body.read(size)
+
+        class Opener:
+            def __init__(self, bodies):
+                self.bodies = iter(bodies)
+
+            def open(self, request, timeout):
+                return Response(request.full_url, next(self.bodies))
+
+        expected_bytes = b"frozen historical pom\n"
+        expected_sha = prefetch.hashlib.sha256(expected_bytes).hexdigest()
+        with tempfile.TemporaryDirectory() as directory, mock.patch.object(
+            prefetch,
+            "REPOSITORY_BASES",
+            ("https://first.example/", "https://second.example/"),
+        ):
+            root = Path(directory) / "repository"
+            record = prefetch.download(
+                "example/artifact/1/artifact-1.pom",
+                expected_sha,
+                root,
+                Opener((b"different repository copy\n", expected_bytes)),
+            )
+            self.assertEqual(record["source_url"], "https://second.example/example/artifact/1/artifact-1.pom")
+            self.assertEqual(
+                (root / "example/artifact/1/artifact-1.pom").read_bytes(),
+                expected_bytes,
+            )
+
+    def test_prefetch_rejects_when_no_repository_copy_matches_the_frozen_sha(self):
+        class Response:
+            headers = {"Content-Length": "5"}
+
+            def __init__(self, url, body):
+                self.url = url
+                self.body = io.BytesIO(body)
+
+            def __enter__(self):
+                return self
+
+            def __exit__(self, *_):
+                return False
+
+            def geturl(self):
+                return self.url
+
+            def read(self, size):
+                return self.body.read(size)
+
+        class Opener:
+            def __init__(self):
+                self.bodies = iter((b"wrong", b"other"))
+
+            def open(self, request, timeout):
+                return Response(request.full_url, next(self.bodies))
+
+        with tempfile.TemporaryDirectory() as directory, mock.patch.object(
+            prefetch,
+            "REPOSITORY_BASES",
+            ("https://first.example/", "https://second.example/"),
+        ):
+            root = Path(directory) / "repository"
+            with self.assertRaisesRegex(prefetch.PrefetchError, "every available repository"):
+                prefetch.download(
+                    "example/artifact/1/artifact-1.pom",
+                    "0" * 64,
+                    root,
+                    Opener(),
+                )
+            self.assertFalse((root / "example/artifact/1/artifact-1.pom").exists())
 
     def test_c1_workflow_is_manual_metadata_only_and_never_invokes_acquirer(self):
         workflow = (ROOT.parents[1] / ".github/workflows/phase9-gate-c1-runtime-inventory.yml").read_text(

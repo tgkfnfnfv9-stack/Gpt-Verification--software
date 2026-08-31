@@ -107,6 +107,7 @@ def download(relative: str, expected: str, root: Path, opener) -> dict:
         raise PrefetchError(f"Maven target must be new: {relative}")
     temporary = target.with_suffix(target.suffix + ".part")
     last_404 = None
+    mismatched_sources = []
     for url in urls(relative):
         request = urllib.request.Request(url, headers={"User-Agent": "phase9-gate-c1-opaque-prefetch/1.0"}, method="GET")
         digest = hashlib.sha256()
@@ -140,10 +141,15 @@ def download(relative: str, expected: str, root: Path, opener) -> dict:
         actual = digest.hexdigest()
         if actual != expected:
             temporary.unlink()
-            raise PrefetchError(f"Maven artifact SHA-256 mismatch: {relative}")
+            mismatched_sources.append(url)
+            continue
         os.replace(temporary, target)
         require_regular(target, "Downloaded Maven artifact")
         return {"path": relative, "sha256": actual, "bytes": observed, "source_url": url}
+    if mismatched_sources:
+        raise PrefetchError(
+            f"Maven artifact SHA-256 mismatch at every available repository: {relative}"
+        )
     raise PrefetchError(f"Frozen Maven artifact not found: {relative}") from last_404
 
 
