@@ -38,7 +38,6 @@ STATIC_TOKENS = {
     "native_library": b"com/sun/jna/NativeLibrary",
 }
 HOST_NATIVE_PATHS = {
-    "linux/amd64/libzstd-jni-1.5.7-6.so",
     "com/sun/jna/linux-amd64/libjnidispatch.so",
 }
 FALSE_FLAGS = {
@@ -191,8 +190,12 @@ def scan_runner(runner_path: Path, allowlist_path: Path, extract_dir: Path) -> d
                 target.write_bytes(data)
                 os.chmod(target, 0o500)
         manifest = parse_manifest(archive.read("META-INF/MANIFEST.MF"))
-    if set(natives) != set(expected):
-        raise GateCError(f"Shaded native set mismatch: missing={sorted(set(expected)-set(natives))}, additional={sorted(set(natives)-set(expected))}")
+    additional = sorted(set(natives) - set(expected))
+    missing = sorted(set(expected) - set(natives))
+    if additional:
+        raise GateCError(f"Shaded runner contains native entries outside Gate B: {additional}")
+    if not HOST_NATIVE_PATHS.issubset(natives):
+        raise GateCError("Shaded runner lacks its exact Linux X64 host native")
     for name, actual in natives.items():
         frozen = expected[name]
         for field in ("entry_size", "entry_sha256", "magic", "suffix_match"):
@@ -218,8 +221,11 @@ def scan_runner(runner_path: Path, allowlist_path: Path, extract_dir: Path) -> d
         "manifest": manifest,
         "native_entry_count": len(natives),
         "native_entries": [natives[name] for name in sorted(natives)],
+        "gate_b_source_native_entry_count": len(expected),
+        "gate_b_source_native_entries_not_shaded": missing,
         "host_native_extractions": extracted,
         "static_inventory_is_not_runtime_authorization": True,
+        "same_run_inventory_may_authorize": False,
         **FALSE_FLAGS,
         "phase9_price_files_acquired": 0,
         "outcome_fields": [],

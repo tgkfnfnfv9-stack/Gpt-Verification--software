@@ -171,6 +171,7 @@ class GateCInventoryTests(unittest.TestCase):
         self.assertLess(sandbox.index("strace -s 0 -v -ff"), sandbox.index("--reuid="))
         self.assertIn("mount_inventory.txt", workflow)
         self.assertIn("syscall_trace.txt", workflow)
+        self.assertNotIn('zstd="$GATE_C_ROOT/native/', workflow)
 
     def test_c1_scanner_has_no_network_subprocess_or_market_runtime(self):
         source = (ROOT / "runner/phase9_gate_c_inventory.py").read_text(encoding="utf-8")
@@ -188,7 +189,7 @@ class GateCInventoryTests(unittest.TestCase):
         ):
             self.assertNotIn(prohibited, source)
 
-    def fixture(self, manifest_extra: str = "", extra_native: bool = False):
+    def fixture(self, manifest_extra: str = "", extra_native: bool = False, omit_native: str | None = None):
         directory = tempfile.TemporaryDirectory()
         self.addCleanup(directory.cleanup)
         root = Path(directory.name)
@@ -224,7 +225,8 @@ class GateCInventoryTests(unittest.TestCase):
             archive.writestr("META-INF/MANIFEST.MF", manifest)
             archive.writestr("org/phase9/Safe.class", b"\xca\xfe\xba\xbe")
             for name, data in entries.items():
-                archive.writestr(name, data)
+                if name != omit_native:
+                    archive.writestr(name, data)
             if extra_native:
                 archive.writestr("unknown/additional.so", b"\x7fELFx")
         return root, allowlist, runner
@@ -239,13 +241,23 @@ class GateCInventoryTests(unittest.TestCase):
         root, allowlist, runner = self.fixture()
         result = self.scan(root, allowlist, runner)
         self.assertEqual(result["native_entry_count"], 28)
-        self.assertEqual(len(result["host_native_extractions"]), 2)
+        self.assertEqual(len(result["host_native_extractions"]), 1)
+        self.assertEqual(result["gate_b_source_native_entries_not_shaded"], [])
         self.assertFalse(result["runtime_code_closure_verified"])
         self.assertFalse(result["acquisition_authorized"])
         self.assertFalse(result["count_only_authorized"])
         self.assertFalse(result["outcomes_authorized"])
         self.assertEqual(result["phase9_price_files_acquired"], 0)
         self.assertEqual(result["outcome_fields"], [])
+
+    def test_gate_b_source_native_absent_from_shaded_runner_is_recorded_not_authorized(self):
+        omitted = "linux/amd64/libzstd-jni-1.5.7-6.so"
+        root, allowlist, runner = self.fixture(omit_native=omitted)
+        result = self.scan(root, allowlist, runner)
+        self.assertEqual(result["native_entry_count"], 27)
+        self.assertEqual(result["gate_b_source_native_entries_not_shaded"], [omitted])
+        self.assertFalse(result["same_run_inventory_may_authorize"])
+        self.assertFalse(result["acquisition_authorized"])
 
     def test_additional_native_is_rejected(self):
         root, allowlist, runner = self.fixture(extra_native=True)

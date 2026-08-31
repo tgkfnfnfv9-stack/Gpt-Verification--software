@@ -10,15 +10,13 @@ public final class GateCNativeMapProbe {
     private GateCNativeMapProbe() {}
 
     public static void main(String[] args) throws Exception {
-        if (args.length != 4) {
-            throw new IllegalArgumentException("Expected two native paths, a ready file, and a release file.");
+        if (args.length != 3) {
+            throw new IllegalArgumentException("Expected one native path, a ready file, and a release file.");
         }
         Path first = Paths.get(args[0]).toRealPath();
-        Path second = Paths.get(args[1]).toRealPath();
-        Path ready = Paths.get(args[2]).toAbsolutePath().normalize();
-        Path release = Paths.get(args[3]).toAbsolutePath().normalize();
+        Path ready = Paths.get(args[1]).toAbsolutePath().normalize();
+        Path release = Paths.get(args[2]).toAbsolutePath().normalize();
         System.load(first.toString());
-        System.load(second.toString());
         String runtimeName = ManagementFactory.getRuntimeMXBean().getName();
         String pid = runtimeName.substring(0, runtimeName.indexOf('@'));
         Files.write(ready, (pid + "\n").getBytes("UTF-8"));

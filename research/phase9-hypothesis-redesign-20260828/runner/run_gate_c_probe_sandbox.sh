@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-[[ $# -eq 8 ]]
+[[ $# -eq 7 ]]
 [[ "$(id -u)" == 0 ]]
 target_uid=$1
 target_gid=$2
@@ -10,18 +10,16 @@ host_namespace=$4
 java_exact=$5
 probe_classes=$6
 jna_path=$7
-zstd_path=$8
 work_root="$gate_root/probe-work"
 evidence_root="$gate_root/evidence-private"
 ready_path="$work_root/ready.pid"
 release_path="$work_root/release"
 
-for path in "$gate_root" "$java_exact" "$probe_classes" "$jna_path" "$zstd_path"; do
+for path in "$gate_root" "$java_exact" "$probe_classes" "$jna_path"; do
   [[ "$path" == /* ]]
 done
 [[ "$probe_classes" == "$gate_root"/* ]]
 [[ "$jna_path" == "$gate_root"/* ]]
-[[ "$zstd_path" == "$gate_root"/* ]]
 [[ ! -L "$gate_root" ]]
 [[ ! -e "$work_root" ]]
 [[ ! -e "$evidence_root" ]]
@@ -72,7 +70,7 @@ strace -s 0 -v -ff -o "$evidence_root/trace" -e trace=process,network \
   "$env_exact" -i HOME="$home_path" XDG_CACHE_HOME="$cache_path" \
   XDG_CONFIG_HOME="$config_path" XDG_DATA_HOME="$data_path" PATH=/usr/bin:/bin \
   "$java_exact" -XX:-UsePerfData -Djava.io.tmpdir="$work_root" -cp "$probe_classes" \
-  org.phase9.gatec.GateCNativeMapProbe "$jna_path" "$zstd_path" "$ready_path" "$release_path" &
+  org.phase9.gatec.GateCNativeMapProbe "$jna_path" "$ready_path" "$release_path" &
 trace_supervisor_pid=$!
 
 for _ in $(seq 1 300); do

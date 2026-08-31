@@ -135,7 +135,6 @@ jobs:
           javac -source 8 -target 8 -d "$probe" "$root/tests/fixtures/GateCNativeMapProbe.java"
           host_ns=$(readlink /proc/self/ns/net)
           jna="$GATE_C_ROOT/native/libjnidispatch.so"
-          zstd="$GATE_C_ROOT/native/libzstd-jni-1.5.7-6.so"
           java_exe=$(command -v java)
           target_uid=$(id -u)
           target_gid=$(id -g)
@@ -144,7 +143,7 @@ jobs:
           sudo unshare --net --mount --propagation private -- \
             bash "$root/runner/run_gate_c_probe_sandbox.sh" \
             "$target_uid" "$target_gid" "$GATE_C_ROOT" "$host_ns" \
-            "$java_exe" "$probe" "$jna" "$zstd" \
+            "$java_exe" "$probe" "$jna" \
             > "$GATE_C_ROOT/metadata/probe_stdout.txt" \
             2> "$GATE_C_ROOT/metadata/probe_stderr.txt"
           grep -Fx 'gate_c_native_map_probe=PASS' "$GATE_C_ROOT/metadata/probe_stdout.txt"
