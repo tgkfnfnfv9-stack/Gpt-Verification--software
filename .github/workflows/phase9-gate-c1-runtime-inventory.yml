@@ -8,6 +8,7 @@ on:
       - '.github/workflows/phase9-gate-c1-runtime-inventory.yml'
       - 'research/phase9-hypothesis-redesign-20260828/runner/phase9_gate_c_inventory.py'
       - 'research/phase9-hypothesis-redesign-20260828/runner/prefetch_phase9_maven_closure.py'
+      - 'research/phase9-hypothesis-redesign-20260828/runner/derive_effective_mount_inventory.awk'
       - 'research/phase9-hypothesis-redesign-20260828/runner/run_gate_c_probe_sandbox.sh'
       - 'research/phase9-hypothesis-redesign-20260828/tests/fixtures/GateCNativeMapProbe.java'
       - 'research/phase9-hypothesis-redesign-20260828/tests/test_phase9_gate_c.py'
@@ -164,7 +165,7 @@ jobs:
           grep -Fx 'gate_c_native_map_probe=PASS' "$GATE_C_ROOT/metadata/probe_stdout.txt"
           evidence="$GATE_C_ROOT/evidence-private"
           (cd "$evidence" && sha256sum -c sandbox_evidence_manifest.txt)
-          for name in mount_inventory.txt network_namespace.txt probe_proc_maps.txt supervisor_identity.txt sandbox_evidence_manifest.txt; do
+          for name in effective_mount_inventory.txt mount_inventory.txt network_namespace.txt probe_proc_maps.txt raw_mountinfo.txt supervisor_identity.txt sandbox_evidence_manifest.txt; do
             cp "$evidence/$name" "$GATE_C_ROOT/metadata/$name"
           done
           python - <<'PY'
@@ -231,11 +232,13 @@ jobs:
             maven_build_artifact_sha256.txt \
             maven_prefetch_audit.json \
             maven_repository_sha256.txt \
+            effective_mount_inventory.txt \
             mount_inventory.txt \
             network_namespace.txt \
             probe_proc_maps.txt \
             probe_stderr.txt \
             probe_stdout.txt \
+            raw_mountinfo.txt \
             runtime_identity.txt \
             runtime_observation.json \
             shaded_runner_inventory.json \

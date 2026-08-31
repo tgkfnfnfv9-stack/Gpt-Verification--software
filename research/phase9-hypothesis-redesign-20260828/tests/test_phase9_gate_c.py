@@ -3,6 +3,7 @@ from __future__ import annotations
 import importlib.util
 import io
 import json
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -165,6 +166,9 @@ class GateCInventoryTests(unittest.TestCase):
         self.assertIn("remount,bind,ro /", sandbox)
         self.assertIn("findmnt -rn -o TARGET", sandbox)
         self.assertIn("mount_inventory", sandbox)
+        self.assertIn("raw_mountinfo.txt", sandbox)
+        self.assertIn("effective_mount_inventory.txt", sandbox)
+        self.assertIn("derive_effective_mount_inventory.awk", sandbox)
         self.assertIn("gate_c_unexpected_rw_mount_target=%q", sandbox)
         self.assertIn("gate_c_unexpected_rw_mount_options=%q", sandbox)
         self.assertIn("gate_c_raw_mount=id:", sandbox)
@@ -180,8 +184,46 @@ class GateCInventoryTests(unittest.TestCase):
         self.assertIn('chown -R "$target_uid:$target_gid" "$evidence_root"', sandbox)
         self.assertLess(sandbox.index("strace -s 0 -v -ff"), sandbox.index("--reuid="))
         self.assertIn("mount_inventory.txt", workflow)
+        self.assertIn("effective_mount_inventory.txt", workflow)
+        self.assertIn("raw_mountinfo.txt", workflow)
         self.assertIn("syscall_trace.txt", workflow)
         self.assertNotIn('zstd="$GATE_C_ROOT/native/', workflow)
+
+    def test_effective_mount_inventory_keeps_only_leaf_mounts(self):
+        mountinfo = """\
+100 1 0:1 / / rw,relatime - ext4 /dev/root rw
+101 100 0:1 / / ro,relatime - ext4 /dev/root rw
+102 101 0:2 / /probe-work rw,relatime - tmpfs tmpfs rw
+103 101 0:3 / /proc ro,nosuid,nodev,noexec - proc proc rw
+104 103 0:4 / /proc/sys/fs/binfmt_misc rw,relatime - autofs systemd-1 rw
+105 104 0:5 / /proc/sys/fs/binfmt_misc ro,nosuid,nodev,noexec - binfmt_misc binfmt_misc rw
+"""
+        result = subprocess.run(
+            ["awk", "-f", str(ROOT / "runner/derive_effective_mount_inventory.awk")],
+            input=mountinfo,
+            text=True,
+            capture_output=True,
+            check=True,
+        )
+        self.assertEqual(
+            result.stdout.splitlines(),
+            [
+                "/ ro,relatime",
+                "/probe-work rw,relatime",
+                "/proc ro,nosuid,nodev,noexec",
+                "/proc/sys/fs/binfmt_misc ro,nosuid,nodev,noexec",
+            ],
+        )
+
+    def test_effective_mount_inventory_rejects_malformed_input(self):
+        result = subprocess.run(
+            ["awk", "-f", str(ROOT / "runner/derive_effective_mount_inventory.awk")],
+            input="not mountinfo\n",
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+        self.assertNotEqual(result.returncode, 0)
 
     def test_c1_scanner_has_no_network_subprocess_or_market_runtime(self):
         source = (ROOT / "runner/phase9_gate_c_inventory.py").read_text(encoding="utf-8")

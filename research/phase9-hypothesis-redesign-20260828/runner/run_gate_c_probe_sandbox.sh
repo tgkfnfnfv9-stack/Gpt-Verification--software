@@ -45,7 +45,11 @@ done
 mount -o remount,bind,rw "$work_root"
 mount -o remount,bind,rw "$evidence_root"
 
+cp /proc/self/mountinfo "$evidence_root/raw_mountinfo.txt"
 findmnt -rn -o TARGET,OPTIONS > "$evidence_root/mount_inventory.txt"
+awk -f "$(dirname "${BASH_SOURCE[0]}")/derive_effective_mount_inventory.awk" \
+  "$evidence_root/raw_mountinfo.txt" > "$evidence_root/effective_mount_inventory.txt"
+[[ -s "$evidence_root/effective_mount_inventory.txt" ]]
 while read -r target options; do
   case "$target" in
     "$work_root"|"$work_root"/*|"$evidence_root"|"$evidence_root"/*) ;;
@@ -74,7 +78,7 @@ while read -r target options; do
       fi
       ;;
   esac
-done < "$evidence_root/mount_inventory.txt"
+done < "$evidence_root/effective_mount_inventory.txt"
 isolated_namespace=$(readlink /proc/self/ns/net)
 [[ "$isolated_namespace" != "$host_namespace" ]]
 printf 'host_net_namespace=%s\nisolated_net_namespace=%s\n' \
