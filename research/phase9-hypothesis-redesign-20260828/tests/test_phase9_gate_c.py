@@ -519,7 +519,7 @@ class GateCInventoryTests(unittest.TestCase):
                 family = "AF_INET" if "AF_INET" in call else "AF_UNIX" if "AF_UNIX" in call else "FAMILY_NOT_VISIBLE"
                 with self.assertRaisesRegex(
                     gate_c.GateCError,
-                    rf"network syscall classes: {syscall_name}:{family}:FAILURE$",
+                    rf"network syscall signatures: {syscall_name}:{family}(?::[^,]+)?:FAILURE:COUNT_1$",
                 ):
                     gate_c.validate_runtime(inventory, maps, traces, supervisor, root / "output.json")
 
@@ -534,9 +534,9 @@ class GateCInventoryTests(unittest.TestCase):
         self.assertEqual(
             observed,
             [
-                "connect:AF_UNIX:FAILURE",
-                "getsockname:AF_UNIX:SUCCESS",
-                "socketpair:AF_UNIX:SUCCESS",
+                "connect:AF_UNIX:FAILURE:COUNT_1",
+                "getsockname:AF_UNIX:SUCCESS:COUNT_1",
+                "socketpair:AF_UNIX:SOCK_STREAM:PROTOCOL_0:SUCCESS:COUNT_1",
             ],
         )
         self.assertNotIn(sensitive, json.dumps(observed))
@@ -549,11 +549,27 @@ class GateCInventoryTests(unittest.TestCase):
         observed = gate_c.bounded_network_diagnostics(trace)
         self.assertEqual(
             observed,
-            ["connect:AF_UNIX:FAILURE", "sendto:FAMILY_OTHER:FAILURE"],
+            ["connect:AF_UNIX:FAILURE:COUNT_1", "sendto:FAMILY_OTHER:FAILURE:COUNT_1"],
         )
         rendered = json.dumps(observed)
         for secret in ("API_TOKEN", "API_SECRET", "CUSTOMER_SECRET"):
             self.assertNotIn(secret, rendered)
+
+    def test_network_diagnostics_fix_socket_type_protocol_and_count(self):
+        trace = (
+            "socket(AF_INET6, SOCK_STREAM|SOCK_CLOEXEC, 0) = 7\n"
+            "socket(AF_INET6, SOCK_STREAM|SOCK_CLOEXEC, 0) = 8\n"
+            "socket(AF_INET6, SOCK_DGRAM, IPPROTO_UDP) = 9\n"
+            "socket(AF_INET6, SOCK_RAW, IPPROTO_RAW) = 10\n"
+        )
+        self.assertEqual(
+            gate_c.bounded_network_diagnostics(trace),
+            [
+                "socket:AF_INET6:SOCK_CLOEXEC+SOCK_STREAM:PROTOCOL_0:SUCCESS:COUNT_2",
+                "socket:AF_INET6:SOCK_DGRAM:IPPROTO_UDP:SUCCESS:COUNT_1",
+                "socket:AF_INET6:SOCK_RAW:IPPROTO_RAW:SUCCESS:COUNT_1",
+            ],
+        )
 
 
 if __name__ == "__main__":

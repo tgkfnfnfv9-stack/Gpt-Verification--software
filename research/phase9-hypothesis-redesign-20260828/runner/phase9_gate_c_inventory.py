@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+from collections import Counter
 import hashlib
 import json
 import os
@@ -314,11 +315,44 @@ KNOWN_SOCKET_FAMILIES = {
     "AF_RXRPC", "AF_SECURITY", "AF_SMC", "AF_TIPC", "AF_UNIX", "AF_UNSPEC",
     "AF_VSOCK", "AF_WANPIPE", "AF_X25", "AF_XDP",
 }
+KNOWN_SOCKET_TYPES = {
+    "SOCK_DCCP", "SOCK_DGRAM", "SOCK_PACKET", "SOCK_RAW", "SOCK_RDM",
+    "SOCK_SEQPACKET", "SOCK_STREAM", "SOCK_CLOEXEC", "SOCK_NONBLOCK",
+}
+KNOWN_SOCKET_PROTOCOLS = {
+    "IPPROTO_AH", "IPPROTO_DCCP", "IPPROTO_ESP", "IPPROTO_GRE", "IPPROTO_ICMP",
+    "IPPROTO_ICMPV6", "IPPROTO_IDP", "IPPROTO_IGMP", "IPPROTO_IP", "IPPROTO_IPV6",
+    "IPPROTO_MPTCP", "IPPROTO_RAW", "IPPROTO_SCTP", "IPPROTO_TCP", "IPPROTO_UDP",
+    "IPPROTO_UDPLITE",
+}
+
+
+def fixed_socket_argument_shape(line: str, syscall: str) -> tuple[str, str]:
+    pattern = r"\bsocket\(([^,]+),\s*([^,]+),\s*([^\)]+)\)" if syscall == "socket" else r"\bsocketpair\(([^,]+),\s*([^,]+),\s*([^,]+),"
+    match = re.search(pattern, line)
+    if match is None:
+        return "TYPE_NOT_VISIBLE", "PROTOCOL_NOT_VISIBLE"
+    type_tokens = re.findall(r"\b(SOCK_[A-Za-z0-9_]+)\b", match.group(2))
+    known_types = sorted(set(type_tokens).intersection(KNOWN_SOCKET_TYPES))
+    if known_types and len(known_types) == len(set(type_tokens)):
+        socket_type = "+".join(known_types)
+    elif type_tokens:
+        socket_type = "TYPE_OTHER"
+    else:
+        socket_type = "TYPE_NOT_VISIBLE"
+    protocol_raw = match.group(3).strip()
+    if protocol_raw == "0":
+        protocol = "PROTOCOL_0"
+    elif protocol_raw in KNOWN_SOCKET_PROTOCOLS:
+        protocol = protocol_raw
+    else:
+        protocol = "PROTOCOL_OTHER"
+    return socket_type, protocol
 
 
 def bounded_network_diagnostics(trace_text: str) -> list[str]:
     """Return argument-free syscall/family/result classes for failure diagnosis."""
-    observations = set()
+    observations: Counter[str] = Counter()
     for line in trace_text.splitlines():
         match = NETWORK_SYSCALL_PATTERN.search(line)
         if match is None:
@@ -340,8 +374,13 @@ def bounded_network_diagnostics(trace_text: str) -> list[str]:
             result = "SUCCESS"
         else:
             result = "FAILURE"
-        observations.add(f"{match.group(1)}:{family}:{result}")
-    return sorted(observations)
+        syscall = match.group(1)
+        detail = ""
+        if syscall in {"socket", "socketpair"}:
+            socket_type, protocol = fixed_socket_argument_shape(line, syscall)
+            detail = f":{socket_type}:{protocol}"
+        observations[f"{syscall}:{family}{detail}:{result}"] += 1
+    return sorted(f"{signature}:COUNT_{count}" for signature, count in observations.items())
 
 
 def validate_runtime(
@@ -436,7 +475,7 @@ def validate_runtime(
     prohibited_network = bounded_network_diagnostics(trace_text)
     if prohibited_network:
         raise GateCError(
-            "Probe attempted network syscall classes: " + ",".join(prohibited_network)
+            "Probe attempted network syscall signatures: " + ",".join(prohibited_network)
         )
     result = {
         "schema_version": "phase9-gate-c1-runtime-observation-v1.0",
