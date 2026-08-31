@@ -515,7 +515,11 @@ class GateCInventoryTests(unittest.TestCase):
                 root, inventory, maps, traces, supervisor = self.runtime_fixture(
                     self.EXEC_CHAIN + f'{call} = -1 EPERM\n'
                 )
-                with self.assertRaises(gate_c.GateCError):
+                syscall_name = call.split("(", 1)[0]
+                with self.assertRaisesRegex(
+                    gate_c.GateCError,
+                    rf"network syscalls: {syscall_name}$",
+                ):
                     gate_c.validate_runtime(inventory, maps, traces, supervisor, root / "output.json")
 
 

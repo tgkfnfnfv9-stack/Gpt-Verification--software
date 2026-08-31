@@ -394,7 +394,10 @@ def validate_runtime(
         trace_text,
     )
     if prohibited_network:
-        raise GateCError("Probe attempted a network syscall")
+        raise GateCError(
+            "Probe attempted network syscalls: "
+            + ",".join(sorted({match[:-1] for match in prohibited_network}))
+        )
     result = {
         "schema_version": "phase9-gate-c1-runtime-observation-v1.0",
         "status": "GATE_C1_RUNTIME_OBSERVED_ACQUISITION_BLOCKED",
