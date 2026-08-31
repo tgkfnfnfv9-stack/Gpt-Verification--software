@@ -258,6 +258,10 @@ class GateCInventoryTests(unittest.TestCase):
         ):
             self.assertNotIn(prohibited, source)
 
+        probe = (ROOT / "tests/fixtures/GateCNativeMapProbe.java").read_text(encoding="utf-8")
+        self.assertNotIn("ManagementFactory", probe)
+        self.assertIn('Paths.get("/proc/self").toRealPath()', probe)
+
     def fixture(self, manifest_extra: str = "", extra_native: bool = False, omit_native: str | None = None):
         directory = tempfile.TemporaryDirectory()
         self.addCleanup(directory.cleanup)

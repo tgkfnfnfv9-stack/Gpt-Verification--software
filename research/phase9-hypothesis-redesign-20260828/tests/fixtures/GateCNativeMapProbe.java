@@ -3,7 +3,6 @@ package org.phase9.gatec;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.lang.management.ManagementFactory;
 
 /** Inert C1 probe: explicit native loads and /proc maps only; no SDK or network calls. */
 public final class GateCNativeMapProbe {
@@ -17,8 +16,7 @@ public final class GateCNativeMapProbe {
         Path ready = Paths.get(args[1]).toAbsolutePath().normalize();
         Path release = Paths.get(args[2]).toAbsolutePath().normalize();
         System.load(first.toString());
-        String runtimeName = ManagementFactory.getRuntimeMXBean().getName();
-        String pid = runtimeName.substring(0, runtimeName.indexOf('@'));
+        String pid = Paths.get("/proc/self").toRealPath().getFileName().toString();
         Files.write(ready, (pid + "\n").getBytes("UTF-8"));
         long deadline = System.currentTimeMillis() + 30000L;
         while (!Files.isRegularFile(release)) {
