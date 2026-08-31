@@ -430,6 +430,7 @@ class GateCInventoryTests(unittest.TestCase):
     def test_exec_argv_shape_classifier_is_bounded_and_structural(self):
         rows = {
             'execve("/x", [...], 0) = 0': "BRACKET_ELLIPSIS",
+            'execve("/x", ["x", ...], 0) = 0': "ARRAY_TRAILING_ELLIPSIS",
             'execve("/x", 0xabc123 /* 9 vars */, 0) = 0': "POINTER_COUNT",
             'execve("/x", ["x"], 0) = 0': "ARRAY",
             'unrelated [...]': "UNKNOWN",
@@ -442,6 +443,18 @@ class GateCInventoryTests(unittest.TestCase):
         abbreviated = self.EXEC_CHAIN.replace(
             '["setpriv", "--reuid=1000", "--regid=1000", "--clear-groups", "--no-new-privs"]',
             "[...]",
+        )
+        root, inventory, maps, traces, supervisor = self.runtime_fixture(abbreviated)
+        result = gate_c.validate_runtime(inventory, maps, traces, supervisor, root / "output.json")
+        self.assertEqual(
+            result["setpriv_argv_observation"],
+            "STRACE_ABBREVIATED_KERNEL_POSTCONDITIONS_VERIFIED",
+        )
+
+    def test_runtime_observation_accepts_trailing_ellipsis_with_kernel_postconditions(self):
+        abbreviated = self.EXEC_CHAIN.replace(
+            '["setpriv", "--reuid=1000", "--regid=1000", "--clear-groups", "--no-new-privs"]',
+            '["setpriv", ...]',
         )
         root, inventory, maps, traces, supervisor = self.runtime_fixture(abbreviated)
         result = gate_c.validate_runtime(inventory, maps, traces, supervisor, root / "output.json")

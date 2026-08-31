@@ -291,6 +291,8 @@ def classify_exec_argv_shape(line: str) -> str:
         return "UNKNOWN"
     if re.match(r'\[\.\.\.\]\s*,', remainder):
         return "BRACKET_ELLIPSIS"
+    if re.match(r'\[(?:"(?:[^"\\]|\\.)*"\s*,\s*)+\.\.\.\]\s*,', remainder):
+        return "ARRAY_TRAILING_ELLIPSIS"
     if re.match(r'0x[0-9a-fA-F]+\s*/\*\s*\d+\s+vars\s*\*/\s*,', remainder):
         return "POINTER_COUNT"
     if remainder.startswith("["):
@@ -364,7 +366,10 @@ def validate_runtime(
         token for token in required_setpriv_arguments if token not in exec_records[0]["line"]
     ]
     setpriv_argv_shape = classify_exec_argv_shape(exec_records[0]["line"])
-    setpriv_argv_abbreviated = setpriv_argv_shape == "BRACKET_ELLIPSIS"
+    setpriv_argv_abbreviated = setpriv_argv_shape in {
+        "BRACKET_ELLIPSIS",
+        "ARRAY_TRAILING_ELLIPSIS",
+    }
     if missing_setpriv_arguments and not (
         missing_setpriv_arguments == list(required_setpriv_arguments) and setpriv_argv_abbreviated
     ):
