@@ -49,7 +49,30 @@ findmnt -rn -o TARGET,OPTIONS > "$evidence_root/mount_inventory.txt"
 while read -r target options; do
   case "$target" in
     "$work_root"|"$work_root"/*|"$evidence_root"|"$evidence_root"/*) ;;
-    *) [[ ",$options," != *,rw,* ]] ;;
+    *)
+      if [[ ",$options," == *,rw,* ]]; then
+        printf 'gate_c_unexpected_rw_mount_target=%q\n' "$target" >&2
+        printf 'gate_c_unexpected_rw_mount_options=%q\n' "$options" >&2
+        awk -v want="$target" '
+          $5 == want {
+            separator = 0
+            for (field = 7; field <= NF; field++) {
+              if ($field == "-") {
+                separator = field
+                break
+              }
+            }
+            if (separator > 0) {
+              printf "gate_c_raw_mount=id:%s parent:%s target:%s options:%s fstype:%s source:%s super:%s\n", \
+                $1, $2, $5, $6, $(separator + 1), $(separator + 2), $(separator + 3)
+            }
+          }
+        ' /proc/self/mountinfo >&2
+        findmnt -T "$target" -rn -o TARGET,SOURCE,FSTYPE,OPTIONS \
+          | sed 's/^/gate_c_effective_mount=/' >&2
+        false
+      fi
+      ;;
   esac
 done < "$evidence_root/mount_inventory.txt"
 isolated_namespace=$(readlink /proc/self/ns/net)
