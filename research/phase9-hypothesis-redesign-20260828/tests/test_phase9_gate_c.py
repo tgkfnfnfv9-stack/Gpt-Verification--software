@@ -400,6 +400,15 @@ class GateCInventoryTests(unittest.TestCase):
         with self.assertRaises(gate_c.GateCError):
             gate_c.validate_runtime(inventory, maps, traces, supervisor, root / "output.json")
 
+    def test_runtime_observation_reports_only_missing_setpriv_argument_names(self):
+        incomplete = self.EXEC_CHAIN.replace('"--clear-groups", ', "")
+        root, inventory, maps, traces, supervisor = self.runtime_fixture(incomplete)
+        with self.assertRaisesRegex(
+            gate_c.GateCError,
+            r"setpriv launcher arguments are incomplete: --clear-groups$",
+        ):
+            gate_c.validate_runtime(inventory, maps, traces, supervisor, root / "output.json")
+
     def test_runtime_observation_rejects_fork_without_exec(self):
         root, inventory, maps, traces, supervisor = self.runtime_fixture(
             self.EXEC_CHAIN + 'fork() = 123\n'

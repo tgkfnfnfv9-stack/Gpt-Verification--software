@@ -325,8 +325,14 @@ def validate_runtime(
         raise GateCError("Launcher/Java executable chain mismatch")
     if any(" = 0" not in record["line"] or "unfinished" in record["line"] for record in exec_records):
         raise GateCError("Launcher/Java exec did not complete successfully")
-    if not all(token in exec_records[0]["line"] for token in ("--reuid=", "--regid=", "--clear-groups", "--no-new-privs")):
-        raise GateCError("setpriv launcher arguments are incomplete")
+    required_setpriv_arguments = ("--reuid=", "--regid=", "--clear-groups", "--no-new-privs")
+    missing_setpriv_arguments = [
+        token for token in required_setpriv_arguments if token not in exec_records[0]["line"]
+    ]
+    if missing_setpriv_arguments:
+        raise GateCError(
+            "setpriv launcher arguments are incomplete: " + ",".join(missing_setpriv_arguments)
+        )
     if '"-i"' not in exec_records[1]["line"]:
         raise GateCError("env launcher did not clear the environment")
     if not all(token in exec_records[2]["line"] for token in ("-XX:-UsePerfData", "org.phase9.gatec.GateCNativeMapProbe")):
