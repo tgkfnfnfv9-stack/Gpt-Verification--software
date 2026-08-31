@@ -1,0 +1,257 @@
+name: phase9-s1b-runtime-qc-preflight
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirmation:
+        description: 'Type RUN_PHASE9_S1B_NO_SECRET_NO_PRICE_PREFLIGHT'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: phase9-s1b-runtime-qc-preflight
+  cancel-in-progress: false
+
+jobs:
+  preflight:
+    if: ${{ github.ref == 'refs/heads/main' && inputs.confirmation == 'RUN_PHASE9_S1B_NO_SECRET_NO_PRICE_PREFLIGHT' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+
+    steps:
+      - name: Checkout exact triggering commit
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+          ref: ${{ github.sha }}
+
+      - name: Initialize fail-closed metadata state
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          {
+            echo "S1B_METADATA_DIR=$RUNNER_TEMP/phase9-s1b-metadata"
+            echo "S1B_UPLOAD_DIR=$RUNNER_TEMP/phase9-s1b-upload-$GITHUB_RUN_ID"
+            echo "S1B_RUNTIME_OUTPUT=$RUNNER_TEMP/phase9-s1b-runtime-output"
+            echo "S1B_JAR_DOWNLOAD_DIR=$RUNNER_TEMP/phase9-s1b-locked-jars"
+            echo "PYTHONDONTWRITEBYTECODE=1"
+          } >> "$GITHUB_ENV"
+          mkdir -m 0700 "$RUNNER_TEMP/phase9-s1b-metadata"
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          state = {
+              "schema_version": "phase9-s1b-authorization-state-v2.0",
+              "workflow_mode": "S1B_GATE_A_LOCKED_JAR_STATIC_SCAN_NO_SECRET_NO_PRICE",
+              "git_sha": os.environ["GITHUB_SHA"],
+              "run_id": int(os.environ["GITHUB_RUN_ID"]),
+              "github_checkout_ephemeral_token_used": True,
+              "github_checkout_credentials_persisted": False,
+              "dukascopy_or_market_credentials_referenced": False,
+              "external_jnlp_request_attempted": False,
+              "actual_jnlp_launch_invoked": False,
+              "jforex_connect_invoked": False,
+              "market_price_request_attempted": False,
+              "forbidden_market_period_request_attempted": False,
+              "phase9_price_files_acquired": 0,
+              "synthetic_fixture_only": True,
+              "maven_executed": False,
+              "java_executed": False,
+              "shaded_runner_scanned": False,
+              "actual_market_data_full_quality_gate_passed": False,
+              "runtime_code_closure_verified": False,
+              "acquisition_authorized": False,
+              "research_outcomes_calculated": False,
+              "outcome_fields": [],
+          }
+          target = Path(os.environ["RUNNER_TEMP"]) / "phase9-s1b-metadata/s1b_authorization_state.json"
+          target.write_text(json.dumps(state, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+          PY
+
+      - name: Verify frozen anchors and S1B source identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          root='research/phase9-hypothesis-redesign-20260828'
+          for source in \
+            "$root/spec/candidate_registry.frozen.json" \
+            "$root/spec/data_requirements.frozen.json" \
+            "$root/policy/preregistered_research_policy.json" \
+            "$root/data_manifest/runtime_envelope_policy.json" \
+            "$root/data_manifest/data_custody_policy.json" \
+            "$root/data_manifest/maven_jar_sha256.run33336895081.lock.txt" \
+            "$root/data_manifest/source_versions.json" \
+            "$root/data_manifest/instrument_mapping.json" \
+            "$root/data_manifest/trading_calendar.json" \
+            "$root/data_manifest/energy_roll_rules.json" \
+            "$root/runner/acquire_phase9_data.py" \
+            "$root/runner/validate_phase9_acquisition.py" \
+            "$root/runner/preflight_runtime_envelope.py" \
+            "$root/runner/phase9_full_qc.py" \
+            "$root/tests/test_phase9_acquisition.py" \
+            "$root/tests/test_phase9_s1b.py" \
+            "$root/tests/fixtures/synthetic_safe_demo_shape.jnlp"; do
+            test "$(git ls-files -s -- "$source" | awk '{print $1}')" = 100644
+          done
+          test "$(git hash-object "$root/spec/candidate_registry.frozen.json")" = '8740f58efe48c40ba0664606194b18b40cf14c27'
+          test "$(git hash-object "$root/spec/data_requirements.frozen.json")" = '7e6a476366140e07edac4e4316f8c08a6ab4ae92'
+          test "$(git hash-object "$root/policy/preregistered_research_policy.json")" = '8483418a6a75f5a6ea7d6b54ca54beb68896855f'
+          test "$(git hash-object "$root/data_manifest/source_versions.json")" = 'feae561b2cb29a01baada265a32ea0cd36e93a86'
+          test "$(git hash-object "$root/data_manifest/instrument_mapping.json")" = 'cb6622feaaa9e8b37e5ee47e82d70e1e0eebf2a3'
+          test "$(git hash-object "$root/data_manifest/trading_calendar.json")" = 'fd77135fdb4e7599bf38de039f3cfc0f5f51c827'
+          test "$(git hash-object "$root/data_manifest/energy_roll_rules.json")" = '9a40047e4498d87ccfe7cd4f1d0c903a9e4154cf'
+          test "$(git hash-object "$root/runner/acquire_phase9_data.py")" = '5995127399012decc03dbdae2dfe1ceb4fe9d2e0'
+          test "$(git hash-object "$root/runner/validate_phase9_acquisition.py")" = 'cb2d7acd6cf899e085301ac7e4a59b8e051a340b'
+          test "$(git hash-object "$root/data_manifest/runtime_envelope_policy.json")" = '0262a8f6355b1318b65fcdd9a97cb9611bb93ae0'
+          test "$(git hash-object "$root/data_manifest/data_custody_policy.json")" = '72fed646535e9fa2c9b3530865e226768339b6a6'
+          test "$(git hash-object "$root/data_manifest/maven_jar_sha256.run33336895081.lock.txt")" = 'ed59a1c438a4b5a17ddc6629371c00b978628004'
+          test "$(git hash-object "$root/runner/preflight_runtime_envelope.py")" = '5e48584b76454bea23da94f25013601e35965024'
+          test "$(git hash-object "$root/runner/phase9_full_qc.py")" = '88932d03eac7b3a97986bc2e7646f09c71035b98'
+          test "$(git hash-object "$root/tests/test_phase9_s1b.py")" = 'dbbc1b3559d9dd9a7feb9bcbd3778187970a96ee'
+          test "$(git hash-object "$root/tests/fixtures/synthetic_safe_demo_shape.jnlp")" = '72f2060afd72db1417ebf69ae53471e3956fe145'
+          test "$(git hash-object "$root/tests/test_phase9_acquisition.py")" = 'ee01704c819973e19a0f9690ba9e1556cc909e71'
+          test "$(sha256sum "$root/data_manifest/maven_jar_sha256.run33336895081.lock.txt" | cut -d' ' -f1)" = '8a6fca0cf65d80fc7ca0459ff56cf35ec6f92fe89b8f516de7bc8905ab941aeb'
+          test "$(wc -l < "$root/data_manifest/maven_jar_sha256.run33336895081.lock.txt")" = 116
+          python -m json.tool "$root/data_manifest/runtime_envelope_policy.json" >/dev/null
+          python -m json.tool "$root/data_manifest/data_custody_policy.json" >/dev/null
+          python -m unittest discover -s "$root/tests" -p 'test_phase9_acquisition.py' -v
+          python -m unittest discover -s "$root/tests" -p 'test_phase9_s1b.py' -v
+
+      - name: Record runtime and workflow policy audit
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          python - <<'PY'
+          import json
+          import os
+          import platform
+          import sys
+          from pathlib import Path
+
+          metadata = Path(os.environ["S1B_METADATA_DIR"])
+          identity = [
+              f"git_sha={os.environ['GITHUB_SHA']}",
+              f"run_id={os.environ['GITHUB_RUN_ID']}",
+              f"run_attempt={os.environ['GITHUB_RUN_ATTEMPT']}",
+              f"runner_os={os.environ['RUNNER_OS']}",
+              f"runner_arch={os.environ['RUNNER_ARCH']}",
+              f"image_os={os.environ.get('ImageOS', 'unknown')}",
+              f"image_version={os.environ.get('ImageVersion', 'unknown')}",
+              f"python_version={platform.python_version()}",
+              f"python_executable={sys.executable}",
+          ]
+          (metadata / "runtime_identity.txt").write_text("\n".join(identity) + "\n", encoding="utf-8")
+          audit = {
+              "schema_version": "phase9-s1b-workflow-policy-audit-v2.0",
+              "manual_dispatch_only": True,
+              "contents_read_only": True,
+              "github_checkout_ephemeral_token_used": True,
+              "github_checkout_credentials_persisted": False,
+              "dukascopy_or_market_credentials_referenced": False,
+              "external_jnlp_network_step_present": False,
+              "jforex_acquirer_invocation_present": False,
+              "market_price_step_present": False,
+              "maven_executed": False,
+              "java_executed": False,
+              "locked_dependency_bytes_only": True,
+              "synthetic_qc_only": True,
+              "artifact_exact_allowlist_required": True,
+              "authorization_effect": "NONE",
+          }
+          (metadata / "workflow_policy_audit.json").write_text(
+              json.dumps(audit, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+          )
+          PY
+
+      - name: Download SHA-locked JAR bytes and statically inventory after verification
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          root='research/phase9-hypothesis-redesign-20260828'
+          test ! -e "$S1B_JAR_DOWNLOAD_DIR"
+          python "$root/runner/preflight_runtime_envelope.py" \
+            --jar-lock "$root/data_manifest/maven_jar_sha256.run33336895081.lock.txt" \
+            --download-dir "$S1B_JAR_DOWNLOAD_DIR" \
+            --policy "$root/data_manifest/runtime_envelope_policy.json" \
+            --synthetic-jnlp "$root/tests/fixtures/synthetic_safe_demo_shape.jnlp" \
+            --metadata-dir "$S1B_RUNTIME_OUTPUT"
+          cp "$S1B_RUNTIME_OUTPUT/locked_jar_downloads.json" "$S1B_METADATA_DIR/"
+          cp "$S1B_RUNTIME_OUTPUT/locked_jar_sha256.txt" "$S1B_METADATA_DIR/"
+          cp "$S1B_RUNTIME_OUTPUT/native_library_inventory.json" "$S1B_METADATA_DIR/"
+          cp "$S1B_RUNTIME_OUTPUT/local_jnlp_synthetic_audit.json" "$S1B_METADATA_DIR/"
+          python "$root/runner/phase9_full_qc.py" \
+            --synthetic-report "$S1B_METADATA_DIR/synthetic_qc_report.json"
+
+      - name: Enforce metadata-only custody and clean checkout
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import hashlib
+          import json
+          import os
+          import shutil
+          import stat
+          from pathlib import Path
+
+          download = Path(os.environ["S1B_JAR_DOWNLOAD_DIR"])
+          if download.is_symlink() or not download.is_dir():
+              raise SystemExit("Locked JAR download directory is unsafe or missing.")
+          shutil.rmtree(download)
+          metadata = Path(os.environ["S1B_METADATA_DIR"])
+          policy = json.loads(Path(
+              "research/phase9-hypothesis-redesign-20260828/data_manifest/data_custody_policy.json"
+          ).read_text(encoding="utf-8"))
+          allowed_filenames = set(policy["metadata_artifact"]["allowed_filenames"])
+          manifest_name = "artifact_manifest_sha256.txt"
+          observed = {path.name for path in metadata.iterdir()}
+          expected_before_manifest = allowed_filenames - {manifest_name}
+          if observed != expected_before_manifest:
+              raise SystemExit(f"Artifact allowlist mismatch: {sorted(observed ^ expected_before_manifest)}")
+          rows = []
+          for path in sorted(metadata.iterdir()):
+              info = path.lstat()
+              if not stat.S_ISREG(info.st_mode) or path.is_symlink() or info.st_nlink != 1:
+                  raise SystemExit(f"Unsafe artifact entry: {path.name}")
+              if path.suffix in policy["metadata_artifact"]["forbidden_suffixes"]:
+                  raise SystemExit(f"Forbidden artifact suffix: {path.name}")
+              rows.append(f"{hashlib.sha256(path.read_bytes()).hexdigest()}  {path.name}\n")
+          (metadata / manifest_name).write_text("".join(rows), encoding="utf-8")
+          if {path.name for path in metadata.iterdir()} != allowed_filenames:
+              raise SystemExit("Final artifact filenames differ from the exact allowlist.")
+          upload = Path(os.environ["S1B_UPLOAD_DIR"])
+          if upload.exists() or upload.is_symlink():
+              raise SystemExit("Upload staging path must be new.")
+          upload.mkdir(mode=0o700)
+          for source in sorted(metadata.iterdir()):
+              target = upload / source.name
+              shutil.copyfile(source, target)
+              target.chmod(0o600)
+              info = target.lstat()
+              if not stat.S_ISREG(info.st_mode) or target.is_symlink() or info.st_nlink != 1:
+                  raise SystemExit(f"Unsafe upload staging entry: {target.name}")
+          if {path.name for path in upload.iterdir()} != allowed_filenames:
+              raise SystemExit("Upload staging filenames differ from the exact allowlist.")
+          PY
+          test ! -e "$S1B_JAR_DOWNLOAD_DIR"
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
+          test ! -e "$RUNNER_TEMP/phase9-plan-output"
+          test ! -e "$RUNNER_TEMP/phase9-plan-cache"
+
+      - name: Upload exact metadata allowlist only
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: phase9-s1b-runtime-qc-metadata-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/phase9-s1b-upload-${{ github.run_id }}/
+          if-no-files-found: error
+          retention-days: 14
+          include-hidden-files: false

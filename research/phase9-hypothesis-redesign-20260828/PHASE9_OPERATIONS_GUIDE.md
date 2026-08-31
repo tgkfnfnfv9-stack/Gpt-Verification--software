@@ -1,8 +1,8 @@
 # Phase 9 統合運用ガイド
 
-guide_version: `1.1.0`
+guide_version: `1.2.0`
 status: `OPERATIONS_CANONICAL`
-更新日: 2026-08-30
+更新日: 2026-08-31
 対象リポジトリ: `tgkfnfnfv9-stack/Gpt-Verification--software`
 対象ブランチ: `main`
 凍結仕様の基準コミット: `e94cd52a0ec5a990f32c3740ba83736beb95d709`
@@ -28,7 +28,7 @@ Phase 9
 ├─ Confirmatory questions      12件
 ├─ 状態                         全件UNTESTED_PREREGISTERED
 ├─ 正式なPhase 9データ取得      未開始
-├─ Provider acquisition         BUILD_PREFLIGHT_READY / PRICE_BLOCKED
+├─ Provider acquisition         S1B_GATE_A_IMPLEMENTED_PENDING_RUN / PRICE_BLOCKED
 ├─ Phase 9 return/backtest       0件
 └─ MT5 EA                       禁止
 ```
@@ -194,7 +194,7 @@ H4とD1はcanonical H1からの派生のみなので、最終的な対象終了�
 
 公開website endpointと`dukascopy-go`の組合せは、自動access条件、配布license、H1月単位requestの禁止境界超過の3点で廃止しました。詳細は`PROVIDER_ACQUISITION_BLOCKER.md`を参照します。
 
-代替として、公式認証JForex Tester APIと公式SDKを使う取得経路を`JFOREX_SOURCE_CHANNEL_AMENDMENT.md`で事前凍結しました。現在許可されるのはcredential・price stepを一切含まないisolated reproducible Build preflightだけです。空の専用Maven repoとserver/mirror/profileを持たない最小user/global settingsを使い、online build 1回とoffline rebuild 2回を行い、3回の全file inventory完全一致とrunner JAR SHA一致を確認します。JNLP runtime code closure、および同一run full-QCまたは承認済み非公開raw保管が固定されるまで実取得しません。
+代替として、公式認証JForex Tester APIと公式SDKを使う取得経路を`JFOREX_SOURCE_CHANNEL_AMENDMENT.md`で事前凍結しました。Build preflight Run `33336895081`はpre-connect non-bootstrap class-origin試験に成功しました。現在許可される次工程は、Dukascopy・市場資格情報、外部JNLP、price stepを一切含まないS1B Gate Aだけです。Run 5から固定した116個のJARをMaven/Javaを実行せず取得し、各SHA一致後にだけnative payloadを静的列挙し、repository-local synthetic JNLPとsynthetic Full-QC primitivesを試験します。shaded runnerはGate Aでは未検査です。S1B成功も取得許可ではありません。Gate B native allowlist、JNLP/OS egress、actual full-QCまたは承認済み非公開raw保管が固定されるまで実取得しません。
 
 ### 再利用できる参考実装
 
@@ -227,9 +227,11 @@ workflow inputに日付はありません。Java runnerがtimeframe別の境界�
 3. workflowが凍結anchor、manifest、runner test、official root dependency SHAを検証する。
 4. 空の専用Maven repoでonline buildし、同じrepoだけを使うoffline rebuildを2回行う。
 5. 3回の依存inventory完全一致、3回のrunner JAR SHA一致、runtime identityをmetadata Artifactへ保存する。
-6. このworkflowにはSecrets、JForex認証、price request、raw CSV、QC、Outcomeのstepを置かない。
+6. このworkflowにはDukascopy・市場Secrets、JForex認証、price request、raw CSV、QC、Outcomeのstepを置かない。checkoutの一時GitHub tokenは永続化しない。
 
-このArtifactは依存とbuild再現性の監査資料であり、lockまたは取得許可そのものではありません。JNLP接続がMaven closure外の実行codeを追加取得しないことの検証と、full-QC/raw保管経路の決定後に、別のsecret-scoped acquisition/QC workflowを事前監査します。
+Run 5監査後のS1B Gate Aは`.github/workflows/phase9-s1b-runtime-qc-preflight.yml`を使い、confirmationへ`RUN_PHASE9_S1B_NO_SECRET_NO_PRICE_PREFLIGHT`を完全一致入力します。GitHub checkoutのscoped ephemeral tokenは使用しますが永続化せず、Dukascopy・市場資格情報は参照しません。Maven、Java、外部JNLP request、JForex connect、market request、native executionは行いません。116個のlocked JARはredirect/proxyなしで取得し、SHA一致後にだけ静的に開きます。Artifactはdata custody policyの完全allowlistを全検査した成功時だけuploadします。
+
+このArtifactはlocked JAR/native inventoryとsynthetic QCの監査資料であり、取得許可そのものではありません。shaded runner、JNLP接続がMaven closure外の実行codeを追加取得しないことの検証と、full-QC/raw保管経路の決定後に、別のsecret-scoped acquisition/QC workflowを事前監査します。
 
 workflowはprice、return、edgeの実行ボタンを自動的に続けません。取得成功後も`full_quality_gate_passed=false`のまま停止し、calendar、H4/D1 bucket、Energy rollを別工程で監査します。
 

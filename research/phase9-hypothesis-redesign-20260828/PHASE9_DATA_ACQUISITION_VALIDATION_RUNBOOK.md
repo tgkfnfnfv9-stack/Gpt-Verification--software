@@ -1,10 +1,10 @@
 # Phase 9 データ取得・仮説検証 実行手順書
 
-更新日: 2026-08-30
+更新日: 2026-08-31
 対象Repository: `tgkfnfnfv9-stack/Gpt-Verification--software`
 対象Branch: `main`
-基準main commit: `ff45fcb26dcd6e8e3f9d3eb9fb415e8eb09c9952`
-現在status: `BUILD_PREFLIGHT_READY_ACQUISITION_BLOCKED`
+S1B実装基準main commit: `d5789f8c5516bd21b4d838ff04533518bef76ac6`
+現在status: `S1B_GATE_A_IMPLEMENTED_PENDING_RUN_ACQUISITION_BLOCKED`
 
 > 2026-08-30 amendment: 公開endpointと`dukascopy-go v0.2.0`の実行経路は廃止しました。この文書の旧版にあった同toolのコマンドや実行指示は有効ではありません。理由は`PROVIDER_ACQUISITION_BLOCKER.md`、代替正本は`JFOREX_SOURCE_CHANNEL_AMENDMENT.md`です。
 
@@ -44,7 +44,7 @@ Phase 9
 
 Phase 9は仮説討論段階ではなく、事前登録済みである。旧Draftを使ってはいけない。
 
-Phase 9専用JForex取得・境界QC基盤は実装済みだが、市場price fileは0件である。次は認証・price request前に停止するBuild preflightで、全Maven依存と再珫uild JARのSHAを凍結する。Count-only RunnerとDiscovery Runnerはまだ作らない。
+Phase 9専用JForex取得・境界QC基盤は実装済みだが、市場price fileは0件である。Build preflight Run `33336895081`で全Maven依存とrebuild JARのSHA、pre-connect class-origin guardを監査済み。次はDukascopy・市場資格情報、外部JNLP、price requestなしのS1B Gate Aで、Run 5から固定した116個のJARをSHA一致後にだけ静的検査し、native payload inventoryとsynthetic Full-QC primitivesを記録する。S1BではMaven/Javaを実行せず、shaded runnerも未検査のままblockerとする。Count-only RunnerとDiscovery Runnerはまだ作らない。
 
 ---
 
@@ -253,6 +253,8 @@ H1  = [2013-01-01T00:00:00Z, 2019-08-01T00:00:00Z)
 3. Artifactの3つの完全依存inventory、runtime identity、3回一致したrunner JAR SHAを監査する。これは監査資料であり取得許可ではない。
 4. JNLP runtime code closureを検証し、同一locked runにfull QCを追加するか、ユーザー承認済み非公開raw保管を決める。
 5. その後に限り、buildと分離されたsecret-scoped acquisition/QC workflowを事前監査し、一度の実取得を許可する。
+
+Run 5の次は`.github/workflows/phase9-s1b-runtime-qc-preflight.yml`を`RUN_PHASE9_S1B_NO_SECRET_NO_PRICE_PREFLIGHT`で実行する。このGate AはMaven/Javaを実行せず、Run 5から固定した116-JAR manifestを2つの完全一致HTTPS repository baseからopaque bytesとして取得する。redirectとenvironment proxyを拒否し、各SHA一致後にだけZIPを開いてnative resource inventoryを作る。local synthetic JNLP、synthetic Full-QCも行う。同一runで発見したnative resourceを同一runの許可表に使わず、shaded runner未検査を含むblockerを残して、別commitでGate B allowlistを凍結する。外部JNLP観測は規約確認と別の手動承認まで実行しない。
 
 取得runnerは日付引数を受け付けず、M15/H1×BID/ASKの4 processで48ファイルを出力する。不完全downloadは必ずfail-closedとする。
 
@@ -591,7 +593,7 @@ Run A0
 Build preflightのみ（認証・priceの前に停止）
         ↓
 Commit A1
-全依存lock・runner JAR SHA・full-QC/raw保管経路を凍結
+全依存lock・runner JAR SHA・S1Bの116-JAR静的inventory・full-QC/raw保管経路を凍結
         ↓
 Run A1
 一度のAcquisition + QCのみ
@@ -716,27 +718,25 @@ GitHub Repository tgkfnfnfv9-stack/Gpt-Verification--software のPhase 9自動�
 
 現在はFormal alpha 11件＋Risk overlay 1件、全12確認項目がUNTESTED_PREREGISTEREDです。Phase 9固有Returnは未計算です。
 
-今回実行する作業は、Phase 9専用JForex Acquisition/QC基盤のBuild preflightです。
+今回実行する作業は、Phase 9専用JForex Acquisition/QC基盤のS1B Gate Aです。
 
 作成対象：
 
-- .github/workflows/phase9-acquisition-only.yml
-- data_manifest/source_versions.json
-- data_manifest/instrument_mapping.json
-- data_manifest/trading_calendar.json
-- data_manifest/energy_roll_rules.json
-- runner/acquire_phase9_data.py
-- runner/validate_phase9_acquisition.py
-- runner/jforex/
-- 境界・品質・安全Tests
+- .github/workflows/phase9-s1b-runtime-qc-preflight.yml
+- data_manifest/runtime_envelope_policy.json
+- data_manifest/data_custody_policy.json
+- data_manifest/maven_jar_sha256.run33336895081.lock.txt
+- runner/preflight_runtime_envelope.py
+- runner/phase9_full_qc.py
+- S1B境界・品質・安全Tests
 
 実取得範囲はM15が2013-01-01 inclusiveから2019-08-28 exclusive、H1が2013-01-01 inclusiveから2019-08-01 exclusiveだけです。日付をWorkflow InputにせずHard-codeします。
 
-公開endpointとdukascopy-goは使用しません。公式認証JForex Tester APIを使います。最初のrunはcredential・price stepを含まないBuild preflightで、空の専用Maven repoの全file inventoryとonline 1回＋offline 2回で一致する再現build JAR SHAを出力します。
+公開endpointとdukascopy-goは使用しません。S1BはDukascopy/market credential、外部JNLP、JForex connect、price requestを含みません。Run 5から固定した116個のJARをMaven/Javaを実行せず取得し、redirect/proxyを拒否し、各SHA一致後にだけnative payloadを静的検査します。shaded runnerは未検査blockerとして残します。
 
 今回はデータ品質検査だけを行い、Return、MFE、MAE、Edge、勝率、P値を計算しないでください。Raw CSVをGitや公開Artifactへ保存しないでください。
 
-実装、Tests、GitHub反映、Build preflight Run監査まで進めてください。依存lockとfull-QC/raw保管経路が未凍結なら実price取得をしないでください。
+実装、Tests、GitHub反映、S1B Gate A Run監査まで進めてください。同一runのnative inventoryを許可表に流用せず、shaded runner、Gate B、外部JNLP、OS egress、actual full-QC/raw保管経路が未凍結なら実price取得をしないでください。
 ```
 
 ---
@@ -801,4 +801,4 @@ EA Safety / Demo Forward
 OANDA MT5 Live Standard
 ```
 
-現在は最初の`Phase 9 Acquisition / QC`を実装する段階である。
+現在は最初の`Phase 9 Acquisition / QC`の事前S1B Gate Aを実行・監査する段階である。市場price fileは0件で、Count-only以降は未開始である。

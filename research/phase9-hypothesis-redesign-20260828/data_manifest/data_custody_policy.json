@@ -1,0 +1,47 @@
+{
+  "schema_version": "phase9-data-custody-policy-v1.0",
+  "status": "SAME_RUN_FULL_QC_RAW_EPHEMERAL_PRIVATE_STORAGE_NOT_APPROVED",
+  "raw": {
+    "git_allowed": false,
+    "public_artifact_allowed": false,
+    "actions_cache_allowed": false,
+    "runner_temp_only": true,
+    "required_directory_mode": "0700",
+    "symlink_allowed": false,
+    "hardlink_allowed": false,
+    "delete_after_same_run_full_qc": true
+  },
+  "cache": {
+    "git_allowed": false,
+    "artifact_allowed": false,
+    "actions_cache_allowed": false,
+    "runner_temp_only": true,
+    "required_directory_mode": "0700",
+    "symlink_allowed": false,
+    "delete_after_run": true
+  },
+  "metadata_artifact": {
+    "allowed_filenames": [
+      "s1b_authorization_state.json",
+      "workflow_policy_audit.json",
+      "runtime_identity.txt",
+      "locked_jar_downloads.json",
+      "locked_jar_sha256.txt",
+      "native_library_inventory.json",
+      "local_jnlp_synthetic_audit.json",
+      "synthetic_qc_report.json",
+      "artifact_manifest_sha256.txt"
+    ],
+    "allowed_suffixes": [".json", ".txt"],
+    "forbidden_suffixes": [".csv", ".parquet", ".db", ".sqlite", ".zip", ".jar", ".jnlp"],
+    "regular_file_only": true,
+    "hardlink_allowed": false,
+    "symlink_allowed": false,
+    "unknown_file_action": "FAIL_BEFORE_UPLOAD"
+  },
+  "cross_stage_handoff": {
+    "private_immutable_storage_approved": false,
+    "method_without_private_storage": "REACQUIRE_ALL_48_AND_REQUIRE_EXACT_SHA256_MATCH",
+    "single_mismatch_action": "STOP_BEFORE_COUNT_ONLY_AND_REGISTER_NEW_DATA_VERSION"
+  }
+}

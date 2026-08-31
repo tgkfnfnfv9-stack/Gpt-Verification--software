@@ -1,0 +1,85 @@
+{
+  "schema_version": "phase9-runtime-envelope-policy-v1.0",
+  "status": "GATE_A_INVENTORY_ONLY_ACQUISITION_BLOCKED",
+  "frozen_from": {
+    "run_id": 33336895081,
+    "head_sha": "5392bb18ed4a8db9dc76aa882f7bc41b89ed0ff9",
+    "artifact_id": 9739411958,
+    "artifact_zip_sha256": "fbf204bb048f795463a46910c669c8bcc9226705cad631798948ef7ca4c6e635"
+  },
+  "build_lock": {
+    "maven_repository_inventory_line_count": 930,
+    "maven_repository_inventory_sha256": "604f29b030b6f54f1e5d42d132b39784295dd1c6b633998a3a768e680fe557ab",
+    "runner_jar_sha256": "545bb9601d547b0edd5476886474a9affb541df5dc1c3fe172cb544c7c1f8204",
+    "locked_jar_count": 116,
+    "locked_jar_manifest_sha256": "8a6fca0cf65d80fc7ca0459ff56cf35ec6f92fe89b8f516de7bc8905ab941aeb",
+    "jna_3_5_0_jar_sha256": "961da7811f92dd6b200c5792241ae4208f54bd14e974f49d8eeab15bc4a908df",
+    "zstd_jni_1_5_7_6_jar_sha256": "8d6feb1da335f3ab13c584c613e23c7b3c61b392e37956872057baf8f0ca1d6f"
+  },
+  "locked_jar_download": {
+    "allowed_repository_bases": [
+      "https://repo.maven.apache.org/maven2/",
+      "https://www.dukascopy.com/client/jforexlib/publicrepo/"
+    ],
+    "fallback_only_after_http_404": true,
+    "redirects_allowed": false,
+    "environment_proxy_allowed": false,
+    "verify_sha256_before_archive_parse": true,
+    "maven_execution_allowed": false,
+    "java_execution_allowed": false,
+    "setup_java_action_allowed": false,
+    "shaded_runner_scan_in_gate_a": false,
+    "maximum_jar_bytes": 268435456,
+    "timeout_seconds": 60
+  },
+  "observed_runtime": {
+    "runner_os": "Linux",
+    "runner_arch": "X64",
+    "image_os": "ubuntu24",
+    "image_version": "20260823.283.1",
+    "java_version": "1.8.0_504-b01",
+    "maven_version": "3.9.16"
+  },
+  "gate_a": {
+    "dukascopy_or_market_credentials_allowed": false,
+    "github_checkout_ephemeral_token_is_not_a_market_credential": true,
+    "external_jnlp_request_allowed": false,
+    "jforex_connect_allowed": false,
+    "market_request_allowed": false,
+    "native_execution_allowed": false,
+    "maven_execution_allowed": false,
+    "java_execution_allowed": false,
+    "native_inventory_required": true,
+    "local_synthetic_jnlp_only": true,
+    "synthetic_full_qc_only": true
+  },
+  "native_inventory": {
+    "extensions": [".so", ".dll", ".dylib", ".jnilib"],
+    "magic_headers": ["ELF", "PE", "MACHO"],
+    "reject_absolute_paths": true,
+    "reject_parent_traversal": true,
+    "reject_case_collisions": true,
+    "same_run_inventory_may_authorize_execution": false
+  },
+  "jnlp_static_policy": {
+    "network_fetch_implemented": false,
+    "allowed_scheme": "https",
+    "allowed_initial_url": "https://platform.dukascopy.com:443/demo_3/jforex_3.jnlp",
+    "redirects_allowed": false,
+    "query_allowed": false,
+    "fragment_allowed": false,
+    "userinfo_allowed": false,
+    "doctype_allowed": false,
+    "external_entities_allowed": false,
+    "xinclude_allowed": false,
+    "allowed_resource_elements": ["jar", "nativelib", "extension"],
+    "observation_requires_separate_terms_confirmation": true
+  },
+  "authorization_after_gate_a": {
+    "runtime_code_closure_verified": false,
+    "acquisition_authorized": false,
+    "actual_market_data_full_quality_gate_passed": false,
+    "count_only_authorized": false,
+    "outcomes_authorized": false
+  }
+}

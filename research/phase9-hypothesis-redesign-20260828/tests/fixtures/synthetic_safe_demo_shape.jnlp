@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jnlp spec="1.0+" codebase="https://platform.dukascopy.com:443/demo_3/">
+  <information><title>Phase 9 synthetic descriptor only</title></information>
+  <resources>
+    <jar href="synthetic-client.jar" />
+    <nativelib href="synthetic-native.jar" />
+    <extension href="synthetic-extension.jnlp" />
+  </resources>
+</jnlp>
