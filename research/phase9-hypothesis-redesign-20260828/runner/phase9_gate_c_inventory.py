@@ -276,6 +276,28 @@ def parse_supervisor_identity(path: Path) -> dict[str, str]:
     return values
 
 
+def classify_exec_argv_shape(line: str) -> str:
+    prefixes = (
+        r'\bexecve\("[^"]+",\s*',
+        r'\bexecveat\([^,]+,\s*"[^"]+",\s*',
+    )
+    remainder = None
+    for prefix in prefixes:
+        match = re.search(prefix, line)
+        if match is not None:
+            remainder = line[match.end():]
+            break
+    if remainder is None:
+        return "UNKNOWN"
+    if re.match(r'\[\.\.\.\]\s*,', remainder):
+        return "BRACKET_ELLIPSIS"
+    if re.match(r'0x[0-9a-fA-F]+\s*/\*\s*\d+\s+vars\s*\*/\s*,', remainder):
+        return "POINTER_COUNT"
+    if remainder.startswith("["):
+        return "ARRAY"
+    return "UNKNOWN"
+
+
 def validate_runtime(
     inventory_path: Path,
     maps_path: Path,
@@ -341,18 +363,16 @@ def validate_runtime(
     missing_setpriv_arguments = [
         token for token in required_setpriv_arguments if token not in exec_records[0]["line"]
     ]
-    setpriv_argv_abbreviated = bool(
-        re.search(r'\bexecve\("[^"]+",\s*\[\.\.\.\],', exec_records[0]["line"])
-        or re.search(
-            r'\bexecveat\([^,]+,\s*"[^"]+",\s*\[\.\.\.\],',
-            exec_records[0]["line"],
-        )
-    )
+    setpriv_argv_shape = classify_exec_argv_shape(exec_records[0]["line"])
+    setpriv_argv_abbreviated = setpriv_argv_shape == "BRACKET_ELLIPSIS"
     if missing_setpriv_arguments and not (
         missing_setpriv_arguments == list(required_setpriv_arguments) and setpriv_argv_abbreviated
     ):
         raise GateCError(
-            "setpriv launcher arguments are incomplete: " + ",".join(missing_setpriv_arguments)
+            "setpriv launcher arguments are incomplete: "
+            + ",".join(missing_setpriv_arguments)
+            + "; argv_shape="
+            + setpriv_argv_shape
         )
     if '"-i"' not in exec_records[1]["line"]:
         raise GateCError("env launcher did not clear the environment")

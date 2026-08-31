@@ -423,9 +423,20 @@ class GateCInventoryTests(unittest.TestCase):
         root, inventory, maps, traces, supervisor = self.runtime_fixture(incomplete)
         with self.assertRaisesRegex(
             gate_c.GateCError,
-            r"setpriv launcher arguments are incomplete: --clear-groups$",
+            r"setpriv launcher arguments are incomplete: --clear-groups; argv_shape=ARRAY$",
         ):
             gate_c.validate_runtime(inventory, maps, traces, supervisor, root / "output.json")
+
+    def test_exec_argv_shape_classifier_is_bounded_and_structural(self):
+        rows = {
+            'execve("/x", [...], 0) = 0': "BRACKET_ELLIPSIS",
+            'execve("/x", 0xabc123 /* 9 vars */, 0) = 0': "POINTER_COUNT",
+            'execve("/x", ["x"], 0) = 0': "ARRAY",
+            'unrelated [...]': "UNKNOWN",
+        }
+        for line, expected in rows.items():
+            with self.subTest(line=line):
+                self.assertEqual(gate_c.classify_exec_argv_shape(line), expected)
 
     def test_runtime_observation_accepts_abbreviated_setpriv_argv_with_kernel_postconditions(self):
         abbreviated = self.EXEC_CHAIN.replace(
