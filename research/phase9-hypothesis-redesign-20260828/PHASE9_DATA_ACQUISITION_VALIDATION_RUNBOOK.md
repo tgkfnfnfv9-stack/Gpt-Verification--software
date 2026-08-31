@@ -4,7 +4,7 @@
 対象Repository: `tgkfnfnfv9-stack/Gpt-Verification--software`
 対象Branch: `main`
 S1B Run #2 head commit: `951c38aaa875180fa7dbbe498866a4e3ece50e9c`
-現在status: `S1B_GATE_A_RUN2_PASS_GATE_B_PENDING_ACQUISITION_BLOCKED`
+現在status: `S1B_GATE_A_PASS_GATE_B_FROZEN_ACQUISITION_BLOCKED`
 
 > 2026-08-30 amendment: 公開endpointと`dukascopy-go v0.2.0`の実行経路は廃止しました。この文書の旧版にあった同toolのコマンドや実行指示は有効ではありません。理由は`PROVIDER_ACQUISITION_BLOCKER.md`、代替正本は`JFOREX_SOURCE_CHANNEL_AMENDMENT.md`です。
 
@@ -44,7 +44,7 @@ Phase 9
 
 Phase 9は仮説討論段階ではなく、事前登録済みである。旧Draftを使ってはいけない。
 
-Phase 9専用JForex取得・境界QC基盤は実装済みだが、市場price fileは0件である。Build preflight Run `33336895081`で全Maven依存とrebuild JARのSHA、pre-connect class-origin guardを監査済み。S1B Gate A Run `33376110507`では、Run 5から固定した116個のJARをMaven/Javaを実行せず全SHA一致後に静的検査し、28 native entryとsynthetic Full-QC primitivesを記録した。次は28件を別commitのGate B exact-match allowlistとして固定する。Shaded runnerその他のblockerは残り、Count-only RunnerとDiscovery Runnerはまだ作らない。
+Phase 9専用JForex取得・境界QC基盤は実装済みだが、市場price fileは0件である。Build preflight Run `33336895081`で全Maven依存とrebuild JARのSHA、pre-connect class-origin guardを監査済み。S1B Gate A Run `33376110507`では、Run 5から固定した116個のJARをMaven/Javaを実行せず全SHA一致後に静的検査し、28 native entryとsynthetic Full-QC primitivesを記録した。28件はRun 2とは別commitのGate B exact-match allowlistへ固定し、保存済みevidenceと独立再取得した2 archiveのSHA/entry/OS/archを再検証済み。Shaded runnerその他のblockerは残り、Count-only RunnerとDiscovery Runnerはまだ作らない。
 
 S1B Run #1 `33374751888`は116 JAR SHA検証に成功したが、Java `.class`の`CAFEBABE`をMach-Oとして28,088件誤検出したためnative inventoryを無効化した。分類器修正後のRun #2 `33376110507`は116 JAR全SHA一致、native 28件、class衝突除外で成功した。正本は`results/s1b-run-33376110507/S1B_AUDIT.json`。市場price、禁止期間、Outcomeへのaccessは0、取得認可はfalseである。
 
@@ -252,13 +252,13 @@ H1  = [2013-01-01T00:00:00Z, 2019-08-01T00:00:00Z)
 
 1. 完了済みBuild preflightのdependency inventory、runtime identity、runner JAR SHAを監査資料として固定する。これは取得許可ではない。
 2. 完了済みS1B Gate A Run `33376110507`の116 JAR SHA、28 native entry、synthetic QC、認可falseを検証する。
-3. 28 native entryを別commitのGate B exact-match allowlistとして凍結する。同一Runのinventoryで自己認可しない。
-4. Shaded runner scan、実native load/mapped DSO、child process/OS egressを検証する。
+3. 28 native entryを別commitのGate B exact-match allowlistとして凍結する。同一Runのinventoryで自己認可しない。（完了、取得認可への効果なし）
+4. Shaded runner scan、実native load/mapped DSO、child process/OS egressを検証する。（次の単一作業）
 5. 規約確認と別の手動承認後に限り、price requestなしでremote JNLP/runtime closureを観測・hash-lockする。
 6. Streaming 48-series Full-QCを同一取得runへ実装し、必要ならユーザー承認済み非公開raw保管を決める。
 7. 最終pre-dispatch監査後に限り、buildと分離されたsecret-scoped acquisition/QC workflowの一度の実取得を許可する。
 
-Run 5の後、`.github/workflows/phase9-s1b-runtime-qc-preflight.yml`を`RUN_PHASE9_S1B_NO_SECRET_NO_PRICE_PREFLIGHT`で実行済み。このGate AはMaven/Javaを実行せず、Run 5から固定した116-JAR manifestを2つの完全一致HTTPS repository baseからopaque bytesとして取得した。Redirectとenvironment proxyを拒否し、各SHA一致後にだけZIPを開き、Run #2でnative 28件を記録した。Local synthetic JNLP、synthetic Full-QCも通過した。同一runで発見したnative resourceを同一runの許可表に使わず、shaded runner未検査を含むblockerを残して、別commitでGate B allowlistを凍結する。外部JNLP観測は規約確認と別の手動承認まで実行しない。
+Run 5の後、`.github/workflows/phase9-s1b-runtime-qc-preflight.yml`を`RUN_PHASE9_S1B_NO_SECRET_NO_PRICE_PREFLIGHT`で実行済み。このGate AはMaven/Javaを実行せず、Run 5から固定した116-JAR manifestを2つの完全一致HTTPS repository baseからopaque bytesとして取得した。Redirectとenvironment proxyを拒否し、各SHA一致後にだけZIPを開き、Run #2でnative 28件を記録した。Local synthetic JNLP、synthetic Full-QCも通過した。同一runで発見したnative resourceを同一runの許可表に使わず、別commitの`data_manifest/native_entry_allowlist.run33376110507.json`へGate B allowlistを凍結した。`runner/verify_phase9_gate_b.py`は未知・追加・欠落・重複・case collisionを拒否し、authorizationをすべてfalseに固定する。外部JNLP観測は規約確認と別の手動承認まで実行しない。
 
 取得runnerは日付引数を受け付けず、M15/H1×BID/ASKの4 processで48ファイルを出力する。不完全downloadは必ずfail-closedとする。
 
@@ -702,7 +702,7 @@ Force Pushは禁止。
 
 # 17. 別セッションへ送る実行指示
 
-コピー用の最新完成文は`NEXT_SESSION_PROMPT.md`を正本とする。Run #2完了後の単一作業は、28 native entryを別commitのGate B exact-match allowlistとして凍結することである。Gate B完了だけでは実取得を認可しない。
+コピー用の最新完成文は`NEXT_SESSION_PROMPT.md`を正本とする。Gate B完了後の単一作業は、exact shaded runnerの静的scanと、native load/mapped DSO、child process、OS egressをno-secret/no-priceで検証する次Gateの設計である。Gate B完了だけでは実取得を認可しない。
 
 ---
 
@@ -766,4 +766,4 @@ EA Safety / Demo Forward
 OANDA MT5 Live Standard
 ```
 
-現在は最初の`Phase 9 Acquisition / QC`のS1B Gate Aを完了し、Gate B allowlist固定へ進む段階である。市場price fileは0件で、Actual Full-QCとCount-only以降は未開始である。
+現在は最初の`Phase 9 Acquisition / QC`のS1B Gate AとGate B allowlist固定を完了し、shaded runner/native load/OS egressのno-secret/no-price検証へ進む段階である。市場price fileは0件で、Actual Full-QCとCount-only以降は未開始である。

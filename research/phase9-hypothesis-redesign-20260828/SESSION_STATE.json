@@ -1,7 +1,7 @@
 {
   "project": "auto-trading-research",
   "updated_at": "2026-08-31",
-  "phase": "PHASE9_PREREGISTERED_S1B_GATE_A_RUN2_PASS_GATE_B_PENDING_ACQUISITION_BLOCKED",
+  "phase": "PHASE9_PREREGISTERED_S1B_GATE_A_PASS_GATE_B_FROZEN_ACQUISITION_BLOCKED",
   "phase8": {
     "formal_hypotheses_including_pa002": 16,
     "decision": "ALL_REJECT_FOR_DEVELOPMENT",
@@ -54,7 +54,7 @@
     "legacy_non_phase9_future_period_download_detected": true
   },
   "provider_acquisition": {
-    "status": "S1B_GATE_A_RUN2_PASS_GATE_B_PENDING_ACQUISITION_BLOCKED",
+    "status": "S1B_GATE_A_PASS_GATE_B_FROZEN_ACQUISITION_BLOCKED",
     "decision_log": "PROVIDER_ACQUISITION_BLOCKER.md",
     "source_channel_amendment": "JFOREX_SOURCE_CHANNEL_AMENDMENT.md",
     "selected_channel": "DUKASCOPY_OFFICIAL_AUTHENTICATED_JFOREX_TESTER_API",
@@ -71,7 +71,7 @@
     "runtime_code_closure_verified": false,
     "java_nonbootstrap_class_origin_guard_self_test_passed": true,
     "s1b_runtime_qc_gate_a": {
-      "status": "RUN2_STATIC_NATIVE_INVENTORY_PASS_AUTHORIZATION_BLOCKED",
+      "status": "RUN2_STATIC_NATIVE_INVENTORY_PASS_GATE_B_FROZEN_AUTHORIZATION_BLOCKED",
       "workflow": ".github/workflows/phase9-s1b-runtime-qc-preflight.yml",
       "confirmation": "RUN_PHASE9_S1B_NO_SECRET_NO_PRICE_PREFLIGHT",
       "github_checkout_ephemeral_token_used": true,
@@ -92,7 +92,10 @@
       "latest_artifact_zip_sha256": "ad72a646f91ec4e15fb7df564bbc7fd0fb4133c3c8999f8bf8a0468e4af0094a",
       "native_entry_count": 28,
       "java_class_cafebabe_collision_excluded": true,
-      "gate_b_allowlist_committed": false,
+      "gate_b_allowlist_committed": true,
+      "gate_b_allowlist": "data_manifest/native_entry_allowlist.run33376110507.json",
+      "gate_b_audit": "results/gate-b-native-allowlist/GATE_B_AUDIT.json",
+      "gate_b_exact_match_tests": "18/18 PASS",
       "shaded_runner_scanned": false,
       "runtime_code_closure_verified": false,
       "acquisition_authorized": false,
@@ -130,7 +133,8 @@
         "native_entry_count": 28,
         "java_class_cafebabe_collision_excluded": true,
         "authoritative_gate_a_inventory_available": true,
-        "gate_b_allowlist_committed": false,
+        "gate_b_allowlist_committed_at_run_time": false,
+        "gate_b_allowlist_committed_later": true,
         "phase9_price_files": 0,
         "market_price_request_attempted": false,
         "forbidden_market_period_request_attempted": false,
@@ -207,6 +211,22 @@
         "audit": "results/preflight-run-33336895081/PREFLIGHT_AUDIT.json"
       }
     ],
+    "gate_b_native_allowlist": {
+      "status": "EXACT_MATCH_PASS_ACQUISITION_BLOCKED",
+      "allowlist": "data_manifest/native_entry_allowlist.run33376110507.json",
+      "verifier": "runner/verify_phase9_gate_b.py",
+      "audit": "results/gate-b-native-allowlist/GATE_B_AUDIT.json",
+      "source_run_id": 33376110507,
+      "source_head_sha": "951c38aaa875180fa7dbbe498866a4e3ece50e9c",
+      "source_artifact_zip_sha256": "ad72a646f91ec4e15fb7df564bbc7fd0fb4133c3c8999f8bf8a0468e4af0094a",
+      "source_locked_jar_manifest_sha256": "8a6fca0cf65d80fc7ca0459ff56cf35ec6f92fe89b8f516de7bc8905ab941aeb",
+      "native_archive_count": 2,
+      "native_entry_count": 28,
+      "same_run_self_authorization_used": false,
+      "acquisition_authorized": false,
+      "phase9_price_files_acquired": 0,
+      "outcomes_calculated": false
+    },
     "full_qc_same_run_or_private_raw_storage_decided": false,
     "required_github_secrets": ["DUKASCOPY_USERNAME", "DUKASCOPY_PASSWORD"],
     "h1_network_request_hard_clipped_before_2019_08_01": true,
@@ -270,7 +290,7 @@
   ],
   "next_actions": [
     "use PHASE9_OPERATIONS_GUIDE.md as the procedural entrypoint",
-    "review the 28 Run 2 native entries and freeze a separate exact-match Gate B allowlist anchored to Run 33376110507, head SHA, locked-JAR manifest SHA and artifact ZIP SHA; Gate B alone does not authorize acquisition",
+    "in a separate atomic commit, statically scan the exact shaded runner and design the no-secret/no-price native-load, mapped-DSO, child-process and OS-egress verification gate",
     "before any credential or price access, separately verify the shaded runner, native load and mapped DSO set, child-process and OS-egress controls, and remote JNLP lock after terms confirmation and explicit manual authorization",
     "freeze the streaming 48-series Full-QC execution path and same-run ephemeral raw custody, or obtain explicit approval for private immutable raw storage",
     "only after every blocker and a separate manual authorization, configure JForex demo credentials and run one acquisition plus same-run Full-QC with M15 before 2019-08-28 and H1 before 2019-08-01",

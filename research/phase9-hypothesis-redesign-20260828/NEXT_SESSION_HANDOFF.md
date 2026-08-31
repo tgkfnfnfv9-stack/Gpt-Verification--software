@@ -24,6 +24,8 @@ Repository: `tgkfnfnfv9-stack/Gpt-Verification--software`
 16. `spec/data_requirements.frozen.json`
 17. `policy/preregistered_research_policy.json`
 18. `results/s1b-run-33376110507/S1B_AUDIT.json`
+19. `data_manifest/native_entry_allowlist.run33376110507.json`
+20. `results/gate-b-native-allowlist/GATE_B_AUDIT.json`
 
 数値Entryはcandidate registry、取得outer boundaryはdata requirements、許可・禁止はpreregistered policyを正本とする。Markdown要約やdraftで凍結仕様を変更しない。H1の終了境界はouter authorizationをさらに狭めた運用上のfail-closed制約である。
 
@@ -38,6 +40,7 @@ Repository: `tgkfnfnfv9-stack/Gpt-Verification--software`
 | Phase 9 status | 全12件 `UNTESTED_PREREGISTERED` |
 | Phase 9正式取得 | 未開始 |
 | Phase 9価格ファイル | 0件 |
+| Gate B native allowlist | exact-match PASS、取得認可への効果なし |
 | Actual market Full-QC | 未実施 |
 | Count-only Gate | 未開始 |
 | Phase 9 outcome | 未計算・未閲覧 |
@@ -78,6 +81,18 @@ Repository: `tgkfnfnfv9-stack/Gpt-Verification--software`
 
 Run #2はlocked-JAR静的棚卸しの工学的PASSであり、実データ取得、Count-only、仮説検証の許可ではない。Run証跡は`results/s1b-run-33376110507/`へmetadata-onlyで保存している。
 
+## Gate B exact-match allowlist
+
+- Allowlist: `data_manifest/native_entry_allowlist.run33376110507.json`
+- Verifier: `runner/verify_phase9_gate_b.py`
+- Audit: `results/gate-b-native-allowlist/GATE_B_AUDIT.json`
+- Source anchors: Run ID、head SHA、116-JAR manifest SHA、Artifact ZIP SHAを完全固定
+- Archives: 2/2 SHA一致
+- Entries: 28/28 path/SHA/size/magic/target OS/arch一致
+- Fail-closed: 未知archive、追加、欠落、重複、case collision、未知magic/target、authorization反転を拒否
+- 同一Runのinventoryによる自己認可: なし
+- Acquisition authorization: `false`
+
 ## 正式取得時の固定範囲
 
 直接取得は次の48系列だけ。
@@ -97,21 +112,20 @@ Run #2はlocked-JAR静的棚卸しの工学的PASSであり、実データ取得
 
 ## 残るBlocker
 
-1. Run #2の28 native entryを別commitのexact-match Gate B allowlistとして未固定
-2. Shaded runner未検査
-3. 実際にloadされるnative/mapped DSO未検証
-4. Child process、`System.load*`、write/cache mutation、OS egress default-deny未強制
-5. Remote JNLP未観測・未lock。規約確認と別の明示的手動承認が必要
-6. 48系列を読むstreaming Full-QC経路が未実装・未実行
-7. Same-run ephemeral raw custodyまたは承認済みprivate immutable storageが未固定
+1. Shaded runner未検査
+2. 実際にloadされるnative/mapped DSO未検証
+3. Child process、`System.load*`、write/cache mutation、OS egress default-deny未強制
+4. Remote JNLP未観測・未lock。規約確認と別の明示的手動承認が必要
+5. 48系列を読むstreaming Full-QC経路が未実装・未実行
+6. Same-run ephemeral raw custodyまたは承認済みprivate immutable storageが未固定
 
 Demo secrets設定、外部JNLP接続、JForex connect、availability照会、price取得はまだ禁止。
 
 ## 次に実行する1作業
 
-Run #2の28 native entryを人手監査し、別commitでGate B exact-match allowlistを凍結する。
+Exact shaded runnerを静的scanし、native load/mapped DSO、child process、write/cache mutation、OS egressをno-secret/no-priceで検証する次Gateを、別のatomic commitとして設計・実装する。
 
-Gate Bには最低限、Run ID、head SHA、116-JAR manifest SHA、Artifact ZIP SHA、archive path/SHA、entry path/SHA/size/magic、対象OS/arch、未知・追加・欠落・重複・case collisionのfail-closed規則を固定する。同一Runの棚卸しで自己認可しない。Gate B完了だけでは実price取得を許可しない。
+Gate B完了だけでは実price取得を許可しない。次Gateでもdemo secrets設定、外部JNLP request、JForex connect、availability照会、market price requestを含めない。
 
 ## 絶対禁止
 

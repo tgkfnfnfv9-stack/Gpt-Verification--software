@@ -25,6 +25,8 @@ GitHub Repository tgkfnfnfv9-stack/Gpt-Verification--software のPhase 9自動�
 16. research/phase9-hypothesis-redesign-20260828/spec/data_requirements.frozen.json
 17. research/phase9-hypothesis-redesign-20260828/policy/preregistered_research_policy.json
 18. research/phase9-hypothesis-redesign-20260828/results/s1b-run-33376110507/S1B_AUDIT.json
+19. research/phase9-hypothesis-redesign-20260828/data_manifest/native_entry_allowlist.run33376110507.json
+20. research/phase9-hypothesis-redesign-20260828/results/gate-b-native-allowlist/GATE_B_AUDIT.json
 
 8つの論理役割A0〜A7を使用してください。同時実行上限が7なら2波に分け、サブエージェントはread-only監査、主担当だけがGitHubへCommitしてください。作業前後にremote mainを確認し、force push、reset --hard、ユーザー変更の破棄、git add .、git add -Aは禁止です。
 
@@ -43,13 +45,13 @@ S1B Gate A Run 33376110507はcompleted/successです。
 - Phase 9価格ファイル0、Outcome未計算
 - acquisition_authorized=false
 
-Run 2はlocked-JAR静的棚卸しの工学的PASSであり、実データ取得許可ではありません。
+Run 2はlocked-JAR静的棚卸しの工学的PASSであり、実データ取得許可ではありません。Gate B exact-match allowlistはRun 2とは別Commitで凍結・検証済みですが、acquisition_authorized=falseのままです。
 
-今回の単一作業は、Run 2の28 native entryを監査し、別CommitでGate B exact-match allowlistを凍結することです。
+今回の単一作業は、exact shaded runnerを静的scanし、native load/mapped DSO、child process、write/cache mutation、OS egressをno-secret/no-priceで検証する次Gateを、別のatomic Commitとして設計・実装することです。
 
-Gate BにはRun ID、head SHA、116-JAR manifest SHA、Artifact ZIP SHA、各archive path/SHA、entry path/SHA/size/magic、対象OS/arch、未知・追加・欠落・重複・case collisionを拒否するfail-closed規則を固定してください。同一Runのinventoryで自己認可しないでください。Gate Bだけでacquisition_authorized=trueに変更しないでください。
+Gate BのRun ID、head SHA、116-JAR manifest SHA、Artifact ZIP SHA、各archive path/SHA、entry path/SHA/size/magic、対象OS/arch、fail-closed規則を変更しないでください。次GateでもGate Bだけでacquisition_authorized=trueに変更しないでください。
 
-Gate B後にも、shaded runner、native load/mapped DSO、child process/OS egress、remote JNLP lock、streaming 48-series Full-QC、raw custodyが未解決なら、demo secrets設定、外部JNLP接続、availability照会、JForex connect、price取得をしないでください。
+Remote JNLP lock、streaming 48-series Full-QC、raw custodyが未解決なら、demo secrets設定、外部JNLP接続、availability照会、JForex connect、price取得をしないでください。
 
 将来の正式取得範囲は次だけです。
 

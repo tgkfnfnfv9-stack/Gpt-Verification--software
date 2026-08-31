@@ -1,0 +1,126 @@
+{
+  "audited_at": "2026-08-31",
+  "schema_version": "phase9-gate-b-native-allowlist-audit-v1.0",
+  "conclusion": "GATE_B_EXACT_MATCH_PASS_ACQUISITION_BLOCKED",
+  "source_gate_a": {
+    "run_id": 33376110507,
+    "run_number": 2,
+    "run_attempt": 1,
+    "job_id": 99437846539,
+    "head_sha": "951c38aaa875180fa7dbbe498866a4e3ece50e9c",
+    "artifact_id": 9751919672,
+    "artifact_zip_sha256": "ad72a646f91ec4e15fb7df564bbc7fd0fb4133c3c8999f8bf8a0468e4af0094a",
+    "locked_jar_count": 116,
+    "locked_jar_manifest_sha256": "8a6fca0cf65d80fc7ca0459ff56cf35ec6f92fe89b8f516de7bc8905ab941aeb"
+  },
+  "independent_reverification": {
+    "artifact_zip_sha256_match": true,
+    "artifact_exact_file_count": 9,
+    "artifact_manifest_sha256": "6ee13c8fedad21d1d818036e1f07bf0ac5b0b395441ef7c043d75ab15798049e",
+    "artifact_payload_hashes_match": "8/8",
+    "preserved_repository_payloads_byte_match_artifact": true,
+    "native_archive_count": 2,
+    "native_archive_sha256_match": "2/2",
+    "native_entry_sha256_and_size_match": "28/28",
+    "target_os_and_arch_reviewed": "28/28",
+    "java_class_cafebabe_false_positives_included": 0
+  },
+  "native_inventory": {
+    "entry_count": 28,
+    "archive_breakdown": {
+      "zstd-jni": 18,
+      "jna": 10
+    },
+    "gate_a_magic_breakdown": {
+      "ELF": 18,
+      "MACHO": 3,
+      "PE": 6,
+      "SUFFIX_ONLY": 1
+    },
+    "reviewed_suffix_only_entry": {
+      "entry": "aix/ppc64/libzstd-jni-1.5.7-6.so",
+      "target_os": "aix",
+      "target_arches": ["ppc64"],
+      "reviewed_binary_format": "XCOFF64"
+    },
+    "target_os_breakdown": {
+      "aix": 1,
+      "darwin": 3,
+      "freebsd": 2,
+      "linux": 12,
+      "sunos": 4,
+      "windows": 5,
+      "windows_ce": 1
+    },
+    "unknown_archive_count": 0,
+    "additional_entry_count": 0,
+    "missing_entry_count": 0,
+    "duplicate_entry_count": 0,
+    "case_collision_count": 0
+  },
+  "implementation": {
+    "allowlist": "data_manifest/native_entry_allowlist.run33376110507.json",
+    "allowlist_sha256": "a0932eee2fe2c7019e838cce1557e78b19be42048af0474bbceb6b692b30602c",
+    "verifier": "runner/verify_phase9_gate_b.py",
+    "tests": "tests/test_phase9_gate_b.py",
+    "same_run_inventory_self_authorization_used": false,
+    "network_or_process_execution_in_verifier": false,
+    "market_or_external_jnlp_access_in_verifier": false
+  },
+  "red_team": {
+    "role": "A7",
+    "initial_conclusion": "FAIL_P0_FIXED_BEFORE_COMMIT",
+    "fixed_findings": [
+      "ARTIFACT_MANIFEST_AND_PAYLOADS_NOT_INDEPENDENTLY_ANCHORED",
+      "TARGET_OS_ARCH_FORMAT_NOT_IMMUTABLE",
+      "SCOPE_AND_REMAINING_BLOCKERS_NOT_IMMUTABLE"
+    ],
+    "final_conclusion": "PASS_COMMIT_ALLOWED",
+    "regression_tests": "18/18 PASS",
+    "remaining_findings": []
+  },
+  "logical_role_audits": {
+    "A0": "PASS_INTEGRATION_ATOMIC_COMMIT_ONLY",
+    "A1": "PASS_FROZEN_CANDIDATE_BLOB_ANCHORS_UNCHANGED",
+    "A2": "PASS_DATA_BOUNDARIES_UNCHANGED_NO_MARKET_OR_FORBIDDEN_PERIOD_ACCESS",
+    "A3": "PASS_WORKFLOWS_UNCHANGED_NO_PUSH_OR_PRICE_TRIGGER_ADDED",
+    "A4": "PASS_TWO_ARCHIVES_AND_28_TARGET_OS_ARCH_FORMATS_REVIEWED",
+    "A5": "PASS_ARTIFACT_ZIP_MANIFEST_AND_PAYLOAD_HASHES_VERIFIED",
+    "A6": "PASS_COUNT_ONLY_AND_OUTCOME_AUTHORIZATION_FALSE_NO_OUTCOME_FIELDS",
+    "A7": "PASS_AFTER_P0_REGRESSIONS_CLOSED"
+  },
+  "authorization_state": {
+    "runtime_code_closure_verified": false,
+    "shaded_runner_scanned": false,
+    "native_load_and_mapped_dso_verified": false,
+    "child_process_and_os_egress_enforced": false,
+    "remote_jnlp_locked": false,
+    "streaming_48_series_full_qc_ready": false,
+    "actual_market_data_full_quality_gate_passed": false,
+    "acquisition_authorized": false,
+    "count_only_authorized": false,
+    "outcomes_authorized": false,
+    "phase9_price_files_acquired": 0,
+    "market_price_request_attempted": false,
+    "forbidden_market_period_request_attempted": false,
+    "research_outcomes_calculated": false,
+    "outcome_fields": []
+  },
+  "remaining_blockers": [
+    "SHADED_RUNNER_NOT_SCANNED",
+    "NATIVE_LOAD_AND_MAPPED_DSO_NOT_TESTED",
+    "CHILD_PROCESS_AND_OS_EGRESS_NOT_ENFORCED",
+    "REMOTE_JNLP_NOT_OBSERVED_OR_LOCKED",
+    "STREAMING_48_SERIES_FULL_QC_NOT_FROZEN",
+    "ACTUAL_MARKET_DATA_FULL_QC_NOT_EXECUTED",
+    "RAW_CUSTODY_PATH_NOT_APPROVED"
+  ],
+  "scientific_status": {
+    "phase9_confirmatory_questions_tested": 0,
+    "confirmed_phase9_edge_count": 0,
+    "count_only_started": false,
+    "return_mfe_mae_edge_win_rate_p_value_calculated": false,
+    "interpretation": "Gate B freezes and validates the exact Run 2 native inventory only. It does not authorize credentials, JNLP observation, acquisition, Count-only, or research outcomes."
+  },
+  "next_single_action": "In a new atomic commit, statically scan the exact shaded runner and design the no-secret/no-price native-load, mapped-DSO, child-process, and OS-egress verification gate without connecting to external JNLP or market services."
+}

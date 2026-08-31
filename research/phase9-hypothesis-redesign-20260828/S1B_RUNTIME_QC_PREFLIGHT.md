@@ -1,6 +1,6 @@
 # Phase 9 S1B runtime/QC preflight
 
-Status: `RUN_2_STATIC_NATIVE_INVENTORY_PASS_GATE_B_PENDING_ACQUISITION_BLOCKED`
+Status: `RUN_2_STATIC_NATIVE_INVENTORY_PASS_GATE_B_FROZEN_ACQUISITION_BLOCKED`
 
 Run #1 `33374751888` verified all 116 locked JAR SHA-256 values before parsing, but
 its native inventory was invalid because 28,088 Java `.class` entries beginning with
@@ -15,10 +15,12 @@ parsing, and recorded 28 native candidates. The exact metadata Artifact ZIP SHA-
 The canonical audit and preserved metadata are in
 `results/s1b-run-33376110507/`.
 
-Run #2 is a Gate A static-inventory engineering pass only. Acquisition remains
-blocked, no market data or outcomes were accessed, and the 28 entries must be
-reviewed and frozen in a separate Gate B commit before they can be used as an
-exact-match allowlist.
+Run #2 is a Gate A static-inventory engineering pass only. The 28 entries were
+subsequently reviewed and frozen in the separate
+`data_manifest/native_entry_allowlist.run33376110507.json` Gate B commit. The
+exact-match verifier is `runner/verify_phase9_gate_b.py`; the canonical audit is
+`results/gate-b-native-allowlist/GATE_B_AUDIT.json`. Acquisition remains blocked,
+and no market data or outcomes were accessed.
 
 ## Purpose
 
@@ -83,10 +85,11 @@ mandatory before the actual market-data Full-QC gate can pass.
 - actual market-data quality or missingness;
 - durable private raw-data custody.
 
-The first native inventory cannot authorize its own contents. It must be audited and
-committed as a separate Gate B allowlist. External JNLP observation also requires a
-separate terms confirmation and manual authorization; Gate A performs no such
-request.
+The first native inventory did not authorize its own contents. Its later Gate B
+allowlist fixes both archive identities and all 28 entry identities, target OS/arch,
+and fail-closed mismatch rules. Gate B still has no acquisition authorization effect.
+External JNLP observation also requires a separate terms confirmation and manual
+authorization; Gate A and Gate B perform no such request.
 
 Until later gates pass:
 

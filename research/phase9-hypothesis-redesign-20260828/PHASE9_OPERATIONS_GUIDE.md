@@ -28,7 +28,7 @@ Phase 9
 ├─ Confirmatory questions      12件
 ├─ 状態                         全件UNTESTED_PREREGISTERED
 ├─ 正式なPhase 9データ取得      未開始
-├─ Provider acquisition         S1B_GATE_A_RUN2_PASS / GATE_B_PENDING / PRICE_BLOCKED
+├─ Provider acquisition         S1B_GATE_A_PASS / GATE_B_FROZEN / PRICE_BLOCKED
 ├─ Phase 9 return/backtest       0件
 └─ MT5 EA                       禁止
 ```
@@ -194,7 +194,7 @@ H4とD1はcanonical H1からの派生のみなので、最終的な対象終了�
 
 公開website endpointと`dukascopy-go`の組合せは、自動access条件、配布license、H1月単位requestの禁止境界超過の3点で廃止しました。詳細は`PROVIDER_ACQUISITION_BLOCKER.md`を参照します。
 
-代替として、公式認証JForex Tester APIと公式SDKを使う取得経路を`JFOREX_SOURCE_CHANNEL_AMENDMENT.md`で事前凍結しました。Build preflight Run `33336895081`はpre-connect non-bootstrap class-origin試験に成功しました。S1B Gate A Run `33376110507`は、Run 5から固定した116個のJARをMaven/Javaを実行せず取得し、全SHA一致後に28 native entryを静的列挙し、repository-local synthetic JNLPとsynthetic Full-QC primitivesを完了しました。現在許可される次工程は、この28件を別commitのexact-match Gate B allowlistとして凍結することだけです。Shaded runner、native load/mapped DSO、child process/OS egress、remote JNLP、streaming actual Full-QC、raw custodyが未解決であり、S1B成功もGate B成功も実取得許可ではありません。
+代替として、公式認証JForex Tester APIと公式SDKを使う取得経路を`JFOREX_SOURCE_CHANNEL_AMENDMENT.md`で事前凍結しました。Build preflight Run `33336895081`はpre-connect non-bootstrap class-origin試験に成功しました。S1B Gate A Run `33376110507`は、Run 5から固定した116個のJARをMaven/Javaを実行せず取得し、全SHA一致後に28 native entryを静的列挙し、repository-local synthetic JNLPとsynthetic Full-QC primitivesを完了しました。その28件はRun 2とは別commitの`data_manifest/native_entry_allowlist.run33376110507.json`へGate B exact-match allowlistとして凍結し、Artifact ZIP、2 archive、28 entryを独立再検証済みです。Shaded runner、native load/mapped DSO、child process/OS egress、remote JNLP、streaming actual Full-QC、raw custodyが未解決であり、S1B成功もGate B成功も実取得許可ではありません。
 
 ### 再利用できる参考実装
 
@@ -236,6 +236,8 @@ S1B Run #1 `33374751888`は116 JARの全SHA一致まで成功しましたが、J
 衝突除外とregression testを反映したRun #2 `33376110507`はcompleted/successです。116 JARの全SHA一致、28 native entry、Java class衝突除外、exact 9-file metadata Artifactを確認しました。Artifact ZIP SHA-256は`ad72a646f91ec4e15fb7df564bbc7fd0fb4133c3c8999f8bf8a0468e4af0094a`です。取得・価格・禁止期間・Outcomeへのaccessは0で、全認可はfalseです。正本監査は`results/s1b-run-33376110507/S1B_AUDIT.json`です。
 
 このArtifactはlocked JAR/native inventoryとsynthetic QCの監査資料であり、取得許可そのものではありません。shaded runner、JNLP接続がMaven closure外の実行codeを追加取得しないことの検証と、full-QC/raw保管経路の決定後に、別のsecret-scoped acquisition/QC workflowを事前監査します。
+
+Gate B監査正本は`results/gate-b-native-allowlist/GATE_B_AUDIT.json`です。Verifierは`runner/verify_phase9_gate_b.py`で、Run ID、head SHA、116-JAR manifest SHA、Artifact ZIP SHA、archive/entryの完全集合と各fieldを照合します。未知archive、追加・欠落・重複entry、case collision、未知magic/target、authorization反転はfail-closedです。Gate B後も`acquisition_authorized=false`、価格0件、Outcome未計算を維持します。
 
 workflowはprice、return、edgeの実行ボタンを自動的に続けません。取得成功後も`full_quality_gate_passed=false`のまま停止し、calendar、H4/D1 bucket、Energy rollを別工程で監査します。
 

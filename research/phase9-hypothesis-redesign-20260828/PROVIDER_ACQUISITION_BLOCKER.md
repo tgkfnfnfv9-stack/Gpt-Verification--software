@@ -1,6 +1,6 @@
 # Phase 9 Provider / Acquisition Blocker
 
-Status: `PUBLIC_ENDPOINT_PATH_REJECTED; JFOREX_SELECTED; S1B_GATE_A_PASS; PRICE_BLOCKED_PENDING_GATE_B_AND_REMAINING_RUNTIME_CONTROLS`
+Status: `PUBLIC_ENDPOINT_PATH_REJECTED; JFOREX_SELECTED; S1B_GATE_A_PASS; GATE_B_FROZEN; PRICE_BLOCKED_PENDING_REMAINING_RUNTIME_CONTROLS`
 
 Recorded: 2026-08-29 UTC
 
@@ -94,7 +94,8 @@ Resume acquisition only after all of the following have been completed and
 separately audited:
 
 1. Freeze the 28 native entries in a later commit as a Gate B exact-match
-   allowlist; do not self-authorize from the same discovery run.
+   allowlist; do not self-authorize from the same discovery run. **Completed;
+   acquisition authorization remains false.**
 2. Scan the shaded runner and prove actual native loading/mapped-DSO behavior.
 3. Enforce child-process and OS-level egress controls.
 4. After terms confirmation and a separate manual authorization, observe and
@@ -111,8 +112,8 @@ See `JFOREX_SOURCE_CHANNEL_AMENDMENT.md`, `S1B_RUNTIME_QC_PREFLIGHT.md`, and
 Until then:
 
 - S1B Gate A static inventory: `PASS_EVIDENCE_ONLY`
-- Gate B exact-match allowlist: `PENDING_SEPARATE_COMMIT`
-- acquisition: `BLOCKED_PENDING_GATE_B_AND_REMAINING_RUNTIME_CONTROLS`
+- Gate B exact-match allowlist: `FROZEN_EXACT_MATCH_PASS_EVIDENCE_ONLY`
+- acquisition: `BLOCKED_PENDING_REMAINING_RUNTIME_CONTROLS`
 - full quality gate: `BLOCKED`
 - Count-only Gate: `BLOCKED`
 - return/MFE/MAE/edge backtest: `BLOCKED`
