@@ -1,6 +1,14 @@
 # Phase 9 S1B runtime/QC preflight
 
-Status: `GATE_A_IMPLEMENTED_PENDING_WORKFLOW_RUN`
+Status: `RUN_1_NATIVE_INVENTORY_INVALID_CLASS_MAGIC_FIX_PENDING_RERUN`
+
+Run `33374751888` completed successfully at the workflow level and verified all
+116 locked JAR SHA-256 values before parsing. Its native inventory is not valid:
+28,088 Java `.class` entries beginning with `CAFEBABE` were misclassified as Mach-O
+fat binaries. Acquisition remained blocked, no market data or outcomes were accessed,
+and this inventory must not be used as a Gate B allowlist. The canonical fail-closed
+audit is `results/s1b-run-33374751888/S1B_AUDIT.json`. The classifier now explicitly
+excludes this Java-class collision and requires a new workflow run.
 
 ## Purpose
 

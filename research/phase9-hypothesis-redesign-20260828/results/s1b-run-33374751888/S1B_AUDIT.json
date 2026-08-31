@@ -1,0 +1,69 @@
+{
+  "audited_at": "2026-08-31",
+  "artifact": {
+    "artifact_id": 9751429985,
+    "artifact_name": "phase9-s1b-runtime-qc-metadata-b7def4733649d111f693b057c84a159bacfa6126-33374751888-1",
+    "artifact_zip_sha256": "b89711e2eb9acdba312e38aa28ecca1ca0f7faecc167e6a146e8d6fa776f5733",
+    "exact_allowed_file_count": 9,
+    "manifest_rows": 8,
+    "manifest_hashes_match": true,
+    "raw_market_file_count": 0,
+    "size_in_bytes": 1466726
+  },
+  "conclusion": "OPERATIONAL_SUCCESS_SCIENTIFIC_NATIVE_INVENTORY_INVALID_FAIL_CLOSED",
+  "dependency_bytes": {
+    "all_sha256_match": true,
+    "dukascopy_repository_jar_count": 22,
+    "environment_proxy_used": false,
+    "locked_jar_count": 116,
+    "locked_jar_manifest_sha256": "8a6fca0cf65d80fc7ca0459ff56cf35ec6f92fe89b8f516de7bc8905ab941aeb",
+    "maven_central_jar_count": 94,
+    "redirects_allowed": false,
+    "total_bytes": 66837102,
+    "verified_before_archive_parse": true
+  },
+  "head_sha": "b7def4733649d111f693b057c84a159bacfa6126",
+  "job_id": 99433615451,
+  "native_inventory_incident": {
+    "authoritative_native_inventory_available": false,
+    "cause": "Java class magic CAFEBABE collided with Mach-O fat-binary magic CAFEBABE.",
+    "class_false_positive_count": 28088,
+    "observed_native_entry_count": 28116,
+    "post_exclusion_candidate_count_inferred_only": 28,
+    "required_action": "Commit the explicit .class collision exclusion, add regression coverage, and rerun S1B. Do not derive a Gate B allowlist from this run."
+  },
+  "policy_status": {
+    "acquisition_authorized": false,
+    "actual_market_data_full_quality_gate_passed": false,
+    "count_only_authorized": false,
+    "dukascopy_or_market_credentials_referenced": false,
+    "external_jnlp_request_attempted": false,
+    "forbidden_market_period_request_attempted": false,
+    "forward_fill_count": 0,
+    "java_executed": false,
+    "jforex_connect_invoked": false,
+    "market_price_request_attempted": false,
+    "maven_executed": false,
+    "outcome_fields": [],
+    "phase9_price_files_acquired": 0,
+    "research_outcomes_calculated": false,
+    "runtime_code_closure_verified": false,
+    "shaded_runner_scanned": false,
+    "synthetic_fixture_only": true
+  },
+  "run_attempt": 1,
+  "run_id": 33374751888,
+  "run_number": 1,
+  "run_status": "completed",
+  "schema_version": "phase9-s1b-gate-a-audit-v1.0",
+  "synthetic_qc": {
+    "actual_market_data_evaluated": false,
+    "outcomes_calculated": false,
+    "status": "SYNTHETIC_PRIMITIVES_PASS_ACTUAL_DATA_NOT_EVALUATED"
+  },
+  "tests": {
+    "phase9_acquisition": "19/19 PASS",
+    "s1b": "30/30 PASS_AT_RUN_TIME_BEFORE_COLLISION_REGRESSION_WAS_ADDED"
+  },
+  "workflow_conclusion": "success"
+}

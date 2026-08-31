@@ -134,7 +134,12 @@ def scan_native_entries(archive: Path, archive_label: str, maximum_entry_bytes: 
             seen.add(info.filename)
             suffix_match = parsed.name.lower().endswith(NATIVE_SUFFIXES)
             with handle.open(info, "r") as entry:
-                magic = native_magic(entry.read(4))
+                header = entry.read(4)
+                magic = native_magic(header)
+            # CAFEBABE is both the Java class-file magic and a Mach-O fat magic.
+            # A .class entry inside a JAR is Java bytecode, not a native payload.
+            if parsed.name.lower().endswith(".class") and header == b"\xca\xfe\xba\xbe":
+                magic = None
             if not suffix_match and magic is None:
                 continue
             if info.file_size > maximum_entry_bytes:
@@ -333,6 +338,7 @@ def run(args: argparse.Namespace) -> dict:
         "run5_maven_repository_inventory_sha256_recorded": policy["build_lock"]["maven_repository_inventory_sha256"],
         "run5_runner_jar_sha256_recorded": policy["build_lock"]["runner_jar_sha256"],
         "native_entry_count": len(native_entries), "native_entries": native_entries,
+        "java_class_cafebabe_collision_excluded": True,
         "maven_executed": False, "java_executed": False, "shaded_runner_scanned": False,
         "dukascopy_or_market_credentials_referenced": False,
         "external_jnlp_request_attempted": False, "jforex_connect_invoked": False,

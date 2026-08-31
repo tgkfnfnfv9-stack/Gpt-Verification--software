@@ -39,7 +39,8 @@
 - Run `33336895081`はJava class-origin guard preflight Success。19/19 tests、正規guard ACTIVE→PASSED、外部probeはexit 86で拒否、3-build・930-file inventory一致。price/QC/outcome access 0
 - Java bytecode guardのpreflightは通過したが、JNI/native、child process、JNLP、OS-level network egress、full QC/raw保管は未解決
 - S1B Gate Aを実装済み。Run 5から固定した116-JAR manifestを使い、Maven/Javaは実行せず、SHA一致後のnative payload静的検査、local synthetic JNLP、synthetic Full-QCだけを実行する。外部JNLP・Dukascopy/市場資格情報・priceには接続しない（checkoutの一時GitHub tokenは使用）。shaded runnerは未検査のままGate B blockerとする
+- S1B Run `33374751888`はworkflow Success、116 JAR全SHA一致。ただしJava `.class`の`CAFEBABE`をMach-Oと誤認し28,088件がfalse positiveだったためnative inventoryは無効。price/outcome access 0、認可falseのままfail-closed。分類器修正後の再Runが必要
 
 ## 次に実行する1作業
 
-`.github/workflows/phase9-s1b-runtime-qc-preflight.yml`を完全一致confirmationで1回手動実行し、native inventoryとsynthetic QC Artifactを監査する。Gate Aの同一run inventoryを許可表に流用せず、結果を別commitのGate B allowlistとして固定する。外部JNLP観測は規約確認と別の手動承認まで行わない。同一run Full QCまたは明示承認済みの非公開immutable raw保管が決まるまで実取得しない。
+Java class/Mach-O magic衝突修正版をCommitし、`.github/workflows/phase9-s1b-runtime-qc-preflight.yml`を同じ完全一致confirmationで再実行する。Run `33374751888`のnative inventoryは許可表に使わない。修正Runを監査後も、同一run inventoryを自己認可せず別commitのGate B allowlistとして固定する。外部JNLP観測は規約確認と別の手動承認まで行わない。同一run Full QCまたは明示承認済みの非公開immutable raw保管が決まるまで実取得しない。

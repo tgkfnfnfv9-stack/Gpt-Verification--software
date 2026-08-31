@@ -59,6 +59,7 @@
     "reject_absolute_paths": true,
     "reject_parent_traversal": true,
     "reject_case_collisions": true,
+    "reject_java_class_cafebabe_as_macho": true,
     "same_run_inventory_may_authorize_execution": false
   },
   "jnlp_static_policy": {

@@ -4,7 +4,7 @@
 対象Repository: `tgkfnfnfv9-stack/Gpt-Verification--software`
 対象Branch: `main`
 S1B実装基準main commit: `d5789f8c5516bd21b4d838ff04533518bef76ac6`
-現在status: `S1B_GATE_A_IMPLEMENTED_PENDING_RUN_ACQUISITION_BLOCKED`
+現在status: `S1B_RUN1_NATIVE_INVENTORY_INVALID_FIX_PENDING_RERUN_ACQUISITION_BLOCKED`
 
 > 2026-08-30 amendment: 公開endpointと`dukascopy-go v0.2.0`の実行経路は廃止しました。この文書の旧版にあった同toolのコマンドや実行指示は有効ではありません。理由は`PROVIDER_ACQUISITION_BLOCKER.md`、代替正本は`JFOREX_SOURCE_CHANNEL_AMENDMENT.md`です。
 
@@ -45,6 +45,8 @@ Phase 9
 Phase 9は仮説討論段階ではなく、事前登録済みである。旧Draftを使ってはいけない。
 
 Phase 9専用JForex取得・境界QC基盤は実装済みだが、市場price fileは0件である。Build preflight Run `33336895081`で全Maven依存とrebuild JARのSHA、pre-connect class-origin guardを監査済み。次はDukascopy・市場資格情報、外部JNLP、price requestなしのS1B Gate Aで、Run 5から固定した116個のJARをSHA一致後にだけ静的検査し、native payload inventoryとsynthetic Full-QC primitivesを記録する。S1BではMaven/Javaを実行せず、shaded runnerも未検査のままblockerとする。Count-only RunnerとDiscovery Runnerはまだ作らない。
+
+S1B Run `33374751888`は116 JAR SHA検証に成功したが、Java `.class`の`CAFEBABE`をMach-Oとして28,088件誤検出したためnative inventoryを無効化した。`results/s1b-run-33374751888/S1B_AUDIT.json`を正本とし、分類器修正後に再Runする。同RunからGate B allowlistを作らない。市場price、禁止期間、Outcomeへのaccessは0である。
 
 ---
 

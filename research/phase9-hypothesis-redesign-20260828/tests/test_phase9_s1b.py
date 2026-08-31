@@ -107,10 +107,21 @@ class RuntimeEnvelopeTests(unittest.TestCase):
             with zipfile.ZipFile(archive, "w") as handle:
                 handle.writestr("linux/libgood.so", b"\x7fELFpayload")
                 handle.writestr("windows/native.bin", b"MZpayload")
+                handle.writestr("org/example/Ordinary.class", b"\xca\xfe\xba\xbebytecode")
                 handle.writestr("ordinary.txt", b"plain")
             rows = runtime.scan_native_entries(archive, "fixture.jar")
             self.assertEqual(len(rows), 2)
             self.assertEqual({row["magic"] for row in rows}, {"ELF", "PE"})
+
+    def test_java_class_cafebabe_is_not_macho(self):
+        with tempfile.TemporaryDirectory() as directory:
+            archive = Path(directory) / "classes.jar"
+            with zipfile.ZipFile(archive, "w") as handle:
+                handle.writestr("Example.class", b"\xca\xfe\xba\xbe\x00\x00\x00\x34")
+                handle.writestr("mac/libnative.dylib", b"\xca\xfe\xba\xbe\x00\x00\x00\x02")
+            rows = runtime.scan_native_entries(archive, "fixture.jar")
+            self.assertEqual([row["entry"] for row in rows], ["mac/libnative.dylib"])
+            self.assertEqual(rows[0]["magic"], "MACHO")
 
     def test_archive_path_traversal_is_rejected(self):
         with self.assertRaises(ValueError):
@@ -171,6 +182,7 @@ class RuntimeEnvelopeTests(unittest.TestCase):
         self.assertFalse(POLICY["gate_a"]["native_execution_allowed"])
         self.assertFalse(POLICY["gate_a"]["maven_execution_allowed"])
         self.assertFalse(POLICY["gate_a"]["java_execution_allowed"])
+        self.assertTrue(POLICY["native_inventory"]["reject_java_class_cafebabe_as_macho"])
 
 
 class FullQcPrimitiveTests(unittest.TestCase):

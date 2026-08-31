@@ -28,7 +28,7 @@ Phase 9
 ├─ Confirmatory questions      12件
 ├─ 状態                         全件UNTESTED_PREREGISTERED
 ├─ 正式なPhase 9データ取得      未開始
-├─ Provider acquisition         S1B_GATE_A_IMPLEMENTED_PENDING_RUN / PRICE_BLOCKED
+├─ Provider acquisition         S1B_RUN1_INVALID_FIX_PENDING_RERUN / PRICE_BLOCKED
 ├─ Phase 9 return/backtest       0件
 └─ MT5 EA                       禁止
 ```
@@ -230,6 +230,8 @@ workflow inputに日付はありません。Java runnerがtimeframe別の境界�
 6. このworkflowにはDukascopy・市場Secrets、JForex認証、price request、raw CSV、QC、Outcomeのstepを置かない。checkoutの一時GitHub tokenは永続化しない。
 
 Run 5監査後のS1B Gate Aは`.github/workflows/phase9-s1b-runtime-qc-preflight.yml`を使い、confirmationへ`RUN_PHASE9_S1B_NO_SECRET_NO_PRICE_PREFLIGHT`を完全一致入力します。GitHub checkoutのscoped ephemeral tokenは使用しますが永続化せず、Dukascopy・市場資格情報は参照しません。Maven、Java、外部JNLP request、JForex connect、market request、native executionは行いません。116個のlocked JARはredirect/proxyなしで取得し、SHA一致後にだけ静的に開きます。Artifactはdata custody policyの完全allowlistを全検査した成功時だけuploadします。
+
+S1B Run `33374751888`は116 JARの全SHA一致まで成功しましたが、Java `.class`の`CAFEBABE`をMach-O fat magicと誤認しました。28,088件のfalse positiveを含むため同Runのnative inventoryは無効で、Gate B allowlistに使いません。取得・価格・禁止期間・Outcomeへのaccessは0で、全認可はfalseです。`.class`衝突除外とregression testをcommitしてS1Bを再Runします。
 
 このArtifactはlocked JAR/native inventoryとsynthetic QCの監査資料であり、取得許可そのものではありません。shaded runner、JNLP接続がMaven closure外の実行codeを追加取得しないことの検証と、full-QC/raw保管経路の決定後に、別のsecret-scoped acquisition/QC workflowを事前監査します。
 

@@ -1,7 +1,7 @@
 {
   "project": "auto-trading-research",
   "updated_at": "2026-08-31",
-  "phase": "PHASE9_PREREGISTERED_S1B_GATE_A_IMPLEMENTED_PENDING_RUN_ACQUISITION_BLOCKED",
+  "phase": "PHASE9_PREREGISTERED_S1B_RUN1_NATIVE_INVENTORY_INVALID_FIX_PENDING_RERUN_ACQUISITION_BLOCKED",
   "phase8": {
     "formal_hypotheses_including_pa002": 16,
     "decision": "ALL_REJECT_FOR_DEVELOPMENT",
@@ -54,7 +54,7 @@
     "legacy_non_phase9_future_period_download_detected": true
   },
   "provider_acquisition": {
-    "status": "S1B_GATE_A_IMPLEMENTED_PENDING_RUN_ACQUISITION_BLOCKED_PENDING_GATE_B_JNLP_AND_ACTUAL_FULL_QC",
+    "status": "S1B_RUN1_NATIVE_INVENTORY_INVALID_FIX_PENDING_RERUN_ACQUISITION_BLOCKED",
     "decision_log": "PROVIDER_ACQUISITION_BLOCKER.md",
     "source_channel_amendment": "JFOREX_SOURCE_CHANNEL_AMENDMENT.md",
     "selected_channel": "DUKASCOPY_OFFICIAL_AUTHENTICATED_JFOREX_TESTER_API",
@@ -71,7 +71,7 @@
     "runtime_code_closure_verified": false,
     "java_nonbootstrap_class_origin_guard_self_test_passed": true,
     "s1b_runtime_qc_gate_a": {
-      "status": "IMPLEMENTED_PENDING_WORKFLOW_RUN",
+      "status": "RUN1_NATIVE_INVENTORY_INVALID_CLASS_MAGIC_FIX_PENDING_RERUN",
       "workflow": ".github/workflows/phase9-s1b-runtime-qc-preflight.yml",
       "confirmation": "RUN_PHASE9_S1B_NO_SECRET_NO_PRICE_PREFLIGHT",
       "github_checkout_ephemeral_token_used": true,
@@ -92,6 +92,26 @@
       "acquisition_authorized": false,
       "actual_market_data_full_quality_gate_passed": false
     },
+    "s1b_runtime_qc_attempts": [
+      {
+        "run_id": 33374751888,
+        "job_id": 99433615451,
+        "artifact_id": 9751429985,
+        "head_sha": "b7def4733649d111f693b057c84a159bacfa6126",
+        "workflow_conclusion": "success",
+        "locked_jar_count": 116,
+        "locked_jar_sha_all_match": true,
+        "observed_native_entry_count": 28116,
+        "java_class_false_positive_count": 28088,
+        "authoritative_native_inventory_available": false,
+        "failure_reason": "CAFEBABE_JAVA_CLASS_MACHO_MAGIC_COLLISION",
+        "phase9_price_files": 0,
+        "forbidden_market_period_request_attempted": false,
+        "outcomes_calculated": false,
+        "acquisition_authorized": false,
+        "audit": "results/s1b-run-33374751888/S1B_AUDIT.json"
+      }
+    ],
     "build_preflight_audit": {
       "run_id": 33300116235,
       "job_id": 99226544365,
@@ -223,7 +243,7 @@
   ],
   "next_actions": [
     "use PHASE9_OPERATIONS_GUIDE.md as the procedural entrypoint",
-    "run and audit S1B Gate A without Dukascopy or market credentials, external JNLP, or market access",
+    "commit the S1B Java-class CAFEBABE collision fix and rerun Gate A without Dukascopy or market credentials, external JNLP, or market access",
     "freeze the audited native inventory in a separate Gate B allowlist; do not authorize from same-run discovery",
     "complete streaming 48-series provider-calendar/session/synchronization/H4-D1/Energy-roll QC or approve a private raw-data store",
     "only then configure JForex demo credentials and authorize one acquisition run",
