@@ -226,6 +226,22 @@ class GateCInventoryTests(unittest.TestCase):
         )
         self.assertNotEqual(result.returncode, 0)
 
+    def test_supplementary_group_probe_is_valid_awk_and_detects_groups(self):
+        program = (
+            r"/^Groups:/ {for (field_number = 2; field_number <= NF; field_number++) "
+            r"printf $field_number}"
+        )
+        sandbox = (ROOT / "runner/run_gate_c_probe_sandbox.sh").read_text(encoding="utf-8")
+        self.assertIn(program, sandbox)
+        empty = subprocess.run(
+            ["awk", program], input="Groups:\t\n", text=True, capture_output=True, check=True
+        )
+        populated = subprocess.run(
+            ["awk", program], input="Groups:\t4 27\n", text=True, capture_output=True, check=True
+        )
+        self.assertEqual(empty.stdout, "")
+        self.assertEqual(populated.stdout, "427")
+
     def test_c1_scanner_has_no_network_subprocess_or_market_runtime(self):
         source = (ROOT / "runner/phase9_gate_c_inventory.py").read_text(encoding="utf-8")
         for prohibited in (

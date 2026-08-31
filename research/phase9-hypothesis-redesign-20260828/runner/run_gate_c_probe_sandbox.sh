@@ -114,7 +114,7 @@ kill -0 "$java_pid"
 observed_uids=$(awk '/^Uid:/ {print $2 "," $3 "," $4 "," $5}' "/proc/$java_pid/status")
 observed_gids=$(awk '/^Gid:/ {print $2 "," $3 "," $4 "," $5}' "/proc/$java_pid/status")
 observed_no_new_privs=$(awk '/^NoNewPrivs:/ {print $2}' "/proc/$java_pid/status")
-observed_groups=$(awk '/^Groups:/ {for (index = 2; index <= NF; index++) printf $index}' "/proc/$java_pid/status")
+observed_groups=$(awk '/^Groups:/ {for (field_number = 2; field_number <= NF; field_number++) printf $field_number}' "/proc/$java_pid/status")
 [[ "$observed_uids" == "$target_uid,$target_uid,$target_uid,$target_uid" ]]
 [[ "$observed_gids" == "$target_gid,$target_gid,$target_gid,$target_gid" ]]
 [[ "$observed_no_new_privs" == 1 ]]
