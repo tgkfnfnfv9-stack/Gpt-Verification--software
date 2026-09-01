@@ -1,0 +1,186 @@
+name: phase9-gate-c3-execution-envelope
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/phase9-gate-c3-execution-envelope.yml'
+      - 'research/phase9-hypothesis-redesign-20260828/runner/phase9_ephemeral_custody.py'
+      - 'research/phase9-hypothesis-redesign-20260828/runner/phase9_gate_c3_seccomp.c'
+      - 'research/phase9-hypothesis-redesign-20260828/tests/test_phase9_gate_c3.py'
+  workflow_dispatch:
+    inputs:
+      confirmation:
+        description: 'Type RUN_PHASE9_GATE_C3_NO_SECRET_NO_PRICE'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: phase9-gate-c3-execution-envelope
+  cancel-in-progress: false
+
+jobs:
+  enforce:
+    if: ${{ github.ref == 'refs/heads/main' && (github.event_name == 'push' || inputs.confirmation == 'RUN_PHASE9_GATE_C3_NO_SECRET_NO_PRICE') }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout exact triggering commit
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+          ref: ${{ github.sha }}
+
+      - name: Establish no-secret no-price boundary
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          for name in DUKASCOPY_USERNAME DUKASCOPY_PASSWORD PHASE9_JFOREX_CONFIRM; do
+            test -z "${!name:-}"
+          done
+          for injection in CLASSPATH JAVA_TOOL_OPTIONS _JAVA_OPTIONS JDK_JAVA_OPTIONS LD_PRELOAD LD_LIBRARY_PATH; do
+            test -z "${!injection:-}"
+          done
+          upload="$RUNNER_TEMP/phase9-gate-c3-upload-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          test ! -e "$upload"
+          mkdir -m 0700 "$upload"
+          {
+            echo "GATE_C3_UPLOAD=$upload"
+            echo "GATE_C3_GUARD=$RUNNER_TEMP/phase9-gate-c3-guard-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          } >> "$GITHUB_ENV"
+
+      - name: Verify prior frozen gates and repository tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          root='research/phase9-hypothesis-redesign-20260828'
+          test "$(sha256sum "$root/data_manifest/native_entry_allowlist.run33376110507.json" | cut -d' ' -f1)" = 'a0932eee2fe2c7019e838cce1557e78b19be42048af0474bbceb6b692b30602c'
+          test "$(sha256sum "$root/data_manifest/runtime_mapping_allowlist.run33451221995.json" | cut -d' ' -f1)" = '43a7a0e43302daed8f5ad97c63c3da1a618f16d4d07a43a1de88c49e8ec26bc3'
+          python "$root/runner/verify_phase9_gate_b.py" >/dev/null
+          python "$root/runner/verify_phase9_gate_c2.py" >/dev/null
+          python -m unittest discover -s "$root/tests" -p 'test_*.py' -v
+          git diff --exit-code
+
+      - name: Compile and exercise kernel execution envelope
+        shell: bash
+        run: |
+          set -euo pipefail
+          root='research/phase9-hypothesis-redesign-20260828'
+          cc -std=c11 -O2 -Wall -Wextra -Werror -pthread \
+            "$root/runner/phase9_gate_c3_seccomp.c" -o "$GATE_C3_GUARD"
+          "$GATE_C3_GUARD" --self-test > "$GATE_C3_UPLOAD/seccomp_self_test.txt"
+          "$GATE_C3_GUARD" -- /bin/true
+          test "$(cat "$GATE_C3_UPLOAD/seccomp_self_test.txt")" = 'phase9_gate_c3_seccomp_self_test=PASS'
+          chmod 0600 "$GATE_C3_UPLOAD/seccomp_self_test.txt"
+
+      - name: Exercise same-run custody and prove scoped cleanup
+        shell: bash
+        run: |
+          set -euo pipefail
+          root='research/phase9-hypothesis-redesign-20260828'
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          import importlib.util
+
+          source = Path('research/phase9-hypothesis-redesign-20260828/runner/phase9_ephemeral_custody.py')
+          spec = importlib.util.spec_from_file_location('phase9_ephemeral_custody', source)
+          module = importlib.util.module_from_spec(spec)
+          assert spec.loader is not None
+          spec.loader.exec_module(module)
+          paths = module.prepare(Path(os.environ['RUNNER_TEMP']), os.environ['GITHUB_RUN_ID'], os.environ['GITHUB_RUN_ATTEMPT'])
+          probe = paths['cache'] / 'synthetic-custody-probe.bin'
+          probe.write_bytes(b'not-market-data\n')
+          probe.chmod(0o600)
+          validation = module.validate_private_tree(paths['root'])
+          cleanup = module.remove_private_tree(paths['root'], Path(os.environ['RUNNER_TEMP']))
+          value = {
+              'schema_version': 'phase9-gate-c3-custody-cleanup-v1.0',
+              'synthetic_only': True,
+              'pre_cleanup_validation': validation,
+              'cleanup': cleanup,
+              'raw_market_files_created': 0,
+              'cache_market_files_created': 0,
+          }
+          target = Path(os.environ['GATE_C3_UPLOAD']) / 'custody_cleanup.json'
+          target.write_text(json.dumps(value, indent=2, sort_keys=True) + '\n', encoding='utf-8')
+          target.chmod(0o600)
+          PY
+
+      - name: Seal exact metadata and blocked authorization
+        shell: bash
+        run: |
+          set -euo pipefail
+          root='research/phase9-hypothesis-redesign-20260828'
+          python - <<'PY'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+
+          root = Path('research/phase9-hypothesis-redesign-20260828')
+          upload = Path(os.environ['GATE_C3_UPLOAD'])
+          def digest(path: Path) -> str:
+              return hashlib.sha256(path.read_bytes()).hexdigest()
+          audit = {
+              'schema_version': 'phase9-gate-c3-execution-envelope-audit-v1.0',
+              'status': 'OFFLINE_ENFORCEMENT_EVIDENCE_ONLY_ACQUISITION_BLOCKED',
+              'run_id': int(os.environ['GITHUB_RUN_ID']),
+              'run_attempt': int(os.environ['GITHUB_RUN_ATTEMPT']),
+              'head_sha': os.environ['GITHUB_SHA'],
+              'runner_os': os.environ['RUNNER_OS'],
+              'runner_arch': os.environ['RUNNER_ARCH'],
+              'gate_b_allowlist_sha256': digest(root / 'data_manifest/native_entry_allowlist.run33376110507.json'),
+              'gate_c2_allowlist_sha256': digest(root / 'data_manifest/runtime_mapping_allowlist.run33451221995.json'),
+              'seccomp_source_sha256': digest(root / 'runner/phase9_gate_c3_seccomp.c'),
+              'custody_source_sha256': digest(root / 'runner/phase9_ephemeral_custody.py'),
+              'kernel_child_process_nonthread_rejection_tested': True,
+              'kernel_external_socket_io_rejection_tested': True,
+              'same_run_private_custody_cleanup_tested': True,
+              'credentials_referenced': False,
+              'external_jnlp_request_attempted': False,
+              'jforex_connect_invoked': False,
+              'availability_request_attempted': False,
+              'market_price_request_attempted': False,
+              'forbidden_market_period_request_attempted': False,
+              'phase9_price_files_acquired': 0,
+              'research_outcomes_calculated': False,
+              'outcome_fields': [],
+              'same_run_evidence_may_authorize': False,
+              'acquisition_authorized': False,
+              'count_only_authorized': False,
+              'outcomes_authorized': False,
+          }
+          target = upload / 'GATE_C3_AUDIT.json'
+          target.write_text(json.dumps(audit, indent=2, sort_keys=True) + '\n', encoding='utf-8')
+          target.chmod(0o600)
+          PY
+          expected=$(printf '%s\n' GATE_C3_AUDIT.json custody_cleanup.json seccomp_self_test.txt | LC_ALL=C sort)
+          actual=$(find "$GATE_C3_UPLOAD" -mindepth 1 -maxdepth 1 -type f -printf '%f\n' | LC_ALL=C sort)
+          test "$actual" = "$expected"
+          test "$(find "$GATE_C3_UPLOAD" -mindepth 1 -maxdepth 1 ! -type f -print -quit)" = ''
+          test "$(find "$GATE_C3_UPLOAD" -type f -links +1 -print -quit)" = ''
+          test -z "$(find "$GATE_C3_UPLOAD" -type f \( -iname '*.csv' -o -iname '*.jar' -o -iname '*.jnlp' \) -print -quit)"
+          (cd "$GATE_C3_UPLOAD" && sha256sum $expected) > "$GATE_C3_UPLOAD/artifact_manifest_sha256.txt"
+          chmod 0600 "$GATE_C3_UPLOAD/artifact_manifest_sha256.txt"
+          allowed=$(printf '%s\n%s\n' "$expected" artifact_manifest_sha256.txt | LC_ALL=C sort)
+          actual=$(find "$GATE_C3_UPLOAD" -mindepth 1 -maxdepth 1 -type f -printf '%f\n' | LC_ALL=C sort)
+          test "$actual" = "$allowed"
+          git diff --exit-code
+
+      - name: Upload exact metadata only after all gates pass
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: phase9-gate-c3-execution-envelope-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ env.GATE_C3_UPLOAD }}/
+          if-no-files-found: error
+          retention-days: 14
+          include-hidden-files: false
