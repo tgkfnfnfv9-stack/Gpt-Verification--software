@@ -1,0 +1,88 @@
+{
+  "schema_version": "phase9-exploratory-fxcm-mtf-run-audit-v1.0.0",
+  "status": "EXECUTION_COMPLETE_EXACT_H1_RECONCILIATION_GATE_BLOCKED",
+  "recorded_at_utc": "2026-09-01T12:51:36Z",
+  "track": "EXPLORATORY_FX8_MULTI_TIMEFRAME_NOT_FORMAL_PHASE9",
+  "run_identity": {
+    "run_id": 33508634314,
+    "run_number": 2,
+    "run_attempt": 1,
+    "head_sha": "3c2ec919096cfcb29aef464507398685497f8220",
+    "job_id": 99858646137,
+    "event": "workflow_dispatch",
+    "branch": "main",
+    "conclusion": "SUCCESS",
+    "all_job_steps_succeeded": true,
+    "working_price_cleanup": "SUCCESS"
+  },
+  "artifact": {
+    "artifact_id": 9801206925,
+    "name": "phase9-exploratory-fxcm-mtf-qc-3c2ec919096cfcb29aef464507398685497f8220-33508634314-1",
+    "size_in_bytes": 112194,
+    "github_digest": "sha256:a1048aa2b892cfd5b69b148a374026c8f870b660f512d7f2547e420e436febaa",
+    "downloaded_zip_sha256": "a1048aa2b892cfd5b69b148a374026c8f870b660f512d7f2547e420e436febaa",
+    "exact_file_count": 2,
+    "manifest_check_passed": true,
+    "files": [
+      {
+        "path": "EXPLORATORY_FXCM_MTF_QC.json",
+        "size_in_bytes": 844008,
+        "sha256": "4d7f77caa5333e017742e01606aa869f3845aa4c4f206563e2fd59e02b1e1063"
+      },
+      {
+        "path": "artifact_manifest_sha256.txt",
+        "size_in_bytes": 95,
+        "sha256": "cafae34203451ad4ff32413b9ed62d93e06a4b36e0987296fdc7c144818531a2"
+      }
+    ]
+  },
+  "execution": {
+    "source_download_count": 1664,
+    "source_download_total_bytes": 124980294,
+    "h1_source_identity_exact_match": true,
+    "final_series_count": 64,
+    "bid_ask_reconciliation_count": 32,
+    "mtf_qc_execution_completed": true,
+    "persistent_price_files": 0
+  },
+  "direct_bar_totals": {
+    "m1": {
+      "observed": 5913653,
+      "usable": 5844261,
+      "crossed_open_quarantined": 69392
+    },
+    "H1": {
+      "observed": 98910,
+      "usable": 97644,
+      "crossed_open_quarantined": 1266
+    }
+  },
+  "h1_reconciliation": {
+    "matched_timestamp_count": 126180,
+    "exact_ohlc_match_count": 121883,
+    "ohlc_mismatch_count": 4297,
+    "m1_derived_only_count": 4,
+    "direct_h1_only_count": 69108,
+    "all_symbols_and_sides_affected": true,
+    "per_series_mismatch_rate_percent_min": 2.436,
+    "per_series_mismatch_rate_percent_max": 4.210,
+    "canonical_h1_remains": "DIRECT_H1",
+    "m1_derived_h1_role": "QC_ONLY_NO_SUBSTITUTION_OR_FILL"
+  },
+  "gate_state": {
+    "exploratory_mtf_structural_qc_passed": false,
+    "blocking_gate": "EXACT_DECIMAL_M1_DERIVED_H1_EQUALS_DIRECT_H1",
+    "provider_schedule_version_status": "UNPROVEN_NOT_EVALUATED",
+    "count_only_authorized": false,
+    "candidate_signal_counts_calculated": false,
+    "research_outcomes_calculated": false,
+    "outcome_fields": [],
+    "formal_phase9_authorization_effect": false
+  },
+  "interpretation_boundary": {
+    "run_reclassified_as_pass": false,
+    "provider_guarantee_of_cross_periodicity_exact_ohlc_equivalence": "NOT_ESTABLISHED",
+    "technical_gate_amendment_requires_separate_prospective_decision_before_count_only": true,
+    "return_or_outcome_gate_entered": false
+  }
+}
