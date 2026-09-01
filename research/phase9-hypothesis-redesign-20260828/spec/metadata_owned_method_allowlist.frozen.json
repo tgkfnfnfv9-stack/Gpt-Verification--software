@@ -28,12 +28,12 @@
   "real_jforex_api_2_13_99_compatibility_verified": false,
   "real_runtime_methodrefs_verified": false,
   "dukascopy_method_references": [
+    "com/dukascopy/api/IContext.getDataService:()Lcom/dukascopy/api/IDataService;",
     "com/dukascopy/api/IDataService.getOfflineTimeDomains:(JJLcom/dukascopy/api/Instrument;)Ljava/util/Set;",
     "com/dukascopy/api/ITimeDomain.getEnd:()J",
     "com/dukascopy/api/ITimeDomain.getStart:()J",
     "com/dukascopy/api/Instrument.fromString:(Ljava/lang/String;)Lcom/dukascopy/api/Instrument;",
     "com/dukascopy/api/JFException.<init>:(Ljava/lang/String;Ljava/lang/Throwable;)V",
-    "com/dukascopy/api/IContext.getDataService:()Lcom/dukascopy/api/IDataService;",
     "com/dukascopy/api/plugins/IPluginContext.stop:()V",
     "com/dukascopy/api/plugins/Plugin.<init>:()V",
     "com/dukascopy/api/system/IClient.connect:(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V",

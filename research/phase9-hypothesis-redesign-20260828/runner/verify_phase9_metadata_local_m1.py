@@ -22,12 +22,12 @@ REMOTE_PROPOSAL_MARKDOWN = ROOT / "JFOREX_REMOTE_JNLP_OBSERVATION_AMENDMENT.md"
 MODULE = ROOT / "runner/jforex-metadata"
 SYNTHETIC_API = ROOT / "tests/fixtures/metadata-jforex-api"
 EXPECTED_PROVIDER_METHODS = [
+    "com/dukascopy/api/IContext.getDataService:()Lcom/dukascopy/api/IDataService;",
     "com/dukascopy/api/IDataService.getOfflineTimeDomains:(JJLcom/dukascopy/api/Instrument;)Ljava/util/Set;",
     "com/dukascopy/api/ITimeDomain.getEnd:()J",
     "com/dukascopy/api/ITimeDomain.getStart:()J",
     "com/dukascopy/api/Instrument.fromString:(Ljava/lang/String;)Lcom/dukascopy/api/Instrument;",
     "com/dukascopy/api/JFException.<init>:(Ljava/lang/String;Ljava/lang/Throwable;)V",
-    "com/dukascopy/api/IContext.getDataService:()Lcom/dukascopy/api/IDataService;",
     "com/dukascopy/api/plugins/IPluginContext.stop:()V",
     "com/dukascopy/api/plugins/Plugin.<init>:()V",
     "com/dukascopy/api/system/IClient.connect:(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V",

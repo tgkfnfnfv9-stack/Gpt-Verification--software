@@ -118,6 +118,10 @@ class MetadataLocalM1Tests(unittest.TestCase):
             "getAvailableInstruments(", "setSubscribedInstruments(", "downloadData(",
         ):
             self.assertNotIn(prohibited, text)
+        allowlist = json.loads(
+            (ROOT / "spec/metadata_owned_method_allowlist.frozen.json").read_text()
+        )["dukascopy_method_references"]
+        self.assertEqual(allowlist, sorted(allowlist))
 
     def test_private_custody_rejects_root_symlink_and_hardlink(self):
         with tempfile.TemporaryDirectory(dir=ROOT) as directory:
