@@ -11,7 +11,7 @@ Actual Full-QC実装基準: `9eb7ce667bea8e76a7f9bb1f2d378eebd8957206`
 ## 1. この引継ぎの結論
 
 Phase 9では、実価格データを受け入れて検査するActual Full-QC契約まで実装・監査済み。
-provider scheduleのauthoritative/versioned/price-independent source自体は未固定であり、inventoryと別Commit allowlistは未取得・未凍結。2026-09-01にmetadata-only JForex方式のamendment、local M1専用module/bytecode/network/custody controls、remote JNLP observationの別承認proposalまでを凍結した。remote observation、接続dispatch、正式取得はいずれも未認可である。
+provider scheduleのauthoritative/versioned/price-independent source自体は未固定であり、inventoryと別Commit allowlistは未取得・未凍結。2026-09-01にremote JNLP initial identity observation Run `33500446289`をユーザー承認された単一GETとして完了し、Run/Job/Artifact/head/ZIPを独立監査した。観測した5 exact URLは元Runとは別の後続Commitでevidence-only allowlistとして凍結したが、単一使用認可は消費済みであり、follow-up URL、接続dispatch、正式取得はいずれも未認可である。
 
 ```text
 Phase 9仮説凍結
@@ -32,10 +32,10 @@ Metadata-only JForex amendment / static Gate
   ↓ FROZEN（no-secret/no-connect、dispatch認可なし）
 Local M1 module / bytecode / network / custody
   ↓ 実装済み（local/syntheticのみ、認可効果なし）
-Remote JNLP observation amendment proposal
-  ↓ FROZEN（別ユーザー承認待ち、workflow未実装）
+Remote JNLP initial identity observation
+  ↓ Run 33500446289 PASS・独立監査・別Commit exact URL freeze（再実行/後続request未認可）
 Remote JNLP/runtime/network/price-isolation discovery
-  ↓ 未開始
+  ↓ 初期identityのみ完了、runtime closure未解決
 Provider schedule inventory / allowlist
   ↓ 未開始
 正式48系列取得 → Actual Full-QC → Count-only → Return検証
@@ -70,6 +70,10 @@ Provider schedule inventory / allowlist
 25. `research/phase9-hypothesis-redesign-20260828/spec/metadata_owned_method_allowlist.frozen.json`
 26. `research/phase9-hypothesis-redesign-20260828/JFOREX_REMOTE_JNLP_OBSERVATION_AMENDMENT.md`
 27. `research/phase9-hypothesis-redesign-20260828/spec/remote_jnlp_observation_amendment.frozen.json`
+28. `research/phase9-hypothesis-redesign-20260828/spec/remote_jnlp_initial_observation_gate.frozen.json`
+29. `research/phase9-hypothesis-redesign-20260828/results/remote-jnlp-run-33500446289/REMOTE_JNLP_INDEPENDENT_AUDIT.json`
+30. `research/phase9-hypothesis-redesign-20260828/spec/remote_jnlp_observed_url_allowlist.frozen.json`
+31. `research/phase9-hypothesis-redesign-20260828/runner/verify_phase9_remote_jnlp_independent_audit.py`
 
 凍結仕様の優先順位は、candidate registry、data requirements、preregistered policy。Markdown要約で凍結仕様を変更しない。
 
@@ -162,7 +166,7 @@ Provider schedule inventory / allowlist
 - 価格・availability・禁止期間・Outcomeアクセス: なし
 - 取得認可効果: なし
 
-### 4.6 Local M1 / remote observation proposal
+### 4.6 Local M1 controls
 
 - Dedicated module: `runner/jforex-metadata`
 - Local contract: `spec/metadata_only_local_m1_gate.frozen.json`
@@ -172,11 +176,27 @@ Provider schedule inventory / allowlist
 - Custody: exact private 0700 directories / 0600 regular single-link files
 - Existing price acquirer: moduleから物理的に除外
 - Compile proof: 凍結したlocal synthetic API fixtureに対するexact bytecode allowlistのみPASS。実JForex API 2.13.99 JAR/runtime互換性は未検証であり残Blocker
-- Remote proposal: `JFOREX_REMOTE_JNLP_OBSERVATION_AMENDMENT.md`
-- Remote workflow: 未実装
-- `external_jnlp_observation_authorized=false`
+- Remote amendment: `JFOREX_REMOTE_JNLP_OBSERVATION_AMENDMENT.md`
 - `connection_dispatch_authorized=false`
 - schedule/price/Outcomeアクセス: なし
+
+### 4.7 Remote JNLP initial identity observation
+
+- Implementation Commit: `aa9d46a6a42936042a406bdf339f07d378cc79b7`
+- Run ID: `33500446289`（run_number 1 / run_attempt 1 / completed-success）
+- Job ID: `99832303024`
+- Artifact ID: `9797466074`
+- Artifact ZIP SHA-256: `5a0339a026ea2ac0a7382b3ad7e0510a303609ab8817d55a268b55108415b8d2`
+- Exact request: `https://platform.dukascopy.com:443/demo_3/jforex_3.jnlp`へのunauthenticated GET 1回
+- Response: HTTP 200、2445 bytes、body SHA-256 `4e5adcbb29116e7f17b3babfc4aa47590d06baca50a98745d300d4824a1a70e9`
+- TLS certificate DER SHA-256: `616df88e991b3d1f0ca1183d5155a243d7dfceb0b3f1461cb4f400d43b6003df`
+- Redirect: 0、recursive resource request: 0、raw JNLP/JAR/credential/market CSV保存: 0
+- Locally parsed href: 3件、canonical exact URL set: 5件、aggregate SHA-256 `72fe580e020440cb273c56eef77b73982b78fb3843b33c1ac32e119b767790ee`
+- 独立監査: `results/remote-jnlp-run-33500446289/REMOTE_JNLP_INDEPENDENT_AUDIT.json`
+- 後続URL凍結: `spec/remote_jnlp_observed_url_allowlist.frozen.json`（元Runとは別Commit、evidence-only）
+- 単一使用認可は消費済み。rerun/replay、`libs_3.jnlp`、icon、その他resourceのrequestはすべて未認可
+- `external_jnlp_observation_authorized=false`、`followup_url_request_authorized=false`
+- provider schedule/availability/JForex connect/price/禁止期間/Outcomeアクセス: なし
 
 ## 5. Actual Full-QCに実装済みの検査
 
@@ -213,7 +233,7 @@ Provider schedule inventory / allowlist
 
 ## 7. 次に行う単一作業
 
-凍結済み`JFOREX_REMOTE_JNLP_OBSERVATION_AMENDMENT.md`について、exact initial URLへのno-secret/no-connect単一GET（最大2 MiB、redirect追跡なし、runtime resource取得なし）だけを観測する別承認をユーザーから得る。承認されるまではworkflowを実装・dispatchせず、`external_jnlp_observation_authorized=false`を維持し、remote JNLP/runtime/TLS/endpointを照会しない。
+初期JNLP観測は完了して単一使用認可を消費した。次は、凍結済み5 exact URLを証拠としてremote runtime closureをどう検証するか、別の限定Gateと別ユーザー承認を事前設計・監査する。現時点ではどのURLもrequestしない。特に`https://platform.dukascopy.com/demo_3/libs_3.jnlp`、icon、JAR/resource、redirect先の取得、初期URLのrerun/replayは禁止する。
 
 2026-09-01のA0〜A7監査で確認した境界:
 
@@ -230,18 +250,18 @@ Provider schedule inventory / allowlist
 
 ## 8. 残りの順序
 
-1. remote JNLP observation proposalの別ユーザー承認を得る
-2. 承認後だけ、exact initial URL単一GET・redirect no-followのworkflowを別Commitで実装
-3. 初期response identityを観測・独立監査
-4. 観測したLocationまたはlocally parsed resource URLを次に要求する場合、exact URL setを観測Runより後の別Commit/別承認で凍結
-5. 別manual Gateでoffline-domain evidenceを観測し、完全性を独立証明
-6. Provider schedule exact allowlistをさらに後の別Commitで検証
-7. Energy roll/session metadataを価格非参照で固定
-8. すべてのBlocker解消後に、明示的な取得認可を別Gateで凍結
-9. JForexから48系列だけをsame-run private領域へ取得
-10. Actual Full-QCを実行しrawをcleanup
-11. Actual Full-QC PASS後も自動では進まず、別GateでCount-onlyを認可
-12. Count-only完了後にReturn検証
+1. 完了済み初期Runを再実行せず、remote runtime closure用の限定Gateを事前設計・監査する
+2. 新たなexact URL requestごとに、別ユーザー承認を得てから単一使用workflowを実装する
+3. remote runtime/provider version/API互換性を観測し、Run/Artifactを独立監査してさらに後の別Commitで凍結する
+4. SDK内部market bytes/cache isolationとTOCTOU-resistant custodyを証明する
+5. 別manual Gateでoffline-domain evidenceを観測し、完全性を独立証明する
+6. Provider schedule exact allowlistをさらに後の別Commitで検証する
+7. Energy roll/session metadataを価格非参照で固定する
+8. すべてのBlocker解消後に、明示的な取得認可を別Gateで凍結する
+9. JForexから48系列だけをsame-run private領域へ取得する
+10. Actual Full-QCを実行しrawをcleanupする
+11. Actual Full-QC PASS後も自動では進まず、別GateでCount-onlyを認可する
+12. Count-only完了後にReturn検証する
 13. 12仮説の共通ルールを抽出し、マルチタイムフレーム戦略へ進む
 
 ## 9. 絶対禁止

@@ -29,6 +29,10 @@ GitHub Repository tgkfnfnfv9-stack/Gpt-Verification--software のPhase 9自動�
 20. research/phase9-hypothesis-redesign-20260828/spec/metadata_owned_method_allowlist.frozen.json
 21. research/phase9-hypothesis-redesign-20260828/JFOREX_REMOTE_JNLP_OBSERVATION_AMENDMENT.md
 22. research/phase9-hypothesis-redesign-20260828/spec/remote_jnlp_observation_amendment.frozen.json
+23. research/phase9-hypothesis-redesign-20260828/spec/remote_jnlp_initial_observation_gate.frozen.json
+24. research/phase9-hypothesis-redesign-20260828/results/remote-jnlp-run-33500446289/REMOTE_JNLP_INDEPENDENT_AUDIT.json
+25. research/phase9-hypothesis-redesign-20260828/spec/remote_jnlp_observed_url_allowlist.frozen.json
+26. research/phase9-hypothesis-redesign-20260828/runner/verify_phase9_remote_jnlp_independent_audit.py
 
 8つの論理役割A0〜A7を使用してください。同時実行上限が7なら2波に分け、サブエージェントはread-only監査、主担当だけがGitHubへCommitしてください。作業前後にremote mainを確認し、force push、reset --hard、ユーザー変更の破棄、git add .、git add -Aは禁止です。
 
@@ -46,13 +50,20 @@ Actual Full-QC実装基準は9eb7ce667bea8e76a7f9bb1f2d378eebd8957206です。�
 - Actual Full-QC contract Run 33459534741 / Job 99706597775 / Artifact 9782660195: completed/success
 - Actual Full-QC contract ZIP SHA-256: af4d807d725c0a6207e19d3fbadc0157603bb8cd40474545564012938c59f4d5
 - Full-QC tests 131 PASS、A6/A7 P0/P1なし
-- Credential、外部JNLP、JForex connect、availability、price、禁止期間、Outcomeへのアクセスなし
+- Remote JNLP initial identity observation Run 33500446289 / Job 99832303024 / Artifact 9797466074: completed/success
+- Remote observation implementation Commit: aa9d46a6a42936042a406bdf339f07d378cc79b7
+- Artifact ZIP SHA-256: 5a0339a026ea2ac0a7382b3ad7e0510a303609ab8817d55a268b55108415b8d2
+- exact initial URLへのunauthenticated GET 1回だけを実施。HTTP 200、2445 bytes、body SHA-256 4e5adcbb29116e7f17b3babfc4aa47590d06baca50a98745d300d4824a1a70e9
+- redirect、recursive resource、Credential、JForex connect、availability、provider schedule、price、禁止期間、Outcomeへのアクセスなし
+- Run/Job/Artifact/head/ZIPは独立監査済み。観測5 exact URLは元Runとは別Commitでevidence-only allowlistとして凍結済み
+- 単一使用認可は消費済み。rerun/replay/follow-up URL requestは未認可
 - acquisition_authorized=false
 - count_only_authorized=false
+- research_outcomes_calculated=false
 
-現在はprovider schedule source readinessでP0 BLOCKEDです。`trading_calendar.json`は`provider_schedule_version=NO_VERSION_AVAILABLE_YET`であり、非価格・非JNLP・pre-connectで使えるDukascopy公式version付きcomplete historical schedule sourceはRepositoryにありません。metadata-only JForex amendmentとlocal M1専用module/bytecode/network/custody controlsは凍結済みですが、bytecode proofは凍結local synthetic API fixtureに対するものだけで、実JForex API 2.13.99 JAR/runtime互換性は未検証です。connection dispatch、external JNLP observation、demo Secrets設定は未認可です。
+現在はprovider schedule source readinessでP0 BLOCKEDです。`trading_calendar.json`は`provider_schedule_version=NO_VERSION_AVAILABLE_YET`であり、Dukascopy公式version付きcomplete historical schedule sourceはRepositoryにありません。metadata-only JForex amendmentとlocal M1専用module/bytecode/network/custody controlsは凍結済みですが、bytecode proofは凍結local synthetic API fixtureに対するものだけで、実JForex API 2.13.99 JAR/runtime互換性、remote runtime closure、SDK内部market-byte/cache isolation、TOCTOU-resistant custodyは未証明です。connection dispatch、follow-up JNLP/resource request、demo Secrets設定は未認可です。
 
-次の単一作業は、凍結済みremote JNLP observation proposalへの別ユーザー承認を得ることです。proposalはexact initial URLへのno-secret/no-connect単一GET、最大2 MiB、redirect no-follow、recursive runtime resource requestなしに限定されています。承認前はremote workflowを実装・dispatchせず、`external_jnlp_observation_authorized=false`のままremote JNLP/runtime/TLS/endpointを照会しないでください。承認後のみ、この限定identity observation workflowを別Commitで実装してください。
+次の単一作業は、完了済み初期Runを再実行せず、凍結した5 exact URLを証拠としてremote runtime closureを検証する限定Gateを事前設計・監査することです。この設計作業では外部requestを行いません。`libs_3.jnlp`、icon、JAR/resource、初期URLを含む新たなrequestは、対象exact URL・回数・redirect・bytes・保存物を固定した別の明示的ユーザー承認があるまで行わないでください。
 
 公式`getOfflineTimeDomains`はweekend intervalsしか保証せず、holiday、maintenance、Energy daily session、歴史的session-rule変更、provider schedule versionの完全性は未証明です。SDK内部のmarket bytes受信・cache persistenceも`UNPROVEN`です。これらをfalseまたはcompleteと自己申告しないでください。前提証明が揃うまでmanual connection workflowをdispatchせず、24 schedule files、inventory、allowlistを作らないでください。
 
@@ -60,7 +71,7 @@ P0解消後にのみ、provider schedule inventoryを価格データとは独立
 
 同一Runのinventoryで自己認可しないでください。Canonical path、Git strict ancestor、freeze parent、Git object byte一致、tracked/unmodifiedをfail-closedで検証してください。この作業だけでacquisition_authorized=trueに変更しないでください。
 
-Provider schedule、Energy metadata、Run/Artifact identity、remote JNLP lockなどの残Blockerが解消し、別Gateで明示的に取得認可されるまでは、demo secrets設定、外部JNLP接続、availability照会、JForex connect、price取得をしないでください。
+Provider schedule、Energy metadata、remote runtime closure、実API互換性、cache/custodyなどの残Blockerが解消し、別Gateで明示的に取得認可されるまでは、demo secrets設定、外部JNLP接続、availability照会、JForex connect、price取得をしないでください。
 
 将来の正式取得範囲:
 

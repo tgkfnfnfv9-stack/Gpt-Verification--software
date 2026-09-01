@@ -1,6 +1,6 @@
 # Phase 9 Provider / Acquisition Blocker
 
-Status: `JFOREX_SELECTED; METADATA_ONLY_AMENDMENT_FROZEN; CONNECTION_DISPATCH_BLOCKED; PROVIDER_SCHEDULE_SOURCE_P0_BLOCKED; PRICE_BLOCKED`
+Status: `JFOREX_SELECTED; INITIAL_REMOTE_JNLP_IDENTITY_AUDITED; FOLLOWUP_BLOCKED; CONNECTION_DISPATCH_BLOCKED; PROVIDER_SCHEDULE_SOURCE_P0_BLOCKED; PRICE_BLOCKED`
 
 Recorded: 2026-08-29 UTC
 
@@ -96,16 +96,33 @@ price acquirer and has no executable authorized dispatch workflow.
 
 The bytecode exact-match result is compiled against a frozen local synthetic
 API fixture. It is not evidence of compatibility with the real JForex API
-2.13.99 JAR or runtime closure. Those identities and method references remain a
-separate blocker until the no-secret remote closure is approved, observed,
-audited, and frozen in a later commit.
+2.13.99 JAR or runtime closure. The initial remote JNLP identity has now been
+observed, but the remote runtime closure has not been requested or proven.
 
 `JFOREX_REMOTE_JNLP_OBSERVATION_AMENDMENT.md` and
-`spec/remote_jnlp_observation_amendment.frozen.json` are a frozen proposal, not
-an approval. No remote observation workflow exists. Separate explicit user
-approval is still required before any remote JNLP/runtime/TLS/endpoint request.
-All provider-schedule, price, acquisition, Count-only and Outcome states remain
-blocked.
+`spec/remote_jnlp_observation_amendment.frozen.json` governed a single-use
+initial identity request. User-approved Run `33500446289` completed successfully
+at head `aa9d46a6a42936042a406bdf339f07d378cc79b7`; Job `99832303024`, Artifact
+`9797466074`, and independently downloaded Artifact ZIP SHA-256
+`5a0339a026ea2ac0a7382b3ad7e0510a303609ab8817d55a268b55108415b8d2`
+were independently audited. The one unauthenticated GET returned HTTP 200 and
+2445 bytes with body SHA-256
+`4e5adcbb29116e7f17b3babfc4aa47590d06baca50a98745d300d4824a1a70e9`;
+the TLS certificate DER SHA-256 was
+`616df88e991b3d1f0ca1183d5155a243d7dfceb0b3f1461cb4f400d43b6003df`.
+No redirect or recursive resource request occurred, and no raw JNLP bytes were
+retained in Git or the Artifact.
+
+The three parsed hrefs plus codebase and the explicit-port initial URL form a
+five-string exact set with aggregate SHA-256
+`72fe580e020440cb273c56eef77b73982b78fb3843b33c1ac32e119b767790ee`.
+That set is frozen as evidence-only in
+`spec/remote_jnlp_observed_url_allowlist.frozen.json`, strictly after the source
+Run and without same-run self-authorization. The single-use authorization is
+consumed. Rerun, replay, `libs_3.jnlp`, icon, JAR/resource, connection,
+provider-schedule, availability and price requests remain unauthorized and
+require a separate explicit Gate and user approval. All provider-schedule,
+price, acquisition, Count-only and Outcome states remain blocked.
 
 ## Rejected public-endpoint P0 blockers
 
@@ -190,8 +207,10 @@ separately audited:
    acquisition authorization remains false.**
 2. Scan the shaded runner and prove actual native loading/mapped-DSO behavior.
 3. Enforce child-process and OS-level egress controls.
-4. After terms confirmation and a separate manual authorization, observe and
-   hash-lock the remote JNLP/runtime closure without requesting market prices.
+4. Initial JNLP identity is independently audited and exact URL strings are
+   frozen. Before any further request, pre-audit a narrower remote-runtime
+   closure Gate and obtain a separate manual authorization; do not reuse the
+   consumed initial-observation authorization.
 5. Implement streaming Full-QC for all 48 direct series in the acquisition run.
 6. Configure a user-approved private raw-data custody path if raw persistence is
    required; raw prices must not enter Git or public Artifacts.

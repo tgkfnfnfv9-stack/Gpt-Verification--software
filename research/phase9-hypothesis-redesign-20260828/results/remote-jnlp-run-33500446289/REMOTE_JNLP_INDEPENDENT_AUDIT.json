@@ -1,0 +1,90 @@
+{
+  "schema_version": "phase9-remote-jnlp-independent-audit-v1.0",
+  "status": "PASS_IDENTITY_ONLY_FOLLOWUP_BLOCKED",
+  "audited_at_utc": "2026-09-01T11:05:00Z",
+  "implementation": {
+    "commit_sha": "aa9d46a6a42936042a406bdf339f07d378cc79b7",
+    "tree_sha": "5a0eb282c45137a6a4d24785651b3a61bff2f441",
+    "parent_sha": "84df3eb489dba32a22957165f3bb324f63a7c367",
+    "gate_sha256": "c1749720fd6f5a906b8dbcc7a285f88326a6c089ecba0dfa80191e56729c98bc"
+  },
+  "github_actions": {
+    "run_id": 33500446289,
+    "run_number": 1,
+    "run_attempt": 1,
+    "event": "workflow_dispatch",
+    "head_sha": "aa9d46a6a42936042a406bdf339f07d378cc79b7",
+    "ref": "refs/heads/main",
+    "conclusion": "success",
+    "job_id": 99832303024,
+    "job_name": "observe",
+    "job_conclusion": "success",
+    "artifact_id": 9797466074,
+    "artifact_name": "phase9-remote-jnlp-initial-observation-aa9d46a6a42936042a406bdf339f07d378cc79b7-33500446289-1",
+    "artifact_size_in_bytes": 2285,
+    "github_artifact_digest_sha256": "5a0339a026ea2ac0a7382b3ad7e0510a303609ab8817d55a268b55108415b8d2",
+    "independently_downloaded_zip_sha256": "5a0339a026ea2ac0a7382b3ad7e0510a303609ab8817d55a268b55108415b8d2"
+  },
+  "artifact_custody": {
+    "exact_member_count": 2,
+    "exact_members": [
+      "REMOTE_JNLP_INITIAL_OBSERVATION_AUDIT.json",
+      "artifact_manifest_sha256.txt"
+    ],
+    "observation_audit_sha256": "d577bfc7e8588de5dcc873393b250a4514d3d0e0ff013e59dcbeabc46d10e1bb",
+    "artifact_manifest_sha256": "d8173e584491a4d8190a27ade555385e5c07e17db31371ef4342eec66a237d0f",
+    "inner_manifest_verified": true,
+    "raw_jnlp_bytes_present": false,
+    "jar_present": false,
+    "market_csv_present": false
+  },
+  "observation": {
+    "attempt_started_at_utc": "2026-09-01T11:02:39.601283Z",
+    "exact_request_url": "https://platform.dukascopy.com:443/demo_3/jforex_3.jnlp",
+    "method": "GET",
+    "dns_resolution_call_count": 1,
+    "tcp_connect_attempt_count": 1,
+    "http_request_count": 1,
+    "selected_peer_ip": "3.168.2.101",
+    "selected_peer_port": 443,
+    "resolved_address_count": 12,
+    "resolved_address_set_sha256": "949b7ad26c2a8b4a8815ebd8a47a47dd6fb6350d6147f2a3a2992e7a042c9cc8",
+    "tls_version": "TLSv1.3",
+    "tls_cipher": "TLS_AES_128_GCM_SHA256",
+    "tls_peer_certificate_sha256": "616df88e991b3d1f0ca1183d5155a243d7dfceb0b3f1461cb4f400d43b6003df",
+    "response_status": 200,
+    "response_content_type": "application/x-java-jnlp-file",
+    "response_last_modified": "Fri, 16 Feb 2024 07:55:13 GMT",
+    "response_entity_body_bytes": 2445,
+    "response_entity_body_sha256": "4e5adcbb29116e7f17b3babfc4aa47590d06baca50a98745d300d4824a1a70e9",
+    "body_identity_semantics": "HTTP_ENTITY_BODY_AFTER_TRANSFER_DECODING_BEFORE_CONTENT_DECODING",
+    "redirect_location": null,
+    "redirect_followed": false,
+    "recursive_resource_fetch_count": 0,
+    "local_jnlp_parse_status": "PARSED_LOCAL_IDENTITY_ONLY",
+    "observed_href_reference_count": 3,
+    "observed_href_reference_list_sha256": "2d11c08d52520447b86147ca9305aa9911851f54d51b039dd30c0e1a2f36c134"
+  },
+  "authorization": {
+    "single_use_authorization_consumed": true,
+    "external_jnlp_observation_authorized_after_run": false,
+    "retry_authorized": false,
+    "replay_authorized": false,
+    "followup_url_request_authorized": false,
+    "jforex_connect_authorized": false,
+    "provider_schedule_query_authorized": false,
+    "availability_query_authorized": false,
+    "price_access_authorized": false,
+    "acquisition_authorized": false,
+    "count_only_authorized": false,
+    "outcome_access_authorized": false,
+    "authorization_effect": "NONE"
+  },
+  "scientific_state": {
+    "provider_schedule_files": 0,
+    "phase9_price_files": 0,
+    "forbidden_market_period_request_attempted": false,
+    "research_outcomes_calculated": false,
+    "outcome_fields": []
+  }
+}

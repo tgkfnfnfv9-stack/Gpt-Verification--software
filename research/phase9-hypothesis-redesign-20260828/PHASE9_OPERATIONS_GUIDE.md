@@ -241,13 +241,17 @@ Gate B監査正本は`results/gate-b-native-allowlist/GATE_B_AUDIT.json`です�
 
 workflowはprice、return、edgeの実行ボタンを自動的に続けません。取得成功後も`full_quality_gate_passed=false`のまま停止し、calendar、H4/D1 bucket、Energy rollを別工程で監査します。
 
-凍結JNLPはdemo serviceです。Repository secretsにはJForex demo accountの認証情報だけを登録し、live accountの認証情報を使いません。ただし2026-09-01時点ではlocal/synthetic専用Plugin module、owned-bytecode exact allowlist、synthetic exact-destination network namespace、private custodyまでを実装しただけで、remote JNLP/runtime closure、実network destination、SDK内部price受信・cache非露出の証明は未完了です。exact initial URLのidentityだけを観測する単一使用workflowはユーザー承認済みですが、これはSecrets設定、JForex接続、provider schedule、availability、price取得を認可しません。現在のmetadata-only preflightもlocal/synthetic controlsだけを検証し、取得認可効果を持ちません。単一の`tick_volume`はBID bar volumeをcanonicalとし、ASK volumeは不一致件数のQCだけに使います。
+凍結JNLPはdemo serviceです。Repository secretsにはJForex demo accountの認証情報だけを登録し、live accountの認証情報を使いません。ただしSecrets設定自体がまだ未認可です。2026-09-01時点ではlocal/synthetic専用Plugin module、owned-bytecode exact allowlist、synthetic exact-destination network namespace、private custodyまでを実装し、exact initial URLのidentityだけを単一GETで観測・独立監査しました。remote JNLP/runtime closure、実network destination、SDK内部price受信・cache非露出の証明は未完了です。初期観測の単一使用認可は消費済みで、rerun/replay/follow-up URL、Secrets、JForex接続、provider schedule、availability、price取得を認可しません。現在のmetadata-only preflightもlocal/synthetic controlsだけを検証し、取得認可効果を持ちません。単一の`tick_volume`はBID bar volumeをcanonicalとし、ASK volumeは不一致件数のQCだけに使います。
 
 ### Remote JNLP initial identity observation（単一使用）
 
 `.github/workflows/phase9-remote-jnlp-initial-observation.yml`は手動`workflow_dispatch`専用です。confirmationには`OBSERVE_PHASE9_REMOTE_JNLP_IDENTITY_ONLY_NO_CONNECT_NO_SECRETS`を完全一致入力します。実行できるのはこのworkflowの`run_number=1`かつ`run_attempt=1`だけで、最初のdispatchが成功・失敗にかかわらず承認を消費します。rerunや第2回dispatchは未認可です。
 
 許可範囲は`https://platform.dukascopy.com:443/demo_3/jforex_3.jnlp`へのunauthenticated HTTPS GET 1回、response body最大2 MiBだけです。redirectは追跡せずLocationを記録するだけで、埋込resource URLは受信済みbytesからlocal parseするだけです。raw JNLP bytes、証明書DER、JAR、cookie、credentialはArtifactへ保存しません。Artifactはidentity audit JSONとそのSHA manifestの2ファイルだけです。同じRunで観測URLをallowlist化せず、後続URL request、JForex connect、schedule/availability/price、Count-only、Outcomeへ進みません。
+
+この単一使用workflowはRun `33500446289`（head `aa9d46a6a42936042a406bdf339f07d378cc79b7`、Job `99832303024`、Artifact `9797466074`）でcompleted/successとなり、認可を消費しました。Artifact ZIP SHA-256は`5a0339a026ea2ac0a7382b3ad7e0510a303609ab8817d55a268b55108415b8d2`で独立downloadと一致しています。HTTP 200、2445 bytes、body SHA-256 `4e5adcbb29116e7f17b3babfc4aa47590d06baca50a98745d300d4824a1a70e9`、TLS certificate DER SHA-256 `616df88e991b3d1f0ca1183d5155a243d7dfceb0b3f1461cb4f400d43b6003df`を確認し、redirect/recursive resource requestは0でした。
+
+観測した3 href、codebase、explicit-port initial URLの5 exact stringは、元Runとは別の後続Commitで`spec/remote_jnlp_observed_url_allowlist.frozen.json`へevidence-onlyとして凍結しました。aggregate SHA-256は`72fe580e020440cb273c56eef77b73982b78fb3843b33c1ac32e119b767790ee`です。このallowlistはrequest許可ではありません。初期URLの再実行、`libs_3.jnlp`、icon、JAR/resourceなどを要求するには、対象と上限を凍結した別Gateおよび別ユーザー承認が必要です。
 
 ### 12銘柄
 

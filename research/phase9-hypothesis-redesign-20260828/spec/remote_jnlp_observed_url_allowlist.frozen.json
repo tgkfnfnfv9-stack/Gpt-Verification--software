@@ -1,0 +1,100 @@
+{
+  "schema_version": "phase9-remote-jnlp-observed-url-allowlist-v1.0",
+  "status": "FROZEN_EXACT_MATCH_EVIDENCE_ONLY_ALL_FOLLOWUP_REQUESTS_BLOCKED",
+  "recorded_at_utc": "2026-09-01T11:15:11Z",
+  "source": {
+    "observation_head_sha": "aa9d46a6a42936042a406bdf339f07d378cc79b7",
+    "run_id": 33500446289,
+    "job_id": 99832303024,
+    "artifact_id": 9797466074,
+    "artifact_zip_sha256": "5a0339a026ea2ac0a7382b3ad7e0510a303609ab8817d55a268b55108415b8d2",
+    "observation_audit_sha256": "d577bfc7e8588de5dcc873393b250a4514d3d0e0ff013e59dcbeabc46d10e1bb",
+    "independent_audit": "results/remote-jnlp-run-33500446289/REMOTE_JNLP_INDEPENDENT_AUDIT.json"
+  },
+  "freeze_separation": {
+    "allowlist_created_in_source_observation_run": false,
+    "source_run_self_authorized": false,
+    "strictly_later_commit_required": true,
+    "required_freeze_parent_sha": "aa9d46a6a42936042a406bdf339f07d378cc79b7",
+    "source_run_head_must_be_strict_ancestor_of_freeze_commit": true,
+    "followup_execution_requires_separate_user_approval": true
+  },
+  "canonical_exact_string_set": [
+    "https://platform.dukascopy.com/demo_3/",
+    "https://platform.dukascopy.com/demo_3/images/logo/dukascopy-sw_48x48.png",
+    "https://platform.dukascopy.com/demo_3/jforex_3.jnlp",
+    "https://platform.dukascopy.com/demo_3/libs_3.jnlp",
+    "https://platform.dukascopy.com:443/demo_3/jforex_3.jnlp"
+  ],
+  "canonical_exact_string_set_sha256": "72fe580e020440cb273c56eef77b73982b78fb3843b33c1ac32e119b767790ee",
+  "entries": [
+    {
+      "kind": "AUTHORIZED_INITIAL_REQUEST_NOW_CONSUMED",
+      "exact_url": "https://platform.dukascopy.com:443/demo_3/jforex_3.jnlp",
+      "url_sha256": "f32a87a81fcf971d525f002c562ccefc6ee37a33058762bc7cb3918824b9f7e2",
+      "source_field": "request_scope.url",
+      "request_count_in_source_run": 1,
+      "request_authorized_after_source_run": false
+    },
+    {
+      "kind": "OBSERVED_CODEBASE_NOT_REQUESTED",
+      "exact_url": "https://platform.dukascopy.com/demo_3/",
+      "url_sha256": "5c7f0b47c6e01c1e8db25c0e07f4a369bc2fc062db28eb40eb938a4b29897d8d",
+      "source_field": "jnlp_identity.root_codebase",
+      "request_count_in_source_run": 0,
+      "request_authorized_after_source_run": false
+    },
+    {
+      "kind": "OBSERVED_ROOT_HREF_NOT_REQUESTED_AS_EXACT_STRING",
+      "exact_url": "https://platform.dukascopy.com/demo_3/jforex_3.jnlp",
+      "url_sha256": "f9f73a4cf17967381641130cecbe1796819dce3f8dc917d886a326f8da3ee5ab",
+      "source_field": "jnlp_identity.references[0].resolved_url",
+      "request_count_in_source_run": 0,
+      "request_authorized_after_source_run": false
+    },
+    {
+      "kind": "OBSERVED_ICON_HREF_NOT_REQUESTED",
+      "exact_url": "https://platform.dukascopy.com/demo_3/images/logo/dukascopy-sw_48x48.png",
+      "url_sha256": "35949d1d34bc18b4b4b00ef3026d44787ffb41477327cb6b66b2c903e9072429",
+      "source_field": "jnlp_identity.references[1].resolved_url",
+      "request_count_in_source_run": 0,
+      "request_authorized_after_source_run": false
+    },
+    {
+      "kind": "OBSERVED_EXTENSION_HREF_NOT_REQUESTED",
+      "exact_url": "https://platform.dukascopy.com/demo_3/libs_3.jnlp",
+      "url_sha256": "c53922161b6dab0888c702c266685031cc265a4f24696ceb0b33b6eeaa623ac1",
+      "source_field": "jnlp_identity.references[2].resolved_url",
+      "request_count_in_source_run": 0,
+      "request_authorized_after_source_run": false
+    }
+  ],
+  "network_identity_policy": {
+    "observed_dns_addresses_are_authoritative_ip_allowlist": false,
+    "dns_ip_allowlist_frozen": false,
+    "tls_hostname_verification_required_for_any_future_approved_request": true,
+    "redirect_following_authorized": false
+  },
+  "authorization": {
+    "initial_observation_authorization_consumed": true,
+    "any_url_in_this_file_may_be_requested": false,
+    "extension_jnlp_request_authorized": false,
+    "icon_request_authorized": false,
+    "recursive_resource_request_authorized": false,
+    "downloaded_code_execution_authorized": false,
+    "credentials_may_be_referenced": false,
+    "jforex_connect_authorized": false,
+    "provider_schedule_query_authorized": false,
+    "availability_query_authorized": false,
+    "price_access_authorized": false,
+    "acquisition_authorized": false,
+    "count_only_authorized": false,
+    "outcome_access_authorized": false
+  },
+  "scientific_state": {
+    "provider_schedule_files": 0,
+    "phase9_price_files": 0,
+    "research_outcomes_calculated": false,
+    "outcome_fields": []
+  }
+}
