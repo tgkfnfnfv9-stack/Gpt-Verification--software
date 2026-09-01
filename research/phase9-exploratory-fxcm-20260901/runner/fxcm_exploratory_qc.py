@@ -516,9 +516,9 @@ def run(contract_path: Path, work_dir: Path, report_dir: Path) -> dict:
 
 def seal_manifest(report_dir: Path, contract: dict) -> None:
     manifest = report_dir / "artifact_manifest_sha256.txt"
+    payload = report_dir / "EXPLORATORY_FXCM_INVENTORY.json"
     with manifest.open("x", encoding="utf-8", newline="\n") as handle:
-        for path in sorted(item for item in report_dir.rglob("*") if item.is_file()):
-            handle.write(f"{sha256_file(path)}  {path.relative_to(report_dir).as_posix()}\n")
+        handle.write(f"{sha256_file(payload)}  {payload.name}\n")
     validate_report_tree(report_dir, contract, True)
 
 

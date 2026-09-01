@@ -245,6 +245,21 @@ class FxcmQCTests(unittest.TestCase):
             with self.assertRaises(module.FxcmError):
                 module.validate_report_tree(root, {}, False)
 
+    def test_manifest_seals_payload_only_without_false_self_hash(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            inventory = root / "EXPLORATORY_FXCM_INVENTORY.json"
+            inventory.write_text("{}\n", encoding="utf-8")
+            module.seal_manifest(root, {})
+            manifest = root / "artifact_manifest_sha256.txt"
+            self.assertEqual(
+                manifest.read_text(encoding="utf-8"),
+                f"{module.sha256_file(inventory)}  {inventory.name}\n",
+            )
+            self.assertNotIn(manifest.name, manifest.read_text(encoding="utf-8"))
+            self.assertNotEqual(module.sha256_file(manifest), module.EMPTY_SHA256)
+            module.validate_report_tree(root, {}, True)
+
     def test_workflow_is_manual_only(self):
         workflow = (ROOT.parents[1] / ".github/workflows/phase9-exploratory-fxcm-qc.yml").read_text()
         trigger_block = workflow.split("\non:\n", 1)[1].split("\npermissions:\n", 1)[0]
