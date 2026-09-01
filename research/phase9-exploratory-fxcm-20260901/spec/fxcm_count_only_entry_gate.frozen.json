@@ -1,0 +1,141 @@
+{
+  "schema_version": "phase9-exploratory-fxcm-count-only-entry-gate-v1.0.0",
+  "status": "FROZEN_AFTER_MTF_QC_BEFORE_ANY_SIGNAL_COUNT",
+  "recorded_at_utc": "2026-09-01T13:46:14Z",
+  "track": "EXPLORATORY_FX8_MULTI_TIMEFRAME_NOT_FORMAL_PHASE9",
+  "purpose": "Preserve the original MTF result, adjudicate the direct-H1 lineage prospectively, and prevent a two-year FX8 dataset from being mistaken for the preregistered five-year formal Count-only Gate.",
+  "source_anchors": {
+    "mtf_execution_contract": {
+      "path": "research/phase9-exploratory-fxcm-20260901/spec/fxcm_multitimeframe_execution_contract.frozen.json",
+      "sha256": "210bbe2864c17e99f39a1f9c2aee2837f4bb9357a5fa613fe61b5e22de9065b2"
+    },
+    "mtf_run_audit": {
+      "path": "research/phase9-exploratory-fxcm-20260901/results/run-33508634314/FXCM_MTF_RUN_AUDIT.json",
+      "sha256": "a431557625eb8de2fb5c6a8116cdd4ce37c117d4a47afdbc44798a7cc10077fe"
+    },
+    "mtf_qc_report": {
+      "path": "research/phase9-exploratory-fxcm-20260901/results/run-33508634314/artifact/EXPLORATORY_FXCM_MTF_QC.json",
+      "sha256": "4d7f77caa5333e017742e01606aa869f3845aa4c4f206563e2fd59e02b1e1063"
+    },
+    "formal_candidate_registry": {
+      "path": "research/phase9-hypothesis-redesign-20260828/spec/candidate_registry.frozen.json",
+      "git_blob_sha": "8740f58efe48c40ba0664606194b18b40cf14c27",
+      "sha256": "b9a78c539547bfb6d1b727cda5428764b4d849ea81ac20a236d273760d638115"
+    },
+    "formal_data_requirements": {
+      "path": "research/phase9-hypothesis-redesign-20260828/spec/data_requirements.frozen.json",
+      "git_blob_sha": "7e6a476366140e07edac4e4316f8c08a6ab4ae92",
+      "sha256": "7c6f7d769cc030563d85987fe5d0496cabb2911b5ca0c146e5cc5efe25ff478f"
+    },
+    "formal_research_policy": {
+      "path": "research/phase9-hypothesis-redesign-20260828/policy/preregistered_research_policy.json",
+      "git_blob_sha": "8483418a6a75f5a6ea7d6b54ca54beb68896855f",
+      "sha256": "15a0975db798d8eda22b16893186d3404853860646580171e6965483ee18aaf9"
+    }
+  },
+  "preserved_original_run": {
+    "run_id": 33508634314,
+    "head_sha": "3c2ec919096cfcb29aef464507398685497f8220",
+    "artifact_id": 9801206925,
+    "original_status": "EXECUTION_COMPLETE_EXACT_H1_RECONCILIATION_GATE_BLOCKED",
+    "original_run_reclassified_as_pass": false,
+    "original_exact_h1_reconciliation_gate_passed": false,
+    "h1_ohlc_mismatch_count": 4297,
+    "m1_derived_only_count": 4,
+    "direct_h1_only_count": 69108
+  },
+  "prospective_technical_adjudication": {
+    "canonical_h1": "DIRECT_H1",
+    "m1_derived_h1_role": "DIAGNOSTIC_ONLY_NEVER_SUBSTITUTE_OR_FILL",
+    "direct_h1_source_identity_matched_prior_canonical_run": true,
+    "provider_guarantee_of_exact_cross_periodicity_ohlc_equivalence": "NOT_ESTABLISHED",
+    "exact_m1_derived_h1_equals_direct_h1_is_a_provider_diagnostic_not_a_direct_h1_validity_claim": true,
+    "adjudication_applies_retroactively_to_original_status": false,
+    "result_dependent_price_or_signal_rule_change_allowed": false
+  },
+  "observed_dataset_boundary": {
+    "symbols": [
+      "AUDJPY",
+      "AUDUSD",
+      "EURGBP",
+      "EURJPY",
+      "EURUSD",
+      "GBPJPY",
+      "GBPUSD",
+      "USDJPY"
+    ],
+    "start_inclusive": "2017-01-01T00:00:00Z",
+    "end_exclusive": "2019-01-01T00:00:00Z",
+    "timeframes": ["M15", "H1", "H4", "D1"],
+    "sides": ["BID", "ASK"],
+    "final_series_count": 64,
+    "bid_ask_timestamp_reconciliations": 32,
+    "tick_volume_available": false,
+    "persistent_price_files": 0
+  },
+  "formal_count_only_eligibility": {
+    "authorized": false,
+    "status": "BLOCKED_BY_PREREGISTERED_SCOPE_AND_COVERAGE",
+    "formal_required_acquisition_start_inclusive": "2013-01-01T00:00:00Z",
+    "formal_discovery_start_inclusive": "2014-08-28T00:00:00Z",
+    "formal_discovery_end_exclusive": "2019-08-28T00:00:00Z",
+    "formal_registered_instrument_count": 12,
+    "observed_instrument_count": 8,
+    "registered_12_month_blocks_required_with_episodes": 4,
+    "maximum_registered_12_month_blocks_touched_by_observed_interval": 3,
+    "coverage_gate_can_pass_with_observed_interval": false,
+    "reasons": [
+      "The observed interval cannot populate at least four of the five preregistered 12-month discovery blocks.",
+      "Four non-FX registered markets are absent, so ALL_UNIVERSE, metals, and energy candidates are incomplete.",
+      "Tick volume is absent, so STRAT-P9-LV-201 and STRAT-P9-LV-203 cannot be evaluated as registered.",
+      "Exploratory M15 is derived from direct m1 rather than the formal provider-direct M15 lineage."
+    ],
+    "threshold_instrument_timeframe_period_or_episode_rule_relaxation_allowed": false
+  },
+  "candidate_data_compatibility_without_counting": {
+    "exact_fx8_price_only_candidates": [
+      {
+        "strategy_id": "STRAT-P9-RR-201",
+        "required_timeframes": ["H4", "D1"],
+        "gate_profile": "FX_CROSS_SECTION_H4_ONLY",
+        "formal_coverage_complete": false
+      },
+      {
+        "strategy_id": "STRAT-P9-RR-202",
+        "required_timeframes": ["H1", "H4"],
+        "gate_profile": "FX_NETWORK_2TF",
+        "formal_coverage_complete": false
+      }
+    ],
+    "excluded_from_exploratory_fx8_count_only": [
+      "STRAT-P9-PS-202",
+      "STRAT-P9-PS-203",
+      "STRAT-P9-PS-204",
+      "STRAT-P9-PS-205",
+      "STRAT-P9-LV-201",
+      "STRAT-P9-LV-202",
+      "STRAT-P9-LV-203",
+      "STRAT-P9-RR-203",
+      "STRAT-P9-RR-204",
+      "RISK-P9-RO-201"
+    ],
+    "exclusion_rule": "Do not silently shrink a registered target universe or remove a required field to create an apparent Gate pass."
+  },
+  "next_route_boundary": {
+    "exploratory_rr201_rr202_count_only_is_technically_implementable": true,
+    "exploratory_count_only_has_formal_phase9_promotion_effect": false,
+    "formal_count_only_requires_scope_complete_data": true,
+    "automatic_count_only_continuation_allowed": false,
+    "route_selection_required_before_price_reacquisition": true,
+    "price_reacquisition_required_because_persistent_price_files_are_zero": true
+  },
+  "scientific_state": {
+    "formal_phase9_authorization_effect": false,
+    "formal_count_only_authorized": false,
+    "exploratory_count_only_executed": false,
+    "candidate_signal_counts_calculated": false,
+    "return_calculated": false,
+    "research_outcomes_calculated": false,
+    "outcome_fields": []
+  }
+}
