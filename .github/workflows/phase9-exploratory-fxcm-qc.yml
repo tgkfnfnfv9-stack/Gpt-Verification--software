@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       confirmation:
-        description: 'Type RUN_EXPLORATORY_FXCM_FX8_H1_2017_2018_QC_ONLY'
+        description: 'Type RUN_EXPLORATORY_FXCM_FX8_H1_2017_2018_QC_ONLY_V2'
         required: true
         type: string
       usage_confirmation:
@@ -23,7 +23,7 @@ jobs:
   acquire-and-qc:
     if: >-
       ${{ github.ref == 'refs/heads/main' &&
-          inputs.confirmation == 'RUN_EXPLORATORY_FXCM_FX8_H1_2017_2018_QC_ONLY' &&
+          inputs.confirmation == 'RUN_EXPLORATORY_FXCM_FX8_H1_2017_2018_QC_ONLY_V2' &&
           inputs.usage_confirmation == 'I_CONFIRM_PERSONAL_NONCOMMERCIAL_USE_AND_ACCEPT_FXCM_EULA' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 120
@@ -44,7 +44,7 @@ jobs:
           test "$(git hash-object "$formal/spec/candidate_registry.frozen.json")" = '8740f58efe48c40ba0664606194b18b40cf14c27'
           test "$(git hash-object "$formal/spec/data_requirements.frozen.json")" = '7e6a476366140e07edac4e4316f8c08a6ab4ae92'
           test "$(git hash-object "$formal/policy/preregistered_research_policy.json")" = '8483418a6a75f5a6ea7d6b54ca54beb68896855f'
-          test "$(git hash-object "$track/spec/fxcm_exploratory_contract.frozen.json")" = 'bc46f4332613bf46b0c1e8caddfa0b40738b9c06'
+          test "$(git hash-object "$track/spec/fxcm_exploratory_contract.frozen.json")" = 'cfb9ff142879a59847496ed02ca307d6d9bd1540'
           PYTHONDONTWRITEBYTECODE=1 python -m unittest discover -s "$track/tests" -p 'test_*.py'
           git diff --exit-code
 
@@ -59,7 +59,7 @@ jobs:
           echo "EXPLORATORY_FXCM_WORK=$work" >> "$GITHUB_ENV"
           echo "EXPLORATORY_FXCM_REPORT=$report" >> "$GITHUB_ENV"
           python "$track/runner/fxcm_exploratory_qc.py" \
-            --confirmation RUN_EXPLORATORY_FXCM_FX8_H1_2017_2018_QC_ONLY \
+            --confirmation RUN_EXPLORATORY_FXCM_FX8_H1_2017_2018_QC_ONLY_V2 \
             --usage-confirmation I_CONFIRM_PERSONAL_NONCOMMERCIAL_USE_AND_ACCEPT_FXCM_EULA \
             --contract "$track/spec/fxcm_exploratory_contract.frozen.json" \
             --work-dir "$work" \

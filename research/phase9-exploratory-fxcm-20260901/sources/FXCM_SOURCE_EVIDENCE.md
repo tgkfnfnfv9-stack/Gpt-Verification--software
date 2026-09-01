@@ -4,6 +4,8 @@ Metadata frozen on `2026-09-01` before price access.
 
 - Repository: `https://github.com/fxcm/MarketData`
 - Pinned master head: `924393dd545fab187527d95ef8b1178284b274b6`
+- Pinned head role: documentation and URL-contract evidence only
+- Live dataset release version: unpublished/unversioned endpoint objects
 - README SHA-256: `898bdda886b26efee50f4219f02d3264e9e57d71e91f76d4f6765a599b9d7aa6`
 - Official pandas example SHA-256: `2a34f14d16c6635dfa82fa61fcbbf0c346cfd9f4b2f46fa60f6e4f56120fde3d`
 
@@ -12,6 +14,10 @@ The pinned README identifies H1 CandleData as a free sample, publishes the
 template, lists 2017--2020 and the supported FX instruments, states UTC, and
 links provider-authored Python examples. The pandas example loops over the URL
 template with `pandas.read_csv`. This is explicit automated access evidence.
+
+The repository head is not a version identifier for the live CandleData
+objects. Reproducibility is established by recording SHA-256 and byte count for
+each of the 832 downloaded objects in the same-run inventory.
 
 FXCM describes the data points as indicative and based on the lowest spreads
 available to Active Trader accounts. The README states UTC but does not

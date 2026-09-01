@@ -1,6 +1,6 @@
 {
-  "contract_version": "phase9-exploratory-fxcm-v1.0.0",
-  "status": "FROZEN_BEFORE_PRICE_ACCESS",
+  "contract_version": "phase9-exploratory-fxcm-v1.1.0",
+  "status": "FROZEN_BEFORE_RETRY_AFTER_FAILED_PRICE_ACCESS",
   "track": "EXPLORATORY_FX8_H1_NOT_FORMAL_PHASE9",
   "formal_authorization_effect": false,
   "provider": {
@@ -8,6 +8,8 @@
     "dataset": "MarketData CandleData",
     "source_repository": "https://github.com/fxcm/MarketData",
     "source_repository_head": "924393dd545fab187527d95ef8b1178284b274b6",
+    "source_repository_head_role": "DOCUMENTATION_AND_URL_CONTRACT_ONLY",
+    "dataset_release_version": "UNPUBLISHED_UNVERSIONED_ENDPOINT_OBJECTS",
     "base_url": "https://candledata.fxcorporate.com/H1",
     "timestamp_timezone": "UTC",
     "timestamp_semantics": "ROW_TIMESTAMP_ASSUMED_BAR_OPEN_NOT_PROVIDER_EXPLICIT",
@@ -18,6 +20,24 @@
     "personal_noncommercial_use_only": true,
     "eula_url": "https://www.fxcm.com/uk/forms/eula/",
     "explicit_user_confirmation_required_at_dispatch": true
+  },
+  "prior_failed_run": {
+    "run_id": "33477252915",
+    "run_attempt": 1,
+    "head_sha": "70593000cee5fd113719722fef25505b395df87e",
+    "failure": "CROSSED_OPEN_QUOTE",
+    "does_not_retroactively_validate_prior_run": true
+  },
+  "crossed_open_quote_policy": {
+    "predicate": "ASK_OPEN_LT_BID_OPEN",
+    "classification": "PROVIDER_OR_SOURCE_RECORD_ANOMALY_UNADJUDICATED",
+    "action": "COUNT_HASH_AND_QUARANTINE_BOTH_SIDES_FROM_USABLE_SERIES",
+    "event_identity": "SYMBOL_NUL_WORKING_FILENAME_NUL_SOURCE_GZIP_SHA256_NUL_DATA_ROW_ORDINAL_1_BASED_LF",
+    "event_identity_hash": "SHA256",
+    "raw_event_details_artifact_allowed": false,
+    "event_timestamps_artifact_allowed": false,
+    "event_price_values_artifact_allowed": false,
+    "formal_quality_gate_effect": "KEEP_FALSE"
   },
   "period": {
     "start_inclusive": "2017-01-01T00:00:00Z",

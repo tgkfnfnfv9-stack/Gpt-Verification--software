@@ -25,3 +25,17 @@ Observed timestamps are not an independent provider schedule.
 No signals or outcomes are calculated. Returns, return signs, MFE, MAE, edge,
 wins, win rate, Profit Factor, drawdown, cumulative R, p-values, confidence
 intervals, rankings and outcome charts are absent by construction.
+
+## QC amendment after the first real run
+
+Run `33477252915` at head `70593000cee5fd113719722fef25505b395df87e`
+downloaded the frozen 832 weekly source files, then failed on the first observed
+`ASK Open < BID Open` record. Cleanup succeeded and no Artifact was uploaded.
+The price-free audit is recorded under `results/run-33477252915/`.
+
+Contract v1.1.0 is a prospective retry amendment. It does not retroactively
+validate the failed run. It preserves the exact crossed-open predicate, does
+not add a tolerance or change any price, and quarantines both sides of each
+crossed row from the ephemeral usable series. Only per-symbol counts and
+SHA-256 identities are retained in the price-free inventory. Any nonzero count
+keeps Formal Full-QC, Count-only and all outcome work blocked.
