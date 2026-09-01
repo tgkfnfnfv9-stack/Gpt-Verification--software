@@ -1,0 +1,253 @@
+{
+  "candidate_registry_sha256": "b9a78c539547bfb6d1b727cda5428764b4d849ea81ac20a236d273760d638115",
+  "candidate_signal_counts_calculated": true,
+  "canonical_mtf_report_sha256": "4d7f77caa5333e017742e01606aa869f3845aa4c4f206563e2fd59e02b1e1063",
+  "contract_sha256": "64ccfc614916a203e3ecda3dea48ada41915e3183f0c018b747026dc8e2a426e",
+  "current_mtf_matches_canonical_data_identity": true,
+  "current_mtf_report_sha256": "63b8329073fd5f68e3caffe1c32956ffd4c60018bd1334a7a2f19b6abddd2342",
+  "dataset": {
+    "cross_instrument_synchronization_required": false,
+    "end_exclusive": "2018-12-31T00:00:00Z",
+    "price_or_event_timestamp_in_artifact": false,
+    "signal_feature_price": "FIELDWISE_ARITHMETIC_MID_OF_SYNCHRONIZED_BID_AND_ASK_OHLC",
+    "start_inclusive": "2017-01-01T00:00:00Z",
+    "symbols": [
+      "AUDJPY",
+      "AUDUSD",
+      "EURGBP",
+      "EURJPY",
+      "EURUSD",
+      "GBPJPY",
+      "GBPUSD",
+      "USDJPY"
+    ],
+    "timeframes_available": [
+      "M15",
+      "H1",
+      "H4",
+      "D1"
+    ]
+  },
+  "exploratory_count_only_executed": true,
+  "exploratory_fx8_frequency_pass_candidates": [],
+  "formal_count_only_authorized": false,
+  "formal_phase9_authorization_effect": false,
+  "next_gate": "NO_EXPLORATORY_RETURN_GATE",
+  "outcome_fields": [],
+  "persistent_price_files_after_cleanup": 0,
+  "research_outcomes_calculated": false,
+  "result_dependent_rule_change": false,
+  "return_calculated": false,
+  "run_identity": {
+    "head_sha": "7e105d0b10d09ba37c733c85acde5711f341e2a2",
+    "run_attempt": "1",
+    "run_id": "33563507883"
+  },
+  "schema_version": "phase9-exploratory-fxcm-single-pair-count-only-result-v1.0.0",
+  "status": "EXPLORATORY_FX8_SINGLE_PAIR_COUNT_ONLY_COMPLETE_FORMAL_SCOPE_INELIGIBLE",
+  "strategy_results": [
+    {
+      "active_utc_date_count": 557,
+      "counts_by_direction": {
+        "LONG": 526,
+        "SHORT": 532
+      },
+      "counts_by_instrument": {
+        "AUDJPY": 160,
+        "AUDUSD": 141,
+        "EURGBP": 154,
+        "EURJPY": 126,
+        "EURUSD": 109,
+        "GBPJPY": 132,
+        "GBPUSD": 123,
+        "USDJPY": 113
+      },
+      "counts_by_timeframe": {
+        "H1": 96,
+        "H4": 45,
+        "M15": 917
+      },
+      "counts_by_year": {
+        "2017": 531,
+        "2018": 527
+      },
+      "deduplicated_signal_identity_sha256": "703f701be01baf12608eff0715102bc1b1a848c20fea4577c0b47eb643defd86",
+      "exploratory_decision": "EXPLORATORY_FX8_COUNT_FREQUENCY_FAIL_NO_RETURN",
+      "exploratory_fx8_frequency_pass": false,
+      "formal_control_assignment_completed": false,
+      "formal_count_only_gate_passed": false,
+      "formal_profile": "BROAD_MULTI_ASSET_3TF",
+      "formal_scope_ineligible_reasons": [
+        "FX8_SUBSET_OF_REGISTERED_12_MARKET_UNIVERSE",
+        "ONLY_2017_2018_NOT_FULL_FORMAL_DISCOVERY",
+        "EXPLORATORY_M15_DERIVED_FROM_M1_NOT_FORMAL_DIRECT_M15"
+      ],
+      "fx8_instrument_breadth_pass": true,
+      "fx8_instrument_concentration_pass": true,
+      "fx8_timeframe_coverage_pass": false,
+      "overlap_deduplicated_signal_count": 4377,
+      "primary_episode_count": 1058,
+      "primary_episode_identity_sha256": "399a46578a8c3f12d33402bf4f4effea791f012dbb54895974cad1cc005b7cdb",
+      "raw_signal_count": 6327,
+      "raw_signal_identity_sha256": "678b1e81ae72f0c28f9c94d83e98b1108fa127c23868f4a87ba01997609674e0",
+      "strategy_id": "STRAT-P9-PS-202",
+      "timeframe_shares": {
+        "H1": 0.09073724007561437,
+        "H4": 0.04253308128544423,
+        "M15": 0.8667296786389413
+      }
+    },
+    {
+      "active_utc_date_count": 316,
+      "counts_by_direction": {
+        "LONG": 184,
+        "SHORT": 162
+      },
+      "counts_by_instrument": {
+        "AUDJPY": 40,
+        "AUDUSD": 45,
+        "EURGBP": 50,
+        "EURJPY": 34,
+        "EURUSD": 39,
+        "GBPJPY": 41,
+        "GBPUSD": 48,
+        "USDJPY": 49
+      },
+      "counts_by_timeframe": {
+        "H1": 47,
+        "H4": 16,
+        "M15": 283
+      },
+      "counts_by_year": {
+        "2017": 170,
+        "2018": 176
+      },
+      "deduplicated_signal_identity_sha256": "d58654c2298ea8e3670767c228c1c7034ddfc86f56b0e9b0c534b2f3d304cbbd",
+      "exploratory_decision": "EXPLORATORY_FX8_COUNT_FREQUENCY_FAIL_NO_RETURN",
+      "exploratory_fx8_frequency_pass": false,
+      "formal_control_assignment_completed": false,
+      "formal_count_only_gate_passed": false,
+      "formal_profile": "BROAD_MULTI_ASSET_3TF",
+      "formal_scope_ineligible_reasons": [
+        "FX8_SUBSET_OF_REGISTERED_12_MARKET_UNIVERSE",
+        "ONLY_2017_2018_NOT_FULL_FORMAL_DISCOVERY",
+        "EXPLORATORY_M15_DERIVED_FROM_M1_NOT_FORMAL_DIRECT_M15"
+      ],
+      "fx8_instrument_breadth_pass": true,
+      "fx8_instrument_concentration_pass": true,
+      "fx8_timeframe_coverage_pass": false,
+      "overlap_deduplicated_signal_count": 469,
+      "primary_episode_count": 346,
+      "primary_episode_identity_sha256": "b5c63b01047e35f393092c69954af615a4164407cd2c334b975def9110f0eeb3",
+      "raw_signal_count": 511,
+      "raw_signal_identity_sha256": "53f8ffcf0bccd64aec3ca08292ad074cdef571c02d41b3dd191921ad3757c50c",
+      "strategy_id": "STRAT-P9-PS-203",
+      "timeframe_shares": {
+        "H1": 0.13583815028901733,
+        "H4": 0.046242774566473986,
+        "M15": 0.8179190751445087
+      }
+    },
+    {
+      "active_utc_date_count": 182,
+      "counts_by_direction": {
+        "LONG": 128,
+        "SHORT": 72
+      },
+      "counts_by_instrument": {
+        "AUDJPY": 22,
+        "AUDUSD": 28,
+        "EURGBP": 16,
+        "EURJPY": 26,
+        "EURUSD": 27,
+        "GBPJPY": 17,
+        "GBPUSD": 42,
+        "USDJPY": 22
+      },
+      "counts_by_timeframe": {
+        "H1": 159,
+        "H4": 41
+      },
+      "counts_by_year": {
+        "2017": 87,
+        "2018": 113
+      },
+      "deduplicated_signal_identity_sha256": "e2756ab19acba8de7fa1d440b3d1d26525d1ccb1247f9630b4d43040d8a836de",
+      "exploratory_decision": "EXPLORATORY_FX8_COUNT_FREQUENCY_FAIL_NO_RETURN",
+      "exploratory_fx8_frequency_pass": false,
+      "formal_control_assignment_completed": false,
+      "formal_count_only_gate_passed": false,
+      "formal_profile": "BROAD_MULTI_ASSET_2TF",
+      "formal_scope_ineligible_reasons": [
+        "FX8_SUBSET_OF_REGISTERED_12_MARKET_UNIVERSE",
+        "ONLY_2017_2018_NOT_FULL_FORMAL_DISCOVERY",
+        "EXPLORATORY_M15_DERIVED_FROM_M1_NOT_FORMAL_DIRECT_M15"
+      ],
+      "fx8_instrument_breadth_pass": false,
+      "fx8_instrument_concentration_pass": true,
+      "fx8_timeframe_coverage_pass": false,
+      "overlap_deduplicated_signal_count": 250,
+      "primary_episode_count": 200,
+      "primary_episode_identity_sha256": "f86a3af5e27e3773fe990ac3e8e88a6ad685dbd12ab861aa90cdd3cbb5980d3a",
+      "raw_signal_count": 273,
+      "raw_signal_identity_sha256": "1411ab61d9ecfc0528eb7560e9c1529eb5ba75f1a6c80342887b207c7a5d1c2f",
+      "strategy_id": "STRAT-P9-PS-205",
+      "timeframe_shares": {
+        "H1": 0.795,
+        "H4": 0.205
+      }
+    },
+    {
+      "active_utc_date_count": 346,
+      "counts_by_direction": {
+        "LONG": 242,
+        "SHORT": 211
+      },
+      "counts_by_instrument": {
+        "AUDJPY": 47,
+        "AUDUSD": 49,
+        "EURGBP": 80,
+        "EURJPY": 53,
+        "EURUSD": 51,
+        "GBPJPY": 62,
+        "GBPUSD": 67,
+        "USDJPY": 44
+      },
+      "counts_by_timeframe": {
+        "H1": 56,
+        "H4": 5,
+        "M15": 392
+      },
+      "counts_by_year": {
+        "2017": 224,
+        "2018": 229
+      },
+      "deduplicated_signal_identity_sha256": "a738cc3f4614c51c07b7cdc487125abf80cec226ce0b1b527ecc1904e7e98d93",
+      "exploratory_decision": "EXPLORATORY_FX8_COUNT_FREQUENCY_FAIL_NO_RETURN",
+      "exploratory_fx8_frequency_pass": false,
+      "formal_control_assignment_completed": false,
+      "formal_count_only_gate_passed": false,
+      "formal_profile": "BROAD_MULTI_ASSET_3TF",
+      "formal_scope_ineligible_reasons": [
+        "FX8_SUBSET_OF_REGISTERED_12_MARKET_UNIVERSE",
+        "ONLY_2017_2018_NOT_FULL_FORMAL_DISCOVERY",
+        "EXPLORATORY_M15_DERIVED_FROM_M1_NOT_FORMAL_DIRECT_M15"
+      ],
+      "fx8_instrument_breadth_pass": true,
+      "fx8_instrument_concentration_pass": true,
+      "fx8_timeframe_coverage_pass": false,
+      "overlap_deduplicated_signal_count": 647,
+      "primary_episode_count": 453,
+      "primary_episode_identity_sha256": "72e4707bc24889bc0f1da11143dc94ebc163bfde8320de5c818ded46cfb2c533",
+      "raw_signal_count": 673,
+      "raw_signal_identity_sha256": "9b1405360f8ee8a2e5c979cbe743229140f61aa3f7b5fb39b7125f9c043d9211",
+      "strategy_id": "STRAT-P9-LV-202",
+      "timeframe_shares": {
+        "H1": 0.12362030905077263,
+        "H4": 0.011037527593818985,
+        "M15": 0.8653421633554084
+      }
+    }
+  ],
+  "track": "EXPLORATORY_FX8_SINGLE_PAIR_SUBSET_NOT_FORMAL_PHASE9"
+}

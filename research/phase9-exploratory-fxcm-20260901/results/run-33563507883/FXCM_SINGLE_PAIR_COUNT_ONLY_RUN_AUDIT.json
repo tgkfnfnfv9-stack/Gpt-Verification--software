@@ -1,0 +1,159 @@
+{
+  "schema_version": "phase9-exploratory-fxcm-single-pair-count-only-run-audit-v1.0.0",
+  "audited_at_utc": "2026-09-01T22:10:39Z",
+  "repository": "tgkfnfnfv9-stack/Gpt-Verification--software",
+  "workflow": ".github/workflows/phase9-exploratory-fxcm-single-pair-count-only.yml",
+  "run": {
+    "run_id": 33563507883,
+    "run_number": 1,
+    "run_attempt": 1,
+    "event": "workflow_dispatch",
+    "head_sha": "7e105d0b10d09ba37c733c85acde5711f341e2a2",
+    "job_id": 100041290989,
+    "status": "completed",
+    "conclusion": "success",
+    "created_at": "2026-09-01T21:53:49Z",
+    "completed_at": "2026-09-01T22:07:25Z",
+    "duplicate_same_head_manual_run_count": 0
+  },
+  "execution_checks": {
+    "exact_manual_boundary_passed": true,
+    "frozen_anchors_and_59_tests_passed": true,
+    "canonical_ephemeral_mtf_reconstruction_passed": true,
+    "four_candidate_count_only_passed": true,
+    "working_prices_destroyed_before_upload": true,
+    "exact_price_free_artifact_check_passed": true,
+    "artifact_upload_passed": true
+  },
+  "artifact": {
+    "artifact_id": 9822613702,
+    "name": "phase9-exploratory-fxcm-single-pair-count-only-7e105d0b10d09ba37c733c85acde5711f341e2a2-33563507883-1",
+    "size_in_bytes": 2966,
+    "expires_at": "2026-09-15T22:07:22Z",
+    "zip_sha256": "cfc11120da20bcd59668eee349adfc0438e16ffae3ed8bef9e9c536dbe34cf62",
+    "exact_files": [
+      "EXPLORATORY_FXCM_SINGLE_PAIR_COUNT_ONLY.json",
+      "artifact_manifest_sha256.txt"
+    ],
+    "result_sha256": "9f3aca9454a491f4d5c73213e3e1129af8705d15dfdb11104f9a3d6a4b4d1d28",
+    "manifest_sha256": "8f3269c45a7461b682fee7e7dfb64d3753e8981dde9dd0825f950a2a5499a600",
+    "manifest_verified": true,
+    "raw_or_derived_price_files": 0,
+    "event_timestamp_files": 0
+  },
+  "anchors": {
+    "contract_sha256": "64ccfc614916a203e3ecda3dea48ada41915e3183f0c018b747026dc8e2a426e",
+    "candidate_registry_sha256": "b9a78c539547bfb6d1b727cda5428764b4d849ea81ac20a236d273760d638115",
+    "canonical_mtf_report_sha256": "4d7f77caa5333e017742e01606aa869f3845aa4c4f206563e2fd59e02b1e1063",
+    "current_mtf_report_sha256": "63b8329073fd5f68e3caffe1c32956ffd4c60018bd1334a7a2f19b6abddd2342",
+    "current_mtf_matches_canonical_data_identity": true
+  },
+  "candidate_results": [
+    {
+      "strategy_id": "STRAT-P9-PS-202",
+      "raw_signal_count": 6327,
+      "overlap_deduplicated_signal_count": 4377,
+      "primary_episode_count": 1058,
+      "active_utc_date_count": 557,
+      "counts_by_timeframe": {
+        "M15": 917,
+        "H1": 96,
+        "H4": 45
+      },
+      "instrument_breadth_pass": true,
+      "instrument_concentration_pass": true,
+      "timeframe_coverage_pass": false,
+      "exploratory_fx8_frequency_pass": false,
+      "failed_frozen_conditions": [
+        "H4_EPISODES_45_LT_50",
+        "H1_SHARE_0.090737_LT_0.10",
+        "H4_SHARE_0.042533_LT_0.10",
+        "M15_SHARE_0.866730_GT_0.70"
+      ]
+    },
+    {
+      "strategy_id": "STRAT-P9-PS-203",
+      "raw_signal_count": 511,
+      "overlap_deduplicated_signal_count": 469,
+      "primary_episode_count": 346,
+      "active_utc_date_count": 316,
+      "counts_by_timeframe": {
+        "M15": 283,
+        "H1": 47,
+        "H4": 16
+      },
+      "instrument_breadth_pass": true,
+      "instrument_concentration_pass": true,
+      "timeframe_coverage_pass": false,
+      "exploratory_fx8_frequency_pass": false,
+      "failed_frozen_conditions": [
+        "PRIMARY_EPISODES_346_LT_500",
+        "H1_EPISODES_47_LT_50",
+        "H4_EPISODES_16_LT_50",
+        "H4_SHARE_0.046243_LT_0.10",
+        "M15_SHARE_0.817919_GT_0.70"
+      ]
+    },
+    {
+      "strategy_id": "STRAT-P9-PS-205",
+      "raw_signal_count": 273,
+      "overlap_deduplicated_signal_count": 250,
+      "primary_episode_count": 200,
+      "active_utc_date_count": 182,
+      "counts_by_timeframe": {
+        "H1": 159,
+        "H4": 41
+      },
+      "instrument_breadth_pass": false,
+      "instrument_concentration_pass": true,
+      "timeframe_coverage_pass": false,
+      "exploratory_fx8_frequency_pass": false,
+      "failed_frozen_conditions": [
+        "PRIMARY_EPISODES_200_LT_500",
+        "ACTIVE_UTC_DATES_182_LT_250",
+        "INSTRUMENTS_WITH_30_EPISODES_1_LT_6",
+        "H4_EPISODES_41_LT_75"
+      ]
+    },
+    {
+      "strategy_id": "STRAT-P9-LV-202",
+      "raw_signal_count": 673,
+      "overlap_deduplicated_signal_count": 647,
+      "primary_episode_count": 453,
+      "active_utc_date_count": 346,
+      "counts_by_timeframe": {
+        "M15": 392,
+        "H1": 56,
+        "H4": 5
+      },
+      "instrument_breadth_pass": true,
+      "instrument_concentration_pass": true,
+      "timeframe_coverage_pass": false,
+      "exploratory_fx8_frequency_pass": false,
+      "failed_frozen_conditions": [
+        "PRIMARY_EPISODES_453_LT_500",
+        "H4_EPISODES_5_LT_50",
+        "H4_SHARE_0.011038_LT_0.10",
+        "M15_SHARE_0.865342_GT_0.70"
+      ]
+    }
+  ],
+  "decision": {
+    "exploratory_fx8_frequency_pass_candidates": [],
+    "next_gate": "NO_EXPLORATORY_RETURN_GATE",
+    "formal_phase9_pass_or_reject_effect": false,
+    "interpretation": "EXPLORATORY_FX8_SUBSET_FREQUENCY_FAILURE_NOT_FORMAL_STRATEGY_REJECTION",
+    "result_dependent_threshold_relaxation_allowed": false,
+    "favorable_instrument_or_timeframe_selection_allowed": false
+  },
+  "prohibited_outputs": {
+    "return_calculated": false,
+    "return_sign_calculated": false,
+    "mfe_calculated": false,
+    "mae_calculated": false,
+    "edge_calculated": false,
+    "win_loss_calculated": false,
+    "research_outcomes_calculated": false,
+    "outcome_fields": []
+  }
+}
