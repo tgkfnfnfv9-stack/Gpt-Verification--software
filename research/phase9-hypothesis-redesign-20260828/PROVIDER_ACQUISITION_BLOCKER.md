@@ -1,8 +1,10 @@
 # Phase 9 Provider / Acquisition Blocker
 
-Status: `PUBLIC_ENDPOINT_PATH_REJECTED; JFOREX_SELECTED; S1B_GATE_A_PASS; GATE_B_FROZEN; PRICE_BLOCKED_PENDING_REMAINING_RUNTIME_CONTROLS`
+Status: `JFOREX_SELECTED; ACTUAL_FULL_QC_CONTRACT_FROZEN; PROVIDER_SCHEDULE_SOURCE_P0_BLOCKED; PRICE_BLOCKED`
 
 Recorded: 2026-08-29 UTC
+
+Last audited: 2026-09-01 UTC
 
 This decision was made before any Phase 9 market-price file, return, MFE, MAE,
 edge, signal count, or candidate outcome was acquired or inspected.
@@ -14,6 +16,48 @@ workflows remain disabled. The replacement Phase 9 workflow uses Dukascopy's
 official authenticated JForex Tester API. Market-data acquisition remains
 blocked; configuring Secrets or giving manual confirmations does not by itself
 authorize dispatch.
+
+## Provider schedule source P0 blocker (2026-09-01)
+
+The frozen Full-QC contract requires a complete, versioned, price-independent
+provider schedule for 12 instruments and M15/H1. The repository currently has
+no authoritative source for those historical bytes:
+
+- `data_manifest/trading_calendar.json` still records
+  `provider_schedule_version=NO_VERSION_AVAILABLE_YET`.
+- No frozen provider schedule source, 24-file inventory, inventory manifest, or
+  canonical exact-match allowlist exists.
+- A generic Monday-Friday grid, current SDK market-hours template, inferred
+  holiday list, or raw-price timestamp set cannot support the contract's
+  `complete_interval_inventory=true` claim.
+- JForex API 2.13.99 exposes historical offline intervals through
+  `IDataService.getOfflineTimeDomains(from,to,instrument)`, but the documented
+  access path is through a strategy `IContext` after JForex connection. That
+  conflicts with the current prohibition on external JNLP, JForex connect,
+  availability access, and price access before the remaining blockers and a
+  separate authorization Gate are complete.
+- The API describes offline intervals as weekend intervals; completeness for
+  historical holidays, maintenance, Energy daily sessions, and session-rule
+  changes remains unproven.
+
+Official API references audited without connecting to JForex or requesting data:
+
+- https://www.dukascopy.com/client/javadoc3/com/dukascopy/api/IDataService.html
+- https://www.dukascopy.com/client/javadoc3/com/dukascopy/api/IContext.html
+
+Therefore no schedule inventory or allowlist may be fabricated or frozen. The
+safe next decision is one of:
+
+1. identify and hash-lock a Dukascopy-published, versioned, licensed historical
+   schedule source covering the complete frozen intervals; or
+2. create a separate, user-approved metadata-only connection amendment that
+   changes the Gate order and mechanically prohibits availability, historical
+   bars, price, order, and Outcome access. This option still needs proof that
+   the returned offline domains cover holidays and Energy sessions completely.
+
+`runner/verify_phase9_provider_schedule_readiness.py` and its no-secret/no-price
+Actions preflight record this blocked state. They deliberately create no
+`.timestamps` files and have no acquisition authorization effect.
 
 ## Rejected public-endpoint P0 blockers
 

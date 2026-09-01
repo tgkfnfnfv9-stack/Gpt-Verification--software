@@ -1,7 +1,7 @@
 {
   "project": "auto-trading-research",
   "updated_at": "2026-09-01",
-  "phase": "PHASE9_PREREGISTERED_GATE_C3_PASS_ACTUAL_FULL_QC_CONTRACT_FROZEN_PROVIDER_SCHEDULE_BLOCKED",
+  "phase": "PHASE9_PREREGISTERED_ACTUAL_FULL_QC_CONTRACT_FROZEN_PROVIDER_SCHEDULE_SOURCE_P0_BLOCKED",
   "phase8": {
     "formal_hypotheses_including_pa002": 16,
     "decision": "ALL_REJECT_FOR_DEVELOPMENT",
@@ -54,7 +54,7 @@
     "legacy_non_phase9_future_period_download_detected": true
   },
   "provider_acquisition": {
-    "status": "GATE_C3_PASS_ACTUAL_FULL_QC_CONTRACT_FROZEN_PROVIDER_SCHEDULE_BLOCKED",
+    "status": "ACTUAL_FULL_QC_CONTRACT_FROZEN_PROVIDER_SCHEDULE_SOURCE_P0_BLOCKED",
     "decision_log": "PROVIDER_ACQUISITION_BLOCKER.md",
     "source_channel_amendment": "JFOREX_SOURCE_CHANNEL_AMENDMENT.md",
     "selected_channel": "DUKASCOPY_OFFICIAL_AUTHENTICATED_JFOREX_TESTER_API",
@@ -282,6 +282,22 @@
       "outcome_fields": [],
       "acquisition_authorized": false
     },
+    "provider_schedule_source_readiness": {
+      "status": "P0_BLOCKED_AUTHORITATIVE_INDEPENDENT_SOURCE_NOT_FROZEN",
+      "workflow": ".github/workflows/phase9-provider-schedule-readiness-preflight.yml",
+      "runner": "runner/verify_phase9_provider_schedule_readiness.py",
+      "authoritative_versioned_source_frozen": false,
+      "generic_weekday_or_current_session_template_accepted": false,
+      "official_historical_offline_domain_api_requires_jforex_context": true,
+      "metadata_only_connection_amendment_authorized": false,
+      "provider_schedule_inventory_acquired": false,
+      "provider_schedule_allowlist_frozen": false,
+      "phase9_price_files_acquired": 0,
+      "forbidden_market_period_request_attempted": false,
+      "research_outcomes_calculated": false,
+      "acquisition_authorized": false,
+      "count_only_authorized": false
+    },
     "full_qc_same_run_or_private_raw_storage_decided": true,
     "provider_schedule_inventory_acquired": false,
     "provider_schedule_allowlist_frozen": false,
@@ -347,6 +363,7 @@
     "implement MT5 EA"
   ],
   "next_actions": [
+    "resolve the provider schedule source P0 by hash-locking an authoritative versioned historical schedule source or by separately preregistering and explicitly authorizing a metadata-only JForex connection amendment",
     "use PHASE9_OPERATIONS_GUIDE.md as the procedural entrypoint",
     "acquire the provider schedule inventory independently of raw prices and audit its exact Run, Artifact and SHA identities",
     "in a separate atomic commit, freeze the canonical provider schedule exact-match allowlist with Git ancestry and frozen-object byte verification",

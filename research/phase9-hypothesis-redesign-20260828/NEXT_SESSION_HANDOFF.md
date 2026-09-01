@@ -11,7 +11,7 @@ Actual Full-QC実装基準: `9eb7ce667bea8e76a7f9bb1f2d378eebd8957206`
 ## 1. この引継ぎの結論
 
 Phase 9では、実価格データを受け入れて検査するActual Full-QC契約まで実装・監査済み。
-ただし、provider schedule inventoryとその別Commit allowlistが未取得・未凍結のため、正式取得はまだ開始しない。
+ただし、provider scheduleのauthoritative/versioned/price-independent source自体が未固定であり、inventoryと別Commit allowlistは未取得・未凍結。正式取得はまだ開始しない。
 
 ```text
 Phase 9仮説凍結
@@ -26,8 +26,10 @@ Gate C3：child process・OS egress・custody実行境界
   ↓ PASS（取得認可効果なし）
 Actual 48-series Full-QC契約
   ↓ 実装・Tests・A6/A7 PASS
+Provider schedule source readiness
+  ↓ P0 BLOCKED（公式version付き完全履歴source未固定）
 Provider schedule inventory / allowlist
-  ↓ 次の作業
+  ↓ 未開始
 正式48系列取得 → Actual Full-QC → Count-only → Return検証
 ```
 
@@ -167,7 +169,24 @@ Provider schedule inventory / allowlist
 
 ## 7. 次に行う単一作業
 
-Provider schedule inventoryを価格データとは独立して正式取得し、その正確なRun/Artifact/SHAを監査した後、別Commitでcanonical exact-match allowlistを凍結する。
+Provider schedule source P0を解消する。現在の制約内でgeneric weekday gridやcurrent session templateを正式inventoryとして生成してはならない。
+
+2026-09-01のA0〜A7監査で確認した事実:
+
+- `trading_calendar.json`は`provider_schedule_version=NO_VERSION_AVAILABLE_YET`
+- 非価格・非JNLP・pre-connectで使えるversion付きcomplete historical schedule sourceはRepositoryにない
+- 公式`IDataService.getOfflineTimeDomains`は現行経路ではJForex contextを必要とし、接続禁止と循環する
+- 同APIだけでholiday、maintenance、Energy sessionの完全性を証明できていない
+- 現在のFull-QC contractはbytes構造を検査できるが、provider由来は自己申告だけでは証明できない
+
+`phase9-provider-schedule-readiness-preflight.yml`はno-secret/no-priceでこのblocked stateだけを検証する。24 schedule files、inventory、allowlistは作らない。
+
+解決方法は次のいずれかを別判断で固定する。
+
+1. Dukascopy公式のversion付きcomplete historical schedule sourceを特定し、URL/version/content SHA/利用条件を凍結する
+2. Gate順序を変更するmetadata-only JForex connection amendmentを別Commit・別承認で作る。ただしavailability、bar、price、order、Outcomeを機械的に禁止し、holiday/Energy session完全性を別途証明する
+
+P0解消後にのみ、Provider schedule inventoryを価格データとは独立して正式取得し、その正確なRun/Artifact/SHAを監査した後、別Commitでcanonical exact-match allowlistを凍結する。
 
 必要な固定情報:
 

@@ -44,7 +44,11 @@ Actual Full-QC実装基準は9eb7ce667bea8e76a7f9bb1f2d378eebd8957206です。�
 - acquisition_authorized=false
 - count_only_authorized=false
 
-今回の単一作業は、provider schedule inventoryを価格データとは独立して正式取得し、Run ID、head SHA、Artifact ID、Artifact ZIP SHA、provider/version、UTC/BAR_OPEN、24 schedule fileのpath/SHA/count/first/last、aggregate SHAを監査した後、別Commitでcanonical exact-match allowlistを凍結することです。
+現在はprovider schedule source readinessでP0 BLOCKEDです。`trading_calendar.json`は`provider_schedule_version=NO_VERSION_AVAILABLE_YET`であり、非価格・非JNLP・pre-connectで使えるDukascopy公式version付きcomplete historical schedule sourceはRepositoryにありません。公式`IDataService.getOfflineTimeDomains`は現行経路ではJForex contextを必要とし、接続禁止と循環します。またholiday、maintenance、Energy sessionの完全性も未証明です。
+
+次の単一作業は、generic weekday gridやcurrent session templateをinventoryと偽装せず、provider schedule source P0を解消することです。解決方法は、Dukascopy公式のversion付きcomplete historical schedule sourceを特定・hash-lockするか、availability・bar・price・order・Outcomeを機械的に禁止したmetadata-only JForex connection amendmentを別Commit・別承認で事前登録するかのどちらかです。後者でもholiday/Energy session完全性の証明が必要です。
+
+P0解消後にのみ、provider schedule inventoryを価格データとは独立して正式取得し、Run ID、head SHA、Artifact ID、Artifact ZIP SHA、provider/version、UTC/BAR_OPEN、24 schedule fileのpath/SHA/count/first/last、aggregate SHAを監査した後、別Commitでcanonical exact-match allowlistを凍結してください。
 
 同一Runのinventoryで自己認可しないでください。Canonical path、Git strict ancestor、freeze parent、Git object byte一致、tracked/unmodifiedをfail-closedで検証してください。この作業だけでacquisition_authorized=trueに変更しないでください。
 

@@ -1,0 +1,100 @@
+name: phase9-provider-schedule-readiness-preflight
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/phase9-provider-schedule-readiness-preflight.yml'
+      - 'research/phase9-hypothesis-redesign-20260828/runner/verify_phase9_provider_schedule_readiness.py'
+      - 'research/phase9-hypothesis-redesign-20260828/tests/test_phase9_provider_schedule_readiness.py'
+      - 'research/phase9-hypothesis-redesign-20260828/SESSION_STATE.json'
+      - 'research/phase9-hypothesis-redesign-20260828/data_manifest/trading_calendar.json'
+      - 'research/phase9-hypothesis-redesign-20260828/data_manifest/provider_schedule_source.frozen.json'
+      - 'research/phase9-hypothesis-redesign-20260828/data_manifest/provider_schedule_inventory.json'
+      - 'research/phase9-hypothesis-redesign-20260828/spec/provider_schedule_contract.frozen.json'
+      - 'research/phase9-hypothesis-redesign-20260828/spec/provider_schedule_exact_allowlist.frozen.json'
+      - 'research/phase9-hypothesis-redesign-20260828/spec/candidate_registry.frozen.json'
+      - 'research/phase9-hypothesis-redesign-20260828/spec/data_requirements.frozen.json'
+      - 'research/phase9-hypothesis-redesign-20260828/policy/preregistered_research_policy.json'
+  workflow_dispatch:
+    inputs:
+      confirmation:
+        description: 'Type RUN_PHASE9_PROVIDER_SCHEDULE_READINESS_NO_SECRET_NO_PRICE'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: phase9-provider-schedule-readiness-preflight
+  cancel-in-progress: false
+
+jobs:
+  verify-blocked-state:
+    if: ${{ github.ref == 'refs/heads/main' && (github.event_name == 'push' || inputs.confirmation == 'RUN_PHASE9_PROVIDER_SCHEDULE_READINESS_NO_SECRET_NO_PRICE') }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout exact triggering commit
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+          ref: ${{ github.sha }}
+
+      - name: Establish no-secret no-provider-access boundary
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          for name in DUKASCOPY_USERNAME DUKASCOPY_PASSWORD PHASE9_JFOREX_CONFIRM; do
+            test -z "${!name:-}"
+          done
+          upload="$RUNNER_TEMP/phase9-provider-schedule-readiness-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          test ! -e "$upload"
+          mkdir -m 0700 "$upload"
+          echo "PHASE9_SCHEDULE_READINESS_UPLOAD=$upload" >> "$GITHUB_ENV"
+
+      - name: Verify frozen anchors and repository tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          root='research/phase9-hypothesis-redesign-20260828'
+          test "$(git hash-object "$root/spec/candidate_registry.frozen.json")" = '8740f58efe48c40ba0664606194b18b40cf14c27'
+          test "$(git hash-object "$root/spec/data_requirements.frozen.json")" = '7e6a476366140e07edac4e4316f8c08a6ab4ae92'
+          test "$(git hash-object "$root/policy/preregistered_research_policy.json")" = '8483418a6a75f5a6ea7d6b54ca54beb68896855f'
+          python -m py_compile "$root/runner/verify_phase9_provider_schedule_readiness.py"
+          python -m unittest discover -s "$root/tests" -p 'test_*.py' -v
+          git diff --exit-code
+
+      - name: Seal exact metadata-only blocked-state audit
+        shell: bash
+        run: |
+          set -euo pipefail
+          root='research/phase9-hypothesis-redesign-20260828'
+          report="$PHASE9_SCHEDULE_READINESS_UPLOAD/PROVIDER_SCHEDULE_READINESS_AUDIT.json"
+          python "$root/runner/verify_phase9_provider_schedule_readiness.py" \
+            --confirmation RUN_PHASE9_PROVIDER_SCHEDULE_READINESS_NO_SECRET_NO_PRICE \
+            --report "$report"
+          digest=$(sha256sum "$report" | cut -d' ' -f1)
+          printf '%s  %s\n' "$digest" PROVIDER_SCHEDULE_READINESS_AUDIT.json \
+            > "$PHASE9_SCHEDULE_READINESS_UPLOAD/artifact_manifest_sha256.txt"
+          chmod 0600 "$PHASE9_SCHEDULE_READINESS_UPLOAD/artifact_manifest_sha256.txt"
+          expected=$(printf '%s\n' PROVIDER_SCHEDULE_READINESS_AUDIT.json artifact_manifest_sha256.txt | LC_ALL=C sort)
+          actual=$(find "$PHASE9_SCHEDULE_READINESS_UPLOAD" -mindepth 1 -maxdepth 1 -type f -printf '%f\n' | LC_ALL=C sort)
+          test "$actual" = "$expected"
+          test -z "$(find "$PHASE9_SCHEDULE_READINESS_UPLOAD" -mindepth 1 -maxdepth 1 ! -type f -print -quit)"
+          test -z "$(find "$PHASE9_SCHEDULE_READINESS_UPLOAD" -type f \( -iname '*.csv' -o -iname '*.jar' -o -iname '*.jnlp' -o -iname '*.timestamps' \) -print -quit)"
+          git diff --exit-code
+
+      - name: Upload exact blocked-state metadata
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: phase9-provider-schedule-readiness-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ env.PHASE9_SCHEDULE_READINESS_UPLOAD }}/
+          if-no-files-found: error
+          retention-days: 14
+          include-hidden-files: false
