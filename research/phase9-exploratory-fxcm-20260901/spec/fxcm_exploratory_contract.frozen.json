@@ -1,0 +1,37 @@
+{
+  "contract_version": "phase9-exploratory-fxcm-v1.0.0",
+  "status": "FROZEN_BEFORE_PRICE_ACCESS",
+  "track": "EXPLORATORY_FX8_H1_NOT_FORMAL_PHASE9",
+  "formal_authorization_effect": false,
+  "provider": {
+    "name": "FXCM",
+    "dataset": "MarketData CandleData",
+    "source_repository": "https://github.com/fxcm/MarketData",
+    "source_repository_head": "924393dd545fab187527d95ef8b1178284b274b6",
+    "base_url": "https://candledata.fxcorporate.com/H1",
+    "timestamp_timezone": "UTC",
+    "timestamp_semantics": "ROW_TIMESTAMP_ASSUMED_BAR_OPEN_NOT_PROVIDER_EXPLICIT",
+    "price_sides": ["BID", "ASK"],
+    "automation_permission_evidence": "OFFICIAL_README_PUBLISHES_URL_TEMPLATE_AND_PYTHON_LOOP"
+  },
+  "usage_constraints": {
+    "personal_noncommercial_use_only": true,
+    "eula_url": "https://www.fxcm.com/uk/forms/eula/",
+    "explicit_user_confirmation_required_at_dispatch": true
+  },
+  "period": {
+    "start_inclusive": "2017-01-01T00:00:00Z",
+    "end_exclusive": "2018-12-31T00:00:00Z"
+  },
+  "years": [2017, 2018],
+  "weeks_per_year": 52,
+  "symbols": ["AUDJPY", "AUDUSD", "EURGBP", "EURJPY", "EURUSD", "GBPJPY", "GBPUSD", "USDJPY"],
+  "timeframe": "H1",
+  "expected_download_count": 832,
+  "expected_observed_timestamp_file_count": 8,
+  "expected_working_price_file_count": 16,
+  "raw_or_price_artifact_allowed": false,
+  "provider_schedule_claim_allowed": false,
+  "candidate_signal_count_allowed": false,
+  "outcome_calculation_allowed": false
+}

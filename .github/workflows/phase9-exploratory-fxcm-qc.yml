@@ -1,0 +1,88 @@
+name: phase9-exploratory-fxcm-fx8-h1-acquisition-qc
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirmation:
+        description: 'Type RUN_EXPLORATORY_FXCM_FX8_H1_2017_2018_QC_ONLY'
+        required: true
+        type: string
+      usage_confirmation:
+        description: 'Type I_CONFIRM_PERSONAL_NONCOMMERCIAL_USE_AND_ACCEPT_FXCM_EULA'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: phase9-exploratory-fxcm-fx8-h1-acquisition-qc
+  cancel-in-progress: false
+
+jobs:
+  acquire-and-qc:
+    if: >-
+      ${{ github.ref == 'refs/heads/main' &&
+          inputs.confirmation == 'RUN_EXPLORATORY_FXCM_FX8_H1_2017_2018_QC_ONLY' &&
+          inputs.usage_confirmation == 'I_CONFIRM_PERSONAL_NONCOMMERCIAL_USE_AND_ACCEPT_FXCM_EULA' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - name: Checkout exact dispatch commit
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+          ref: ${{ github.sha }}
+
+      - name: Verify frozen Formal anchors and exploratory tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          formal='research/phase9-hypothesis-redesign-20260828'
+          track='research/phase9-exploratory-fxcm-20260901'
+          test "$(git hash-object "$formal/spec/candidate_registry.frozen.json")" = '8740f58efe48c40ba0664606194b18b40cf14c27'
+          test "$(git hash-object "$formal/spec/data_requirements.frozen.json")" = '7e6a476366140e07edac4e4316f8c08a6ab4ae92'
+          test "$(git hash-object "$formal/policy/preregistered_research_policy.json")" = '8483418a6a75f5a6ea7d6b54ca54beb68896855f'
+          test "$(git hash-object "$track/spec/fxcm_exploratory_contract.frozen.json")" = 'bc46f4332613bf46b0c1e8caddfa0b40738b9c06'
+          PYTHONDONTWRITEBYTECODE=1 python -m unittest discover -s "$track/tests" -p 'test_*.py'
+          git diff --exit-code
+
+      - name: Acquire official FX8 H1 data and seal metadata
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          track='research/phase9-exploratory-fxcm-20260901'
+          work="$RUNNER_TEMP/phase9-exploratory-fxcm-work-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          report="$RUNNER_TEMP/phase9-exploratory-fxcm-report-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          echo "EXPLORATORY_FXCM_WORK=$work" >> "$GITHUB_ENV"
+          echo "EXPLORATORY_FXCM_REPORT=$report" >> "$GITHUB_ENV"
+          python "$track/runner/fxcm_exploratory_qc.py" \
+            --confirmation RUN_EXPLORATORY_FXCM_FX8_H1_2017_2018_QC_ONLY \
+            --usage-confirmation I_CONFIRM_PERSONAL_NONCOMMERCIAL_USE_AND_ACCEPT_FXCM_EULA \
+            --contract "$track/spec/fxcm_exploratory_contract.frozen.json" \
+            --work-dir "$work" \
+            --report-dir "$report"
+          test "$(find "$report" -type f | wc -l)" -eq 2
+          test -z "$(find "$report" -type f \( -iname '*.csv' -o -iname '*.gz' -o -iname '*.zip' -o -iname '*.timestamps.txt' \) -print -quit)"
+          git diff --exit-code
+
+      - name: Upload price-free QC metadata
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: phase9-exploratory-fxcm-qc-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ env.EXPLORATORY_FXCM_REPORT }}/
+          if-no-files-found: error
+          retention-days: 14
+          include-hidden-files: false
+
+      - name: Destroy all working prices
+        if: ${{ always() }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ -n "${EXPLORATORY_FXCM_WORK:-}" && "$EXPLORATORY_FXCM_WORK" == "$RUNNER_TEMP"/phase9-exploratory-fxcm-work-* ]]; then
+            find "$EXPLORATORY_FXCM_WORK" -type f -exec shred -u {} + 2>/dev/null || true
+            rm -rf -- "$EXPLORATORY_FXCM_WORK"
+          fi
