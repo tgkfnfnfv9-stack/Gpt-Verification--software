@@ -1,0 +1,82 @@
+{
+  "schema_version": "phase9-provider-schedule-contract-v1.0",
+  "status": "FROZEN_CONTRACT_NO_PROVIDER_INVENTORY_ACQUIRED",
+  "series_count": 24,
+  "series_dimensions": {
+    "instruments": [
+      "AUDJPY",
+      "AUDUSD",
+      "EURGBP",
+      "EURJPY",
+      "EURUSD",
+      "GBPJPY",
+      "GBPUSD",
+      "USDJPY",
+      "XAUUSD",
+      "XAGUSD",
+      "BRENTCMDUSD",
+      "LIGHTCMDUSD"
+    ],
+    "timeframes": ["M15", "H1"],
+    "side_independent": true
+  },
+  "coverage": {
+    "start_inclusive": "2013-01-01T00:00:00Z",
+    "end_exclusive_by_timeframe": {
+      "M15": "2019-08-28T00:00:00Z",
+      "H1": "2019-08-01T00:00:00Z"
+    },
+    "timezone": "UTC",
+    "bar_timestamp": "BAR_OPEN"
+  },
+  "required_manifest_schema_version": "phase9-provider-schedule-inventory-v1.0",
+  "required_manifest_status": "FROZEN_PROVIDER_SCHEDULE_INVENTORY",
+  "required_separate_allowlist_schema_version": "phase9-provider-schedule-exact-allowlist-v1.0",
+  "required_separate_allowlist_status": "SEPARATE_COMMIT_EXACT_ALLOWLIST_FROZEN",
+  "required_manifest_fields": [
+    "source",
+    "provider_version",
+    "observed_at_utc",
+    "coverage_start_inclusive",
+    "coverage_end_exclusive_by_timeframe",
+    "complete_interval_inventory",
+    "derived_from_raw_prices",
+    "inventory_sha256",
+    "series"
+  ],
+  "series_file_rule": "ASCII UTC timestamps with exact Z suffix, one scheduled bar-open per LF-terminated line, strictly increasing, no duplicate, exact interval alignment",
+  "fail_closed_rules": {
+    "provider_version_required": true,
+    "no_version_available_yet_rejected": true,
+    "complete_frozen_interval_claim_required": true,
+    "derived_from_raw_prices_must_be_false": true,
+    "exact_24_file_set_required": true,
+    "unknown_additional_missing_duplicate_case_collision_rejected": true,
+    "per_file_sha256_count_first_last_exact_match_required": true,
+    "aggregate_inventory_sha256_exact_match_required": true,
+    "canonical_allowlist_repository_path_required": true,
+    "allowlist_git_object_byte_match_required": true,
+    "allowlist_freeze_commit_must_be_strict_ancestor": true,
+    "freeze_parent_sha_must_match_git_parent": true,
+    "source_head_must_be_ancestor_of_freeze_parent": true,
+    "allowlist_tracked_and_unmodified_required": true,
+    "schedule_outside_frozen_period_rejected": true,
+    "unclassified_gap_rejected": true,
+    "forward_fill_prohibited": true,
+    "same_run_schedule_observation_may_not_self_authorize": true,
+    "raw_owner_mode_and_single_link_required": "runner-owned root 0700; files 0600 regular single-link",
+    "raw_identity_permissions_link_count_and_sha256_pinned_across_all_streaming_passes": true,
+    "schedule_identity_permissions_link_count_and_sha256_pinned_across_all_streaming_passes": true,
+    "raw_and_schedule_root_identity_pinned_across_all_streaming_passes": true,
+    "derived_h4_d1_ohlcv_digest_required": true,
+    "report_parent_directory_fd_pinned_and_no_clobber_required": true
+  },
+  "authorization_state": {
+    "provider_schedule_inventory_acquired": false,
+    "actual_market_data_full_quality_gate_passed": false,
+    "count_only_authorized": false,
+    "outcome_access_authorized": false,
+    "research_outcomes_calculated": false,
+    "outcome_fields": []
+  }
+}

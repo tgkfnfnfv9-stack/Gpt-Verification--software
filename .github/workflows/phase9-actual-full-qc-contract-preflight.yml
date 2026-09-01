@@ -1,0 +1,126 @@
+name: phase9-actual-full-qc-contract-preflight
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/phase9-actual-full-qc-contract-preflight.yml'
+      - 'research/phase9-hypothesis-redesign-20260828/runner/phase9_actual_full_qc.py'
+      - 'research/phase9-hypothesis-redesign-20260828/spec/provider_schedule_contract.frozen.json'
+      - 'research/phase9-hypothesis-redesign-20260828/tests/test_phase9_actual_full_qc.py'
+  workflow_dispatch:
+    inputs:
+      confirmation:
+        description: 'Type RUN_PHASE9_ACTUAL_FULL_QC_CONTRACT_PREFLIGHT_NO_PRICE'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: phase9-actual-full-qc-contract-preflight
+  cancel-in-progress: false
+
+jobs:
+  verify:
+    if: ${{ github.ref == 'refs/heads/main' && (github.event_name == 'push' || inputs.confirmation == 'RUN_PHASE9_ACTUAL_FULL_QC_CONTRACT_PREFLIGHT_NO_PRICE') }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout exact triggering commit
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+
+      - name: Establish no-secret no-price boundary
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          for name in DUKASCOPY_USERNAME DUKASCOPY_PASSWORD PHASE9_JFOREX_CONFIRM; do
+            test -z "${!name:-}"
+          done
+          upload="$RUNNER_TEMP/phase9-actual-full-qc-contract-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          test ! -e "$upload"
+          mkdir -m 0700 "$upload"
+          echo "PHASE9_PREFLIGHT_UPLOAD=$upload" >> "$GITHUB_ENV"
+
+      - name: Verify frozen contract and all repository tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          root='research/phase9-hypothesis-redesign-20260828'
+          python -m py_compile "$root/runner/phase9_actual_full_qc.py"
+          python -m unittest discover -s "$root/tests" -p 'test_*.py' -v
+          python "$root/runner/phase9_actual_full_qc.py" --help >/dev/null
+          git diff --exit-code
+
+      - name: Seal exact metadata-only blocked-state audit
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+
+          root = Path('research/phase9-hypothesis-redesign-20260828')
+          upload = Path(os.environ['PHASE9_PREFLIGHT_UPLOAD'])
+          audit = {
+              'schema_version': 'phase9-actual-full-qc-contract-preflight-v1.0',
+              'status': 'CONTRACT_AND_TESTS_PASS_ACTUAL_ACQUISITION_NOT_STARTED',
+              'run_id': int(os.environ['GITHUB_RUN_ID']),
+              'run_attempt': int(os.environ['GITHUB_RUN_ATTEMPT']),
+              'head_sha': os.environ['GITHUB_SHA'],
+              'runner_os': os.environ['RUNNER_OS'],
+              'runner_arch': os.environ['RUNNER_ARCH'],
+              'contract_sha256': hashlib.sha256(
+                  (root / 'spec/provider_schedule_contract.frozen.json').read_bytes()
+              ).hexdigest(),
+              'full_qc_runner_sha256': hashlib.sha256(
+                  (root / 'runner/phase9_actual_full_qc.py').read_bytes()
+              ).hexdigest(),
+              'provider_schedule_inventory_acquired': False,
+              'provider_schedule_allowlist_frozen': False,
+              'credentials_referenced': False,
+              'external_jnlp_request_attempted': False,
+              'jforex_connect_invoked': False,
+              'availability_request_attempted': False,
+              'market_price_request_attempted': False,
+              'forbidden_market_period_request_attempted': False,
+              'phase9_price_files_acquired': 0,
+              'actual_market_data_full_quality_gate_passed': False,
+              'count_only_authorized': False,
+              'research_outcomes_calculated': False,
+              'outcome_fields': [],
+              'acquisition_authorized': False,
+          }
+          target = upload / 'ACTUAL_FULL_QC_CONTRACT_PREFLIGHT_AUDIT.json'
+          target.write_text(json.dumps(audit, indent=2, sort_keys=True) + '\n', encoding='utf-8')
+          target.chmod(0o600)
+          digest = hashlib.sha256(target.read_bytes()).hexdigest()
+          manifest = upload / 'artifact_manifest_sha256.txt'
+          manifest.write_text(f'{digest}  {target.name}\n', encoding='ascii')
+          manifest.chmod(0o600)
+          PY
+          expected=$(printf '%s\n' ACTUAL_FULL_QC_CONTRACT_PREFLIGHT_AUDIT.json artifact_manifest_sha256.txt | LC_ALL=C sort)
+          actual=$(find "$PHASE9_PREFLIGHT_UPLOAD" -mindepth 1 -maxdepth 1 -type f -printf '%f\n' | LC_ALL=C sort)
+          test "$actual" = "$expected"
+          test -z "$(find "$PHASE9_PREFLIGHT_UPLOAD" -mindepth 1 -maxdepth 1 ! -type f -print -quit)"
+          test -z "$(find "$PHASE9_PREFLIGHT_UPLOAD" -type f \( -iname '*.csv' -o -iname '*.jar' -o -iname '*.jnlp' -o -iname '*.zip' \) -print -quit)"
+          git diff --exit-code
+
+      - name: Upload exact metadata only
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: phase9-actual-full-qc-contract-preflight-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ env.PHASE9_PREFLIGHT_UPLOAD }}/
+          if-no-files-found: error
+          retention-days: 14
+          include-hidden-files: false
