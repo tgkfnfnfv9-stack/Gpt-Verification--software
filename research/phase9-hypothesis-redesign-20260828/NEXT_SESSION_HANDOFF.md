@@ -4,7 +4,9 @@
 
 Repository: `tgkfnfnfv9-stack/Gpt-Verification--software`
 
-Remote main基準: `9eb7ce667bea8e76a7f9bb1f2d378eebd8957206`
+Actual Full-QC実装基準: `9eb7ce667bea8e76a7f9bb1f2d378eebd8957206`
+
+現在のremote mainは、この実装基準より後の引継ぎ文書Commitを含む。次セッション開始時に必ずremote mainを再確認する。
 
 ## 1. この引継ぎの結論
 

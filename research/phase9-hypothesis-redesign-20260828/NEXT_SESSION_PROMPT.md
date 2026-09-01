@@ -26,7 +26,7 @@ GitHub Repository tgkfnfnfv9-stack/Gpt-Verification--software のPhase 9自動�
 
 8つの論理役割A0〜A7を使用してください。同時実行上限が7なら2波に分け、サブエージェントはread-only監査、主担当だけがGitHubへCommitしてください。作業前後にremote mainを確認し、force push、reset --hard、ユーザー変更の破棄、git add .、git add -Aは禁止です。
 
-Remote main基準は9eb7ce667bea8e76a7f9bb1f2d378eebd8957206です。
+Actual Full-QC実装基準は9eb7ce667bea8e76a7f9bb1f2d378eebd8957206です。現在のremote mainには、その後の引継ぎ文書Commitも含まれるため、作業開始時に最新remote mainを確認してください。
 
 現在はFormal alpha 11件＋Risk overlay 1件、全12確認項目がUNTESTED_PREREGISTEREDです。Phase 9価格ファイル0件、確認済み優位性0件です。Actual Full-QC契約は実装済みですが、実データでは未実行です。Count-only、Return検証、バックテストは未開始です。
 
