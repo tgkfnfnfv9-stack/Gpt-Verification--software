@@ -11,14 +11,16 @@ import json
 import math
 import os
 import re
+import ssl
 import stat
 import time
+import urllib.error
 import urllib.request
 from datetime import datetime, timezone
 from pathlib import Path
 
 
-CONFIRMATION = "RUN_EXPLORATORY_FXCM_FX8_H1_2017_2018_QC_ONLY_V2"
+CONFIRMATION = "RUN_EXPLORATORY_FXCM_FX8_H1_2017_2018_QC_ONLY_V3"
 USAGE_CONFIRMATION = "I_CONFIRM_PERSONAL_NONCOMMERCIAL_USE_AND_ACCEPT_FXCM_EULA"
 UTC = timezone.utc
 EMPTY_SHA256 = hashlib.sha256(b"").hexdigest()
@@ -30,6 +32,8 @@ MAX_GZIP_BYTES = 20 * 1024 * 1024
 MAX_TOTAL_GZIP_BYTES = 4 * 1024 * 1024 * 1024
 MAX_SYMBOL_UNCOMPRESSED_BYTES = 512 * 1024 * 1024
 REQUEST_PAUSE_SECONDS = 0.1
+DOWNLOAD_MAX_ATTEMPTS = 4
+DOWNLOAD_RETRY_DELAYS_SECONDS = (1.0, 2.0, 4.0)
 PROHIBITED_FIELDS = {
     "return", "returns", "return_sign", "edge", "mfe", "mae", "win", "wins", "win_rate",
     "profit_factor", "drawdown", "cumulative_r", "p_value",
@@ -143,20 +147,35 @@ def write_new_json(path: Path, value: object) -> None:
 
 
 def download(url: str, destination: Path, opener) -> dict:
-    request = urllib.request.Request(url, headers={"User-Agent": "phase9-exploratory-fxcm-qc/1.0"})
-    with opener.open(request, timeout=60) as response:
-        if response.status != 200:
-            raise FxcmError(f"unexpected status {response.status}: {url}")
-        total = 0
-        with destination.open("xb") as handle:
-            while True:
-                chunk = response.read(1024 * 1024)
-                if not chunk:
-                    break
-                total += len(chunk)
-                if total > MAX_GZIP_BYTES:
-                    raise FxcmError(f"source file exceeds limit: {url}")
-                handle.write(chunk)
+    if destination.exists() or destination.is_symlink():
+        raise FileExistsError("download destination must be new")
+    for attempt in range(1, DOWNLOAD_MAX_ATTEMPTS + 1):
+        request = urllib.request.Request(url, headers={"User-Agent": "phase9-exploratory-fxcm-qc/1.0"})
+        try:
+            with opener.open(request, timeout=60) as response:
+                if response.status != 200:
+                    raise FxcmError(f"unexpected status {response.status}: {url}")
+                total = 0
+                with destination.open("xb") as handle:
+                    while True:
+                        chunk = response.read(1024 * 1024)
+                        if not chunk:
+                            break
+                        total += len(chunk)
+                        if total > MAX_GZIP_BYTES:
+                            raise FxcmError(f"source file exceeds limit: {url}")
+                        handle.write(chunk)
+            break
+        except urllib.error.HTTPError as error:
+            destination.unlink(missing_ok=True)
+            raise FxcmError(f"unexpected status {error.code}: {url}") from None
+        except (urllib.error.URLError, ConnectionError, TimeoutError, ssl.SSLError):
+            destination.unlink(missing_ok=True)
+            if attempt == DOWNLOAD_MAX_ATTEMPTS:
+                raise FxcmError(
+                    f"transient download failure after {DOWNLOAD_MAX_ATTEMPTS} attempts: {url}"
+                ) from None
+            time.sleep(DOWNLOAD_RETRY_DELAYS_SECONDS[attempt - 1])
     if destination.stat().st_size < 20:
         raise FxcmError(f"source file too small: {url}")
     with destination.open("rb") as handle:

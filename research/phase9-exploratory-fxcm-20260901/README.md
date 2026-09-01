@@ -39,3 +39,19 @@ not add a tolerance or change any price, and quarantines both sides of each
 crossed row from the ephemeral usable series. Only per-symbol counts and
 SHA-256 identities are retained in the price-free inventory. Any nonzero count
 keeps Formal Full-QC, Count-only and all outcome work blocked.
+
+## Operational amendments after Runs 2 and 3
+
+Run `33479424685` completed acquisition and QC, but its Artifact manifest
+incorrectly included a self-hash captured while the manifest was still empty.
+The inventory payload passed independent audit, but that Artifact is not
+canonical. Commit `5e97795b0d74e55f87278e01af1668089ad7edf7` changed the
+manifest convention to one payload-only line and added a regression test.
+
+Run `33481035804` at that head passed all 13 tests, then stopped during source
+download after the remote connection was reset. No Artifact was uploaded and
+working-price cleanup succeeded. The prospective V3 operational amendment
+retries only transient transport failures, at most four attempts with fixed
+1, 2 and 4 second waits. HTTP status, redirect, size, gzip, schema and all QC
+failures remain immediately fail-closed. The URL set, period, symbols,
+timeframe, provider contract and outcome prohibitions are unchanged.

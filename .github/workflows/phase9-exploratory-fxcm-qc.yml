@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       confirmation:
-        description: 'Type RUN_EXPLORATORY_FXCM_FX8_H1_2017_2018_QC_ONLY_V2'
+        description: 'Type RUN_EXPLORATORY_FXCM_FX8_H1_2017_2018_QC_ONLY_V3'
         required: true
         type: string
       usage_confirmation:
@@ -23,7 +23,7 @@ jobs:
   acquire-and-qc:
     if: >-
       ${{ github.ref == 'refs/heads/main' &&
-          inputs.confirmation == 'RUN_EXPLORATORY_FXCM_FX8_H1_2017_2018_QC_ONLY_V2' &&
+          inputs.confirmation == 'RUN_EXPLORATORY_FXCM_FX8_H1_2017_2018_QC_ONLY_V3' &&
           inputs.usage_confirmation == 'I_CONFIRM_PERSONAL_NONCOMMERCIAL_USE_AND_ACCEPT_FXCM_EULA' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 120
@@ -59,7 +59,7 @@ jobs:
           echo "EXPLORATORY_FXCM_WORK=$work" >> "$GITHUB_ENV"
           echo "EXPLORATORY_FXCM_REPORT=$report" >> "$GITHUB_ENV"
           python "$track/runner/fxcm_exploratory_qc.py" \
-            --confirmation RUN_EXPLORATORY_FXCM_FX8_H1_2017_2018_QC_ONLY_V2 \
+            --confirmation RUN_EXPLORATORY_FXCM_FX8_H1_2017_2018_QC_ONLY_V3 \
             --usage-confirmation I_CONFIRM_PERSONAL_NONCOMMERCIAL_USE_AND_ACCEPT_FXCM_EULA \
             --contract "$track/spec/fxcm_exploratory_contract.frozen.json" \
             --work-dir "$work" \

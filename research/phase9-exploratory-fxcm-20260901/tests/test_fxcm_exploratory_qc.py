@@ -8,6 +8,8 @@ import sys
 import tempfile
 import traceback
 import unittest
+import urllib.error
+from unittest import mock
 from pathlib import Path
 
 
@@ -166,6 +168,88 @@ class FxcmQCTests(unittest.TestCase):
                 self.fail("invalid header was accepted")
             self.assertNotIn(timestamp_sentinel, rendered)
             self.assertNotIn(price_sentinel, rendered)
+
+    def test_transient_download_retries_remove_partial_file_and_stay_bounded(self):
+        payload = gzip.compress(b"bounded retry fixture" * 4)
+
+        class Response:
+            status = 200
+
+            def __init__(self, chunks):
+                self.chunks = iter(chunks)
+
+            def __enter__(self):
+                return self
+
+            def __exit__(self, *_args):
+                return False
+
+            def read(self, _size):
+                value = next(self.chunks, b"")
+                if isinstance(value, BaseException):
+                    raise value
+                return value
+
+        class Opener:
+            def __init__(self, responses):
+                self.responses = iter(responses)
+                self.calls = 0
+
+            def open(self, _request, timeout):
+                self.calls += 1
+                self.assert_timeout = timeout
+                value = next(self.responses)
+                if isinstance(value, BaseException):
+                    raise value
+                return value
+
+        with tempfile.TemporaryDirectory() as directory, mock.patch.object(module.time, "sleep") as sleep:
+            destination = Path(directory) / "fixture.csv.gz"
+            opener = Opener([
+                Response([payload[:12], ConnectionResetError("reset")]),
+                urllib.error.URLError(ConnectionResetError("reset")),
+                Response([payload]),
+            ])
+            result = module.download("https://example.invalid/frozen.csv.gz", destination, opener)
+            self.assertEqual(opener.calls, 3)
+            self.assertEqual(opener.assert_timeout, 60)
+            self.assertEqual(destination.read_bytes(), payload)
+            self.assertEqual(result["sha256"], module.sha256_file(destination))
+            self.assertEqual([call.args[0] for call in sleep.call_args_list], [1.0, 2.0])
+
+        with tempfile.TemporaryDirectory() as directory, mock.patch.object(module.time, "sleep") as sleep:
+            destination = Path(directory) / "fixture.csv.gz"
+            opener = Opener([
+                urllib.error.URLError(ConnectionResetError("reset"))
+                for _ in range(module.DOWNLOAD_MAX_ATTEMPTS)
+            ])
+            with self.assertRaisesRegex(module.FxcmError, "after 4 attempts"):
+                module.download("https://example.invalid/frozen.csv.gz", destination, opener)
+            self.assertEqual(opener.calls, module.DOWNLOAD_MAX_ATTEMPTS)
+            self.assertFalse(destination.exists())
+            self.assertEqual(
+                [call.args[0] for call in sleep.call_args_list],
+                list(module.DOWNLOAD_RETRY_DELAYS_SECONDS),
+            )
+
+        with tempfile.TemporaryDirectory() as directory, mock.patch.object(module.time, "sleep") as sleep:
+            destination = Path(directory) / "fixture.csv.gz"
+            url = "https://example.invalid/frozen.csv.gz"
+            opener = Opener([urllib.error.HTTPError(url, 503, "unavailable", {}, None)])
+            with self.assertRaisesRegex(module.FxcmError, "unexpected status 503"):
+                module.download(url, destination, opener)
+            self.assertEqual(opener.calls, 1)
+            self.assertFalse(destination.exists())
+            sleep.assert_not_called()
+
+        with tempfile.TemporaryDirectory() as directory:
+            destination = Path(directory) / "fixture.csv.gz"
+            destination.write_bytes(b"preexisting")
+            opener = Opener([Response([payload])])
+            with self.assertRaises(FileExistsError):
+                module.download("https://example.invalid/frozen.csv.gz", destination, opener)
+            self.assertEqual(destination.read_bytes(), b"preexisting")
+            self.assertEqual(opener.calls, 0)
 
     def test_outcome_fields_rejected(self):
         module.reject_outcomes({"bar_count": 1, "crossed_open_quote_count": 1})
