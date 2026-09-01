@@ -8,52 +8,49 @@ GitHub Repository tgkfnfnfv9-stack/Gpt-Verification--software のPhase 9自動�
 最初に以下を完全に読んでください。
 
 1. AGENTS.md
-2. research/phase9-hypothesis-redesign-20260828/PHASE9_OPERATIONS_GUIDE.md
-3. research/phase9-hypothesis-redesign-20260828/PHASE9_DATA_ACQUISITION_VALIDATION_RUNBOOK.md
-4. research/phase9-hypothesis-redesign-20260828/POLICY_INCIDENT_20260829.md
-5. research/phase9-hypothesis-redesign-20260828/POLICY_INCIDENT_20260830.md
-6. research/phase9-hypothesis-redesign-20260828/PROVIDER_ACQUISITION_BLOCKER.md
-7. research/phase9-hypothesis-redesign-20260828/JFOREX_SOURCE_CHANNEL_AMENDMENT.md
-8. research/phase8-blind-discovery-20260828/results/PHASE8_FINAL_DECISION.json
-9. research/phase8-blind-discovery-20260828/results/RESULTS_SUMMARY.md
-10. research/phase9-hypothesis-redesign-20260828/README.md
-11. research/phase9-hypothesis-redesign-20260828/SESSION_STATE.json
-12. research/phase9-hypothesis-redesign-20260828/DESIGN_DECISIONS.md
-13. research/phase9-hypothesis-redesign-20260828/HYPOTHESIS_PORTFOLIO_FINAL.md
-14. research/phase9-hypothesis-redesign-20260828/spec/candidate_registry.frozen.json
-15. research/phase9-hypothesis-redesign-20260828/DATA_REQUIREMENTS.md
-16. research/phase9-hypothesis-redesign-20260828/spec/data_requirements.frozen.json
-17. research/phase9-hypothesis-redesign-20260828/policy/preregistered_research_policy.json
-18. research/phase9-hypothesis-redesign-20260828/results/s1b-run-33376110507/S1B_AUDIT.json
-19. research/phase9-hypothesis-redesign-20260828/data_manifest/native_entry_allowlist.run33376110507.json
-20. research/phase9-hypothesis-redesign-20260828/results/gate-b-native-allowlist/GATE_B_AUDIT.json
+2. research/phase9-hypothesis-redesign-20260828/NEXT_SESSION_HANDOFF.md
+3. research/phase9-hypothesis-redesign-20260828/PHASE9_OPERATIONS_GUIDE.md
+4. research/phase9-hypothesis-redesign-20260828/PHASE9_DATA_ACQUISITION_VALIDATION_RUNBOOK.md
+5. research/phase9-hypothesis-redesign-20260828/POLICY_INCIDENT_20260829.md
+6. research/phase9-hypothesis-redesign-20260828/POLICY_INCIDENT_20260830.md
+7. research/phase9-hypothesis-redesign-20260828/PROVIDER_ACQUISITION_BLOCKER.md
+8. research/phase9-hypothesis-redesign-20260828/JFOREX_SOURCE_CHANNEL_AMENDMENT.md
+9. research/phase9-hypothesis-redesign-20260828/SESSION_STATE.json
+10. research/phase9-hypothesis-redesign-20260828/DESIGN_DECISIONS.md
+11. research/phase9-hypothesis-redesign-20260828/HYPOTHESIS_PORTFOLIO_FINAL.md
+12. research/phase9-hypothesis-redesign-20260828/spec/candidate_registry.frozen.json
+13. research/phase9-hypothesis-redesign-20260828/spec/data_requirements.frozen.json
+14. research/phase9-hypothesis-redesign-20260828/policy/preregistered_research_policy.json
+15. research/phase9-hypothesis-redesign-20260828/runner/phase9_actual_full_qc.py
+16. research/phase9-hypothesis-redesign-20260828/spec/provider_schedule_contract.frozen.json
 
 8つの論理役割A0〜A7を使用してください。同時実行上限が7なら2波に分け、サブエージェントはread-only監査、主担当だけがGitHubへCommitしてください。作業前後にremote mainを確認し、force push、reset --hard、ユーザー変更の破棄、git add .、git add -Aは禁止です。
 
-現在はFormal alpha 11件＋Risk overlay 1件、全12確認項目がUNTESTED_PREREGISTEREDです。Phase 9の正式取得、Actual Full-QC、Count-only、Return検証は未開始で、価格ファイル0件、確認済み優位性0件です。
+Remote main基準は9eb7ce667bea8e76a7f9bb1f2d378eebd8957206です。
 
-S1B Gate A Run 33376110507はcompleted/successです。
+現在はFormal alpha 11件＋Risk overlay 1件、全12確認項目がUNTESTED_PREREGISTEREDです。Phase 9価格ファイル0件、確認済み優位性0件です。Actual Full-QC契約は実装済みですが、実データでは未実行です。Count-only、Return検証、バックテストは未開始です。
 
-- Head SHA: 951c38aaa875180fa7dbbe498866a4e3ece50e9c
-- Job ID: 99437846539
-- Artifact ID: 9751919672
-- Artifact ZIP SHA-256: ad72a646f91ec4e15fb7df564bbc7fd0fb4133c3c8999f8bf8a0468e4af0094a
-- 116 locked JARすべてSHA一致
-- Native候補28件
-- Run 1のJava .class CAFEBABE誤分類28,088件は除外済み
-- Dukascopy/market credential、外部JNLP、JForex connect、market request、禁止期間requestはすべてなし
-- Phase 9価格ファイル0、Outcome未計算
+完了済み:
+
+- S1B Gate A Run 33376110507: completed/success
+- Gate B native exact allowlist: PASS、取得認可効果なし
+- Gate C2 runtime mapping exact allowlist: PASS、取得認可効果なし
+- Gate C3 Run 33455444958 / Job 99694321791 / Artifact 9781258311: completed/success
+- Gate C3 ZIP SHA-256: 4cee963b9c3ffa7bb88bec5287a36de82ec4197c8c7e7e2277ea313acd4970c8
+- Actual Full-QC contract Run 33459534741 / Job 99706597775 / Artifact 9782660195: completed/success
+- Actual Full-QC contract ZIP SHA-256: af4d807d725c0a6207e19d3fbadc0157603bb8cd40474545564012938c59f4d5
+- Full-QC tests 131 PASS、A6/A7 P0/P1なし
+- Credential、外部JNLP、JForex connect、availability、price、禁止期間、Outcomeへのアクセスなし
 - acquisition_authorized=false
+- count_only_authorized=false
 
-Run 2はlocked-JAR静的棚卸しの工学的PASSであり、実データ取得許可ではありません。Gate B exact-match allowlistはRun 2とは別Commitで凍結・検証済みですが、acquisition_authorized=falseのままです。
+今回の単一作業は、provider schedule inventoryを価格データとは独立して正式取得し、Run ID、head SHA、Artifact ID、Artifact ZIP SHA、provider/version、UTC/BAR_OPEN、24 schedule fileのpath/SHA/count/first/last、aggregate SHAを監査した後、別Commitでcanonical exact-match allowlistを凍結することです。
 
-今回の単一作業は、exact shaded runnerを静的scanし、native load/mapped DSO、child process、write/cache mutation、OS egressをno-secret/no-priceで検証する次Gateを、別のatomic Commitとして設計・実装することです。
+同一Runのinventoryで自己認可しないでください。Canonical path、Git strict ancestor、freeze parent、Git object byte一致、tracked/unmodifiedをfail-closedで検証してください。この作業だけでacquisition_authorized=trueに変更しないでください。
 
-Gate BのRun ID、head SHA、116-JAR manifest SHA、Artifact ZIP SHA、各archive path/SHA、entry path/SHA/size/magic、対象OS/arch、fail-closed規則を変更しないでください。次GateでもGate Bだけでacquisition_authorized=trueに変更しないでください。
+Provider schedule、Energy metadata、Run/Artifact identity、remote JNLP lockなどの残Blockerが解消し、別Gateで明示的に取得認可されるまでは、demo secrets設定、外部JNLP接続、availability照会、JForex connect、price取得をしないでください。
 
-Remote JNLP lock、streaming 48-series Full-QC、raw custodyが未解決なら、demo secrets設定、外部JNLP接続、availability照会、JForex connect、price取得をしないでください。
-
-将来の正式取得範囲は次だけです。
+将来の正式取得範囲:
 
 - 12銘柄 × M15/H1 × BID/ASK = 48系列
 - M15: 2013-01-01 inclusiveから2019-08-28 exclusive

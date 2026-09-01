@@ -1,7 +1,7 @@
 {
   "project": "auto-trading-research",
-  "updated_at": "2026-08-31",
-  "phase": "PHASE9_PREREGISTERED_S1B_GATE_A_PASS_GATE_B_FROZEN_ACQUISITION_BLOCKED",
+  "updated_at": "2026-09-01",
+  "phase": "PHASE9_PREREGISTERED_GATE_C3_PASS_ACTUAL_FULL_QC_CONTRACT_FROZEN_PROVIDER_SCHEDULE_BLOCKED",
   "phase8": {
     "formal_hypotheses_including_pa002": 16,
     "decision": "ALL_REJECT_FOR_DEVELOPMENT",
@@ -54,7 +54,7 @@
     "legacy_non_phase9_future_period_download_detected": true
   },
   "provider_acquisition": {
-    "status": "GATE_C1_PASS_GATE_C2_FROZEN_ACQUISITION_BLOCKED",
+    "status": "GATE_C3_PASS_ACTUAL_FULL_QC_CONTRACT_FROZEN_PROVIDER_SCHEDULE_BLOCKED",
     "decision_log": "PROVIDER_ACQUISITION_BLOCKER.md",
     "source_channel_amendment": "JFOREX_SOURCE_CHANNEL_AMENDMENT.md",
     "selected_channel": "DUKASCOPY_OFFICIAL_AUTHENTICATED_JFOREX_TESTER_API",
@@ -246,7 +246,46 @@
       "phase9_price_files_acquired": 0,
       "outcomes_calculated": false
     },
-    "full_qc_same_run_or_private_raw_storage_decided": false,
+    "gate_c3_execution_envelope": {
+      "status": "COMPLETED_SUCCESS_ACQUISITION_BLOCKED",
+      "workflow": ".github/workflows/phase9-gate-c3-execution-envelope.yml",
+      "commit_sha": "795dcef802d16310c0350b7c20e0871919e76882",
+      "run_id": 33455444958,
+      "job_id": 99694321791,
+      "artifact_id": 9781258311,
+      "artifact_zip_sha256": "4cee963b9c3ffa7bb88bec5287a36de82ec4197c8c7e7e2277ea313acd4970c8",
+      "child_process_and_os_egress_envelope_passed": true,
+      "same_run_custody_cleanup_passed": true,
+      "credentials_referenced": false,
+      "market_price_request_attempted": false,
+      "forbidden_market_period_request_attempted": false,
+      "acquisition_authorized": false
+    },
+    "actual_full_qc_contract": {
+      "status": "CONTRACT_AND_TESTS_PASS_ACTUAL_ACQUISITION_NOT_STARTED",
+      "workflow": ".github/workflows/phase9-actual-full-qc-contract-preflight.yml",
+      "runner": "runner/phase9_actual_full_qc.py",
+      "contract": "spec/provider_schedule_contract.frozen.json",
+      "commit_sha": "9eb7ce667bea8e76a7f9bb1f2d378eebd8957206",
+      "run_id": 33459534741,
+      "job_id": 99706597775,
+      "artifact_id": 9782660195,
+      "artifact_zip_sha256": "af4d807d725c0a6207e19d3fbadc0157603bb8cd40474545564012938c59f4d5",
+      "tests_passed": 131,
+      "a6_a7_p0_count": 0,
+      "a6_a7_p1_count": 0,
+      "provider_schedule_inventory_acquired": false,
+      "provider_schedule_allowlist_frozen": false,
+      "actual_market_data_full_quality_gate_passed": false,
+      "count_only_authorized": false,
+      "research_outcomes_calculated": false,
+      "outcome_fields": [],
+      "acquisition_authorized": false
+    },
+    "full_qc_same_run_or_private_raw_storage_decided": true,
+    "provider_schedule_inventory_acquired": false,
+    "provider_schedule_allowlist_frozen": false,
+    "energy_metadata_gate_passed": false,
     "required_github_secrets": ["DUKASCOPY_USERNAME", "DUKASCOPY_PASSWORD"],
     "h1_network_request_hard_clipped_before_2019_08_01": true,
     "h1_uniform_tail_exclusion": "2019-08-01T00:00:00Z/2019-08-28T00:00:00Z",
@@ -309,9 +348,10 @@
   ],
   "next_actions": [
     "use PHASE9_OPERATIONS_GUIDE.md as the procedural entrypoint",
-    "in a separate atomic commit, statically scan the exact shaded runner and design the no-secret/no-price native-load, mapped-DSO, child-process and OS-egress verification gate",
-    "before any credential or price access, separately verify the shaded runner, native load and mapped DSO set, child-process and OS-egress controls, and remote JNLP lock after terms confirmation and explicit manual authorization",
-    "freeze the streaming 48-series Full-QC execution path and same-run ephemeral raw custody, or obtain explicit approval for private immutable raw storage",
+    "acquire the provider schedule inventory independently of raw prices and audit its exact Run, Artifact and SHA identities",
+    "in a separate atomic commit, freeze the canonical provider schedule exact-match allowlist with Git ancestry and frozen-object byte verification",
+    "freeze Energy roll and session metadata without inspecting prices",
+    "before any credential or price access, complete the remaining remote JNLP and source Run/Artifact identity audit and freeze a separate explicit acquisition authorization gate",
     "only after every blocker and a separate manual authorization, configure JForex demo credentials and run one acquisition plus same-run Full-QC with M15 before 2019-08-28 and H1 before 2019-08-01",
     "complete actual provider-calendar, session-gap, BID/ASK, cross-market synchronization, H4/D1 bucket, Energy roll and no-forward-fill QC",
     "run count-only coverage Gate before Discovery"
@@ -329,7 +369,7 @@
     "guide_does_not_override_frozen_spec": true
   },
   "workflow_safety": {
-    "status": "MANUAL_S1B_LOCKED_BYTE_STATIC_PREFLIGHT_NO_SECRET_OR_PRICE_PATH",
+    "status": "GATE_C3_AND_ACTUAL_FULL_QC_CONTRACT_PREFLIGHT_PASS_NO_SECRET_OR_PRICE_PATH",
     "disabled_legacy_workflows": [
       ".github/workflows/tmp-gbpjpy-h1-v8.yml",
       ".github/workflows/tmp-gbpjpy-h1-v8b.yml",
