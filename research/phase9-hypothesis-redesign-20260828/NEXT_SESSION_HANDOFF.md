@@ -8,6 +8,21 @@ Actual Full-QC実装基準: `9eb7ce667bea8e76a7f9bb1f2d378eebd8957206`
 
 現在のremote mainは、この実装基準より後の引継ぎ文書Commitを含む。次セッション開始時に必ずremote mainを再確認する。
 
+## 2026-09-01 latest delta
+
+- Exploratory FX8 MTF Run `33508634314`でdirect m1/H1取得、
+  M15/H4/D1生成、最終64 BID/ASK系列の実行を完了した。価格はcleanup済み。
+- RR-201、RR-202、PS-202、PS-203、PS-205、LV-202、PS-204の
+  Count-onlyを完了した。探索Return Gate通過候補は0件。
+- Return、MFE、MAE、Edge、Outcomeは未計算。
+- 正式12市場取得はremote runtime closure、provider schedule、Energy
+  metadata待ち。
+- 次の単一作業は、既に観測済みで未要求の
+  `https://platform.dukascopy.com/demo_3/libs_3.jnlp`を、完全一致の手動確認後に
+  1回だけidentity観測すること。Workflowは
+  `.github/workflows/phase9-remote-libs-jnlp-observation.yml`。
+  資格情報、JForex接続、resource/JAR、schedule、price、Outcomeアクセスは禁止。
+
 ## 1. この引継ぎの結論
 
 Phase 9では、実価格データを受け入れて検査するActual Full-QC契約まで実装・監査済み。
@@ -264,16 +279,18 @@ Provider schedule inventory / allowlist
 
 ## 7. 次に行う単一作業
 
-JNLP追加監査は停止する。次は`research/phase9-exploratory-fxcm-20260901/spec/fxcm_multitimeframe_data_requirements.frozen.json`に完全一致するFX8 MTF取得/QC workflowを実装する。
+FX8 MTF取得/QCと、既存FX8で実行可能な7候補のCount-onlyは完了した。
+探索Return Gate通過候補は0件なので、同じFX8でReturnを計算しない。
 
-1. FXCM direct m1/H1を2017–2018の8通貨ペアについて取得する。
-2. m1からM15、H1からH4/D1を完全UTC bucketだけで生成する。
-3. direct H1とm1由来H1をQC照合する。
-4. BID/ASK、OHLC、timestamp、gap、crossed quote、bucket completeness、SHAを検査する。
-5. 価格を含まないRun/Artifact/QC inventoryだけを保存し、raw/derived pricesはcleanupする。
-6. このRunではsignal count、Return、勝率、Outcomeを計算しない。
+次はremote runtime closureを進めるため、手動workflow
+`.github/workflows/phase9-remote-libs-jnlp-observation.yml`を1回だけ実行する。
 
-最終対象は`8銘柄 × M15/H1/H4/D1 × BID/ASK = 64系列`。この64系列QCが完了してからCount-only Gateへ進む。
+1. GitHub Actionsで完全一致confirmationを入力する。
+2. 既に観測済みのexact `libs_3.jnlp` URLへunauthenticated GETを1回だけ行う。
+3. response bodyは保存せず、size/SHAとローカル解析したhref identityだけを記録する。
+4. redirect、recursive fetch、JAR/resource download、code executionを禁止する。
+5. 資格情報、JForex connect、schedule、availability、price、Count、Outcomeへ進まない。
+6. Run後はArtifactを独立監査し、観測URLは別commitでのみ凍結する。
 
 2026-09-01のA0〜A7監査で確認した境界:
 

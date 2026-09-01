@@ -30,7 +30,16 @@
 
 Provider schedule source P0に対して、`JFOREX_METADATA_ONLY_CONNECTION_AMENDMENT.md`と`spec/metadata_only_jforex_schedule_gate.frozen.json`は、将来のoffline-domain metadata観測境界を2026-09-01に別途凍結しました。現workflowはno-secret/no-JNLP/no-JForex/no-networkの静的preflightだけで、connection dispatchは未認可です。公式APIのweekend intervalだけではholiday、maintenance、Energy session、schedule versionの完全性を証明できないため、24-file inventoryとallowlistは未作成、取得認可はfalseのままです。
 
-Local M1は`runner/jforex-metadata`、`spec/metadata_owned_method_allowlist.frozen.json`、uplinkなしの独立client/server namespace＋exact `/32` host route＋Landlock/seccomp、専用private custodyとして実装しました。専用moduleは既存price acquirerを物理的に含まず、凍結local synthetic API fixtureでowned bytecodeのDukascopy method referenceをexact-matchします。これは実JForex API 2.13.99 JAR/runtime互換性の証明ではなく、その検証は残Blockerです。`JFOREX_REMOTE_JNLP_OBSERVATION_AMENDMENT.md`は別承認を求めるproposalとして凍結しただけで、remote request workflowは未実装、`external_jnlp_observation_authorized=false`です。価格・schedule inventory・Outcomeは引き続き0/未計算です。
+初期JNLP identity Run `33500446289`で観測済みかつ未要求だった
+`https://platform.dukascopy.com/demo_3/libs_3.jnlp`について、
+`JFOREX_REMOTE_LIBS_JNLP_OBSERVATION_AMENDMENT.md`と
+`spec/remote_libs_jnlp_observation_gate.frozen.json`に1回限りの
+identity-only Gateを固定しました。Workflowは
+`.github/workflows/phase9-remote-libs-jnlp-observation.yml`で、完全一致の
+手動確認が別承認になります。資格情報、JForex接続、resource/JAR取得・実行、
+schedule、availability、価格、Count-only、Outcomeへの認可効果はありません。
+
+Local M1は`runner/jforex-metadata`、`spec/metadata_owned_method_allowlist.frozen.json`、uplinkなしの独立client/server namespace＋exact `/32` host route＋Landlock/seccomp、専用private custodyとして実装しました。専用moduleは既存price acquirerを物理的に含まず、凍結local synthetic API fixtureでowned bytecodeのDukascopy method referenceをexact-matchします。これは実JForex API 2.13.99 JAR/runtime互換性の証明ではなく、その検証は残Blockerです。初期remote JNLP identity観測はRun `33500446289`で完了・独立監査済みで、初期URLの再実行は禁止されています。次のlibs JNLP観測は別workflowの完全一致手動確認が必要です。価格・schedule inventory・Outcomeは引き続き0/未計算です。
 
 `S1B_RUNTIME_QC_PREFLIGHT.md`のGate AはRun #2で完了しました。GitHub checkoutの一時token以外にDukascopy・市場資格情報は参照せず、116-JAR manifest、local synthetic JNLP parser、synthetic Full-QC primitivesを検査済みです。Gate Bは`data_manifest/native_entry_allowlist.run33376110507.json`へ別commitで凍結し、`runner/verify_phase9_gate_b.py`が保存済みRun 2 evidenceとの完全一致をfail-closedで検証します。Shaded runnerは未検査で、Gate B完了も実取得許可にはなりません。
 
