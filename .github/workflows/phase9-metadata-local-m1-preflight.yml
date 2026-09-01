@@ -68,18 +68,30 @@ jobs:
           set -euo pipefail
           root='research/phase9-hypothesis-redesign-20260828'
           upload="$RUNNER_TEMP/phase9-metadata-local-m1"
-          guard="$RUNNER_TEMP/phase9-metadata-net-guard"
-          target="$RUNNER_TEMP/phase9-metadata-net-target"
+          guard_build="$RUNNER_TEMP/phase9-metadata-net-guard"
+          target_build="$RUNNER_TEMP/phase9-metadata-net-target"
+          launch="/run/phase9-m1-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          [[ "$GITHUB_RUN_ID" =~ ^[0-9]+$ ]]
+          [[ "$GITHUB_RUN_ATTEMPT" =~ ^[0-9]+$ ]]
+          sudo install -d -o root -g root -m 0755 "$launch"
+          cleanup_launch() {
+            sudo rm -f -- "$launch/guard" "$launch/target"
+            sudo rmdir -- "$launch"
+          }
+          trap cleanup_launch EXIT
           cc -std=c11 -O2 -Wall -Wextra -Werror \
-            "$root/runner/phase9_metadata_net_guard.c" -o "$guard"
+            "$root/runner/phase9_metadata_net_guard.c" -o "$guard_build"
           cc -static -std=c11 -O2 -Wall -Wextra -Werror \
-            "$root/tests/fixtures/MetadataNetworkTarget.c" -o "$target"
-          chmod 0755 "$guard" "$target"
+            "$root/tests/fixtures/MetadataNetworkTarget.c" -o "$target_build"
+          sudo install -o root -g root -m 0755 "$guard_build" "$launch/guard"
+          sudo install -o root -g root -m 0755 "$target_build" "$launch/target"
           sudo "$root/runner/run_phase9_metadata_network_synthetic.sh" \
-            "$guard" "$target" "$upload"
+            "$launch/guard" "$launch/target" "$upload"
           sudo rm "$upload/server.ready"
           sudo chown -R "$(id -u):$(id -g)" "$upload"
           test "$(find "$upload" -type f -links +1 -print -quit)" = ''
+          cleanup_launch
+          trap - EXIT
 
       - name: Seal exact evidence-only Artifact
         shell: bash

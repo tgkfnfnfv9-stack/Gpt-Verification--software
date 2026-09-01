@@ -214,6 +214,8 @@ class MetadataLocalM1Tests(unittest.TestCase):
         self.assertIn("metadata-jforex-api", workflow)
         self.assertIn("--classes-dir", workflow)
         self.assertIn("run_phase9_metadata_network_synthetic.sh", workflow)
+        self.assertIn("/run/phase9-m1-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}", workflow)
+        self.assertIn("trap cleanup_launch EXIT", workflow)
         self.assertIn("persist-credentials: false", workflow)
         self.assertIn("ref: ${{ github.sha }}", workflow)
         for prohibited in (
