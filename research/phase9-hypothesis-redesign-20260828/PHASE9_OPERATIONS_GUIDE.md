@@ -241,7 +241,13 @@ Gate B監査正本は`results/gate-b-native-allowlist/GATE_B_AUDIT.json`です�
 
 workflowはprice、return、edgeの実行ボタンを自動的に続けません。取得成功後も`full_quality_gate_passed=false`のまま停止し、calendar、H4/D1 bucket、Energy rollを別工程で監査します。
 
-凍結JNLPはdemo serviceです。Repository secretsにはJForex demo accountの認証情報だけを登録し、live accountの認証情報を使いません。ただし2026-09-01時点ではlocal/synthetic専用Plugin module、owned-bytecode exact allowlist、synthetic exact-destination network namespace、private custodyまでを実装しただけで、remote JNLP/runtime closure、実network destination、SDK内部price受信・cache非露出の証明は未完了です。`JFOREX_REMOTE_JNLP_OBSERVATION_AMENDMENT.md`も別ユーザー承認待ちのproposalであり、remote workflowは存在しません。したがってSecrets設定、remote request、接続dispatchはまだ禁止です。現在のmetadata-only preflightはno-secret/no-JNLP/no-JForexでlocal/synthetic controlsだけを検証し、取得認可効果を持ちません。単一の`tick_volume`はBID bar volumeをcanonicalとし、ASK volumeは不一致件数のQCだけに使います。
+凍結JNLPはdemo serviceです。Repository secretsにはJForex demo accountの認証情報だけを登録し、live accountの認証情報を使いません。ただし2026-09-01時点ではlocal/synthetic専用Plugin module、owned-bytecode exact allowlist、synthetic exact-destination network namespace、private custodyまでを実装しただけで、remote JNLP/runtime closure、実network destination、SDK内部price受信・cache非露出の証明は未完了です。exact initial URLのidentityだけを観測する単一使用workflowはユーザー承認済みですが、これはSecrets設定、JForex接続、provider schedule、availability、price取得を認可しません。現在のmetadata-only preflightもlocal/synthetic controlsだけを検証し、取得認可効果を持ちません。単一の`tick_volume`はBID bar volumeをcanonicalとし、ASK volumeは不一致件数のQCだけに使います。
+
+### Remote JNLP initial identity observation（単一使用）
+
+`.github/workflows/phase9-remote-jnlp-initial-observation.yml`は手動`workflow_dispatch`専用です。confirmationには`OBSERVE_PHASE9_REMOTE_JNLP_IDENTITY_ONLY_NO_CONNECT_NO_SECRETS`を完全一致入力します。実行できるのはこのworkflowの`run_number=1`かつ`run_attempt=1`だけで、最初のdispatchが成功・失敗にかかわらず承認を消費します。rerunや第2回dispatchは未認可です。
+
+許可範囲は`https://platform.dukascopy.com:443/demo_3/jforex_3.jnlp`へのunauthenticated HTTPS GET 1回、response body最大2 MiBだけです。redirectは追跡せずLocationを記録するだけで、埋込resource URLは受信済みbytesからlocal parseするだけです。raw JNLP bytes、証明書DER、JAR、cookie、credentialはArtifactへ保存しません。Artifactはidentity audit JSONとそのSHA manifestの2ファイルだけです。同じRunで観測URLをallowlist化せず、後続URL request、JForex connect、schedule/availability/price、Count-only、Outcomeへ進みません。
 
 ### 12銘柄
 

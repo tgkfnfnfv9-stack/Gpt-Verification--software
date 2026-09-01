@@ -1,0 +1,82 @@
+{
+  "schema_version": "phase9-remote-jnlp-initial-observation-gate-v1.0",
+  "status": "USER_APPROVED_SINGLE_USE_IMPLEMENTED_PENDING_DISPATCH",
+  "recorded_at_utc": "2026-09-01T00:00:00Z",
+  "approval_context": {
+    "exact_confirmation": "OBSERVE_PHASE9_REMOTE_JNLP_IDENTITY_ONLY_NO_CONNECT_NO_SECRETS",
+    "approved_in_chat_on_utc_date": "2026-09-01",
+    "base_head_sha": "84df3eb489dba32a22957165f3bb324f63a7c367",
+    "proposal_path": "research/phase9-hypothesis-redesign-20260828/spec/remote_jnlp_observation_amendment.frozen.json",
+    "proposal_git_blob_sha": "5f4c98593f0e3ff88e7533f3a49b48876dc85204",
+    "proposal_sha256": "26ddd52dc4bde39b9822a159c85a303477103f388703b99f338abf5634851631"
+  },
+  "single_use_authorization": {
+    "user_approved": true,
+    "workflow_dispatch_authorized_once": true,
+    "authorization_consumed_on": "FIRST_WORKFLOW_DISPATCH_REGARDLESS_OF_RESULT",
+    "required_github_run_number": 1,
+    "required_github_run_attempt": 1,
+    "retry_authorized": false,
+    "replay_authorized": false
+  },
+  "exact_scope": {
+    "initial_url": "https://platform.dukascopy.com:443/demo_3/jforex_3.jnlp",
+    "allowed_urls_exact_set": [
+      "https://platform.dukascopy.com:443/demo_3/jforex_3.jnlp"
+    ],
+    "scheme": "https",
+    "host": "platform.dukascopy.com",
+    "port": 443,
+    "path": "/demo_3/jforex_3.jnlp",
+    "query": "",
+    "fragment": "",
+    "userinfo": "",
+    "method": "GET",
+    "dns_resolution_call_count_max": 1,
+    "tcp_connect_attempt_count_max": 1,
+    "http_request_count_max": 1,
+    "response_body_bytes_max": 2097152,
+    "follow_redirects": false,
+    "redirect_location_record_only": true,
+    "recursive_resource_fetch": false,
+    "credentials": "NONE",
+    "proxy_use": false,
+    "execute_downloaded_code": false,
+    "local_jnlp_identity_parse_if_status_200_and_identity_encoding": true
+  },
+  "adjacent_authorizations": {
+    "demo_credentials_may_be_configured": false,
+    "credentials_may_be_referenced": false,
+    "jforex_connect_authorized": false,
+    "provider_schedule_query_authorized": false,
+    "availability_query_authorized": false,
+    "history_feed_tick_bar_or_price_access_authorized": false,
+    "market_cache_persistence_authorized": false,
+    "acquisition_authorized": false,
+    "count_only_authorized": false,
+    "outcome_access_authorized": false
+  },
+  "same_run_rules": {
+    "observation_may_self_authorize": false,
+    "same_run_integrity_check_is_authoritative_independent_audit": false,
+    "observation_may_freeze_runtime_allowlist": false,
+    "observation_may_authorize_followup_url_requests": false,
+    "observation_may_authorize_jforex_connection": false,
+    "observed_url_set_requires_strictly_later_commit": true,
+    "any_followup_request_requires_separate_user_approval": true
+  },
+  "artifact_policy": {
+    "raw_jnlp_bytes_may_be_written_to_disk": false,
+    "raw_jnlp_bytes_may_be_uploaded": false,
+    "raw_jnlp_bytes_may_be_committed": false,
+    "identity_audit_filename": "REMOTE_JNLP_INITIAL_OBSERVATION_AUDIT.json",
+    "manifest_filename": "artifact_manifest_sha256.txt",
+    "exact_artifact_file_count": 2
+  },
+  "scientific_state": {
+    "phase9_price_files": 0,
+    "provider_schedule_files": 0,
+    "research_outcomes_calculated": false,
+    "outcome_fields": []
+  }
+}
