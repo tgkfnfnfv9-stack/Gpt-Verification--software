@@ -1,0 +1,176 @@
+name: phase9-exploratory-fxcm-single-pair-count-only
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirmation:
+        description: 'Type RUN_EXPLORATORY_FXCM_SINGLE_PAIR_COUNT_ONLY_2017_2018_V1'
+        required: true
+        type: string
+      usage_confirmation:
+        description: 'Type I_CONFIRM_PERSONAL_NONCOMMERCIAL_USE_AND_ACCEPT_FXCM_EULA'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: phase9-exploratory-fxcm-single-pair-count-only
+  cancel-in-progress: false
+
+jobs:
+  count-only:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 240
+    steps:
+      - name: Enforce exact manual separate-Gate boundary
+        shell: bash
+        env:
+          CONFIRMATION: ${{ inputs.confirmation }}
+          USAGE_CONFIRMATION: ${{ inputs.usage_confirmation }}
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF" = 'refs/heads/main'
+          test "$CONFIRMATION" = 'RUN_EXPLORATORY_FXCM_SINGLE_PAIR_COUNT_ONLY_2017_2018_V1'
+          test "$USAGE_CONFIRMATION" = 'I_CONFIRM_PERSONAL_NONCOMMERCIAL_USE_AND_ACCEPT_FXCM_EULA'
+
+      - name: Checkout exact dispatch commit
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+          ref: ${{ github.sha }}
+
+      - name: Verify frozen anchors and all exploratory tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          formal='research/phase9-hypothesis-redesign-20260828'
+          track='research/phase9-exploratory-fxcm-20260901'
+          test "$(git hash-object "$formal/spec/candidate_registry.frozen.json")" = '8740f58efe48c40ba0664606194b18b40cf14c27'
+          test "$(sha256sum "$formal/spec/candidate_registry.frozen.json" | cut -d' ' -f1)" = 'b9a78c539547bfb6d1b727cda5428764b4d849ea81ac20a236d273760d638115'
+          test "$(git hash-object "$track/spec/fxcm_multitimeframe_data_requirements.frozen.json")" = '66dd82822cedeefee01c2b30ad6b26febf8e8c66'
+          test "$(git hash-object "$track/spec/fxcm_multitimeframe_execution_contract.frozen.json")" = '79c515d89ae2692430fdf1db62acc5b464e050ec'
+          test "$(git hash-object "$track/runner/fxcm_multitimeframe_qc.py")" = 'ef5e5143ee0d7a389ab4ebb377d9ece2684d3d8b'
+          test "$(sha256sum "$track/spec/fxcm_count_only_entry_gate.frozen.json" | cut -d' ' -f1)" = '1080a9674b80ebd99e88d1d3c3f54e9fa36b5f02d5b1d51346e8ce42ca9c88e6'
+          test "$(sha256sum "$track/results/run-33558592191/FXCM_RR_COUNT_ONLY_RUN_AUDIT.json" | cut -d' ' -f1)" = 'cdc4c42d7918e33c54ccac5e82bcfbe7ee484cfdc12c588e0220eefa42434bbe'
+          test "$(sha256sum "$track/results/run-33508634314/artifact/EXPLORATORY_FXCM_MTF_QC.json" | cut -d' ' -f1)" = '4d7f77caa5333e017742e01606aa869f3845aa4c4f206563e2fd59e02b1e1063'
+          test "$(sha256sum "$track/runner/fxcm_rr_count_only.py" | cut -d' ' -f1)" = '72c12b633e4eacdac6f7a9fb3eb98d05da8c4fa147ae4f178a4dd9b614615837'
+          test "$(sha256sum "$track/spec/fxcm_single_pair_count_only_contract.frozen.json" | cut -d' ' -f1)" = '64ccfc614916a203e3ecda3dea48ada41915e3183f0c018b747026dc8e2a426e'
+          test "$(sha256sum "$track/runner/fxcm_single_pair_count_only.py" | cut -d' ' -f1)" = '2991575f471c19de35d04ae21d276cc25d52d9fb705587a8259f70d43639cdad'
+          PYTHONDONTWRITEBYTECODE=1 python -m unittest discover -s "$track/tests" -p 'test_*.py'
+          git diff --exit-code
+
+      - name: Reacquire and reconstruct the canonical ephemeral MTF dataset
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          track='research/phase9-exploratory-fxcm-20260901'
+          work="$RUNNER_TEMP/phase9-exploratory-fxcm-single-pair-work-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          mtf_report="$RUNNER_TEMP/phase9-exploratory-fxcm-single-pair-mtf-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          count_report="$RUNNER_TEMP/phase9-exploratory-fxcm-single-pair-report-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          echo "EXPLORATORY_FXCM_SINGLE_PAIR_WORK=$work" >> "$GITHUB_ENV"
+          echo "EXPLORATORY_FXCM_SINGLE_PAIR_MTF_REPORT=$mtf_report" >> "$GITHUB_ENV"
+          echo "EXPLORATORY_FXCM_SINGLE_PAIR_REPORT=$count_report" >> "$GITHUB_ENV"
+          python "$track/runner/fxcm_multitimeframe_qc.py" \
+            --confirmation RUN_EXPLORATORY_FXCM_FX8_MTF_2017_2018_QC_ONLY_V1 \
+            --usage-confirmation I_CONFIRM_PERSONAL_NONCOMMERCIAL_USE_AND_ACCEPT_FXCM_EULA \
+            --contract "$track/spec/fxcm_multitimeframe_data_requirements.frozen.json" \
+            --execution-contract "$track/spec/fxcm_multitimeframe_execution_contract.frozen.json" \
+            --prior-h1-inventory "$track/results/run-33482595275/artifact/EXPLORATORY_FXCM_INVENTORY.json" \
+            --work-dir "$work" \
+            --report-dir "$mtf_report"
+          git diff --exit-code
+
+      - name: Calculate four single-instrument candidate frequencies only
+        shell: bash
+        run: |
+          set -euo pipefail
+          track='research/phase9-exploratory-fxcm-20260901'
+          python "$track/runner/fxcm_single_pair_count_only.py" \
+            --confirmation RUN_EXPLORATORY_FXCM_SINGLE_PAIR_COUNT_ONLY_2017_2018_V1 \
+            --usage-confirmation I_CONFIRM_PERSONAL_NONCOMMERCIAL_USE_AND_ACCEPT_FXCM_EULA \
+            --contract "$track/spec/fxcm_single_pair_count_only_contract.frozen.json" \
+            --candidate-registry 'research/phase9-hypothesis-redesign-20260828/spec/candidate_registry.frozen.json' \
+            --entry-gate "$track/spec/fxcm_count_only_entry_gate.frozen.json" \
+            --rr-count-run-audit "$track/results/run-33558592191/FXCM_RR_COUNT_ONLY_RUN_AUDIT.json" \
+            --current-mtf-report "$EXPLORATORY_FXCM_SINGLE_PAIR_MTF_REPORT/EXPLORATORY_FXCM_MTF_QC.json" \
+            --canonical-mtf-report "$track/results/run-33508634314/artifact/EXPLORATORY_FXCM_MTF_QC.json" \
+            --work-dir "$EXPLORATORY_FXCM_SINGLE_PAIR_WORK" \
+            --report-dir "$EXPLORATORY_FXCM_SINGLE_PAIR_REPORT"
+          git diff --exit-code
+
+      - name: Destroy all working prices before upload
+        if: ${{ always() }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          work="${EXPLORATORY_FXCM_SINGLE_PAIR_WORK:-}"
+          mtf_report="${EXPLORATORY_FXCM_SINGLE_PAIR_MTF_REPORT:-}"
+          if [[ -n "$work" ]]; then
+            expected="$RUNNER_TEMP/phase9-exploratory-fxcm-single-pair-work-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+            test "$work" = "$expected"
+            test ! -L "$work"
+            if [[ -d "$work" ]]; then
+              find "$work" -type f -exec shred -u {} + 2>/dev/null || true
+              rm -rf -- "$work"
+            fi
+            test ! -e "$work"
+          fi
+          if [[ -n "$mtf_report" ]]; then
+            expected_mtf="$RUNNER_TEMP/phase9-exploratory-fxcm-single-pair-mtf-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+            test "$mtf_report" = "$expected_mtf"
+            test ! -L "$mtf_report"
+            if [[ -d "$mtf_report" ]]; then
+              rm -rf -- "$mtf_report"
+            fi
+            test ! -e "$mtf_report"
+          fi
+
+      - name: Verify exact price-free Count-only artifact after cleanup
+        shell: bash
+        run: |
+          set -euo pipefail
+          report="$EXPLORATORY_FXCM_SINGLE_PAIR_REPORT"
+          test "$report" = "$RUNNER_TEMP/phase9-exploratory-fxcm-single-pair-report-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          test ! -L "$report"
+          test "$(find "$report" -type f | wc -l)" -eq 2
+          test -f "$report/EXPLORATORY_FXCM_SINGLE_PAIR_COUNT_ONLY.json"
+          test -f "$report/artifact_manifest_sha256.txt"
+          test -z "$(find "$report" -type f \( -iname '*.csv' -o -iname '*.gz' -o -iname '*.zip' -o -iname '*.timestamps' -o -iname '*.timestamps.txt' \) -print -quit)"
+          python - "$report/EXPLORATORY_FXCM_SINGLE_PAIR_COUNT_ONLY.json" <<'PY'
+          import json
+          import sys
+          from pathlib import Path
+
+          value = json.loads(Path(sys.argv[1]).read_text(encoding="utf-8"))
+          assert value["status"] == "EXPLORATORY_FX8_SINGLE_PAIR_COUNT_ONLY_COMPLETE_FORMAL_SCOPE_INELIGIBLE"
+          assert [row["strategy_id"] for row in value["strategy_results"]] == [
+              "STRAT-P9-PS-202", "STRAT-P9-PS-203", "STRAT-P9-PS-205", "STRAT-P9-LV-202",
+          ]
+          assert value["candidate_signal_counts_calculated"] is True
+          assert value["exploratory_count_only_executed"] is True
+          assert value["formal_count_only_authorized"] is False
+          assert value["formal_phase9_authorization_effect"] is False
+          assert value["return_calculated"] is False
+          assert value["research_outcomes_calculated"] is False
+          assert value["outcome_fields"] == []
+          assert value["persistent_price_files_after_cleanup"] == 0
+          assert value["dataset"]["price_or_event_timestamp_in_artifact"] is False
+          for row in value["strategy_results"]:
+              assert row["raw_signal_count"] >= row["overlap_deduplicated_signal_count"] >= row["primary_episode_count"] >= 0
+              assert row["formal_count_only_gate_passed"] is False
+          PY
+          (cd "$report" && sha256sum -c artifact_manifest_sha256.txt)
+          git diff --exit-code
+
+      - name: Upload price-free exploratory Count-only metadata
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: phase9-exploratory-fxcm-single-pair-count-only-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ env.EXPLORATORY_FXCM_SINGLE_PAIR_REPORT }}/
+          if-no-files-found: error
+          retention-days: 14
+          include-hidden-files: false

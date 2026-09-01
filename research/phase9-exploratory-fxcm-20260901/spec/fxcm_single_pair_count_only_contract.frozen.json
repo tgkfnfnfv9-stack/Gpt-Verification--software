@@ -1,0 +1,175 @@
+{
+  "schema_version": "phase9-exploratory-fxcm-single-pair-count-only-v1.0.0",
+  "status": "FROZEN_AFTER_RR_COUNT_RESULT_BEFORE_FIRST_SINGLE_PAIR_SIGNAL_COUNT",
+  "recorded_at_utc": "2026-09-01T21:30:00Z",
+  "track": "EXPLORATORY_FX8_SINGLE_PAIR_SUBSET_NOT_FORMAL_PHASE9",
+  "purpose": "Screen four preregistered price-only, single-instrument hypotheses on the existing FX8 MTF dataset without another provider expansion and without calculating any outcome.",
+  "scope_amendment": {
+    "prior_entry_gate_exclusion_is_preserved": true,
+    "new_user_direction_after_rr_count_result": "CONTINUE_WITH_EXISTING_FX8_SINGLE_PAIR_CANDIDATES",
+    "registered_ALL_UNIVERSE_is_not_redefined_as_FX8": true,
+    "formal_phase9_promotion_or_rejection_effect": false,
+    "exploratory_fx8_subset_only": true
+  },
+  "anchors": {
+    "candidate_registry": {
+      "path": "research/phase9-hypothesis-redesign-20260828/spec/candidate_registry.frozen.json",
+      "sha256": "b9a78c539547bfb6d1b727cda5428764b4d849ea81ac20a236d273760d638115"
+    },
+    "entry_gate": {
+      "path": "research/phase9-exploratory-fxcm-20260901/spec/fxcm_count_only_entry_gate.frozen.json",
+      "sha256": "1080a9674b80ebd99e88d1d3c3f54e9fa36b5f02d5b1d51346e8ce42ca9c88e6"
+    },
+    "rr_count_run_audit": {
+      "path": "research/phase9-exploratory-fxcm-20260901/results/run-33558592191/FXCM_RR_COUNT_ONLY_RUN_AUDIT.json",
+      "sha256": "cdc4c42d7918e33c54ccac5e82bcfbe7ee484cfdc12c588e0220eefa42434bbe"
+    },
+    "canonical_mtf_report": {
+      "path": "research/phase9-exploratory-fxcm-20260901/results/run-33508634314/artifact/EXPLORATORY_FXCM_MTF_QC.json",
+      "sha256": "4d7f77caa5333e017742e01606aa869f3845aa4c4f206563e2fd59e02b1e1063"
+    },
+    "shared_count_utility": {
+      "path": "research/phase9-exploratory-fxcm-20260901/runner/fxcm_rr_count_only.py",
+      "sha256": "72c12b633e4eacdac6f7a9fb3eb98d05da8c4fa147ae4f178a4dd9b614615837"
+    }
+  },
+  "dataset": {
+    "symbols": ["AUDJPY", "AUDUSD", "EURGBP", "EURJPY", "EURUSD", "GBPJPY", "GBPUSD", "USDJPY"],
+    "start_inclusive": "2017-01-01T00:00:00Z",
+    "end_exclusive": "2018-12-31T00:00:00Z",
+    "timeframes": ["M15", "H1", "H4", "D1"],
+    "signal_feature_price": "FIELDWISE_ARITHMETIC_MID_OF_SYNCHRONIZED_BID_AND_ASK_OHLC",
+    "lineage": {
+      "M15": "DIRECT_M1_COMPLETE_15_BAR_BUCKETS_EXPLORATORY_NOT_FORMAL_PROVIDER_DIRECT_M15",
+      "H1": "DIRECT_H1",
+      "H4": "DIRECT_H1_COMPLETE_4_BAR_BUCKETS",
+      "D1": "DIRECT_H1_COMPLETE_24_BAR_BUCKETS"
+    },
+    "cross_instrument_synchronization_required": false,
+    "forward_fill_or_interpolation_allowed": false,
+    "working_price_persistence": "NONE_DESTROY_BEFORE_ARTIFACT_UPLOAD"
+  },
+  "common_rules": {
+    "timestamps": "UTC_BAR_OPEN",
+    "bar_information_available_at": "BAR_OPEN_PLUS_NOMINAL_TIMEFRAME_DURATION",
+    "higher_timeframe_rule": "LATEST_COMPLETED_HIGHER_TIMEFRAME_BUCKET_END_LESS_THAN_OR_EQUAL_TO_SIGNAL_CONFIRMATION_BAR_END",
+    "atr14": "MEAN_TRUE_RANGE_OF_14_BARS_ENDING_IMMEDIATELY_BEFORE_REFERENCED_SIGNAL_BAR_UNLESS_EXPLICIT_D1_ATR20",
+    "true_range": "MAX_HIGH_MINUS_LOW_ABS_HIGH_MINUS_PREVIOUS_CLOSE_ABS_LOW_MINUS_PREVIOUS_CLOSE",
+    "ema_seed": "FIRST_PRICE_WITH_RECURSIVE_ALPHA_2_OVER_PERIOD_PLUS_1; REGIME_ELIGIBLE_ONLY_AFTER_60_OBSERVATIONS",
+    "linear_percentile": "SORTED_LINEAR_INTERPOLATION_AT_FRACTIONAL_INDEX_P_TIMES_N_MINUS_1",
+    "entry_exists": "NEXT_OBSERVED_BAR_EXISTS_NO_LATER_THAN_TWO_NOMINAL_DURATIONS_AFTER_CONFIRMATION_BAR_CLOSE",
+    "overlap": "WITHIN_CANDIDATE_INSTRUMENT_DIRECTION_KEEP_EARLIEST_ENTRY_THEN_DROP_ENTRIES_LESS_THAN_12_REAL_HOURS_AFTER_KEPT_ENTRY",
+    "primary_episode_key": "STRATEGY_ID_PLUS_UTC_SIGNAL_DATE_PLUS_DIRECTION",
+    "primary_episode_selection": "EARLIEST_SIGNAL_THEN_H4_BEFORE_H1_BEFORE_M15_THEN_INSTRUMENT_ASCENDING",
+    "artifact_event_policy": "COUNTS_AND_EVENT_IDENTITY_SHA256_ONLY_NO_SIGNAL_TIMESTAMP_OR_PRICE",
+    "matched_control_assignment": "NOT_COMPLETED_DIAGNOSTIC_CANDIDATE_POOL_COUNTS_ONLY",
+    "forward_outcome_access": false
+  },
+  "candidates": {
+    "STRAT-P9-PS-202": {
+      "timeframes": ["M15", "H1", "H4"],
+      "atr_period": 14,
+      "boundary_lookback_bars": 20,
+      "break_distance_atr_min_inclusive": 0.15,
+      "break_close_location_min_inclusive": 0.75,
+      "reclaim_bars_after_break": [1, 2],
+      "reclaim_inside_atr_min_inclusive": 0.10,
+      "reclaim_body_over_range_min_inclusive": 0.40,
+      "reclaim_close_location_reversal_min_inclusive": 0.60,
+      "reclaim_selection": "EARLIEST_ELIGIBLE_RECLAIM",
+      "direction": "OPPOSITE_FAILED_BREAK",
+      "formal_profile": "BROAD_MULTI_ASSET_3TF"
+    },
+    "STRAT-P9-PS-203": {
+      "timeframes": ["M15", "H1", "H4"],
+      "regime_map": {"M15": "H4", "H1": "D1", "H4": "D1"},
+      "regime_ema_periods": [20, 60],
+      "regime_slope_bars": 5,
+      "regime_slope_atr_min_inclusive": 0.25,
+      "pullback_bars_min": 2,
+      "pullback_bars_max": 6,
+      "pullback_definition": "IMMEDIATELY_PRECEDING_CONTIGUOUS_CLOSE_TO_CLOSE_MOVES_AGAINST_REGIME; SEVEN_OR_MORE_INELIGIBLE",
+      "pullback_depth_atr_min_inclusive": 0.50,
+      "pullback_depth_atr_max_inclusive": 1.75,
+      "ema20_touch": "BUY_REQUIRES_AT_LEAST_ONE_PULLBACK_LOW_AT_OR_BELOW_ITS_EMA20; SELL_REQUIRES_HIGH_AT_OR_ABOVE_ITS_EMA20",
+      "ema50_close_guard": "NO_PULLBACK_CLOSE_BEYOND_ITS_EMA50_AGAINST_REGIME",
+      "confirmation_extreme_lookback_bars": 2,
+      "confirmation_body_over_range_min_inclusive": 0.50,
+      "formal_profile": "BROAD_MULTI_ASSET_3TF"
+    },
+    "STRAT-P9-PS-205": {
+      "timeframes": ["H1", "H4"],
+      "regime_timeframe": "D1",
+      "d1_change_bars": [20, 60],
+      "d1_change_definition": "CURRENT_COMPLETED_D1_MID_CLOSE_MINUS_MID_CLOSE_N_COMPLETED_D1_BARS_EARLIER",
+      "same_nonzero_sign_required": true,
+      "d1_atr20": "MEAN_TRUE_RANGE_OF_20_D1_BARS_ENDING_AT_CURRENT_COMPLETED_D1_BAR",
+      "absolute_60_bar_change_over_d1_atr20_min_inclusive": 2.50,
+      "pullback_bars_min": 2,
+      "pullback_bars_max": 6,
+      "pullback_depth_atr_min_inclusive": 0.50,
+      "pullback_depth_atr_max_inclusive": 1.50,
+      "confirmation_extreme_lookback_bars": 3,
+      "confirmation_body_over_range_min_inclusive": 0.50,
+      "formal_profile": "BROAD_MULTI_ASSET_2TF"
+    },
+    "STRAT-P9-LV-202": {
+      "timeframes": ["M15", "H1", "H4"],
+      "atr_period": 14,
+      "recent_true_range_bars": 12,
+      "historical_true_range_bars": 240,
+      "historical_gap_before_break_bars": 12,
+      "compression_percentile_max_inclusive": 20,
+      "boundary_lookback_bars": 20,
+      "break_distance_atr_min_inclusive": 0.10,
+      "break_range_atr_min_inclusive": 1.25,
+      "break_body_over_range_min_inclusive": 0.55,
+      "retest_bars_after_break": [1, 2, 3],
+      "retest_touch_boundary_distance_atr_max_inclusive": 0.20,
+      "maximum_close_penetration_inside_atr_inclusive": 0.20,
+      "confirmation_close_location_min_inclusive": 0.65,
+      "confirmation_selection": "FIRST_ELIGIBLE_CONFIRMATION_AT_OR_AFTER_FIRST_TOUCH_WITHIN_THREE_BARS",
+      "active_setup_rule": "IGNORE_LATER_BREAKS_UNTIL_FAILED_SETUP_WINDOW_END_OR_CONFIRMED_ENTRY_PLUS_12_REAL_HOURS",
+      "formal_profile": "BROAD_MULTI_ASSET_3TF"
+    }
+  },
+  "exploratory_fx8_frequency_gate": {
+    "common": {
+      "primary_episodes_min": 500,
+      "active_utc_dates_min": 250,
+      "instruments_with_at_least_30_episodes_min": 6,
+      "single_instrument_share_max_inclusive": 0.25
+    },
+    "three_timeframe": {
+      "each_timeframe_episodes_min": 50,
+      "each_timeframe_share_min_inclusive": 0.10,
+      "single_timeframe_share_max_inclusive": 0.70
+    },
+    "two_timeframe": {
+      "each_timeframe_episodes_min": 75,
+      "each_timeframe_share_min_inclusive": 0.20
+    },
+    "ignored_only_for_exploratory_subset": [
+      "FORMAL_FIVE_DISCOVERY_BLOCK_COVERAGE",
+      "NON_FX_REGISTERED_INSTRUMENTS",
+      "NON_FX_ASSET_CLASS_MINIMUMS",
+      "FORMAL_DIRECT_M15_LINEAGE"
+    ],
+    "if_pass": "EXPLORATORY_FX8_COUNT_FREQUENCY_PASS_SEPARATE_RETURN_GATE_MAY_BE_PROPOSED",
+    "if_fail": "EXPLORATORY_FX8_COUNT_FREQUENCY_FAIL_NO_RETURN",
+    "formal_pass_or_reject_label_allowed": false
+  },
+  "artifact": {
+    "exact_files": ["EXPLORATORY_FXCM_SINGLE_PAIR_COUNT_ONLY.json", "artifact_manifest_sha256.txt"],
+    "raw_or_derived_price_allowed": false,
+    "event_timestamp_allowed": false,
+    "forward_return_or_outcome_allowed": false
+  },
+  "scientific_state_before_run": {
+    "candidate_signal_counts_calculated": false,
+    "return_calculated": false,
+    "research_outcomes_calculated": false,
+    "outcome_fields": [],
+    "formal_phase9_authorization_effect": false
+  }
+}
