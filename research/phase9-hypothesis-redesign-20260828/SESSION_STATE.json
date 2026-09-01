@@ -1,7 +1,7 @@
 {
   "project": "auto-trading-research",
   "updated_at": "2026-09-01",
-  "phase": "PHASE9_PREREGISTERED_ACTUAL_FULL_QC_CONTRACT_FROZEN_PROVIDER_SCHEDULE_SOURCE_P0_BLOCKED",
+  "phase": "PHASE9_PREREGISTERED_ACTUAL_FULL_QC_CONTRACT_FROZEN_METADATA_ONLY_JFOREX_AMENDMENT_FROZEN_EXECUTION_BLOCKED_PROVIDER_SCHEDULE_P0_BLOCKED",
   "phase8": {
     "formal_hypotheses_including_pa002": 16,
     "decision": "ALL_REJECT_FOR_DEVELOPMENT",
@@ -289,12 +289,36 @@
       "authoritative_versioned_source_frozen": false,
       "generic_weekday_or_current_session_template_accepted": false,
       "official_historical_offline_domain_api_requires_jforex_context": true,
-      "metadata_only_connection_amendment_authorized": false,
+      "metadata_only_connection_amendment_authorized": true,
       "provider_schedule_inventory_acquired": false,
       "provider_schedule_allowlist_frozen": false,
       "phase9_price_files_acquired": 0,
       "forbidden_market_period_request_attempted": false,
       "research_outcomes_calculated": false,
+      "acquisition_authorized": false,
+      "count_only_authorized": false
+    },
+    "metadata_only_jforex_schedule_gate": {
+      "status": "AMENDMENT_FROZEN_EXECUTION_BLOCKED_PENDING_REMOTE_JNLP_RUNTIME_AND_PRICE_ISOLATION_PROOF",
+      "contract": "spec/metadata_only_jforex_schedule_gate.frozen.json",
+      "workflow": ".github/workflows/phase9-metadata-only-jforex-gate-preflight.yml",
+      "verifier": "runner/verify_phase9_metadata_only_jforex_gate.py",
+      "user_approved_amendment": true,
+      "connection_dispatch_authorized": false,
+      "external_jnlp_observation_authorized": false,
+      "demo_credentials_may_be_configured": false,
+      "provider_schedule_inventory_acquired": false,
+      "provider_schedule_allowlist_frozen": false,
+      "credentials_referenced": false,
+      "external_jnlp_request_attempted": false,
+      "jforex_connect_invoked": false,
+      "market_price_request_attempted": false,
+      "availability_request_attempted": false,
+      "schedule_metadata_request_attempted": false,
+      "forbidden_market_period_request_attempted": false,
+      "phase9_price_files_acquired": 0,
+      "research_outcomes_calculated": false,
+      "outcome_fields": [],
       "acquisition_authorized": false,
       "count_only_authorized": false
     },
@@ -363,8 +387,14 @@
     "implement MT5 EA"
   ],
   "next_actions": [
-    "resolve the provider schedule source P0 by hash-locking an authoritative versioned historical schedule source or by separately preregistering and explicitly authorizing a metadata-only JForex connection amendment",
+    "build a dedicated IClient Plugin metadata runner that physically excludes the acquisition runner and passes an owned-bytecode exact method-reference allowlist",
+    "implement and test the metadata network envelope and private writable-path custody using local synthetic targets only",
+    "freeze a separate remote JNLP observation amendment and obtain separate user approval before any remote JNLP runtime TLS or endpoint request",
+    "only after external_jnlp_observation_authorized becomes true, complete no-secret preconnection discovery and freeze the remote JNLP/runtime/TLS/endpoint/mapping/path identities in a strictly later exact allowlist commit without JForex connect",
+    "resolve or reject the UNPROVEN SDK-internal market-byte/cache isolation blocker",
     "use PHASE9_OPERATIONS_GUIDE.md as the procedural entrypoint",
+    "only after every metadata dispatch prerequisite and a separate exact manual approval, observe raw offline domains as evidence without claiming a complete provider schedule inventory",
+    "prove authoritative historical holiday, maintenance, Energy daily session, bar-boundary and version semantics before creating any 24-file provider schedule inventory",
     "acquire the provider schedule inventory independently of raw prices and audit its exact Run, Artifact and SHA identities",
     "in a separate atomic commit, freeze the canonical provider schedule exact-match allowlist with Git ancestry and frozen-object byte verification",
     "freeze Energy roll and session metadata without inspecting prices",
@@ -386,7 +416,7 @@
     "guide_does_not_override_frozen_spec": true
   },
   "workflow_safety": {
-    "status": "GATE_C3_AND_ACTUAL_FULL_QC_CONTRACT_PREFLIGHT_PASS_NO_SECRET_OR_PRICE_PATH",
+    "status": "GATE_C3_ACTUAL_FULL_QC_AND_METADATA_ONLY_AMENDMENT_PREFLIGHT_NO_SECRET_NO_CONNECTION_NO_PRICE_PATH",
     "disabled_legacy_workflows": [
       ".github/workflows/tmp-gbpjpy-h1-v8.yml",
       ".github/workflows/tmp-gbpjpy-h1-v8b.yml",

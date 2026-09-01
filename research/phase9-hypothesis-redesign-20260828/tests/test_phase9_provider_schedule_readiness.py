@@ -34,6 +34,7 @@ class ProviderScheduleReadinessTests(unittest.TestCase):
         for relative in (
             "data_manifest/trading_calendar.json",
             "spec/provider_schedule_contract.frozen.json",
+            "spec/metadata_only_jforex_schedule_gate.frozen.json",
             "SESSION_STATE.json",
         ):
             source = ROOT / relative
@@ -46,7 +47,9 @@ class ProviderScheduleReadinessTests(unittest.TestCase):
         self.assertEqual(audit["status"], readiness.BLOCKED_STATUS)
         self.assertFalse(audit["canonical_source_present"])
         self.assertEqual(audit["provider_schedule_version"], "NO_VERSION_AVAILABLE_YET")
-        self.assertEqual(len(audit["blockers"]), 3)
+        self.assertEqual(len(audit["blockers"]), 4)
+        self.assertTrue(audit["metadata_only_connection_amendment_authorized"])
+        self.assertFalse(audit["metadata_only_connection_dispatch_authorized"])
 
     def test_blocked_audit_keeps_every_authorization_false_and_prices_zero(self):
         audit = readiness.blocked_audit()
@@ -108,7 +111,7 @@ class ProviderScheduleReadinessTests(unittest.TestCase):
             state = json.loads(path.read_text(encoding="utf-8"))
             state["provider_acquisition"]["provider_schedule_source_readiness"][
                 "metadata_only_connection_amendment_authorized"
-            ] = True
+            ] = False
             path.write_text(json.dumps(state), encoding="utf-8")
             with self.assertRaises(readiness.ReadinessError):
                 readiness.blocked_audit(root)

@@ -1,0 +1,98 @@
+{
+  "schema_version": "phase9-metadata-only-jforex-schedule-gate-v1.0",
+  "status": "FROZEN_AMENDMENT_EXECUTION_BLOCKED",
+  "recorded_at_utc": "2026-09-01T00:00:00Z",
+  "authorization": {
+    "user_approved_amendment": true,
+    "amendment_authorized": true,
+    "connection_dispatch_authorized": false,
+    "external_jnlp_observation_authorized": false,
+    "demo_credentials_may_be_configured": false,
+    "provider_schedule_inventory_acquired": false,
+    "provider_schedule_allowlist_frozen": false,
+    "acquisition_authorized": false,
+    "count_only_authorized": false,
+    "outcome_access_authorized": false
+  },
+  "purpose": "PREREGISTER_A_FUTURE_METADATA_ONLY_JFOREX_CONNECTION_WITHOUT_PRICE_AVAILABILITY_ORDER_OR_OUTCOME_ACCESS",
+  "current_preflight_scope": "NO_SECRET_NO_JNLP_NO_JFOREX_NO_NETWORK_STATIC_CONTRACT_VERIFICATION_ONLY",
+  "provider": {
+    "name": "Dukascopy Bank SA",
+    "client": "DDS2-jClient-JForex",
+    "client_version": "3.6.51",
+    "api": "JForex-API",
+    "api_version": "2.13.99",
+    "demo_jnlp": "https://platform.dukascopy.com:443/demo_3/jforex_3.jnlp"
+  },
+  "future_observation_scope": {
+    "timezone": "UTC",
+    "bar_timestamp": "BAR_OPEN",
+    "start_inclusive": "2013-01-01T00:00:00Z",
+    "end_exclusive_by_timeframe": {
+      "M15": "2019-08-28T00:00:00Z",
+      "H1": "2019-08-01T00:00:00Z"
+    },
+    "instruments": [
+      "AUDJPY",
+      "AUDUSD",
+      "EURGBP",
+      "EURJPY",
+      "EURUSD",
+      "GBPJPY",
+      "GBPUSD",
+      "USDJPY",
+      "XAUUSD",
+      "XAGUSD",
+      "BRENTCMDUSD",
+      "LIGHTCMDUSD"
+    ],
+    "only_permitted_provider_data_call": "IContext.getDataService().getOfflineTimeDomains(long,long,Instrument)",
+    "query_end_argument_rule": "END_EXCLUSIVE_MINUS_ONE_MILLISECOND",
+    "observation_is_evidence_only": true,
+    "observation_may_not_claim_complete_interval_inventory": true,
+    "observation_may_not_self_authorize_or_freeze_allowlist": true,
+    "jforex_internal_market_bytes_received": "UNPROVEN"
+  },
+  "mechanical_prohibitions": {
+    "available_instrument_or_data_availability_queries": true,
+    "instrument_subscription": true,
+    "tester_data_interval_or_download": true,
+    "history_or_feed_access": true,
+    "tick_or_bar_value_access": true,
+    "order_or_engine_access": true,
+    "account_value_access": true,
+    "return_or_outcome_access": true,
+    "price_or_cache_artifact_upload": true,
+    "raw_price_derived_schedule": true,
+    "development_oos_final_holdout_access": true
+  },
+  "required_before_connection_dispatch": [
+    "SEPARATE_REMOTE_JNLP_OBSERVATION_AMENDMENT_AND_USER_APPROVAL",
+    "REMOTE_JNLP_BYTES_AND_RUNTIME_CLOSURE_OBSERVED_WITHOUT_CREDENTIALS_OR_JFOREX_CONNECT",
+    "REMOTE_JNLP_AND_RUNTIME_CLOSURE_EXACT_ALLOWLIST_FROZEN_IN_A_STRICTLY_LATER_COMMIT",
+    "METADATA_PROBE_SOURCE_AND_REPRODUCIBLE_RUNNER_HASH_FROZEN",
+    "DEDICATED_PLUGIN_MODULE_EXCLUDES_THE_EXISTING_ACQUIRER_AND_ALL_PRICE_CALLBACK_SURFACES",
+    "OWNED_BYTECODE_METHOD_REFERENCES_MATCH_AN_EXACT_ALLOWLIST",
+    "NETWORK_DESTINATION_AND_CHILD_PROCESS_ENVELOPE_FROZEN_FOR_METADATA_MODE",
+    "UNSUBSCRIBED_CONNECTION_PROVEN_NOT_TO_PERSIST_OR_EXPOSE_PRICE_VALUES",
+    "PRIVATE_EPHEMERAL_CACHE_CUSTODY_AND_CLEANUP_PROVEN",
+    "ACCOUNT_TERMS_CONFIRMATION_RECORDED",
+    "SEPARATE_EXACT_MANUAL_DISPATCH_CONFIRMATION"
+  ],
+  "required_after_observation": [
+    "AUDIT_RUN_ID_HEAD_SHA_ARTIFACT_ID_AND_ARTIFACT_ZIP_SHA256",
+    "PROVE_WHETHER_OFFLINE_DOMAINS_INCLUDE_HOLIDAYS_MAINTENANCE_AND_ENERGY_DAILY_SESSIONS",
+    "DO_NOT_CREATE_24_CANONICAL_SCHEDULE_FILES_UNLESS_COMPLETE_HISTORICAL_SEMANTICS_ARE_PROVEN",
+    "FREEZE_ANY_CANONICAL_EXACT_MATCH_ALLOWLIST_ONLY_IN_A_STRICTLY_LATER_COMMIT"
+  ],
+  "current_commit_artifact_allowlist": [
+    "METADATA_ONLY_JFOREX_GATE_AUDIT.json",
+    "artifact_manifest_sha256.txt"
+  ],
+  "scientific_state": {
+    "phase9_price_files": 0,
+    "actual_market_data_full_quality_gate_passed": false,
+    "research_outcomes_calculated": false,
+    "outcome_fields": []
+  }
+}

@@ -241,7 +241,7 @@ Gate B監査正本は`results/gate-b-native-allowlist/GATE_B_AUDIT.json`です�
 
 workflowはprice、return、edgeの実行ボタンを自動的に続けません。取得成功後も`full_quality_gate_passed=false`のまま停止し、calendar、H4/D1 bucket、Energy rollを別工程で監査します。
 
-凍結JNLPはdemo serviceです。Repository secretsにはJForex demo accountの認証情報だけを登録し、live accountの認証情報を使いません。単一の`tick_volume`はBID bar volumeをcanonicalとし、ASK volumeは不一致件数のQCだけに使います。
+凍結JNLPはdemo serviceです。Repository secretsにはJForex demo accountの認証情報だけを登録し、live accountの認証情報を使いません。ただし2026-09-01時点では`JFOREX_METADATA_ONLY_CONNECTION_AMENDMENT.md`を別途凍結しただけで、remote JNLP/runtime closure、network destination、専用Plugin bytecode、SDK内部price受信・cache非露出の証明が未完了です。したがってSecrets設定と接続dispatchはまだ禁止です。現在のmetadata-only preflightはno-secret/no-JNLP/no-JForexで契約だけを検証し、取得認可効果を持ちません。単一の`tick_volume`はBID bar volumeをcanonicalとし、ASK volumeは不一致件数のQCだけに使います。
 
 ### 12銘柄
 
@@ -305,7 +305,7 @@ Development以降は順序と候補期間だけが登録され、Phase 9専用�
 | Stage | 入力 | 実施 | 出力・Gate |
 |---|---|---|---|
 | S0 | frozen registry/data/policy | head・JSON・hash・draft排除確認 | preregistration integrity |
-| S1 | provider metadata | 認証API、hard-clipped request、provider、12 symbol、calendar、roll、version、client SHAを結果なしで固定 | JForex経路凍結済み。Secrets/account terms確認待ち |
+| S1 | provider metadata | 認証API、hard-clipped request、provider、12 symbol、calendar、roll、version、client SHAを結果なしで固定 | metadata-only amendment凍結済み。実接続はremote runtime/egress/price-isolation証明待ち |
 | S2 | S1 manifest | 12×M15/H1×BID/ASK=48系列をtimeframe別の許可期間だけ取得 | runner一時raw、metadata row count・SHA、full QCは未通過で停止 |
 | S3 | 48系列 | timestamp、duplicate、OHLC、spread、gap、missingness、同期、roll、H1→H4/D1監査 | quality report |
 | S4 | quality通過data | signal flag、episode、control availability、group countだけ計算 | PASSまたはREJECT_AS_UNDERPOWERED |

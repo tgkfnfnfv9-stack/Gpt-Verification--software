@@ -1,6 +1,6 @@
 # Phase 9 Provider / Acquisition Blocker
 
-Status: `JFOREX_SELECTED; ACTUAL_FULL_QC_CONTRACT_FROZEN; PROVIDER_SCHEDULE_SOURCE_P0_BLOCKED; PRICE_BLOCKED`
+Status: `JFOREX_SELECTED; METADATA_ONLY_AMENDMENT_FROZEN; CONNECTION_DISPATCH_BLOCKED; PROVIDER_SCHEDULE_SOURCE_P0_BLOCKED; PRICE_BLOCKED`
 
 Recorded: 2026-08-29 UTC
 
@@ -45,8 +45,8 @@ Official API references audited without connecting to JForex or requesting data:
 - https://www.dukascopy.com/client/javadoc3/com/dukascopy/api/IDataService.html
 - https://www.dukascopy.com/client/javadoc3/com/dukascopy/api/IContext.html
 
-Therefore no schedule inventory or allowlist may be fabricated or frozen. The
-safe next decision is one of:
+Therefore no schedule inventory or allowlist may be fabricated or frozen. Two
+resolution paths were considered:
 
 1. identify and hash-lock a Dukascopy-published, versioned, licensed historical
    schedule source covering the complete frozen intervals; or
@@ -55,9 +55,35 @@ safe next decision is one of:
    bars, price, order, and Outcome access. This option still needs proof that
    the returned offline domains cover holidays and Energy sessions completely.
 
+The user selected path 2 on 2026-09-01. The amendment is now frozen, but its
+connection dispatch remains blocked by the prerequisites below.
+
 `runner/verify_phase9_provider_schedule_readiness.py` and its no-secret/no-price
 Actions preflight record this blocked state. They deliberately create no
 `.timestamps` files and have no acquisition authorization effect.
+
+## Metadata-only amendment (2026-09-01)
+
+The user approved the recommended metadata-only approach. The separate
+`JFOREX_METADATA_ONLY_CONNECTION_AMENDMENT.md` and
+`spec/metadata_only_jforex_schedule_gate.frozen.json` preregister the future
+narrow schedule-metadata query. The push preflight is deliberately no-secret,
+no-JNLP, no-JForex, and no-network. It does not dispatch a connection.
+
+Connection dispatch remains blocked because the remote JNLP/runtime closure,
+metadata runner bytecode, exact network destinations, writable-path custody,
+and SDK-internal market-byte/cache isolation have not been proven and frozen.
+The existing acquisition runner cannot be reused because it contains
+availability, subscription, Tester download, bar callback, and price-write
+capability. A future runner must be a physically separate `IClient`/`Plugin`
+module with an exact owned-bytecode method allowlist.
+
+Even a successful future `getOfflineTimeDomains` observation will be evidence
+only. Official documentation guarantees weekend intervals, not a complete
+historical holiday, maintenance, Energy session, or versioned schedule source.
+No 24-file inventory or canonical allowlist may be created until those semantics
+are independently proven. This amendment has no acquisition authorization
+effect.
 
 ## Rejected public-endpoint P0 blockers
 

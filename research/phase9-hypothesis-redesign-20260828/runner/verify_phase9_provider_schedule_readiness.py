@@ -31,6 +31,7 @@ def load_json(path: Path) -> dict:
 def blocked_audit(root: Path = ROOT) -> dict:
     calendar = load_json(root / "data_manifest/trading_calendar.json")
     contract = load_json(root / "spec/provider_schedule_contract.frozen.json")
+    metadata_gate = load_json(root / "spec/metadata_only_jforex_schedule_gate.frozen.json")
     state = load_json(root / "SESSION_STATE.json")
     source = root / CANONICAL_SOURCE.relative_to(ROOT)
     inventory = root / CANONICAL_INVENTORY.relative_to(ROOT)
@@ -40,6 +41,12 @@ def blocked_audit(root: Path = ROOT) -> dict:
         raise ReadinessError("Blocked-state preflight no longer matches the calendar source state")
     if contract.get("status") != "FROZEN_CONTRACT_NO_PROVIDER_INVENTORY_ACQUIRED":
         raise ReadinessError("Provider schedule contract status unexpectedly changed")
+    if (
+        metadata_gate.get("status") != "FROZEN_AMENDMENT_EXECUTION_BLOCKED"
+        or metadata_gate.get("authorization", {}).get("amendment_authorized") is not True
+        or metadata_gate.get("authorization", {}).get("connection_dispatch_authorized") is not False
+    ):
+        raise ReadinessError("Metadata-only amendment is not frozen and execution-blocked")
     authorization = contract.get("authorization_state", {})
     if authorization != {
         "provider_schedule_inventory_acquired": False,
@@ -71,7 +78,7 @@ def blocked_audit(root: Path = ROOT) -> dict:
         "authoritative_versioned_source_frozen": False,
         "generic_weekday_or_current_session_template_accepted": False,
         "official_historical_offline_domain_api_requires_jforex_context": True,
-        "metadata_only_connection_amendment_authorized": False,
+        "metadata_only_connection_amendment_authorized": True,
         "provider_schedule_inventory_acquired": False,
         "provider_schedule_allowlist_frozen": False,
         "phase9_price_files_acquired": 0,
@@ -91,6 +98,8 @@ def blocked_audit(root: Path = ROOT) -> dict:
         "canonical_source_path": CANONICAL_SOURCE.relative_to(ROOT).as_posix(),
         "canonical_source_present": False,
         "provider_schedule_version": "NO_VERSION_AVAILABLE_YET",
+        "metadata_only_connection_amendment_authorized": True,
+        "metadata_only_connection_dispatch_authorized": False,
         "provider_schedule_inventory_acquired": False,
         "provider_schedule_allowlist_frozen": False,
         "same_run_self_authorization_used": False,
@@ -110,6 +119,7 @@ def blocked_audit(root: Path = ROOT) -> dict:
             "AUTHORITATIVE_VERSIONED_PROVIDER_SCHEDULE_SOURCE_ABSENT",
             "ONLY_DOCUMENTED_HISTORICAL_OFFLINE_DOMAIN_API_REQUIRES_PROHIBITED_JFOREX_CONTEXT",
             "ENERGY_HISTORICAL_SESSION_AND_HOLIDAY_COMPLETENESS_UNPROVEN",
+            "METADATA_ONLY_CONNECTION_DISPATCH_BLOCKED_PENDING_REMOTE_RUNTIME_AND_PRICE_ISOLATION_PROOF",
         ],
     }
 

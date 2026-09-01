@@ -15,14 +15,16 @@ GitHub Repository tgkfnfnfv9-stack/Gpt-Verification--software のPhase 9自動�
 6. research/phase9-hypothesis-redesign-20260828/POLICY_INCIDENT_20260830.md
 7. research/phase9-hypothesis-redesign-20260828/PROVIDER_ACQUISITION_BLOCKER.md
 8. research/phase9-hypothesis-redesign-20260828/JFOREX_SOURCE_CHANNEL_AMENDMENT.md
-9. research/phase9-hypothesis-redesign-20260828/SESSION_STATE.json
-10. research/phase9-hypothesis-redesign-20260828/DESIGN_DECISIONS.md
-11. research/phase9-hypothesis-redesign-20260828/HYPOTHESIS_PORTFOLIO_FINAL.md
-12. research/phase9-hypothesis-redesign-20260828/spec/candidate_registry.frozen.json
-13. research/phase9-hypothesis-redesign-20260828/spec/data_requirements.frozen.json
-14. research/phase9-hypothesis-redesign-20260828/policy/preregistered_research_policy.json
-15. research/phase9-hypothesis-redesign-20260828/runner/phase9_actual_full_qc.py
-16. research/phase9-hypothesis-redesign-20260828/spec/provider_schedule_contract.frozen.json
+9. research/phase9-hypothesis-redesign-20260828/JFOREX_METADATA_ONLY_CONNECTION_AMENDMENT.md
+10. research/phase9-hypothesis-redesign-20260828/SESSION_STATE.json
+11. research/phase9-hypothesis-redesign-20260828/DESIGN_DECISIONS.md
+12. research/phase9-hypothesis-redesign-20260828/HYPOTHESIS_PORTFOLIO_FINAL.md
+13. research/phase9-hypothesis-redesign-20260828/spec/candidate_registry.frozen.json
+14. research/phase9-hypothesis-redesign-20260828/spec/data_requirements.frozen.json
+15. research/phase9-hypothesis-redesign-20260828/policy/preregistered_research_policy.json
+16. research/phase9-hypothesis-redesign-20260828/runner/phase9_actual_full_qc.py
+17. research/phase9-hypothesis-redesign-20260828/spec/provider_schedule_contract.frozen.json
+18. research/phase9-hypothesis-redesign-20260828/spec/metadata_only_jforex_schedule_gate.frozen.json
 
 8つの論理役割A0〜A7を使用してください。同時実行上限が7なら2波に分け、サブエージェントはread-only監査、主担当だけがGitHubへCommitしてください。作業前後にremote mainを確認し、force push、reset --hard、ユーザー変更の破棄、git add .、git add -Aは禁止です。
 
@@ -44,9 +46,11 @@ Actual Full-QC実装基準は9eb7ce667bea8e76a7f9bb1f2d378eebd8957206です。�
 - acquisition_authorized=false
 - count_only_authorized=false
 
-現在はprovider schedule source readinessでP0 BLOCKEDです。`trading_calendar.json`は`provider_schedule_version=NO_VERSION_AVAILABLE_YET`であり、非価格・非JNLP・pre-connectで使えるDukascopy公式version付きcomplete historical schedule sourceはRepositoryにありません。公式`IDataService.getOfflineTimeDomains`は現行経路ではJForex contextを必要とし、接続禁止と循環します。またholiday、maintenance、Energy sessionの完全性も未証明です。
+現在はprovider schedule source readinessでP0 BLOCKEDです。`trading_calendar.json`は`provider_schedule_version=NO_VERSION_AVAILABLE_YET`であり、非価格・非JNLP・pre-connectで使えるDukascopy公式version付きcomplete historical schedule sourceはRepositoryにありません。metadata-only JForex amendmentとno-secret/no-connect静的Gateはユーザー承認済み・凍結済みですが、connection dispatch、external JNLP observation、demo Secrets設定は未認可です。
 
-次の単一作業は、generic weekday gridやcurrent session templateをinventoryと偽装せず、provider schedule source P0を解消することです。解決方法は、Dukascopy公式のversion付きcomplete historical schedule sourceを特定・hash-lockするか、availability・bar・price・order・Outcomeを機械的に禁止したmetadata-only JForex connection amendmentを別Commit・別承認で事前登録するかのどちらかです。後者でもholiday/Energy session完全性の証明が必要です。
+次の単一作業は、外部requestと実接続を行わず、metadata-only Gateのlocal M1前提を解消することです。既存acquirerを物理的に含まない専用`IClient`+`Plugin` module、owned bytecode exact method allowlist、別network namespaceによるexact destination default-deny、private writable-path custodyをlocal/syntheticだけで実装・監査し、remote JNLP observation専用の別amendmentを凍結してユーザー承認を得るところまで進めてください。`external_jnlp_observation_authorized=false`の間はremote JNLP/runtime/TLS/endpointを照会しないでください。
+
+公式`getOfflineTimeDomains`はweekend intervalsしか保証せず、holiday、maintenance、Energy daily session、歴史的session-rule変更、provider schedule versionの完全性は未証明です。SDK内部のmarket bytes受信・cache persistenceも`UNPROVEN`です。これらをfalseまたはcompleteと自己申告しないでください。前提証明が揃うまでmanual connection workflowをdispatchせず、24 schedule files、inventory、allowlistを作らないでください。
 
 P0解消後にのみ、provider schedule inventoryを価格データとは独立して正式取得し、Run ID、head SHA、Artifact ID、Artifact ZIP SHA、provider/version、UTC/BAR_OPEN、24 schedule fileのpath/SHA/count/first/last、aggregate SHAを監査した後、別Commitでcanonical exact-match allowlistを凍結してください。
 

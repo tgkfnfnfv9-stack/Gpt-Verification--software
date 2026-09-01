@@ -13,6 +13,7 @@ on:
       - 'research/phase9-hypothesis-redesign-20260828/data_manifest/provider_schedule_source.frozen.json'
       - 'research/phase9-hypothesis-redesign-20260828/data_manifest/provider_schedule_inventory.json'
       - 'research/phase9-hypothesis-redesign-20260828/spec/provider_schedule_contract.frozen.json'
+      - 'research/phase9-hypothesis-redesign-20260828/spec/metadata_only_jforex_schedule_gate.frozen.json'
       - 'research/phase9-hypothesis-redesign-20260828/spec/provider_schedule_exact_allowlist.frozen.json'
       - 'research/phase9-hypothesis-redesign-20260828/spec/candidate_registry.frozen.json'
       - 'research/phase9-hypothesis-redesign-20260828/spec/data_requirements.frozen.json'

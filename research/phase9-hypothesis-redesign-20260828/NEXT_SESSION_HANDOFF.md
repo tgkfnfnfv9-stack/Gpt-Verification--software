@@ -11,7 +11,7 @@ Actual Full-QC実装基準: `9eb7ce667bea8e76a7f9bb1f2d378eebd8957206`
 ## 1. この引継ぎの結論
 
 Phase 9では、実価格データを受け入れて検査するActual Full-QC契約まで実装・監査済み。
-ただし、provider scheduleのauthoritative/versioned/price-independent source自体が未固定であり、inventoryと別Commit allowlistは未取得・未凍結。正式取得はまだ開始しない。
+provider scheduleのauthoritative/versioned/price-independent source自体は未固定であり、inventoryと別Commit allowlistは未取得・未凍結。2026-09-01にmetadata-only JForex方式のamendmentとfail-closed静的Gateを別途凍結したが、接続dispatchは未認可であり、正式取得はまだ開始しない。
 
 ```text
 Phase 9仮説凍結
@@ -28,6 +28,10 @@ Actual 48-series Full-QC契約
   ↓ 実装・Tests・A6/A7 PASS
 Provider schedule source readiness
   ↓ P0 BLOCKED（公式version付き完全履歴source未固定）
+Metadata-only JForex amendment / static Gate
+  ↓ FROZEN（no-secret/no-connect、dispatch認可なし）
+Remote JNLP/runtime/network/price-isolation discovery
+  ↓ 未開始
 Provider schedule inventory / allowlist
   ↓ 未開始
 正式48系列取得 → Actual Full-QC → Count-only → Return検証
@@ -43,19 +47,21 @@ Provider schedule inventory / allowlist
 6. `research/phase9-hypothesis-redesign-20260828/POLICY_INCIDENT_20260830.md`
 7. `research/phase9-hypothesis-redesign-20260828/PROVIDER_ACQUISITION_BLOCKER.md`
 8. `research/phase9-hypothesis-redesign-20260828/JFOREX_SOURCE_CHANNEL_AMENDMENT.md`
-9. `research/phase8-blind-discovery-20260828/results/PHASE8_FINAL_DECISION.json`
-10. `research/phase8-blind-discovery-20260828/results/RESULTS_SUMMARY.md`
-11. `research/phase9-hypothesis-redesign-20260828/README.md`
-12. `research/phase9-hypothesis-redesign-20260828/SESSION_STATE.json`
-13. `research/phase9-hypothesis-redesign-20260828/DESIGN_DECISIONS.md`
-14. `research/phase9-hypothesis-redesign-20260828/HYPOTHESIS_PORTFOLIO_FINAL.md`
-15. `research/phase9-hypothesis-redesign-20260828/spec/candidate_registry.frozen.json`
-16. `research/phase9-hypothesis-redesign-20260828/DATA_REQUIREMENTS.md`
-17. `research/phase9-hypothesis-redesign-20260828/spec/data_requirements.frozen.json`
-18. `research/phase9-hypothesis-redesign-20260828/policy/preregistered_research_policy.json`
-19. `research/phase9-hypothesis-redesign-20260828/results/s1b-run-33376110507/S1B_AUDIT.json`
-20. `research/phase9-hypothesis-redesign-20260828/runner/phase9_actual_full_qc.py`
-21. `research/phase9-hypothesis-redesign-20260828/spec/provider_schedule_contract.frozen.json`
+9. `research/phase9-hypothesis-redesign-20260828/JFOREX_METADATA_ONLY_CONNECTION_AMENDMENT.md`
+10. `research/phase8-blind-discovery-20260828/results/PHASE8_FINAL_DECISION.json`
+11. `research/phase8-blind-discovery-20260828/results/RESULTS_SUMMARY.md`
+12. `research/phase9-hypothesis-redesign-20260828/README.md`
+13. `research/phase9-hypothesis-redesign-20260828/SESSION_STATE.json`
+14. `research/phase9-hypothesis-redesign-20260828/DESIGN_DECISIONS.md`
+15. `research/phase9-hypothesis-redesign-20260828/HYPOTHESIS_PORTFOLIO_FINAL.md`
+16. `research/phase9-hypothesis-redesign-20260828/spec/candidate_registry.frozen.json`
+17. `research/phase9-hypothesis-redesign-20260828/DATA_REQUIREMENTS.md`
+18. `research/phase9-hypothesis-redesign-20260828/spec/data_requirements.frozen.json`
+19. `research/phase9-hypothesis-redesign-20260828/policy/preregistered_research_policy.json`
+20. `research/phase9-hypothesis-redesign-20260828/results/s1b-run-33376110507/S1B_AUDIT.json`
+21. `research/phase9-hypothesis-redesign-20260828/runner/phase9_actual_full_qc.py`
+22. `research/phase9-hypothesis-redesign-20260828/spec/provider_schedule_contract.frozen.json`
+23. `research/phase9-hypothesis-redesign-20260828/spec/metadata_only_jforex_schedule_gate.frozen.json`
 
 凍結仕様の優先順位は、candidate registry、data requirements、preregistered policy。Markdown要約で凍結仕様を変更しない。
 
@@ -134,6 +140,20 @@ Provider schedule inventory / allowlist
 - `count_only_authorized=false`
 - `research_outcomes_calculated=false`
 
+### 4.5 Metadata-only JForex amendment preflight
+
+- User approval: metadata-only方式のamendment実装を承認
+- Contract: `spec/metadata_only_jforex_schedule_gate.frozen.json`
+- Workflow: `.github/workflows/phase9-metadata-only-jforex-gate-preflight.yml`
+- Scope: no-secret / no-JNLP / no-JForex / no-network static verification only
+- `metadata_only_connection_amendment_authorized=true`
+- `connection_dispatch_authorized=false`
+- `external_jnlp_observation_authorized=false`
+- `demo_credentials_may_be_configured=false`
+- Provider schedule inventory / allowlist: 未取得・未凍結
+- 価格・availability・禁止期間・Outcomeアクセス: なし
+- 取得認可効果: なし
+
 ## 5. Actual Full-QCに実装済みの検査
 
 - exact 12銘柄 × M15/H1 × BID/ASK = 48系列
@@ -169,50 +189,36 @@ Provider schedule inventory / allowlist
 
 ## 7. 次に行う単一作業
 
-Provider schedule source P0を解消する。現在の制約内でgeneric weekday gridやcurrent session templateを正式inventoryとして生成してはならない。
+Metadata-only GateのM1前提を、外部requestと接続なしで解消する。専用Plugin runner、owned bytecode method allowlist、network namespace/egress、private writable-path custodyをlocal/syntheticだけで実装・監査し、remote JNLP observation専用の別amendmentを凍結してユーザー承認を得るところまでを次の単一作業とする。`external_jnlp_observation_authorized=false`の間はremote JNLP/runtime/TLS/endpointを照会しない。
 
-2026-09-01のA0〜A7監査で確認した事実:
+2026-09-01のA0〜A7監査で確認した境界:
 
-- `trading_calendar.json`は`provider_schedule_version=NO_VERSION_AVAILABLE_YET`
-- 非価格・非JNLP・pre-connectで使えるversion付きcomplete historical schedule sourceはRepositoryにない
-- 公式`IDataService.getOfflineTimeDomains`は現行経路ではJForex contextを必要とし、接続禁止と循環する
-- 同APIだけでholiday、maintenance、Energy sessionの完全性を証明できていない
-- 現在のFull-QC contractはbytes構造を検査できるが、provider由来は自己申告だけでは証明できない
+- `ITesterClient`と既存acquirerはavailability、download、bar/price capabilityを含むため再利用禁止
+- 将来runnerは別moduleの`IClient` + `Plugin`とし、価格callback surface自体を含めない
+- owned codeで許可するprovider-data callは`getOfflineTimeDomains`だけ
+- SDK内部のmarket bytes受信・cache persistenceは`UNPROVEN`であり、falseと主張しない
+- 既存Gate C3は外部socket全面拒否のため、接続用に緩和せず別execution envelopeを作る
+- classic seccompだけではdestinationを絞れないため、別network namespace＋exact destination default-denyが必要
+- remote JNLP/runtime/endpointを発見したRunで自己認可せず、独立監査後の別Commitでallowlistを凍結する
+- offline domainは公式上weekend intervalsであり、holiday、maintenance、Energy daily session、歴史的rule change、provider schedule versionの完全性は未証明
 
-`phase9-provider-schedule-readiness-preflight.yml`はno-secret/no-priceでこのblocked stateだけを検証する。24 schedule files、inventory、allowlistは作らない。
+この前提証明が揃うまでmanual connection workflowをdispatchせず、Secretsも設定しない。24 schedule files、inventory、allowlistはまだ作らない。すべての段階で`acquisition_authorized=false`、`count_only_authorized=false`、Outcome未計算を維持する。
 
-解決方法は次のいずれかを別判断で固定する。
+## 8. 残りの順序
 
-1. Dukascopy公式のversion付きcomplete historical schedule sourceを特定し、URL/version/content SHA/利用条件を凍結する
-2. Gate順序を変更するmetadata-only JForex connection amendmentを別Commit・別承認で作る。ただしavailability、bar、price、order、Outcomeを機械的に禁止し、holiday/Energy session完全性を別途証明する
-
-P0解消後にのみ、Provider schedule inventoryを価格データとは独立して正式取得し、その正確なRun/Artifact/SHAを監査した後、別Commitでcanonical exact-match allowlistを凍結する。
-
-必要な固定情報:
-
-- Provider/source名とversion
-- UTC / BAR_OPEN規約
-- 24 schedule files（12銘柄 × M15/H1）
-- 各fileのpath、SHA-256、scheduled slot count、first/last timestamp
-- Aggregate inventory SHA-256
-- Source Run ID、head SHA、Artifact ID、Artifact ZIP SHA-256
-- Raw価格からscheduleを逆算していないこと
-- Freeze parentとallowlist Git commitの証明
-- 未知、追加、欠落、重複、case collisionを拒否する規則
-
-この作業だけで `acquisition_authorized=true` に変更しない。
-
-## 8. Provider schedule後の順序
-
-1. Provider schedule exact allowlistを別Commitで検証
-2. Energy roll/session metadataを価格非参照で固定
-3. 残るremote JNLP/Run/Artifact identityを監査
-4. すべてのBlocker解消後に、明示的な取得認可を別Gateで凍結
-5. JForexから48系列だけをsame-run private領域へ取得
-6. Actual Full-QCを実行しrawをcleanup
-7. Actual Full-QC PASS後も自動では進まず、別GateでCount-onlyを認可
-8. Count-only完了後にReturn検証
-9. 12仮説の共通ルールを抽出し、マルチタイムフレーム戦略へ進む
+1. 専用Plugin/bytecode/egress/custodyをlocal/syntheticで実装・監査
+2. remote JNLP observation専用amendmentを別Commitで凍結し、別ユーザー承認を得る
+3. no-secret/no-JForexでremote JNLP/runtime/TLS/endpoint identityを観測・独立監査
+4. remote identity exact allowlistを観測Runより後の別Commitで凍結
+5. 別manual Gateでoffline-domain evidenceを観測し、完全性を独立証明
+6. Provider schedule exact allowlistをさらに後の別Commitで検証
+7. Energy roll/session metadataを価格非参照で固定
+8. すべてのBlocker解消後に、明示的な取得認可を別Gateで凍結
+9. JForexから48系列だけをsame-run private領域へ取得
+10. Actual Full-QCを実行しrawをcleanup
+11. Actual Full-QC PASS後も自動では進まず、別GateでCount-onlyを認可
+12. Count-only完了後にReturn検証
+13. 12仮説の共通ルールを抽出し、マルチタイムフレーム戦略へ進む
 
 ## 9. 絶対禁止
 
