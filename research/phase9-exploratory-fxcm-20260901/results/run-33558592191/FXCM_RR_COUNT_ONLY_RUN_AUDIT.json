@@ -1,0 +1,124 @@
+{
+  "schema_version": "phase9-exploratory-fxcm-rr-count-only-run-audit-v1.0.0",
+  "status": "COUNT_ONLY_COMPLETE_BOTH_FORMAL_GATES_BLOCKED_NO_OUTCOME",
+  "recorded_at_utc": "2026-09-01T21:17:56Z",
+  "track": "EXPLORATORY_FX8_TWO_YEAR_COUNT_ONLY_NOT_FORMAL_PHASE9",
+  "run_identity": {
+    "run_id": 33558592191,
+    "run_number": 1,
+    "run_attempt": 1,
+    "head_sha": "980546c6699095b6ff7fa49a03f81b15647f62c5",
+    "job_id": 100025378167,
+    "event": "workflow_dispatch",
+    "branch": "main",
+    "conclusion": "SUCCESS",
+    "all_job_steps_succeeded": true,
+    "working_price_cleanup": "SUCCESS"
+  },
+  "duplicate_dispatch": {
+    "run_id": 33558595147,
+    "run_number": 2,
+    "conclusion": "CANCELLED_BEFORE_EXECUTION",
+    "included_in_research_result": false
+  },
+  "artifact": {
+    "artifact_id": 9820869831,
+    "name": "phase9-exploratory-fxcm-rr-count-only-980546c6699095b6ff7fa49a03f81b15647f62c5-33558592191-1",
+    "size_in_bytes": 2486,
+    "github_digest": "sha256:0eb6608aeb0fcb9afecdca0eda4bd3ec7a0e669c8ede7d21dcb6d019e4846741",
+    "downloaded_zip_sha256": "0eb6608aeb0fcb9afecdca0eda4bd3ec7a0e669c8ede7d21dcb6d019e4846741",
+    "exact_file_count": 2,
+    "manifest_check_passed": true,
+    "files": [
+      {
+        "path": "EXPLORATORY_FXCM_RR_COUNT_ONLY.json",
+        "size_in_bytes": 6356,
+        "sha256": "5197ffb14bc7aae7dc1a17d1a4c723e809ebab5a0868197f1fcfafda0e5c7f98"
+      },
+      {
+        "path": "artifact_manifest_sha256.txt",
+        "size_in_bytes": 102,
+        "sha256": "03de9811aabd71d00c1c797abf5427b3560b9a16bbaa51b597c8592415e9e349"
+      }
+    ]
+  },
+  "data_identity": {
+    "current_mtf_matches_canonical_data_identity": true,
+    "canonical_mtf_report_sha256": "4d7f77caa5333e017742e01606aa869f3845aa4c4f206563e2fd59e02b1e1063",
+    "current_mtf_report_sha256": "e9853a942a37be4e48d84d405242c6c124110e0045e2a62562628ab7454a5439",
+    "persistent_price_files_after_cleanup": 0
+  },
+  "count_only_results": [
+    {
+      "strategy_id": "STRAT-P9-RR-201",
+      "raw_signal_count": 0,
+      "overlap_deduplicated_signal_count": 0,
+      "primary_episode_count": 0,
+      "active_utc_date_count": 0,
+      "minimum_all_eight_synchronization_ratio": 0.19362745098039216,
+      "synchronization": {
+        "D1": {
+          "shared": 79,
+          "union": 408,
+          "ratio": 0.19362745098039216
+        },
+        "H4": {
+          "shared": 2075,
+          "union": 2987,
+          "ratio": 0.6946769333779712
+        }
+      },
+      "exploratory_frequency_feasible": false,
+      "formal_count_only_gate_passed": false,
+      "interpretation": "NOT_SIGNAL_SPARSE_CONCLUSION_D1_AND_H4_SYNCHRONIZATION_INSUFFICIENT_FOR_REGISTERED_NETWORK"
+    },
+    {
+      "strategy_id": "STRAT-P9-RR-202",
+      "raw_signal_count": 3036,
+      "overlap_deduplicated_signal_count": 2321,
+      "primary_episode_count": 865,
+      "active_utc_date_count": 485,
+      "counts_by_timeframe": {
+        "H1": 733,
+        "H4": 132
+      },
+      "counts_by_direction": {
+        "LONG": 442,
+        "SHORT": 423
+      },
+      "minimum_all_eight_synchronization_ratio": 0.6946769333779712,
+      "synchronization": {
+        "H1": {
+          "shared": 11252,
+          "union": 12364,
+          "ratio": 0.91006146878033
+        },
+        "H4": {
+          "shared": 2075,
+          "union": 2987,
+          "ratio": 0.6946769333779712
+        }
+      },
+      "raw_signals_with_minimum_control_pool": 2349,
+      "raw_signals_without_minimum_control_pool": 687,
+      "exploratory_frequency_feasible": false,
+      "formal_count_only_gate_passed": false,
+      "interpretation": "SIGNAL_FREQUENCY_ABUNDANT_BUT_REGISTERED_95_PERCENT_SYNCHRONIZATION_GATE_FAILED"
+    }
+  ],
+  "gate_state": {
+    "candidate_signal_counts_calculated": true,
+    "return_calculated": false,
+    "research_outcomes_calculated": false,
+    "outcome_fields": [],
+    "formal_count_only_authorized": false,
+    "formal_phase9_authorization_effect": false,
+    "return_gate_entered": false
+  },
+  "decision": {
+    "rr201": "DATA_INSUFFICIENT_UNSYNCHRONIZED_NOT_HYPOTHESIS_REJECTION",
+    "rr202": "DATA_INSUFFICIENT_UNSYNCHRONIZED_NOT_HYPOTHESIS_REJECTION",
+    "return_or_oos_next": false,
+    "required_before_any_outcome": "A_SEPARATE_PROSPECTIVE_DECISION_AND_A_DATASET_MEETING_REGISTERED_SYNCHRONIZATION_AND_FORMAL_SCOPE"
+  }
+}

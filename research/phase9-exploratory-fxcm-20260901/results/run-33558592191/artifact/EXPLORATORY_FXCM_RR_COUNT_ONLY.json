@@ -1,0 +1,178 @@
+{
+  "candidate_registry_sha256": "b9a78c539547bfb6d1b727cda5428764b4d849ea81ac20a236d273760d638115",
+  "candidate_signal_counts_calculated": true,
+  "canonical_mtf_report_sha256": "4d7f77caa5333e017742e01606aa869f3845aa4c4f206563e2fd59e02b1e1063",
+  "contract_sha256": "66287c4357b93bd59045f6b88e4f78f7d06309d5f5a4a59a6223570e6c5064c0",
+  "current_mtf_matches_canonical_data_identity": true,
+  "current_mtf_report_sha256": "e9853a942a37be4e48d84d405242c6c124110e0045e2a62562628ab7454a5439",
+  "dataset": {
+    "end_exclusive": "2018-12-31T00:00:00Z",
+    "price_or_event_timestamp_in_artifact": false,
+    "signal_feature_price": "FIELDWISE_ARITHMETIC_MID_OF_SYNCHRONIZED_BID_AND_ASK_OHLC",
+    "start_inclusive": "2017-01-01T00:00:00Z",
+    "symbols": [
+      "AUDJPY",
+      "AUDUSD",
+      "EURGBP",
+      "EURJPY",
+      "EURUSD",
+      "GBPJPY",
+      "GBPUSD",
+      "USDJPY"
+    ],
+    "timeframes_used": [
+      "H1",
+      "H4",
+      "D1"
+    ]
+  },
+  "entry_gate_sha256": "1080a9674b80ebd99e88d1d3c3f54e9fa36b5f02d5b1d51346e8ce42ca9c88e6",
+  "exploratory_count_only_executed": true,
+  "formal_count_only_authorized": false,
+  "formal_phase9_authorization_effect": false,
+  "next_gate": "STOP_IF_BOTH_EXPLORATORY_FREQUENCY_FLAGS_FALSE_OTHERWISE_FORMAL_SCOPE_DATA_REQUIRED_BEFORE_ANY_OUTCOME",
+  "outcome_fields": [],
+  "persistent_price_files_after_cleanup": 0,
+  "research_outcomes_calculated": false,
+  "result_dependent_rule_change": false,
+  "return_calculated": false,
+  "run_identity": {
+    "head_sha": "980546c6699095b6ff7fa49a03f81b15647f62c5",
+    "run_attempt": "1",
+    "run_id": "33558592191"
+  },
+  "schema_version": "phase9-exploratory-fxcm-rr-count-only-result-v1.0.0",
+  "status": "EXPLORATORY_COUNT_ONLY_COMPLETE_FORMAL_SCOPE_INELIGIBLE",
+  "strategy_results": [
+    {
+      "active_utc_date_count": 0,
+      "control_diagnostic": {
+        "formal_control_assignment_completed": false,
+        "minimum_candidate_pool": 1,
+        "raw_signals_with_minimum_pool": 0,
+        "raw_signals_without_minimum_pool": 0
+      },
+      "counts_by_direction": {
+        "LONG": 0,
+        "SHORT": 0
+      },
+      "counts_by_formal_12_month_block": {
+        "B1": 0,
+        "B2": 0,
+        "B3": 0,
+        "B4": 0,
+        "B5": 0
+      },
+      "counts_by_instrument": {
+        "AUDJPY": 0,
+        "AUDUSD": 0,
+        "EURGBP": 0,
+        "EURJPY": 0,
+        "EURUSD": 0,
+        "GBPJPY": 0,
+        "GBPUSD": 0,
+        "USDJPY": 0
+      },
+      "counts_by_timeframe": {
+        "H4": 0
+      },
+      "deduplicated_signal_identity_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exploratory_decision": "EXPLORATORY_SPARSE_OR_UNSYNCHRONIZED_STOP_RECOMMENDED",
+      "exploratory_frequency_feasible": false,
+      "formal_count_only_gate_passed": false,
+      "formal_profile": "FX_CROSS_SECTION_H4_ONLY",
+      "formal_scope_ineligible_reasons": [
+        "ONLY_2017_2018_OBSERVED_MAXIMUM_THREE_OF_FIVE_FORMAL_BLOCKS_TOUCHED",
+        "FORMAL_WARMUP_AND_FULL_DISCOVERY_INTERVAL_NOT_PRESENT",
+        "EXPLORATORY_PROVIDER_SCHEDULE_VERSION_UNPROVEN"
+      ],
+      "minimum_all_eight_synchronization_ratio": 0.19362745098039216,
+      "overlap_deduplicated_signal_count": 0,
+      "primary_episode_count": 0,
+      "primary_episode_identity_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "raw_signal_count": 0,
+      "raw_signal_identity_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "strategy_id": "STRAT-P9-RR-201",
+      "synchronization": [
+        {
+          "all_eight_shared_timestamp_count": 79,
+          "all_eight_synchronization_ratio": 0.19362745098039216,
+          "timeframe": "D1",
+          "union_timestamp_count": 408
+        },
+        {
+          "all_eight_shared_timestamp_count": 2075,
+          "all_eight_synchronization_ratio": 0.6946769333779712,
+          "timeframe": "H4",
+          "union_timestamp_count": 2987
+        }
+      ]
+    },
+    {
+      "active_utc_date_count": 485,
+      "control_diagnostic": {
+        "formal_control_assignment_completed": false,
+        "minimum_candidate_pool": 3,
+        "raw_signals_with_minimum_pool": 2349,
+        "raw_signals_without_minimum_pool": 687
+      },
+      "counts_by_direction": {
+        "LONG": 442,
+        "SHORT": 423
+      },
+      "counts_by_formal_12_month_block": {
+        "B1": 0,
+        "B2": 0,
+        "B3": 283,
+        "B4": 413,
+        "B5": 169
+      },
+      "counts_by_instrument": {
+        "AUDJPY": 125,
+        "AUDUSD": 111,
+        "EURGBP": 139,
+        "EURJPY": 132,
+        "EURUSD": 108,
+        "GBPJPY": 91,
+        "GBPUSD": 83,
+        "USDJPY": 76
+      },
+      "counts_by_timeframe": {
+        "H1": 733,
+        "H4": 132
+      },
+      "deduplicated_signal_identity_sha256": "5a5ecff215866a4a0cd8cfa0232bc6f197788ffe637e0b1ecb015133e7bf9214",
+      "exploratory_decision": "EXPLORATORY_SPARSE_OR_UNSYNCHRONIZED_STOP_RECOMMENDED",
+      "exploratory_frequency_feasible": false,
+      "formal_count_only_gate_passed": false,
+      "formal_profile": "FX_NETWORK_2TF",
+      "formal_scope_ineligible_reasons": [
+        "ONLY_2017_2018_OBSERVED_MAXIMUM_THREE_OF_FIVE_FORMAL_BLOCKS_TOUCHED",
+        "FORMAL_WARMUP_AND_FULL_DISCOVERY_INTERVAL_NOT_PRESENT",
+        "EXPLORATORY_PROVIDER_SCHEDULE_VERSION_UNPROVEN"
+      ],
+      "minimum_all_eight_synchronization_ratio": 0.6946769333779712,
+      "overlap_deduplicated_signal_count": 2321,
+      "primary_episode_count": 865,
+      "primary_episode_identity_sha256": "2699b799e5d2cb2c2ee764bcb365b31064ce833ea3ee2a814993d09ce20b1684",
+      "raw_signal_count": 3036,
+      "raw_signal_identity_sha256": "e6c1fa277d3aa045ba6f5c67d9641801a02c6eef617c3dedfd6c5fdd2c1d86f0",
+      "strategy_id": "STRAT-P9-RR-202",
+      "synchronization": [
+        {
+          "all_eight_shared_timestamp_count": 11252,
+          "all_eight_synchronization_ratio": 0.91006146878033,
+          "timeframe": "H1",
+          "union_timestamp_count": 12364
+        },
+        {
+          "all_eight_shared_timestamp_count": 2075,
+          "all_eight_synchronization_ratio": 0.6946769333779712,
+          "timeframe": "H4",
+          "union_timestamp_count": 2987
+        }
+      ]
+    }
+  ],
+  "track": "EXPLORATORY_FX8_TWO_YEAR_COUNT_ONLY_NOT_FORMAL_PHASE9"
+}
