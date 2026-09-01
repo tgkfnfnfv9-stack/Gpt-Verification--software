@@ -1,0 +1,131 @@
+{
+  "schema_version": "phase9-exploratory-fxcm-ps204-count-only-v1.0.0",
+  "status": "FROZEN_AFTER_PRIOR_COUNT_RESULTS_BEFORE_FIRST_PS204_SIGNAL_COUNT",
+  "recorded_at_utc": "2026-09-01T22:15:08Z",
+  "track": "EXPLORATORY_FX8_PS204_SUBSET_NOT_FORMAL_PHASE9",
+  "purpose": "Screen the last uncounted preregistered price-only candidate that can use the existing FX8 M15/H1 data, without adding a provider, changing its Entry rule, or calculating any outcome.",
+  "selection_integrity": {
+    "candidate_was_preregistered_before_all_fxcm_counts": true,
+    "candidate_signal_count_previously_calculated": false,
+    "candidate_return_or_outcome_previously_calculated": false,
+    "selection_reason": "LAST_UNCOUNTED_PREREGISTERED_PRICE_ONLY_CANDIDATE_COMPATIBLE_WITH_EXISTING_FX8",
+    "selection_based_on_prior_candidate_return_or_outcome": false,
+    "prior_candidate_count_results_do_not_change_ps204_parameters": true,
+    "candidate_substitution_for_a_failed_candidate": false
+  },
+  "scope_amendment": {
+    "prior_entry_gate_exclusion_is_preserved": true,
+    "user_direction_after_prior_count_results": "CONTINUE_AND_FIND_EDGE_WITHOUT_FORGETTING_THE_GOAL",
+    "registered_fx8_plus_metals_universe_is_not_redefined_as_fx8": true,
+    "formal_phase9_promotion_or_rejection_effect": false,
+    "exploratory_fx8_subset_only": true
+  },
+  "anchors": {
+    "candidate_registry": {
+      "path": "research/phase9-hypothesis-redesign-20260828/spec/candidate_registry.frozen.json",
+      "sha256": "b9a78c539547bfb6d1b727cda5428764b4d849ea81ac20a236d273760d638115"
+    },
+    "entry_gate": {
+      "path": "research/phase9-exploratory-fxcm-20260901/spec/fxcm_count_only_entry_gate.frozen.json",
+      "sha256": "1080a9674b80ebd99e88d1d3c3f54e9fa36b5f02d5b1d51346e8ce42ca9c88e6"
+    },
+    "prior_single_pair_count_run_audit": {
+      "path": "research/phase9-exploratory-fxcm-20260901/results/run-33563507883/FXCM_SINGLE_PAIR_COUNT_ONLY_RUN_AUDIT.json",
+      "sha256": "a721dd30416b1ab999bce02d83bd1ccf47b0bfddcd77005bf6b2c209b418128a"
+    },
+    "prior_single_pair_count_result": {
+      "path": "research/phase9-exploratory-fxcm-20260901/results/run-33563507883/artifact/EXPLORATORY_FXCM_SINGLE_PAIR_COUNT_ONLY.json",
+      "sha256": "9f3aca9454a491f4d5c73213e3e1129af8705d15dfdb11104f9a3d6a4b4d1d28"
+    },
+    "canonical_mtf_report": {
+      "path": "research/phase9-exploratory-fxcm-20260901/results/run-33508634314/artifact/EXPLORATORY_FXCM_MTF_QC.json",
+      "sha256": "4d7f77caa5333e017742e01606aa869f3845aa4c4f206563e2fd59e02b1e1063"
+    },
+    "shared_count_utility": {
+      "path": "research/phase9-exploratory-fxcm-20260901/runner/fxcm_rr_count_only.py",
+      "sha256": "72c12b633e4eacdac6f7a9fb3eb98d05da8c4fa147ae4f178a4dd9b614615837"
+    }
+  },
+  "dataset": {
+    "symbols": ["AUDJPY", "AUDUSD", "EURGBP", "EURJPY", "EURUSD", "GBPJPY", "GBPUSD", "USDJPY"],
+    "registered_missing_symbols": ["XAUUSD", "XAGUSD"],
+    "start_inclusive": "2017-01-01T00:00:00Z",
+    "end_exclusive": "2018-12-31T00:00:00Z",
+    "timeframes": ["M15", "H1"],
+    "signal_feature_price": "FIELDWISE_ARITHMETIC_MID_OF_SYNCHRONIZED_BID_AND_ASK_OHLC",
+    "lineage": {
+      "M15": "DIRECT_M1_COMPLETE_15_BAR_BUCKETS_EXPLORATORY_NOT_FORMAL_PROVIDER_DIRECT_M15",
+      "H1": "DIRECT_H1"
+    },
+    "cross_instrument_synchronization_required": false,
+    "forward_fill_or_interpolation_allowed": false,
+    "working_price_persistence": "NONE_DESTROY_BEFORE_ARTIFACT_UPLOAD"
+  },
+  "common_rules": {
+    "timestamps": "UTC_BAR_OPEN_DST_NEVER_APPLIED",
+    "bar_information_available_at": "BAR_OPEN_PLUS_NOMINAL_TIMEFRAME_DURATION",
+    "atr14": "MEAN_TRUE_RANGE_OF_14_BARS_ENDING_IMMEDIATELY_BEFORE_UTC_0600_BAR; FROZEN_FOR_BREAK_AND_RECLAIM",
+    "true_range": "MAX_HIGH_MINUS_LOW_ABS_HIGH_MINUS_PREVIOUS_CLOSE_ABS_LOW_MINUS_PREVIOUS_CLOSE",
+    "entry_exists": "NEXT_OBSERVED_BAR_EXISTS_FROM_CONFIRMATION_CLOSE_THROUGH_TWO_NOMINAL_DURATIONS_AFTER_CONFIRMATION_CLOSE",
+    "overlap": "WITHIN_CANDIDATE_INSTRUMENT_DIRECTION_KEEP_EARLIEST_ENTRY_THEN_DROP_ENTRIES_LESS_THAN_12_REAL_HOURS_AFTER_KEPT_ENTRY",
+    "primary_episode_key": "STRATEGY_ID_PLUS_UTC_SIGNAL_DATE_PLUS_DIRECTION",
+    "primary_episode_selection": "EARLIEST_SIGNAL_THEN_H1_BEFORE_M15_THEN_INSTRUMENT_ASCENDING",
+    "artifact_event_policy": "COUNTS_AND_EVENT_IDENTITY_SHA256_ONLY_NO_SIGNAL_TIMESTAMP_OR_PRICE",
+    "matched_control_assignment": "NOT_COMPLETED_IN_COUNT_ONLY",
+    "forward_outcome_access": false
+  },
+  "ps204": {
+    "strategy_id": "STRAT-P9-PS-204",
+    "registered_name": "European Session Range False-Break",
+    "timeframes": ["M15", "H1"],
+    "formal_profile": "BROAD_MULTI_ASSET_2TF",
+    "pre_session_open_time_start_inclusive": "00:00:00",
+    "pre_session_open_time_end_exclusive": "06:00:00",
+    "pre_session_exact_nominal_slots_required": {"M15": 24, "H1": 6},
+    "atr_reference_time": "06:00:00",
+    "pre_session_range_over_atr_min_inclusive": 0.75,
+    "pre_session_range_over_atr_max_inclusive": 2.50,
+    "break_open_time_start_inclusive": "06:00:00",
+    "break_open_time_end_exclusive": "10:00:00",
+    "break_distance_atr_min_inclusive": 0.15,
+    "break_definition": "UPSIDE_REQUIRES_HIGH_AND_CLOSE_AT_OR_ABOVE_RANGE_HIGH_PLUS_DISTANCE; DOWNSIDE_REQUIRES_LOW_AND_CLOSE_AT_OR_BELOW_RANGE_LOW_MINUS_DISTANCE",
+    "reclaim_bars_after_break": [1, 2],
+    "reclaim_bar_sequence": "EXACT_NOMINAL_B_PLUS_1_OR_B_PLUS_2_TIMESTAMPS_REQUIRED_NO_GAP_SUBSTITUTION",
+    "reclaim_inside_atr_min_inclusive": 0.10,
+    "reclaim_close_location_reversal_min_inclusive": 0.65,
+    "reclaim_selection": "EARLIEST_ELIGIBLE_RECLAIM_FOR_EARLIEST_ELIGIBLE_FALSE_BREAK",
+    "daily_side_rule": "FIRST_CONFIRMED_FALSE_BREAK_PER_UTC_DATE_AND_BREAK_SIDE; AN_UNRECLAIMED_BREAK_ATTEMPT_DOES_NOT_BLOCK_A_LATER_ATTEMPT",
+    "direction": "OPPOSITE_BREAK",
+    "entry": "NEXT_OBSERVED_BAR_OPEN_AFTER_RECLAIM_CONFIRMATION"
+  },
+  "exploratory_fx8_frequency_gate": {
+    "primary_episodes_min": 500,
+    "active_utc_dates_min": 250,
+    "instruments_with_at_least_30_episodes_min": 6,
+    "single_instrument_share_max_inclusive": 0.25,
+    "each_timeframe_episodes_min": 75,
+    "each_timeframe_share_min_inclusive": 0.20,
+    "ignored_only_for_exploratory_subset": [
+      "FORMAL_FIVE_DISCOVERY_BLOCK_COVERAGE",
+      "REGISTERED_XAUUSD_AND_XAGUSD",
+      "FORMAL_METALS_ASSET_CLASS_MINIMUM",
+      "FORMAL_DIRECT_M15_LINEAGE"
+    ],
+    "if_pass": "EXPLORATORY_FX8_COUNT_FREQUENCY_PASS_SEPARATE_RETURN_GATE_MAY_BE_PROPOSED",
+    "if_fail": "EXPLORATORY_FX8_COUNT_FREQUENCY_FAIL_NO_RETURN",
+    "formal_pass_or_reject_label_allowed": false
+  },
+  "artifact": {
+    "exact_files": ["EXPLORATORY_FXCM_PS204_COUNT_ONLY.json", "artifact_manifest_sha256.txt"],
+    "raw_or_derived_price_allowed": false,
+    "event_timestamp_allowed": false,
+    "forward_return_or_outcome_allowed": false
+  },
+  "scientific_state_before_run": {
+    "ps204_signal_count_calculated": false,
+    "candidate_return_calculated": false,
+    "research_outcomes_calculated": false,
+    "outcome_fields": [],
+    "formal_phase9_authorization_effect": false
+  }
+}
