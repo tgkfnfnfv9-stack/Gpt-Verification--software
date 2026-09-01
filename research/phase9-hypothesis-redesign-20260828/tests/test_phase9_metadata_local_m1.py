@@ -3,6 +3,7 @@ from __future__ import annotations
 import importlib.util
 import json
 import os
+import re
 import shutil
 import stat
 import subprocess
@@ -187,6 +188,12 @@ class MetadataLocalM1Tests(unittest.TestCase):
                 text=True,
             )
             self.assertEqual(result.returncode, 0, result.stderr)
+
+    def test_forbidden_class_match_uses_exact_class_boundary(self):
+        forbidden = "com/dukascopy/api/IStrategy"
+        boundary = re.escape(forbidden) + r"(?=[.;/$])"
+        self.assertIsNone(re.search(boundary, "com/dukascopy/api/IStrategyExceptionHandler"))
+        self.assertIsNotNone(re.search(boundary, "com/dukascopy/api/IStrategy;"))
 
     def test_workflow_is_targeted_local_synthetic_and_secret_free(self):
         workflow = (REPOSITORY_ROOT / ".github/workflows/phase9-metadata-local-m1-preflight.yml").read_text()
