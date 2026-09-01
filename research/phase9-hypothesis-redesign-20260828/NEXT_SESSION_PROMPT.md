@@ -33,6 +33,10 @@ GitHub Repository tgkfnfnfv9-stack/Gpt-Verification--software のPhase 9自動�
 24. research/phase9-hypothesis-redesign-20260828/results/remote-jnlp-run-33500446289/REMOTE_JNLP_INDEPENDENT_AUDIT.json
 25. research/phase9-hypothesis-redesign-20260828/spec/remote_jnlp_observed_url_allowlist.frozen.json
 26. research/phase9-hypothesis-redesign-20260828/runner/verify_phase9_remote_jnlp_independent_audit.py
+27. research/phase9-exploratory-fxcm-20260901/README.md
+28. research/phase9-exploratory-fxcm-20260901/MULTI_TIMEFRAME_DATA_PLAN.md
+29. research/phase9-exploratory-fxcm-20260901/spec/fxcm_multitimeframe_data_requirements.frozen.json
+30. research/phase9-exploratory-fxcm-20260901/results/run-33482595275/FXCM_CANONICAL_ALLOWLIST.json
 
 8つの論理役割A0〜A7を使用してください。同時実行上限が7なら2波に分け、サブエージェントはread-only監査、主担当だけがGitHubへCommitしてください。作業前後にremote mainを確認し、force push、reset --hard、ユーザー変更の破棄、git add .、git add -Aは禁止です。
 
@@ -57,13 +61,23 @@ Actual Full-QC実装基準は9eb7ce667bea8e76a7f9bb1f2d378eebd8957206です。�
 - redirect、recursive resource、Credential、JForex connect、availability、provider schedule、price、禁止期間、Outcomeへのアクセスなし
 - Run/Job/Artifact/head/ZIPは独立監査済み。観測5 exact URLは元Runとは別Commitでevidence-only allowlistとして凍結済み
 - 単一使用認可は消費済み。rerun/replay/follow-up URL requestは未認可
+- Exploratory FXCM Run 33482595275 / Job 99775327873 / Artifact 9790552032: completed/success
+- FX8 direct H1 BID/ASK、2017–2018、832 source objects、98,910 barsを取得・QC済み
+- 使用可能97,644 bars、ASK Open < BID Open 1,266 barsは価格変更せずBID/ASK両方を隔離
+- raw価格はsame-run cleanup済み。Git/Artifactには価格を保存していない
+- MTF必要範囲はFX8 × M15/H1/H4/D1 × BID/ASK = 64系列
+- direct m1/H1を取得し、m1→M15、H1→H4/D1を完全UTC bucketだけで生成する要件を凍結済み
 - acquisition_authorized=false
 - count_only_authorized=false
 - research_outcomes_calculated=false
 
-現在はprovider schedule source readinessでP0 BLOCKEDです。`trading_calendar.json`は`provider_schedule_version=NO_VERSION_AVAILABLE_YET`であり、Dukascopy公式version付きcomplete historical schedule sourceはRepositoryにありません。metadata-only JForex amendmentとlocal M1専用module/bytecode/network/custody controlsは凍結済みですが、bytecode proofは凍結local synthetic API fixtureに対するものだけで、実JForex API 2.13.99 JAR/runtime互換性、remote runtime closure、SDK内部market-byte/cache isolation、TOCTOU-resistant custodyは未証明です。connection dispatch、follow-up JNLP/resource request、demo Secrets設定は未認可です。
+現在の優先課題は、H1だけで止まっているFXCM exploratory trackをマルチタイムフレーム化することです。Formal provider schedule/JForex blockerの追加監査は後回しにしてください。
 
-次の単一作業は、完了済み初期Runを再実行せず、凍結した5 exact URLを証拠としてremote runtime closureを検証する限定Gateを事前設計・監査することです。この設計作業では外部requestを行いません。`libs_3.jnlp`、icon、JAR/resource、初期URLを含む新たなrequestは、対象exact URL・回数・redirect・bytes・保存物を固定した別の明示的ユーザー承認があるまで行わないでください。
+次の単一作業は、`fxcm_multitimeframe_data_requirements.frozen.json`に完全一致するFX8 m1/H1取得＋M15/H4/D1生成＋QC workflowを実装し、1回実行することです。対象は8通貨ペア、2017-01-01 inclusive～2018-12-31 exclusive、direct m1/H1、BID/ASKです。最終64系列を作ります。
+
+MTFの役割はD1=regime、H4=structure/pullback/range、H1=setup、M15=entry timingです。m1→M15は15本、H1→H4は4本、H1→D1は24本の完全UTC bucketだけを使い、不完全bucketはdrop/count、Forward Fillは禁止します。m1由来H1はdirect H1とのQC照合専用です。
+
+取得/QC Runではsignal count、Return、Return符号、MFE、MAE、Edge、勝敗、勝率、Profit Factor、Drawdown、累積R、P値、信頼区間、順位、Outcome chartを計算しないでください。MTF 64系列QC完了後に別GateでCount-only、その完了後にReturn/OOS検証へ進みます。
 
 公式`getOfflineTimeDomains`はweekend intervalsしか保証せず、holiday、maintenance、Energy daily session、歴史的session-rule変更、provider schedule versionの完全性は未証明です。SDK内部のmarket bytes受信・cache persistenceも`UNPROVEN`です。これらをfalseまたはcompleteと自己申告しないでください。前提証明が揃うまでmanual connection workflowをdispatchせず、24 schedule files、inventory、allowlistを作らないでください。
 
@@ -71,7 +85,7 @@ P0解消後にのみ、provider schedule inventoryを価格データとは独立
 
 同一Runのinventoryで自己認可しないでください。Canonical path、Git strict ancestor、freeze parent、Git object byte一致、tracked/unmodifiedをfail-closedで検証してください。この作業だけでacquisition_authorized=trueに変更しないでください。
 
-Provider schedule、Energy metadata、remote runtime closure、実API互換性、cache/custodyなどの残Blockerが解消し、別Gateで明示的に取得認可されるまでは、demo secrets設定、外部JNLP接続、availability照会、JForex connect、price取得をしないでください。
+FXCM無料CandleDataにないXAUUSD、XAGUSD、BRENTCMDUSD、LIGHTCMDUSD、tick volumeはFX8 MTF trackへ混ぜないでください。別provider/別trackとして後で固定します。Formal Phase 9のprovider schedule、Energy metadata、remote runtime closure、実API互換性、cache/custody blockerも未解決のままです。
 
 将来の正式取得範囲:
 

@@ -1,0 +1,143 @@
+{
+  "schema_version": "phase9-exploratory-fxcm-mtf-data-v1.0.0",
+  "status": "FROZEN_DATA_REQUIREMENTS_ACQUISITION_NOT_STARTED",
+  "track": "EXPLORATORY_FX8_MULTI_TIMEFRAME_NOT_FORMAL_PHASE9",
+  "formal_phase9_authorization_effect": false,
+  "purpose": "Acquire sufficient price data for D1-H4-H1-M15 multi-timeframe hypothesis research without calculating outcomes in the acquisition run.",
+  "provider": {
+    "name": "FXCM",
+    "dataset": "MarketData CandleData",
+    "source_repository": "https://github.com/fxcm/MarketData",
+    "base_url_template": "https://candledata.fxcorporate.com/{periodicity}/{instrument}/{year}/{week}.csv.gz",
+    "published_direct_periodicities": [
+      "m1",
+      "H1",
+      "D1"
+    ],
+    "requested_direct_periodicities": [
+      "m1",
+      "H1"
+    ],
+    "timestamp_timezone": "UTC",
+    "timestamp_semantics": "ROW_TIMESTAMP_ASSUMED_BAR_OPEN_NOT_PROVIDER_EXPLICIT",
+    "price_sides": [
+      "BID",
+      "ASK"
+    ],
+    "tick_volume_available": false
+  },
+  "coverage": {
+    "symbols": [
+      "AUDJPY",
+      "AUDUSD",
+      "EURGBP",
+      "EURJPY",
+      "EURUSD",
+      "GBPJPY",
+      "GBPUSD",
+      "USDJPY"
+    ],
+    "start_inclusive": "2017-01-01T00:00:00Z",
+    "end_exclusive": "2018-12-31T00:00:00Z",
+    "years": [
+      2017,
+      2018
+    ],
+    "weeks_per_year": 52,
+    "expected_direct_source_object_count": 1664
+  },
+  "final_timeframes": [
+    "M15",
+    "H1",
+    "H4",
+    "D1"
+  ],
+  "series_inventory": {
+    "symbol_count": 8,
+    "side_count": 2,
+    "final_timeframe_count": 4,
+    "expected_final_series_count": 64,
+    "expected_direct_m1_side_series_count": 16,
+    "expected_direct_h1_side_series_count": 16
+  },
+  "derivation_rules": {
+    "M15": {
+      "source": "DIRECT_M1",
+      "required_complete_source_bars": 15,
+      "bucket_alignment": "UTC_QUARTER_HOUR",
+      "ohlc": "FIRST_OPEN_MAX_HIGH_MIN_LOW_LAST_CLOSE"
+    },
+    "H1": {
+      "source": "DIRECT_H1",
+      "derived_m1_h1_may_be_used_for_qc_only": true
+    },
+    "H4": {
+      "source": "DIRECT_H1",
+      "required_complete_source_bars": 4,
+      "bucket_alignment": "UTC_HOURS_00_04_08_12_16_20",
+      "ohlc": "FIRST_OPEN_MAX_HIGH_MIN_LOW_LAST_CLOSE"
+    },
+    "D1": {
+      "source": "DIRECT_H1",
+      "required_complete_source_bars": 24,
+      "bucket_alignment": "UTC_DAY_00_00",
+      "ohlc": "FIRST_OPEN_MAX_HIGH_MIN_LOW_LAST_CLOSE"
+    },
+    "incomplete_bucket_action": "DROP_AND_COUNT",
+    "forward_fill_allowed": false,
+    "price_interpolation_allowed": false,
+    "crossed_open_quote_action": "QUARANTINE_BOTH_SIDES_AND_COUNT_HASH"
+  },
+  "multi_timeframe_roles": {
+    "D1": "MARKET_REGIME_AND_PRIMARY_DIRECTION",
+    "H4": "STRUCTURE_PULLBACK_RANGE_AND_BREAKOUT_CONTEXT",
+    "H1": "SETUP_CONFIRMATION",
+    "M15": "ENTRY_TIMING"
+  },
+  "quality_control": {
+    "strict_schema": true,
+    "finite_positive_ohlc": true,
+    "ohlc_geometry": true,
+    "strictly_increasing_utc_timestamps": true,
+    "duplicate_timestamps_rejected": true,
+    "bid_ask_timestamp_exact_match": true,
+    "ask_open_below_bid_open_quarantined": true,
+    "direct_h1_vs_complete_m1_h1_reconciliation": true,
+    "gap_inventory_required": true,
+    "no_forward_fill": true,
+    "source_and_output_sha256_required": true
+  },
+  "completed_source_evidence": {
+    "run_id": 33482595275,
+    "artifact_id": 9790552032,
+    "scope": "FX8_H1_2017_2018",
+    "source_object_count": 832,
+    "observed_bar_count": 98910,
+    "usable_bar_count": 97644,
+    "crossed_open_quote_count": 1266,
+    "raw_prices_persisted": false
+  },
+  "not_acquired": {
+    "m1": true,
+    "M15": true,
+    "H4": true,
+    "D1": true,
+    "XAUUSD": true,
+    "XAGUSD": true,
+    "BRENTCMDUSD": true,
+    "LIGHTCMDUSD": true
+  },
+  "storage_policy": {
+    "raw_or_derived_price_files_may_be_committed_to_git": false,
+    "raw_or_derived_price_files_may_be_uploaded_to_public_artifact": false,
+    "github_may_store_only_code_contracts_run_identity_sha_counts_and_price_free_qc": true
+  },
+  "research_gates": {
+    "acquisition_run_may_calculate_signal_counts": false,
+    "acquisition_run_may_calculate_returns_or_outcomes": false,
+    "count_only_requires_separate_gate_after_mtf_qc": true,
+    "return_validation_requires_count_only_completion": true,
+    "research_outcomes_calculated": false,
+    "outcome_fields": []
+  }
+}

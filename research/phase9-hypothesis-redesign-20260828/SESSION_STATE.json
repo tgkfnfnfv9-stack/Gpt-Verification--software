@@ -53,6 +53,53 @@
     "authorized_data_download_started": false,
     "legacy_non_phase9_future_period_download_detected": true
   },
+  "exploratory_fxcm_multitimeframe": {
+    "status": "H1_ACQUIRED_AND_QC_AUDITED_M1_M15_H4_D1_NOT_ACQUIRED",
+    "formal_phase9_authorization_effect": false,
+    "plan": "../phase9-exploratory-fxcm-20260901/MULTI_TIMEFRAME_DATA_PLAN.md",
+    "contract": "../phase9-exploratory-fxcm-20260901/spec/fxcm_multitimeframe_data_requirements.frozen.json",
+    "symbols": [
+      "AUDJPY",
+      "AUDUSD",
+      "EURGBP",
+      "EURJPY",
+      "EURUSD",
+      "GBPJPY",
+      "GBPUSD",
+      "USDJPY"
+    ],
+    "final_timeframes": [
+      "M15",
+      "H1",
+      "H4",
+      "D1"
+    ],
+    "final_side_series_required": 64,
+    "direct_inputs_required": [
+      "m1",
+      "H1"
+    ],
+    "source_objects_required": 1664,
+    "completed_h1_run_id": 33482595275,
+    "completed_h1_artifact_id": 9790552032,
+    "completed_h1_source_objects": 832,
+    "completed_h1_observed_bars": 98910,
+    "completed_h1_usable_bars": 97644,
+    "completed_h1_crossed_open_quotes_quarantined": 1266,
+    "completed_h1_raw_prices_persisted": false,
+    "m1_acquired": false,
+    "M15_generated": false,
+    "H4_generated": false,
+    "D1_generated": false,
+    "tick_volume_available": false,
+    "XAUUSD_acquired": false,
+    "XAGUSD_acquired": false,
+    "BRENTCMDUSD_acquired": false,
+    "LIGHTCMDUSD_acquired": false,
+    "count_only_authorized": false,
+    "research_outcomes_calculated": false,
+    "outcome_fields": []
+  },
   "provider_acquisition": {
     "status": "ACTUAL_FULL_QC_CONTRACT_FROZEN_PROVIDER_SCHEDULE_SOURCE_P0_BLOCKED",
     "decision_log": "PROVIDER_ACQUISITION_BLOCKER.md",

@@ -68,3 +68,22 @@ stored under `results/run-33482595275/`.
 This is canonical only for the exploratory FX8 H1 source/QC inventory. It is
 not an independent provider schedule, not Formal Phase 9 price custody, and
 does not authorize acquisition, Count-only, signals or outcomes.
+
+## Multi-timeframe next step
+
+H1だけではマルチタイムフレーム研究に不足するため、次の取得要件を
+`spec/fxcm_multitimeframe_data_requirements.frozen.json`へ凍結した。詳細と
+引継ぎは`MULTI_TIMEFRAME_DATA_PLAN.md`を正本とする。
+
+- direct m1から完全15本bucketでM15を生成
+- direct H1をH1正本として使用
+- direct H1から完全4本bucketでH4を生成
+- direct H1から完全24本bucketでD1を生成
+- 8銘柄 × M15/H1/H4/D1 × BID/ASK = 64最終系列
+- m1由来H1はdirect H1とのQC照合だけに使用
+- 不完全bucketは補完せずdrop/count
+- VolumeはFXCM無料CandleDataにないため、volume仮説には使用不可
+
+次のRunは取得・集約・QCだけに限定する。Count-only、signal、Return、
+Outcomeは自動的に続けない。金銀・EnergyはFXCM無料CandleDataの範囲外
+なので、FX8 MTF trackと混ぜず、別provider/別trackで扱う。

@@ -11,7 +11,7 @@ Actual Full-QC実装基準: `9eb7ce667bea8e76a7f9bb1f2d378eebd8957206`
 ## 1. この引継ぎの結論
 
 Phase 9では、実価格データを受け入れて検査するActual Full-QC契約まで実装・監査済み。
-provider scheduleのauthoritative/versioned/price-independent source自体は未固定であり、inventoryと別Commit allowlistは未取得・未凍結。2026-09-01にremote JNLP initial identity observation Run `33500446289`をユーザー承認された単一GETとして完了し、Run/Job/Artifact/head/ZIPを独立監査した。観測した5 exact URLは元Runとは別の後続Commitでevidence-only allowlistとして凍結したが、単一使用認可は消費済みであり、follow-up URL、接続dispatch、正式取得はいずれも未認可である。
+加えて、Exploratory FXCM Run `33482595275`でFX8・H1・2017–2018の実価格832 source objects／98,910 barsを取得・QCし、97,644 barsを使用可能、`ASK Open < BID Open` 1,266 barsを隔離した。ただしraw価格はsame-run cleanup済みで、M15/H4/D1は未生成のためMTF検証はまだ開始できない。次の優先作業はFXCM direct m1/H1を取得し、M15/H4/D1を完全bucketだけから生成して64系列をQCすることである。Formal provider scheduleと金銀・Energyのblockerは別に残る。
 
 ```text
 Phase 9仮説凍結
@@ -26,6 +26,10 @@ Gate C3：child process・OS egress・custody実行境界
   ↓ PASS（取得認可効果なし）
 Actual 48-series Full-QC契約
   ↓ 実装・Tests・A6/A7 PASS
+Exploratory FXCM FX8 H1実価格
+  ↓ Run 33482595275 PASS（98,910 bars、1,266 crossed rows隔離）
+Exploratory FX8 MTF 64系列
+  ↓ NEXT: direct m1/H1取得 → M15/H4/D1生成 → QC
 Provider schedule source readiness
   ↓ P0 BLOCKED（公式version付き完全履歴source未固定）
 Metadata-only JForex amendment / static Gate
@@ -74,6 +78,10 @@ Provider schedule inventory / allowlist
 29. `research/phase9-hypothesis-redesign-20260828/results/remote-jnlp-run-33500446289/REMOTE_JNLP_INDEPENDENT_AUDIT.json`
 30. `research/phase9-hypothesis-redesign-20260828/spec/remote_jnlp_observed_url_allowlist.frozen.json`
 31. `research/phase9-hypothesis-redesign-20260828/runner/verify_phase9_remote_jnlp_independent_audit.py`
+32. `research/phase9-exploratory-fxcm-20260901/README.md`
+33. `research/phase9-exploratory-fxcm-20260901/MULTI_TIMEFRAME_DATA_PLAN.md`
+34. `research/phase9-exploratory-fxcm-20260901/spec/fxcm_multitimeframe_data_requirements.frozen.json`
+35. `research/phase9-exploratory-fxcm-20260901/results/run-33482595275/FXCM_CANONICAL_ALLOWLIST.json`
 
 凍結仕様の優先順位は、candidate registry、data requirements、preregistered policy。Markdown要約で凍結仕様を変更しない。
 
@@ -87,6 +95,10 @@ Provider schedule inventory / allowlist
 | Phase 9確認項目 | 12件、全件 `UNTESTED_PREREGISTERED` |
 | Phase 9正式取得 | 未開始 |
 | Phase 9価格ファイル | 0件 |
+| Exploratory FXCM取得 | FX8・H1・2017–2018、98,910 bars取得済み |
+| Exploratory FXCM使用可能 | 97,644 bars、crossed quote 1,266 bars隔離 |
+| MTF時間足 | H1のみ取得済み。m1/M15/H4/D1は未取得・未生成 |
+| MTF最終必要系列 | FX8 × M15/H1/H4/D1 × BID/ASK = 64系列 |
 | Actual Full-QC | 契約実装済み、実データでは未実行 |
 | Count-only | 未開始 |
 | Return検証・バックテスト | 未開始 |
@@ -198,6 +210,25 @@ Provider schedule inventory / allowlist
 - `external_jnlp_observation_authorized=false`、`followup_url_request_authorized=false`
 - provider schedule/availability/JForex connect/price/禁止期間/Outcomeアクセス: なし
 
+### 4.8 Exploratory FXCM実価格とMTF要件
+
+- Run ID: `33482595275`
+- Job ID: `99775327873`
+- Artifact ID: `9790552032`
+- Artifact ZIP SHA-256: `42c0f5c6d42cfd94eef1cee1c9850f91db8cd64718e2739f1083227de36705ae`
+- 取得範囲: FX8、direct H1 BID/ASK OHLC、2017-01-01 inclusive～2018-12-31 exclusive
+- Source objects: 832件、Observed bars: 98,910本
+- Usable bars: 97,644本、crossed open quote: 1,266本を価格変更せず隔離
+- Raw prices: QC後にcleanup済み。Git/公開Artifactには未保存
+- MTF plan: `../phase9-exploratory-fxcm-20260901/MULTI_TIMEFRAME_DATA_PLAN.md`
+- Frozen MTF requirements: `../phase9-exploratory-fxcm-20260901/spec/fxcm_multitimeframe_data_requirements.frozen.json`
+- 次に必要: direct m1 832件＋direct H1 832件、合計1,664 source objects
+- 生成: m1→M15、H1→H4/D1。最終64 BID/ASK系列
+- D1=regime、H4=structure、H1=setup、M15=entry timing
+- m1由来H1はdirect H1照合専用。不完全bucketはdrop、Forward Fill禁止
+- Volumeなし。XAUUSD/XAGUSD/Brent/WTIはFXCM無料CandleData範囲外
+- Signal count・Return・Outcomeは未計算
+
 ## 5. Actual Full-QCに実装済みの検査
 
 - exact 12銘柄 × M15/H1 × BID/ASK = 48系列
@@ -233,7 +264,16 @@ Provider schedule inventory / allowlist
 
 ## 7. 次に行う単一作業
 
-初期JNLP観測は完了して単一使用認可を消費した。次は、凍結済み5 exact URLを証拠としてremote runtime closureをどう検証するか、別の限定Gateと別ユーザー承認を事前設計・監査する。現時点ではどのURLもrequestしない。特に`https://platform.dukascopy.com/demo_3/libs_3.jnlp`、icon、JAR/resource、redirect先の取得、初期URLのrerun/replayは禁止する。
+JNLP追加監査は停止する。次は`research/phase9-exploratory-fxcm-20260901/spec/fxcm_multitimeframe_data_requirements.frozen.json`に完全一致するFX8 MTF取得/QC workflowを実装する。
+
+1. FXCM direct m1/H1を2017–2018の8通貨ペアについて取得する。
+2. m1からM15、H1からH4/D1を完全UTC bucketだけで生成する。
+3. direct H1とm1由来H1をQC照合する。
+4. BID/ASK、OHLC、timestamp、gap、crossed quote、bucket completeness、SHAを検査する。
+5. 価格を含まないRun/Artifact/QC inventoryだけを保存し、raw/derived pricesはcleanupする。
+6. このRunではsignal count、Return、勝率、Outcomeを計算しない。
+
+最終対象は`8銘柄 × M15/H1/H4/D1 × BID/ASK = 64系列`。この64系列QCが完了してからCount-only Gateへ進む。
 
 2026-09-01のA0〜A7監査で確認した境界:
 
@@ -250,19 +290,14 @@ Provider schedule inventory / allowlist
 
 ## 8. 残りの順序
 
-1. 完了済み初期Runを再実行せず、remote runtime closure用の限定Gateを事前設計・監査する
-2. 新たなexact URL requestごとに、別ユーザー承認を得てから単一使用workflowを実装する
-3. remote runtime/provider version/API互換性を観測し、Run/Artifactを独立監査してさらに後の別Commitで凍結する
-4. SDK内部market bytes/cache isolationとTOCTOU-resistant custodyを証明する
-5. 別manual Gateでoffline-domain evidenceを観測し、完全性を独立証明する
-6. Provider schedule exact allowlistをさらに後の別Commitで検証する
-7. Energy roll/session metadataを価格非参照で固定する
-8. すべてのBlocker解消後に、明示的な取得認可を別Gateで凍結する
-9. JForexから48系列だけをsame-run private領域へ取得する
-10. Actual Full-QCを実行しrawをcleanupする
-11. Actual Full-QC PASS後も自動では進まず、別GateでCount-onlyを認可する
-12. Count-only完了後にReturn検証する
-13. 12仮説の共通ルールを抽出し、マルチタイムフレーム戦略へ進む
+1. FX8 direct m1/H1を取得し、M15/H4/D1を生成して64系列をQCする
+2. MTF 64系列QCのRun/Artifact/SHA/countを独立監査する
+3. MTF QC後に別GateでCount-onlyを実行する
+4. Count-onlyが十分な仮説だけを、凍結ルールのままReturn/OOS検証する
+5. D1 regime → H4 structure → H1 setup → M15 entryの共通ルールを比較する
+6. 金銀・Energyとvolumeに必要なproviderを別trackで固定する
+7. Formal Phase 9ではprovider schedule、Energy metadata、remote runtime closure、cache/custodyを解消する
+8. すべてのFormal Blocker解消後に、正式取得認可を別Gateで凍結する
 
 ## 9. 絶対禁止
 
