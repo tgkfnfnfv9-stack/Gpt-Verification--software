@@ -8,6 +8,7 @@ on:
       - '.github/workflows/phase9-gate-c3-execution-envelope.yml'
       - 'research/phase9-hypothesis-redesign-20260828/runner/phase9_ephemeral_custody.py'
       - 'research/phase9-hypothesis-redesign-20260828/runner/phase9_gate_c3_seccomp.c'
+      - 'research/phase9-hypothesis-redesign-20260828/tests/fixtures/GateC3StaticTarget.c'
       - 'research/phase9-hypothesis-redesign-20260828/tests/test_phase9_gate_c3.py'
   workflow_dispatch:
     inputs:
@@ -75,8 +76,11 @@ jobs:
           root='research/phase9-hypothesis-redesign-20260828'
           cc -std=c11 -O2 -Wall -Wextra -Werror -pthread \
             "$root/runner/phase9_gate_c3_seccomp.c" -o "$GATE_C3_GUARD"
+          cc -static -std=c11 -O2 -Wall -Wextra -Werror \
+            "$root/tests/fixtures/GateC3StaticTarget.c" -o "$RUNNER_TEMP/phase9-gate-c3-static-target"
           "$GATE_C3_GUARD" --self-test > "$GATE_C3_UPLOAD/seccomp_self_test.txt"
-          "$GATE_C3_GUARD" -- /bin/true
+          "$GATE_C3_GUARD" -- "$RUNNER_TEMP/phase9-gate-c3-static-target"
+          test "$("$GATE_C3_GUARD" -- "$RUNNER_TEMP/phase9-gate-c3-static-target" --exec-other)" = 'second_exec_denied=PASS'
           test "$(cat "$GATE_C3_UPLOAD/seccomp_self_test.txt")" = 'phase9_gate_c3_seccomp_self_test=PASS'
           chmod 0600 "$GATE_C3_UPLOAD/seccomp_self_test.txt"
 
@@ -88,6 +92,7 @@ jobs:
           python - <<'PY'
           import json
           import os
+          import tempfile
           from pathlib import Path
           import importlib.util
 
@@ -96,12 +101,16 @@ jobs:
           module = importlib.util.module_from_spec(spec)
           assert spec.loader is not None
           spec.loader.exec_module(module)
-          paths = module.prepare(Path(os.environ['RUNNER_TEMP']), os.environ['GITHUB_RUN_ID'], os.environ['GITHUB_RUN_ATTEMPT'])
+          runner_temp = Path(os.environ['RUNNER_TEMP'])
+          anchor = Path(tempfile.mkdtemp(prefix='phase9-private-anchor-', dir=runner_temp))
+          anchor.chmod(0o700)
+          paths = module.prepare(anchor, os.environ['GITHUB_RUN_ID'], os.environ['GITHUB_RUN_ATTEMPT'])
           probe = paths['cache'] / 'synthetic-custody-probe.bin'
           probe.write_bytes(b'not-market-data\n')
           probe.chmod(0o600)
           validation = module.validate_private_tree(paths['root'])
-          cleanup = module.remove_private_tree(paths['root'], Path(os.environ['RUNNER_TEMP']))
+          cleanup = module.remove_private_tree(paths['root'], anchor)
+          anchor.rmdir()
           value = {
               'schema_version': 'phase9-gate-c3-custody-cleanup-v1.0',
               'synthetic_only': True,

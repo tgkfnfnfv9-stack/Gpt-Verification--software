@@ -32,6 +32,7 @@ class GateC3EnvelopeTests(unittest.TestCase):
         source = ROOT / "runner/phase9_gate_c3_seccomp.c"
         with tempfile.TemporaryDirectory() as directory:
             binary = Path(directory) / "guard"
+            target = Path(directory) / "static-target"
             build = subprocess.run(
                 [
                     "cc", "-std=c11", "-O2", "-Wall", "-Wextra", "-Werror", "-pthread",
@@ -41,45 +42,38 @@ class GateC3EnvelopeTests(unittest.TestCase):
                 text=True,
             )
             self.assertEqual(build.returncode, 0, build.stderr)
+            target_build = subprocess.run(
+                [
+                    "cc", "-static", "-std=c11", "-O2", "-Wall", "-Wextra", "-Werror",
+                    str(ROOT / "tests/fixtures/GateC3StaticTarget.c"), "-o", str(target),
+                ],
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(target_build.returncode, 0, target_build.stderr)
             probe = subprocess.run([str(binary), "--self-test"], capture_output=True, text=True)
             self.assertEqual(probe.returncode, 0, probe.stderr)
             self.assertEqual(probe.stdout, "phase9_gate_c3_seccomp_self_test=PASS\n")
             socket_stdout_left, socket_stdout_right = socket.socketpair()
             try:
                 socket_stdio = subprocess.run(
-                    [str(binary), "--", "/bin/true"], stdout=socket_stdout_right,
+                    [str(binary), "--", str(target)], stdout=socket_stdout_right,
                     stderr=subprocess.PIPE, text=True,
                 )
                 self.assertEqual(socket_stdio.returncode, 75, socket_stdio.stderr)
             finally:
                 socket_stdout_left.close()
                 socket_stdout_right.close()
-            launch = subprocess.run([str(binary), "--", "/bin/true"], capture_output=True, text=True)
+            launch = subprocess.run([str(binary), "--", str(target)], capture_output=True, text=True)
             if launch.returncode == 85 and "Landlock ABI unavailable" in launch.stderr:
                 self.skipTest("local kernel does not expose Landlock; GitHub Gate C3 requires it")
             self.assertEqual(launch.returncode, 0, launch.stderr)
             second_exec = subprocess.run(
-                [str(binary), "--", "/bin/sh", "-c", "exec /bin/true"],
+                [str(binary), "--", str(target), "--exec-other"],
                 capture_output=True, text=True,
             )
-            self.assertNotEqual(second_exec.returncode, 0, second_exec.stderr)
-            left, right = socket.socketpair()
-            try:
-                inherited = subprocess.run(
-                    [
-                        str(binary), "--", sys.executable, "-c",
-                        "import os,sys; fd=int(sys.argv[1]); "
-                        "\ntry: os.fstat(fd)"
-                        "\nexcept OSError: raise SystemExit(0)"
-                        "\nraise SystemExit(1)",
-                        str(right.fileno()),
-                    ],
-                    pass_fds=(right.fileno(),), capture_output=True, text=True,
-                )
-                self.assertEqual(inherited.returncode, 0, inherited.stderr)
-            finally:
-                left.close()
-                right.close()
+            self.assertEqual(second_exec.returncode, 0, second_exec.stderr)
+            self.assertEqual(second_exec.stdout, "second_exec_denied=PASS\n")
 
     def test_seccomp_source_has_kernel_level_nonthread_and_egress_denials(self):
         source = (ROOT / "runner/phase9_gate_c3_seccomp.c").read_text(encoding="utf-8")

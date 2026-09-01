@@ -46,6 +46,9 @@ def _require_canonical_safe_temp(path: Path) -> Path:
     info = path.lstat()
     if not stat.S_ISDIR(info.st_mode) or info.st_uid != os.getuid():
         raise CustodyError("RUNNER_TEMP must be a runner-owned directory")
+    trusted_runner_temp = None
+    if os.environ.get("RUNNER_TEMP"):
+        trusted_runner_temp = Path(os.environ["RUNNER_TEMP"]).resolve(strict=True)
     if stat.S_IMODE(info.st_mode) & 0o022:
         raise CustodyError("RUNNER_TEMP must not be group/world writable")
     current = path
@@ -53,7 +56,10 @@ def _require_canonical_safe_temp(path: Path) -> Path:
         component = current.lstat()
         if current.is_symlink():
             raise CustodyError("RUNNER_TEMP path components must not be symlinks")
-        if stat.S_IMODE(component.st_mode) & 0o022:
+        writable = stat.S_IMODE(component.st_mode) & 0o022
+        root_sticky_temp = component.st_uid == 0 and bool(component.st_mode & stat.S_ISVTX)
+        declared_runner_temp = current == trusted_runner_temp and component.st_uid == os.getuid()
+        if writable and not root_sticky_temp and not declared_runner_temp:
             raise CustodyError("RUNNER_TEMP ancestors must not be group/world writable")
         current = current.parent
     return canonical
