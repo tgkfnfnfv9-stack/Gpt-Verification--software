@@ -1,0 +1,230 @@
+{
+  "schema_version": "phase9-exploratory-fxcm-canonical-allowlist-v1.0.0",
+  "status": "CANONICAL_EXPLORATORY_FX8_H1_SOURCE_QC_INVENTORY_NO_FORMAL_EFFECT",
+  "freeze_date_utc": "2026-09-01",
+  "scope": "RUN_33482595275_EXPLORATORY_FX8_H1_ONLY",
+  "run_identity": {
+    "run_id": 33482595275,
+    "run_number": 4,
+    "run_attempt": 1,
+    "head_sha": "b2eaf84e774f9ce1272344f71ac14afcb0f6849a",
+    "job_id": 99775327873,
+    "event": "workflow_dispatch",
+    "branch": "main",
+    "conclusion": "SUCCESS",
+    "all_job_steps_succeeded": true,
+    "working_price_cleanup": "SUCCESS"
+  },
+  "artifact": {
+    "artifact_id": 9790552032,
+    "name": "phase9-exploratory-fxcm-qc-b2eaf84e774f9ce1272344f71ac14afcb0f6849a-33482595275-1",
+    "size_in_bytes": 45454,
+    "github_digest": "sha256:42c0f5c6d42cfd94eef1cee1c9850f91db8cd64718e2739f1083227de36705ae",
+    "downloaded_zip_sha256": "42c0f5c6d42cfd94eef1cee1c9850f91db8cd64718e2739f1083227de36705ae",
+    "exact_file_count": 2,
+    "files": [
+      {
+        "path": "EXPLORATORY_FXCM_INVENTORY.json",
+        "size_in_bytes": 311859,
+        "sha256": "353e0c6a03ea52039b9d41e3fabd6f73a41fc752bfb817c49ad0c739cca4c835"
+      },
+      {
+        "path": "artifact_manifest_sha256.txt",
+        "size_in_bytes": 98,
+        "sha256": "eebd20b64793e1d1e949f056e53e9053763e2e88ea29e7540ace2a9e5ae43398"
+      }
+    ],
+    "zip_entries_regular_unencrypted_safe_paths": true,
+    "manifest_payload_only_line_count": 1,
+    "manifest_self_entry_present": false,
+    "manifest_check_passed": true
+  },
+  "committed_artifact": {
+    "directory": "results/run-33482595275/artifact",
+    "inventory_path": "results/run-33482595275/artifact/EXPLORATORY_FXCM_INVENTORY.json",
+    "manifest_path": "results/run-33482595275/artifact/artifact_manifest_sha256.txt",
+    "byte_exact_to_downloaded_artifact": true
+  },
+  "contract": {
+    "path": "spec/fxcm_exploratory_contract.frozen.json",
+    "git_blob_sha": "cfb9ff142879a59847496ed02ca307d6d9bd1540",
+    "sha256": "ed96e1beee956d9b73536e1483bf49d5171cf38878d0b2f94a4eb947f21a80b7"
+  },
+  "provider": {
+    "name": "FXCM",
+    "dataset": "MarketData CandleData",
+    "dataset_release_version": "UNPUBLISHED_UNVERSIONED_ENDPOINT_OBJECTS",
+    "base_url": "https://candledata.fxcorporate.com/H1",
+    "timestamp_timezone": "UTC",
+    "timestamp_semantics": "ROW_TIMESTAMP_ASSUMED_BAR_OPEN_NOT_PROVIDER_EXPLICIT",
+    "price_sides": [
+      "BID",
+      "ASK"
+    ]
+  },
+  "coverage": {
+    "symbols": [
+      "AUDJPY",
+      "AUDUSD",
+      "EURGBP",
+      "EURJPY",
+      "EURUSD",
+      "GBPJPY",
+      "GBPUSD",
+      "USDJPY"
+    ],
+    "timeframe": "H1",
+    "start_inclusive": "2017-01-01T00:00:00Z",
+    "end_exclusive": "2018-12-31T00:00:00Z"
+  },
+  "exact_match_inventory": {
+    "source_download_count": 832,
+    "source_download_total_bytes": 2778203,
+    "source_download_identity_aggregate_schema": "SHA256_CANONICAL_JSON_SOURCE_DOWNLOADS_RECORDED_ORDER_V1",
+    "source_download_identity_aggregate_sha256": "2f2f0386adbfd98907827213799eef797fb14bfa7aaf578c3d8a4150780560b9",
+    "observed_bar_total_count": 98910,
+    "usable_bar_total_count": 97644,
+    "crossed_open_quote_total_count": 1266,
+    "observed_bar_inventory_aggregate_sha256": "4692a9085d3c132188592f2fd61c013fbe9b93e12a4e4786eed3b982da35d6f8",
+    "crossed_open_quote_inventory_aggregate_sha256": "c5e285446047735d091ad6762f01979d184b2a7fa515e28eb8fd511823ba3423",
+    "symbols": [
+      {
+        "symbol": "AUDJPY",
+        "source_file_count": 104,
+        "bar_count": 12364,
+        "usable_bar_count": 12237,
+        "crossed_open_quote_count": 127,
+        "first_timestamp_utc": "2017-01-03T00:00:00Z",
+        "last_timestamp_utc": "2018-12-28T21:00:00Z",
+        "observed_timestamps_sha256": "1a753418ddb215034d03867d49565f921d2dfebfc7836df13e0a6fe11629aab3",
+        "usable_timestamps_sha256": "3ff0d2c6fdbbd1d2d0dfaa2df051eb03b041de735bba2deb64d9fe3bd00e8711",
+        "usable_bid_working_sha256": "86ff033b67356b04e43da05f78162609e645560cfc29706e2579f66257eaef04",
+        "usable_ask_working_sha256": "47ed62244771a4d7e836416967b7fa8d055c25819a6668f3b27c57c3270c71ed",
+        "crossed_open_quote_event_sha256": "f10710d30bdc65d332e811e82577f29c4bb92efb9a8b5758bed594883901ac95"
+      },
+      {
+        "symbol": "AUDUSD",
+        "source_file_count": 104,
+        "bar_count": 12364,
+        "usable_bar_count": 12176,
+        "crossed_open_quote_count": 188,
+        "first_timestamp_utc": "2017-01-03T00:00:00Z",
+        "last_timestamp_utc": "2018-12-28T21:00:00Z",
+        "observed_timestamps_sha256": "1a753418ddb215034d03867d49565f921d2dfebfc7836df13e0a6fe11629aab3",
+        "usable_timestamps_sha256": "dbe0f3c21260db86d5af06964dc0de5a58009fb4265e6d5ed3e59f2c2de43db4",
+        "usable_bid_working_sha256": "ba9d77bb248877c824821b6a7c22f40868719ef4800251c5b465f559900074fa",
+        "usable_ask_working_sha256": "e6cdcbc37a543bac222d9ee887166aa1baf07b90fe8a31a0cb19cd4c287f8e30",
+        "crossed_open_quote_event_sha256": "59b98a6fd1eef279b16de91530125c806ae8cffc8d203a737a393fb2ffc8a841"
+      },
+      {
+        "symbol": "EURGBP",
+        "source_file_count": 104,
+        "bar_count": 12363,
+        "usable_bar_count": 12304,
+        "crossed_open_quote_count": 59,
+        "first_timestamp_utc": "2017-01-03T00:00:00Z",
+        "last_timestamp_utc": "2018-12-28T21:00:00Z",
+        "observed_timestamps_sha256": "3962287c96131e0144b2ca7c9c38b64ba5e9ddf94947f1245c0528eeb4509168",
+        "usable_timestamps_sha256": "0d0840b82993d7ce11f03d40e20833f93ed75f31e33e85f133362be2da100e07",
+        "usable_bid_working_sha256": "f6c733a641cc941ff0e67b876277a74433a5e5177944dfb9906b6af350c18f88",
+        "usable_ask_working_sha256": "c4787a9cc9c78a29220ea7dfa83f8b22996bc16755c42b9035c4f670f0006d40",
+        "crossed_open_quote_event_sha256": "f966212558280823d79524e3a9c7f15c786c10cb53bd8635bb15eb38b60af3d2"
+      },
+      {
+        "symbol": "EURJPY",
+        "source_file_count": 104,
+        "bar_count": 12364,
+        "usable_bar_count": 12232,
+        "crossed_open_quote_count": 132,
+        "first_timestamp_utc": "2017-01-03T00:00:00Z",
+        "last_timestamp_utc": "2018-12-28T21:00:00Z",
+        "observed_timestamps_sha256": "1a753418ddb215034d03867d49565f921d2dfebfc7836df13e0a6fe11629aab3",
+        "usable_timestamps_sha256": "6d794461680f4a59356fc1f56eccc9538b585b0e11567eef2bb4f78b1eb1fc3e",
+        "usable_bid_working_sha256": "a5cd8630cf4308568b6ed82ab275d017f130f851f2a4d1a9770a735fb04e5583",
+        "usable_ask_working_sha256": "8132ef6a66e899c02c000958c0681d35f8abbd9afaa9469f335ae666f08eaa26",
+        "crossed_open_quote_event_sha256": "c97b3aba461efad7939d822dbdb752d8129107c6b6d06b0ce9081220fa8c1027"
+      },
+      {
+        "symbol": "EURUSD",
+        "source_file_count": 104,
+        "bar_count": 12364,
+        "usable_bar_count": 12043,
+        "crossed_open_quote_count": 321,
+        "first_timestamp_utc": "2017-01-03T00:00:00Z",
+        "last_timestamp_utc": "2018-12-28T21:00:00Z",
+        "observed_timestamps_sha256": "1a753418ddb215034d03867d49565f921d2dfebfc7836df13e0a6fe11629aab3",
+        "usable_timestamps_sha256": "793354767e895107cd995d2c2fd5e38cf49708f0ec1ef36570eefcfc1406b9db",
+        "usable_bid_working_sha256": "d7561ab44a7e8cbeea0b7c061121bda30e49fb3b15e8896e009c0d9c7a1101e3",
+        "usable_ask_working_sha256": "9fd066a09b0cc5612025df57a5835e417305da9cbb2757f6995b9115dd3cab47",
+        "crossed_open_quote_event_sha256": "30a6887746fbc0baebd6ade0c418e54838468a79c51b854348543a429bb09ff0"
+      },
+      {
+        "symbol": "GBPJPY",
+        "source_file_count": 104,
+        "bar_count": 12364,
+        "usable_bar_count": 12299,
+        "crossed_open_quote_count": 65,
+        "first_timestamp_utc": "2017-01-03T00:00:00Z",
+        "last_timestamp_utc": "2018-12-28T21:00:00Z",
+        "observed_timestamps_sha256": "1a753418ddb215034d03867d49565f921d2dfebfc7836df13e0a6fe11629aab3",
+        "usable_timestamps_sha256": "e2e75c6e71e3a90e0c9a8933b368f68fb721d1a1dd2dfdf7debb4b503af195b2",
+        "usable_bid_working_sha256": "c4871511ff17289581472bd7ca2c6c0be8cd20f0ff8514b8637e499590434f1b",
+        "usable_ask_working_sha256": "d25f5796e4d204772a09cd8c7842c9984b52beb3707e83a6a5c5a270e6b5170e",
+        "crossed_open_quote_event_sha256": "282bdbec972e744bd15065f35530b17309ec0cdf3aff3bb6973c5a0cd6a8ed8d"
+      },
+      {
+        "symbol": "GBPUSD",
+        "source_file_count": 104,
+        "bar_count": 12363,
+        "usable_bar_count": 12184,
+        "crossed_open_quote_count": 179,
+        "first_timestamp_utc": "2017-01-03T00:00:00Z",
+        "last_timestamp_utc": "2018-12-28T21:00:00Z",
+        "observed_timestamps_sha256": "3962287c96131e0144b2ca7c9c38b64ba5e9ddf94947f1245c0528eeb4509168",
+        "usable_timestamps_sha256": "eec45a2168a4265b9944ba908b1034ec51c7db90922ef4b5d1c40a7c9caccf26",
+        "usable_bid_working_sha256": "43f1476d442a8f48995483e512d77c48e94ee2dd9f5ed79a731d867b1ae9420d",
+        "usable_ask_working_sha256": "8a9065e9947b78cf557ce5f6078ec5cefd31543cf6dc36a40cbeb33703d41a88",
+        "crossed_open_quote_event_sha256": "f3b475146b7d319fd2cdf3ee5d62b92525f1c30027a002c2939923c4e737e50d"
+      },
+      {
+        "symbol": "USDJPY",
+        "source_file_count": 104,
+        "bar_count": 12364,
+        "usable_bar_count": 12169,
+        "crossed_open_quote_count": 195,
+        "first_timestamp_utc": "2017-01-03T00:00:00Z",
+        "last_timestamp_utc": "2018-12-28T21:00:00Z",
+        "observed_timestamps_sha256": "1a753418ddb215034d03867d49565f921d2dfebfc7836df13e0a6fe11629aab3",
+        "usable_timestamps_sha256": "3f1bcbc9f6fcdf93491542051370a34fcdc01537a2771809cb1d83900aa50a25",
+        "usable_bid_working_sha256": "f94fc4679a18ba52c75c853be536ab0c49caeac8d9214f8230c633e193ee268d",
+        "usable_ask_working_sha256": "7ba284ab7726b64bc18e1299f9e9d824c295ce1acd085e7319c17ea0c6c1d586",
+        "crossed_open_quote_event_sha256": "2a63cd755d36dcbf1ac110d54f03bc58dc0155817ddec350b1b39ea450b8c843"
+      }
+    ]
+  },
+  "canonicalization_policy": {
+    "same_run_inventory_self_authorized": false,
+    "canonicalization_commit_separate_from_run_head": true,
+    "formal_phase9_provider_schedule_claimed": false,
+    "formal_phase9_authorization_effect": false,
+    "acquisition_authorized": false,
+    "count_only_authorized": false,
+    "full_quality_gate_passed": false,
+    "candidate_signal_counts_calculated": false,
+    "research_outcomes_calculated": false,
+    "outcome_fields": [],
+    "persistent_price_files": 0,
+    "formal_phase9_price_files_acquired": 0,
+    "forbidden_market_period_request_attempted": false
+  },
+  "remaining_formal_blockers": [
+    "INDEPENDENT_PROVIDER_SCHEDULE_NOT_FROZEN",
+    "ENERGY_METADATA_NOT_FROZEN",
+    "M15_NOT_ACQUIRED",
+    "XAUUSD_NOT_ACQUIRED",
+    "XAGUSD_NOT_ACQUIRED",
+    "BRENT_NOT_ACQUIRED",
+    "WTI_NOT_ACQUIRED",
+    "JFOREX_RUNTIME_AND_REMOTE_IDENTITY_LOCK_NOT_COMPLETE"
+  ]
+}

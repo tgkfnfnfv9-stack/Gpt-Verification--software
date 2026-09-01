@@ -55,3 +55,16 @@ retries only transient transport failures, at most four attempts with fixed
 1, 2 and 4 second waits. HTTP status, redirect, size, gzip, schema and all QC
 failures remain immediately fail-closed. The URL set, period, symbols,
 timeframe, provider contract and outcome prohibitions are unchanged.
+
+## Canonical exploratory inventory
+
+Run `33482595275` at head `b2eaf84e774f9ce1272344f71ac14afcb0f6849a`
+completed all workflow steps. Artifact `9790552032` was independently checked
+against its GitHub digest, exact two-file allowlist, payload-only manifest,
+contract, 832 source identities, per-symbol inventories and aggregate hashes.
+The exact price-free Artifact payload and its separate canonical allowlist are
+stored under `results/run-33482595275/`.
+
+This is canonical only for the exploratory FX8 H1 source/QC inventory. It is
+not an independent provider schedule, not Formal Phase 9 price custody, and
+does not authorize acquisition, Count-only, signals or outcomes.
