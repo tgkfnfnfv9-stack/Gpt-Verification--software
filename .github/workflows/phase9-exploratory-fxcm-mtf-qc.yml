@@ -1,0 +1,135 @@
+name: phase9-exploratory-fxcm-fx8-multitimeframe-acquisition-qc
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirmation:
+        description: 'Type RUN_EXPLORATORY_FXCM_FX8_MTF_2017_2018_QC_ONLY_V1'
+        required: true
+        type: string
+      usage_confirmation:
+        description: 'Type I_CONFIRM_PERSONAL_NONCOMMERCIAL_USE_AND_ACCEPT_FXCM_EULA'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: phase9-exploratory-fxcm-fx8-multitimeframe-acquisition-qc
+  cancel-in-progress: false
+
+jobs:
+  acquire-derive-qc:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 240
+    steps:
+      - name: Enforce exact manual dispatch boundary
+        shell: bash
+        env:
+          CONFIRMATION: ${{ inputs.confirmation }}
+          USAGE_CONFIRMATION: ${{ inputs.usage_confirmation }}
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF" = 'refs/heads/main'
+          test "$CONFIRMATION" = 'RUN_EXPLORATORY_FXCM_FX8_MTF_2017_2018_QC_ONLY_V1'
+          test "$USAGE_CONFIRMATION" = 'I_CONFIRM_PERSONAL_NONCOMMERCIAL_USE_AND_ACCEPT_FXCM_EULA'
+
+      - name: Checkout exact dispatch commit
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+          ref: ${{ github.sha }}
+
+      - name: Verify frozen anchors and all exploratory tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          formal='research/phase9-hypothesis-redesign-20260828'
+          track='research/phase9-exploratory-fxcm-20260901'
+          test "$(git hash-object "$formal/spec/candidate_registry.frozen.json")" = '8740f58efe48c40ba0664606194b18b40cf14c27'
+          test "$(git hash-object "$formal/spec/data_requirements.frozen.json")" = '7e6a476366140e07edac4e4316f8c08a6ab4ae92'
+          test "$(git hash-object "$formal/policy/preregistered_research_policy.json")" = '8483418a6a75f5a6ea7d6b54ca54beb68896855f'
+          test "$(git hash-object "$track/spec/fxcm_multitimeframe_data_requirements.frozen.json")" = '66dd82822cedeefee01c2b30ad6b26febf8e8c66'
+          test "$(git hash-object "$track/spec/fxcm_multitimeframe_execution_contract.frozen.json")" = '79c515d89ae2692430fdf1db62acc5b464e050ec'
+          test "$(git hash-object "$track/results/run-33482595275/artifact/EXPLORATORY_FXCM_INVENTORY.json")" = '2afcac6a01b6188ed9efc36060b1a8c6aa4ec633'
+          test "$(git hash-object "$track/runner/fxcm_multitimeframe_qc.py")" = 'ef5e5143ee0d7a389ab4ebb377d9ece2684d3d8b'
+          PYTHONDONTWRITEBYTECODE=1 python -m unittest discover -s "$track/tests" -p 'test_*.py'
+          git diff --exit-code
+
+      - name: Acquire direct m1 and H1, derive M15 H4 D1, and run price-blind QC
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          track='research/phase9-exploratory-fxcm-20260901'
+          work="$RUNNER_TEMP/phase9-exploratory-fxcm-mtf-work-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          report="$RUNNER_TEMP/phase9-exploratory-fxcm-mtf-report-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          echo "EXPLORATORY_FXCM_MTF_WORK=$work" >> "$GITHUB_ENV"
+          echo "EXPLORATORY_FXCM_MTF_REPORT=$report" >> "$GITHUB_ENV"
+          python "$track/runner/fxcm_multitimeframe_qc.py" \
+            --confirmation RUN_EXPLORATORY_FXCM_FX8_MTF_2017_2018_QC_ONLY_V1 \
+            --usage-confirmation I_CONFIRM_PERSONAL_NONCOMMERCIAL_USE_AND_ACCEPT_FXCM_EULA \
+            --contract "$track/spec/fxcm_multitimeframe_data_requirements.frozen.json" \
+            --execution-contract "$track/spec/fxcm_multitimeframe_execution_contract.frozen.json" \
+            --prior-h1-inventory "$track/results/run-33482595275/artifact/EXPLORATORY_FXCM_INVENTORY.json" \
+            --work-dir "$work" \
+            --report-dir "$report"
+          git diff --exit-code
+
+      - name: Destroy all working prices before upload
+        if: ${{ always() }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          work="${EXPLORATORY_FXCM_MTF_WORK:-}"
+          if [[ -n "$work" ]]; then
+            expected="$RUNNER_TEMP/phase9-exploratory-fxcm-mtf-work-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+            test "$work" = "$expected"
+            test ! -L "$work"
+            if [[ -d "$work" ]]; then
+              find "$work" -type f -exec shred -u {} + 2>/dev/null || true
+              rm -rf -- "$work"
+            fi
+            test ! -e "$work"
+          fi
+
+      - name: Verify price-free exact report after cleanup
+        shell: bash
+        run: |
+          set -euo pipefail
+          report="$EXPLORATORY_FXCM_MTF_REPORT"
+          test "$report" = "$RUNNER_TEMP/phase9-exploratory-fxcm-mtf-report-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          test ! -L "$report"
+          test "$(find "$report" -type f | wc -l)" -eq 2
+          test -f "$report/EXPLORATORY_FXCM_MTF_QC.json"
+          test -f "$report/artifact_manifest_sha256.txt"
+          test -z "$(find "$report" -type f \( -iname '*.csv' -o -iname '*.gz' -o -iname '*.zip' -o -iname '*.timestamps' -o -iname '*.timestamps.txt' \) -print -quit)"
+          python - "$report/EXPLORATORY_FXCM_MTF_QC.json" <<'PY'
+          import json
+          import sys
+          from pathlib import Path
+
+          value = json.loads(Path(sys.argv[1]).read_text(encoding="utf-8"))
+          assert value["source_download_count"] == 1664
+          assert value["final_series_count"] == 64
+          assert value["mtf_qc_execution_completed"] is True
+          assert value["provider_schedule_version_status"] == "UNPROVEN_NOT_EVALUATED"
+          assert value["formal_full_quality_gate_passed"] is False
+          assert value["count_only_authorized"] is False
+          assert value["candidate_signal_counts_calculated"] is False
+          assert value["research_outcomes_calculated"] is False
+          assert value["outcome_fields"] == []
+          PY
+          (cd "$report" && sha256sum -c artifact_manifest_sha256.txt)
+          git diff --exit-code
+
+      - name: Upload price-free MTF QC metadata
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: phase9-exploratory-fxcm-mtf-qc-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ env.EXPLORATORY_FXCM_MTF_REPORT }}/
+          if-no-files-found: error
+          retention-days: 14
+          include-hidden-files: false

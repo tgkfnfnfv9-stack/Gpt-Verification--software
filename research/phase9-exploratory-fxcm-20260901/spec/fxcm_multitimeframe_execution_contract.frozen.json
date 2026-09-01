@@ -1,0 +1,88 @@
+{
+  "schema_version": "phase9-exploratory-fxcm-mtf-execution-v1.0.0",
+  "status": "FROZEN_BEFORE_FIRST_MTF_PRICE_RUN",
+  "recorded_at_utc": "2026-09-01T00:00:00Z",
+  "track": "EXPLORATORY_FX8_MULTI_TIMEFRAME_NOT_FORMAL_PHASE9",
+  "requirements": {
+    "path": "research/phase9-exploratory-fxcm-20260901/spec/fxcm_multitimeframe_data_requirements.frozen.json",
+    "git_blob_sha": "66dd82822cedeefee01c2b30ad6b26febf8e8c66",
+    "sha256": "97f7dde21bde5027ce18aaf41f9af7d4d093586894b73d16ecbccf5af8697bfb"
+  },
+  "source_scope": {
+    "symbols": [
+      "AUDJPY",
+      "AUDUSD",
+      "EURGBP",
+      "EURJPY",
+      "EURUSD",
+      "GBPJPY",
+      "GBPUSD",
+      "USDJPY"
+    ],
+    "direct_periodicities": ["m1", "H1"],
+    "years": [2017, 2018],
+    "weeks": "INTEGER_1_THROUGH_52_NO_ZERO_PADDING_IN_URL",
+    "expected_source_object_count": 1664,
+    "redirects_allowed": false,
+    "transient_retry_attempts_max": 4,
+    "date_or_symbol_workflow_inputs_allowed": false
+  },
+  "prior_h1_identity": {
+    "exact_match_required": true,
+    "canonical_inventory_path": "research/phase9-exploratory-fxcm-20260901/results/run-33482595275/artifact/EXPLORATORY_FXCM_INVENTORY.json",
+    "canonical_inventory_sha256": "353e0c6a03ea52039b9d41e3fabd6f73a41fc752bfb817c49ad0c739cca4c835",
+    "canonical_source_download_count": 832,
+    "canonical_source_identity_aggregate_sha256": "2f2f0386adbfd98907827213799eef797fb14bfa7aaf578c3d8a4150780560b9",
+    "match_fields": ["symbol", "year", "week", "url", "bytes", "sha256"]
+  },
+  "bucket_population": {
+    "rule": "SOURCE_TOUCHED_FIXED_UTC_BUCKETS_ONLY",
+    "definition": "A candidate bucket exists when at least one usable source bar is observed in that fixed UTC bucket.",
+    "complete_rule": "The exact ordered UTC timestamp set must equal every required nominal slot in that bucket.",
+    "completely_empty_buckets": "RECORDED_ONLY_THROUGH_NOMINAL_GAP_INVENTORY_NOT_CLASSIFIED_AS_PROVIDER_MISSING",
+    "provider_schedule_claimed": false,
+    "forward_fill_allowed": false,
+    "price_interpolation_allowed": false
+  },
+  "h1_reconciliation": {
+    "canonical_h1": "DIRECT_H1",
+    "m1_derived_h1_role": "QC_ONLY_NEVER_SUBSTITUTE_OR_FILL",
+    "comparison": "EXACT_DECIMAL_NUMERIC_OHLC_EQUALITY_AT_MATCHED_TIMESTAMP",
+    "tolerance": "NONE",
+    "mismatch_action": "COUNT_AND_HASH_WITHOUT_PRICE_OR_TIMESTAMP_DISCLOSURE_AND_BLOCK_STRUCTURAL_QC_PASS",
+    "one_side_missing_action": "COUNT_WITHOUT_FILL",
+    "result_dependent_rule_change_allowed": false
+  },
+  "completion": {
+    "execution_complete_requires": [
+      "EXACT_1664_SOURCE_OBJECTS",
+      "EXACT_PRIOR_H1_SOURCE_IDENTITY_MATCH",
+      "EXACT_64_NONEMPTY_FINAL_BID_ASK_SERIES",
+      "BID_ASK_TIMESTAMP_EXACT_MATCH",
+      "ALL_DERIVED_OUTPUTS_USE_COMPLETE_FIXED_UTC_BUCKETS_ONLY",
+      "PRICE_FREE_EXACT_TWO_FILE_REPORT"
+    ],
+    "structural_qc_pass_requires_h1_ohlc_mismatch_count": 0,
+    "crossed_quotes": "QUARANTINE_BOTH_SIDES_AND_PROPAGATE_TO_INCOMPLETE_BUCKET_DROPS",
+    "count_only_automatic_continuation_allowed": false,
+    "return_or_outcome_automatic_continuation_allowed": false
+  },
+  "artifact": {
+    "exact_files": [
+      "EXPLORATORY_FXCM_MTF_QC.json",
+      "artifact_manifest_sha256.txt"
+    ],
+    "raw_or_derived_price_allowed": false,
+    "full_timestamp_sequence_allowed": false,
+    "anomaly_price_or_timestamp_detail_allowed": false,
+    "manifest_hashes_payload_only": true
+  },
+  "scientific_state": {
+    "formal_phase9_authorization_effect": false,
+    "acquisition_authorized": false,
+    "count_only_authorized": false,
+    "candidate_signal_counts_calculated": false,
+    "research_outcomes_calculated": false,
+    "outcome_fields": []
+  }
+}
