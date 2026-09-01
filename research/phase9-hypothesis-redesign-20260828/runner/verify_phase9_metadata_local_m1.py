@@ -253,7 +253,11 @@ def bytecode_provider_method_references(classes_dir: Path) -> list[str]:
             "com/dukascopy/api/IEngine",
             "com/dukascopy/api/IAccount",
         ):
-            if re.search(re.escape(forbidden) + r"(?=[.;/$])", result.stdout):
+            if re.search(
+                re.escape(forbidden) + r"(?=$|[.;/$])",
+                result.stdout,
+                flags=re.MULTILINE,
+            ):
                 raise GateError(f"Forbidden provider class reference: {forbidden}")
     return sorted(references)
 

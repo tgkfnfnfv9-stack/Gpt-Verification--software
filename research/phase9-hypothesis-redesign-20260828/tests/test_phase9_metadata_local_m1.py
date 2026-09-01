@@ -191,9 +191,18 @@ class MetadataLocalM1Tests(unittest.TestCase):
 
     def test_forbidden_class_match_uses_exact_class_boundary(self):
         forbidden = "com/dukascopy/api/IStrategy"
-        boundary = re.escape(forbidden) + r"(?=[.;/$])"
-        self.assertIsNone(re.search(boundary, "com/dukascopy/api/IStrategyExceptionHandler"))
-        self.assertIsNotNone(re.search(boundary, "com/dukascopy/api/IStrategy;"))
+        boundary = re.escape(forbidden) + r"(?=$|[.;/$])"
+        self.assertIsNone(re.search(
+            boundary,
+            "#8 = Utf8 com/dukascopy/api/IStrategyExceptionHandler\n",
+            flags=re.MULTILINE,
+        ))
+        for observed in (
+            "#7 = Class #8 // com/dukascopy/api/IStrategy\n",
+            "Lcom/dukascopy/api/IStrategy;",
+            "com/dukascopy/api/IStrategy$Nested",
+        ):
+            self.assertIsNotNone(re.search(boundary, observed, flags=re.MULTILINE))
 
     def test_workflow_is_targeted_local_synthetic_and_secret_free(self):
         workflow = (REPOSITORY_ROOT / ".github/workflows/phase9-metadata-local-m1-preflight.yml").read_text()
