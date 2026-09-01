@@ -1,0 +1,137 @@
+{
+  "schema_version": "phase9-exploratory-fxcm-ps204-count-only-run-audit-v1.0.0",
+  "audited_at_utc": "2026-09-01T22:41:12Z",
+  "repository": "tgkfnfnfv9-stack/Gpt-Verification--software",
+  "workflow": ".github/workflows/phase9-exploratory-fxcm-ps204-count-only.yml",
+  "run": {
+    "run_id": 33566130576,
+    "run_number": 1,
+    "run_attempt": 1,
+    "event": "workflow_dispatch",
+    "head_sha": "d6466dc500e4eb769fcf25fb61c4949edfb31b75",
+    "job_id": 100049609623,
+    "status": "completed",
+    "conclusion": "success",
+    "created_at": "2026-09-01T22:24:24Z",
+    "completed_at": "2026-09-01T22:36:51Z"
+  },
+  "duplicate_dispatch": {
+    "run_id": 33566132646,
+    "run_number": 2,
+    "conclusion": "cancelled",
+    "included_in_research_result": false
+  },
+  "execution_checks": {
+    "exact_manual_boundary_passed": true,
+    "frozen_anchors_and_67_tests_passed": true,
+    "canonical_ephemeral_mtf_reconstruction_passed": true,
+    "ps204_count_only_passed": true,
+    "working_prices_destroyed_before_upload": true,
+    "exact_price_free_artifact_check_passed": true,
+    "artifact_upload_passed": true,
+    "independent_report_validation_passed": true
+  },
+  "artifact": {
+    "artifact_id": 9823545166,
+    "name": "phase9-exploratory-fxcm-ps204-count-only-d6466dc500e4eb769fcf25fb61c4949edfb31b75-33566130576-1",
+    "size_in_bytes": 2496,
+    "created_at": "2026-09-01T22:36:49Z",
+    "expires_at": "2026-09-15T22:36:48Z",
+    "zip_sha256": "4ad6310f93e90959323026f6f4ec508d97b4861ecea59451c9f6aecc643b2bd6",
+    "exact_files": [
+      "EXPLORATORY_FXCM_PS204_COUNT_ONLY.json",
+      "artifact_manifest_sha256.txt"
+    ],
+    "result_size_in_bytes": 7675,
+    "result_sha256": "9cab9ed2a210a18255164d09ef75d3fbe2a572d0b0eb3cca88c8c9f2dc4d96c1",
+    "manifest_size_in_bytes": 105,
+    "manifest_sha256": "eeaa445222f4ffe926950b2728332cfca45a4970b1fe9039d6262a1ac2dd4d66",
+    "manifest_verified": true,
+    "raw_or_derived_price_files": 0,
+    "event_timestamp_files": 0
+  },
+  "anchors": {
+    "contract_sha256": "13921246d709a02d22a69c965c970ffe531ba145bf8db96edb0feb4db8eab58d",
+    "candidate_registry_sha256": "b9a78c539547bfb6d1b727cda5428764b4d849ea81ac20a236d273760d638115",
+    "canonical_mtf_report_sha256": "4d7f77caa5333e017742e01606aa869f3845aa4c4f206563e2fd59e02b1e1063",
+    "current_mtf_report_sha256": "9736cd25ad9af2083ffc54f559ff6b4e1721716e755afc483b51661881705e44",
+    "current_mtf_matches_canonical_data_identity": true
+  },
+  "candidate_result": {
+    "strategy_id": "STRAT-P9-PS-204",
+    "raw_signal_count": 769,
+    "overlap_deduplicated_signal_count": 768,
+    "primary_episode_count": 508,
+    "active_utc_date_count": 376,
+    "counts_by_year": {
+      "2017": 254,
+      "2018": 254
+    },
+    "counts_by_direction": {
+      "LONG": 243,
+      "SHORT": 265
+    },
+    "counts_by_instrument": {
+      "AUDJPY": 23,
+      "AUDUSD": 37,
+      "EURGBP": 139,
+      "EURJPY": 46,
+      "EURUSD": 68,
+      "GBPJPY": 61,
+      "GBPUSD": 82,
+      "USDJPY": 52
+    },
+    "counts_by_timeframe": {
+      "H1": 506,
+      "M15": 2
+    },
+    "timeframe_shares": {
+      "H1": 0.9960629921259843,
+      "M15": 0.003937007874015748
+    },
+    "instruments_with_at_least_30_episodes": 7,
+    "maximum_instrument": "EURGBP",
+    "maximum_instrument_share": 0.2736220472440945,
+    "primary_episode_gate_pass": true,
+    "active_date_gate_pass": true,
+    "instrument_breadth_pass": true,
+    "instrument_concentration_pass": false,
+    "timeframe_coverage_pass": false,
+    "exploratory_fx8_frequency_pass": false,
+    "failed_frozen_conditions": [
+      "SINGLE_INSTRUMENT_SHARE_EURGBP_0.273622_GT_0.25",
+      "M15_EPISODES_2_LT_75",
+      "M15_SHARE_0.003937_LT_0.20"
+    ]
+  },
+  "formal_scope": {
+    "eligible": false,
+    "reasons": [
+      "FX8_SUBSET_MISSING_REGISTERED_XAUUSD_AND_XAGUSD",
+      "ONLY_2017_2018_NOT_FULL_FORMAL_DISCOVERY",
+      "EXPLORATORY_M15_DERIVED_FROM_M1_NOT_FORMAL_DIRECT_M15"
+    ],
+    "formal_phase9_authorization_effect": false
+  },
+  "decision": {
+    "exploratory_decision": "EXPLORATORY_FX8_COUNT_FREQUENCY_FAIL_NO_RETURN",
+    "exploratory_fx8_frequency_pass_candidates": [],
+    "next_gate": "NO_EXPLORATORY_RETURN_GATE",
+    "interpretation": "EXPLORATORY_FX8_SUBSET_FREQUENCY_FAILURE_NOT_FORMAL_STRATEGY_REJECTION",
+    "result_dependent_threshold_relaxation_allowed": false,
+    "favorable_instrument_or_timeframe_selection_allowed": false
+  },
+  "prohibited_outputs": {
+    "return_calculated": false,
+    "return_sign_calculated": false,
+    "mfe_calculated": false,
+    "mae_calculated": false,
+    "edge_calculated": false,
+    "win_loss_calculated": false,
+    "research_outcomes_calculated": false,
+    "outcome_fields": []
+  },
+  "cleanup": {
+    "persistent_price_files_after_cleanup": 0
+  }
+}

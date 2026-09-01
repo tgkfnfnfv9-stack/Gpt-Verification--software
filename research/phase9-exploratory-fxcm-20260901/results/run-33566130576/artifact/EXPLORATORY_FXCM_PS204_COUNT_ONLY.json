@@ -1,0 +1,231 @@
+{
+  "candidate_registry_sha256": "b9a78c539547bfb6d1b727cda5428764b4d849ea81ac20a236d273760d638115",
+  "candidate_signal_counts_calculated": true,
+  "canonical_mtf_report_sha256": "4d7f77caa5333e017742e01606aa869f3845aa4c4f206563e2fd59e02b1e1063",
+  "contract_sha256": "13921246d709a02d22a69c965c970ffe531ba145bf8db96edb0feb4db8eab58d",
+  "current_mtf_matches_canonical_data_identity": true,
+  "current_mtf_report_sha256": "9736cd25ad9af2083ffc54f559ff6b4e1721716e755afc483b51661881705e44",
+  "dataset": {
+    "cross_instrument_synchronization_required": false,
+    "end_exclusive": "2018-12-31T00:00:00Z",
+    "price_or_event_timestamp_in_artifact": false,
+    "registered_missing_symbols": [
+      "XAUUSD",
+      "XAGUSD"
+    ],
+    "signal_feature_price": "FIELDWISE_ARITHMETIC_MID_OF_SYNCHRONIZED_BID_AND_ASK_OHLC",
+    "start_inclusive": "2017-01-01T00:00:00Z",
+    "symbols": [
+      "AUDJPY",
+      "AUDUSD",
+      "EURGBP",
+      "EURJPY",
+      "EURUSD",
+      "GBPJPY",
+      "GBPUSD",
+      "USDJPY"
+    ],
+    "timeframes_available": [
+      "M15",
+      "H1"
+    ]
+  },
+  "exploratory_count_only_executed": true,
+  "exploratory_fx8_frequency_pass_candidates": [],
+  "formal_count_only_authorized": false,
+  "formal_phase9_authorization_effect": false,
+  "next_gate": "NO_EXPLORATORY_RETURN_GATE",
+  "outcome_fields": [],
+  "persistent_price_files_after_cleanup": 0,
+  "prior_count_run_audit_sha256": "a721dd30416b1ab999bce02d83bd1ccf47b0bfddcd77005bf6b2c209b418128a",
+  "research_outcomes_calculated": false,
+  "result_dependent_rule_change": false,
+  "return_calculated": false,
+  "run_identity": {
+    "head_sha": "d6466dc500e4eb769fcf25fb61c4949edfb31b75",
+    "run_attempt": "1",
+    "run_id": "33566130576"
+  },
+  "schema_version": "phase9-exploratory-fxcm-ps204-count-only-result-v1.0.0",
+  "session_diagnostics": {
+    "AUDJPY": {
+      "H1": {
+        "atr_available_at_0600_date_count": 487,
+        "complete_pre_session_date_count": 493,
+        "confirmed_false_break_count": 29,
+        "range_eligible_date_count": 191,
+        "utc_dates_with_any_bar": 618
+      },
+      "M15": {
+        "atr_available_at_0600_date_count": 195,
+        "complete_pre_session_date_count": 206,
+        "confirmed_false_break_count": 0,
+        "range_eligible_date_count": 0,
+        "utc_dates_with_any_bar": 618
+      }
+    },
+    "AUDUSD": {
+      "H1": {
+        "atr_available_at_0600_date_count": 476,
+        "complete_pre_session_date_count": 481,
+        "confirmed_false_break_count": 46,
+        "range_eligible_date_count": 189,
+        "utc_dates_with_any_bar": 618
+      },
+      "M15": {
+        "atr_available_at_0600_date_count": 95,
+        "complete_pre_session_date_count": 97,
+        "confirmed_false_break_count": 0,
+        "range_eligible_date_count": 0,
+        "utc_dates_with_any_bar": 618
+      }
+    },
+    "EURGBP": {
+      "H1": {
+        "atr_available_at_0600_date_count": 502,
+        "complete_pre_session_date_count": 504,
+        "confirmed_false_break_count": 185,
+        "range_eligible_date_count": 431,
+        "utc_dates_with_any_bar": 618
+      },
+      "M15": {
+        "atr_available_at_0600_date_count": 239,
+        "complete_pre_session_date_count": 243,
+        "confirmed_false_break_count": 0,
+        "range_eligible_date_count": 0,
+        "utc_dates_with_any_bar": 618
+      }
+    },
+    "EURJPY": {
+      "H1": {
+        "atr_available_at_0600_date_count": 494,
+        "complete_pre_session_date_count": 502,
+        "confirmed_false_break_count": 70,
+        "range_eligible_date_count": 297,
+        "utc_dates_with_any_bar": 618
+      },
+      "M15": {
+        "atr_available_at_0600_date_count": 191,
+        "complete_pre_session_date_count": 199,
+        "confirmed_false_break_count": 0,
+        "range_eligible_date_count": 0,
+        "utc_dates_with_any_bar": 618
+      }
+    },
+    "EURUSD": {
+      "H1": {
+        "atr_available_at_0600_date_count": 443,
+        "complete_pre_session_date_count": 454,
+        "confirmed_false_break_count": 110,
+        "range_eligible_date_count": 327,
+        "utc_dates_with_any_bar": 618
+      },
+      "M15": {
+        "atr_available_at_0600_date_count": 39,
+        "complete_pre_session_date_count": 44,
+        "confirmed_false_break_count": 0,
+        "range_eligible_date_count": 0,
+        "utc_dates_with_any_bar": 618
+      }
+    },
+    "GBPJPY": {
+      "H1": {
+        "atr_available_at_0600_date_count": 497,
+        "complete_pre_session_date_count": 499,
+        "confirmed_false_break_count": 108,
+        "range_eligible_date_count": 334,
+        "utc_dates_with_any_bar": 618
+      },
+      "M15": {
+        "atr_available_at_0600_date_count": 297,
+        "complete_pre_session_date_count": 299,
+        "confirmed_false_break_count": 0,
+        "range_eligible_date_count": 0,
+        "utc_dates_with_any_bar": 618
+      }
+    },
+    "GBPUSD": {
+      "H1": {
+        "atr_available_at_0600_date_count": 486,
+        "complete_pre_session_date_count": 495,
+        "confirmed_false_break_count": 145,
+        "range_eligible_date_count": 378,
+        "utc_dates_with_any_bar": 618
+      },
+      "M15": {
+        "atr_available_at_0600_date_count": 104,
+        "complete_pre_session_date_count": 115,
+        "confirmed_false_break_count": 2,
+        "range_eligible_date_count": 2,
+        "utc_dates_with_any_bar": 618
+      }
+    },
+    "USDJPY": {
+      "H1": {
+        "atr_available_at_0600_date_count": 455,
+        "complete_pre_session_date_count": 468,
+        "confirmed_false_break_count": 74,
+        "range_eligible_date_count": 263,
+        "utc_dates_with_any_bar": 618
+      },
+      "M15": {
+        "atr_available_at_0600_date_count": 58,
+        "complete_pre_session_date_count": 63,
+        "confirmed_false_break_count": 0,
+        "range_eligible_date_count": 0,
+        "utc_dates_with_any_bar": 618
+      }
+    }
+  },
+  "status": "EXPLORATORY_FX8_PS204_COUNT_ONLY_COMPLETE_FORMAL_SCOPE_INELIGIBLE",
+  "strategy_result": {
+    "active_utc_date_count": 376,
+    "counts_by_direction": {
+      "LONG": 243,
+      "SHORT": 265
+    },
+    "counts_by_instrument": {
+      "AUDJPY": 23,
+      "AUDUSD": 37,
+      "EURGBP": 139,
+      "EURJPY": 46,
+      "EURUSD": 68,
+      "GBPJPY": 61,
+      "GBPUSD": 82,
+      "USDJPY": 52
+    },
+    "counts_by_timeframe": {
+      "H1": 506,
+      "M15": 2
+    },
+    "counts_by_year": {
+      "2017": 254,
+      "2018": 254
+    },
+    "deduplicated_signal_identity_sha256": "b37309882e35acd105ee9fe1389ec993695c98e09f49c92f14bcccfb2bfe6e0b",
+    "exploratory_decision": "EXPLORATORY_FX8_COUNT_FREQUENCY_FAIL_NO_RETURN",
+    "exploratory_fx8_frequency_pass": false,
+    "formal_control_assignment_completed": false,
+    "formal_count_only_gate_passed": false,
+    "formal_profile": "BROAD_MULTI_ASSET_2TF",
+    "formal_scope_ineligible_reasons": [
+      "FX8_SUBSET_MISSING_REGISTERED_XAUUSD_AND_XAGUSD",
+      "ONLY_2017_2018_NOT_FULL_FORMAL_DISCOVERY",
+      "EXPLORATORY_M15_DERIVED_FROM_M1_NOT_FORMAL_DIRECT_M15"
+    ],
+    "fx8_instrument_breadth_pass": true,
+    "fx8_instrument_concentration_pass": false,
+    "fx8_timeframe_coverage_pass": false,
+    "overlap_deduplicated_signal_count": 768,
+    "primary_episode_count": 508,
+    "primary_episode_identity_sha256": "c23b7d21f5696d2ab36a97493dc44ca4d2fd9d618bc4409668fa9f5e55dad7a7",
+    "raw_signal_count": 769,
+    "raw_signal_identity_sha256": "d8eb9b4f9e3abe52b810eabc436b87c17859c8174f954906fc5ac2913f559028",
+    "strategy_id": "STRAT-P9-PS-204",
+    "timeframe_shares": {
+      "H1": 0.9960629921259843,
+      "M15": 0.003937007874015748
+    }
+  },
+  "track": "EXPLORATORY_FX8_PS204_SUBSET_NOT_FORMAL_PHASE9"
+}
