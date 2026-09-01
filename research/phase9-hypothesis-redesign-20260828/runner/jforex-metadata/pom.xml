@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.phase9</groupId>
+  <artifactId>phase9-jforex-metadata-probe</artifactId>
+  <version>1.0.0</version>
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.build.outputTimestamp>2026-09-01T00:00:00Z</project.build.outputTimestamp>
+    <maven.compiler.release>8</maven.compiler.release>
+    <jforex.client.version>3.6.51</jforex.client.version>
+    <jforex.api.version>2.13.99</jforex.api.version>
+  </properties>
+  <repositories>
+    <repository>
+      <id>dukascopy-public</id>
+      <url>https://www.dukascopy.com/client/jforexlib/publicrepo/</url>
+      <releases><enabled>true</enabled><updatePolicy>never</updatePolicy></releases>
+      <snapshots><enabled>false</enabled></snapshots>
+    </repository>
+  </repositories>
+  <dependencies>
+    <dependency>
+      <groupId>com.dukascopy.dds2</groupId>
+      <artifactId>DDS2-jClient-JForex</artifactId>
+      <version>${jforex.client.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>com.dukascopy.api</groupId>
+          <artifactId>JForex-API</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>com.dukascopy.api</groupId>
+      <artifactId>JForex-API</artifactId>
+      <version>${jforex.api.version}</version>
+    </dependency>
+  </dependencies>
+</project>

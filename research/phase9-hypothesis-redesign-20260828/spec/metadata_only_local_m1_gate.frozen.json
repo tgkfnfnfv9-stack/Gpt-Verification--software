@@ -1,0 +1,91 @@
+{
+  "schema_version": "phase9-metadata-local-m1-gate-v1.0",
+  "status": "LOCAL_SYNTHETIC_CONTROLS_FROZEN_REMOTE_EXECUTION_BLOCKED",
+  "recorded_at_utc": "2026-09-01T00:00:00Z",
+  "authorization": {
+    "local_synthetic_preflight_authorized": true,
+    "external_jnlp_observation_authorized": false,
+    "connection_dispatch_authorized": false,
+    "demo_credentials_may_be_configured": false,
+    "provider_schedule_inventory_acquired": false,
+    "provider_schedule_allowlist_frozen": false,
+    "acquisition_authorized": false,
+    "count_only_authorized": false,
+    "outcome_access_authorized": false
+  },
+  "module": {
+    "path": "runner/jforex-metadata",
+    "artifact_id": "phase9-jforex-metadata-probe",
+    "physically_excludes": "runner/jforex/src/main/java/org/phase9/Phase9JForexAcquirer.java",
+    "owned_class_exact_set": [
+      "org/phase9/metadata/Phase9MetadataClient.class",
+      "org/phase9/metadata/Phase9OfflineDomainPlugin.class"
+    ],
+    "authorized_executable_dispatch_present": false,
+    "only_future_provider_data_method": "IContext.getDataService().getOfflineTimeDomains(long,long,Instrument)",
+    "compiled_against_frozen_synthetic_api_fixture": true,
+    "real_jforex_api_2_13_99_compatibility_verified": false,
+    "real_jforex_runtime_methodrefs_verified": false,
+    "java_path_toctou_resistant_connection_custody_verified": false,
+    "raw_observation_output": "OFFLINE_DOMAINS_RAW.tsv",
+    "canonical_timestamp_files_created": false
+  },
+  "owned_source_prohibitions": [
+    "ITesterClient",
+    "IStrategy",
+    "IHistory",
+    "ITick",
+    "IBar",
+    "IEngine",
+    "IAccount",
+    "getAvailableInstruments(",
+    "setSubscribedInstruments(",
+    "setDataInterval(",
+    "downloadData(",
+    "startStrategy(",
+    "onTick(",
+    "onBar(",
+    "getAccount(",
+    "getEngine(",
+    "createReport("
+  ],
+  "synthetic_network_envelope": {
+    "network_namespace": "SEPARATE_CLIENT_AND_SERVER_NAMESPACES_EXACT_VETH_HOST_ROUTE_NO_DEFAULT_ROUTE",
+    "allowed_destination_ipv4": "198.18.0.1",
+    "allowed_destination_tcp_port": 38443,
+    "dns_permitted": false,
+    "udp_permitted": false,
+    "nonthread_child_process_permitted": false,
+    "default_deny_other_destinations": true,
+    "real_provider_destination_allowlist": [],
+    "real_provider_egress_authorized": false
+  },
+  "private_writable_path_custody": {
+    "root_mode": "0700",
+    "file_mode": "0600",
+    "exact_directories": [
+      "cache",
+      "evidence",
+      "home",
+      "tmp"
+    ],
+    "symlink_hardlink_fifo_socket_device_rejected": true,
+    "outside_root_write_permitted": false,
+    "cleanup_is_logical_removal_not_secure_erase": true
+  },
+  "remote_jnlp_observation_amendment": {
+    "path": "JFOREX_REMOTE_JNLP_OBSERVATION_AMENDMENT.md",
+    "markdown_sha256": "5a8de4dda50bb81246c38765720acf5fc38eeb653073794c542fae4cf49c49cf",
+    "frozen_json_path": "spec/remote_jnlp_observation_amendment.frozen.json",
+    "frozen_json_sha256": "26ddd52dc4bde39b9822a159c85a303477103f388703b99f338abf5634851631",
+    "status": "FROZEN_PROPOSAL_USER_APPROVAL_REQUIRED",
+    "authorization_effect": "NONE"
+  },
+  "scientific_state": {
+    "phase9_price_files": 0,
+    "provider_schedule_files": 0,
+    "actual_market_data_full_quality_gate_passed": false,
+    "research_outcomes_calculated": false,
+    "outcome_fields": []
+  }
+}

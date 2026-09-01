@@ -89,6 +89,15 @@ class ProviderScheduleReadinessTests(unittest.TestCase):
                         readiness.blocked_audit(root)
                     target.unlink()
 
+    def test_dangling_canonical_symlink_stops_blocked_preflight(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            self.copy_blocked_inputs(root)
+            target = root / "data_manifest/provider_schedule_source.frozen.json"
+            target.symlink_to(root / "missing-provider-schedule-source.json")
+            with self.assertRaises(readiness.ReadinessError):
+                readiness.blocked_audit(root)
+
     def test_state_authorization_or_readiness_mutation_is_rejected(self):
         mutations = (
             ("provider_schedule_inventory_acquired", True),
@@ -158,6 +167,8 @@ class ProviderScheduleReadinessTests(unittest.TestCase):
             "spec/candidate_registry.frozen.json": "8740f58efe48c40ba0664606194b18b40cf14c27",
             "spec/data_requirements.frozen.json": "7e6a476366140e07edac4e4316f8c08a6ab4ae92",
             "policy/preregistered_research_policy.json": "8483418a6a75f5a6ea7d6b54ca54beb68896855f",
+            "spec/provider_schedule_contract.frozen.json": "52513a812d1ea6e8343bc43d80c4f4afb97808c4",
+            "spec/metadata_only_jforex_schedule_gate.frozen.json": "a567e20c039e805d938139d542c147251975c130",
         }
         for relative, blob in expected.items():
             actual = subprocess.check_output(["git", "hash-object", ROOT / relative], text=True).strip()

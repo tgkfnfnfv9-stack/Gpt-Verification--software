@@ -1,6 +1,6 @@
 # Phase 9 Hypothesis Redesign
 
-更新日: 2026-08-31
+更新日: 2026-09-01
 状態: `FROZEN_PREREGISTERED_ACQUISITION_BLOCKED`
 
 最初に [PHASE9_OPERATIONS_GUIDE.md](./PHASE9_OPERATIONS_GUIDE.md) を読みます。全手順、仮説一覧、GitHub取得方法、サブエージェント分担、Gate、禁止事項、更新・引き継ぎ方法の運用正本です。
@@ -29,6 +29,8 @@
 公開endpoint取得は`PROVIDER_ACQUISITION_BLOCKER.md`の3件のP0により廃止しました。代わりに`JFOREX_SOURCE_CHANNEL_AMENDMENT.md`で、公式認証JForex Tester API、4つの固定取得run、H1の一律2019年8月除外を結果未閲覧で凍結しています。Java class-origin guard preflight Run `33336895081`は19/19 tests、online 1回＋offline 2回のJAR SHA一致、930-file inventory一致、外部probeのexit 86拒否でSuccessです。実証範囲はpre-connect non-bootstrap self/adversarial testだけで、実際のJForex接続、JNI/native、child process、OS-level egress、full QCは未検証です。これは監査証跡であり取得許可ではありません。市場price fileはまだ0件です。
 
 Provider schedule source P0に対して、`JFOREX_METADATA_ONLY_CONNECTION_AMENDMENT.md`と`spec/metadata_only_jforex_schedule_gate.frozen.json`は、将来のoffline-domain metadata観測境界を2026-09-01に別途凍結しました。現workflowはno-secret/no-JNLP/no-JForex/no-networkの静的preflightだけで、connection dispatchは未認可です。公式APIのweekend intervalだけではholiday、maintenance、Energy session、schedule versionの完全性を証明できないため、24-file inventoryとallowlistは未作成、取得認可はfalseのままです。
+
+Local M1は`runner/jforex-metadata`、`spec/metadata_owned_method_allowlist.frozen.json`、uplinkなしの独立client/server namespace＋exact `/32` host route＋Landlock/seccomp、専用private custodyとして実装しました。専用moduleは既存price acquirerを物理的に含まず、凍結local synthetic API fixtureでowned bytecodeのDukascopy method referenceをexact-matchします。これは実JForex API 2.13.99 JAR/runtime互換性の証明ではなく、その検証は残Blockerです。`JFOREX_REMOTE_JNLP_OBSERVATION_AMENDMENT.md`は別承認を求めるproposalとして凍結しただけで、remote request workflowは未実装、`external_jnlp_observation_authorized=false`です。価格・schedule inventory・Outcomeは引き続き0/未計算です。
 
 `S1B_RUNTIME_QC_PREFLIGHT.md`のGate AはRun #2で完了しました。GitHub checkoutの一時token以外にDukascopy・市場資格情報は参照せず、116-JAR manifest、local synthetic JNLP parser、synthetic Full-QC primitivesを検査済みです。Gate Bは`data_manifest/native_entry_allowlist.run33376110507.json`へ別commitで凍結し、`runner/verify_phase9_gate_b.py`が保存済みRun 2 evidenceとの完全一致をfail-closedで検証します。Shaded runnerは未検査で、Gate B完了も実取得許可にはなりません。
 

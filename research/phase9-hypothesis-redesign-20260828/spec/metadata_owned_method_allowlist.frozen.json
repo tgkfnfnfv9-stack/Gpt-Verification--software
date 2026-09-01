@@ -1,0 +1,47 @@
+{
+  "schema_version": "phase9-metadata-owned-method-allowlist-v1.0",
+  "status": "EXACT_SYNTHETIC_ABI_OWNED_BYTECODE_PROVIDER_METHOD_ALLOWLIST_FROZEN_REAL_JFOREX_UNVERIFIED",
+  "recorded_at_utc": "2026-09-01T00:00:00Z",
+  "scope": "SYNTHETIC_FIXTURE_COMPILED_DUKASCOPY_METHODREF_AND_INTERFACEMETHODREF_CONSTANT_POOL_ENTRIES_IN_EXACT_OWNED_CLASS_SET",
+  "module_pom_path": "runner/jforex-metadata/pom.xml",
+  "module_pom_sha256": "352db8a1aea2e944e086970ca061b273c7f5f64d22d03121151651ed235402d5",
+  "owned_source_paths": [
+    "runner/jforex-metadata/src/main/java/org/phase9/metadata/Phase9MetadataClient.java",
+    "runner/jforex-metadata/src/main/java/org/phase9/metadata/Phase9OfflineDomainPlugin.java"
+  ],
+  "owned_source_sha256": {
+    "runner/jforex-metadata/src/main/java/org/phase9/metadata/Phase9MetadataClient.java": "6d680fc21a857eb83c04a84876af31dd4523b14d6b01d1b055fec337279dfe80",
+    "runner/jforex-metadata/src/main/java/org/phase9/metadata/Phase9OfflineDomainPlugin.java": "6804bb5c06c7b4bb4c41b617150cf8088fac812d4408642fd9adf43ce12ab094"
+  },
+  "synthetic_api_fixture_sha256": {
+    "tests/fixtures/metadata-jforex-api/com/dukascopy/api/IContext.java": "052cac5092c923b055e113edd1fb75bb711c857856e85d6e0b1ae7ee06869c77",
+    "tests/fixtures/metadata-jforex-api/com/dukascopy/api/IDataService.java": "ef8575c03d6a74d8919b3faab72e99f01c08158eeb7c49d78ae4a69e1da09f8f",
+    "tests/fixtures/metadata-jforex-api/com/dukascopy/api/IStrategyExceptionHandler.java": "0c99c5cedc8b902ac744dc8fa1d2cc5837c803b95da9ae5758dd166fa1e4d1f9",
+    "tests/fixtures/metadata-jforex-api/com/dukascopy/api/ITimeDomain.java": "2c22483252d798c034580547fa535f78c23adddb2ab6ef231294e9810ebe11b2",
+    "tests/fixtures/metadata-jforex-api/com/dukascopy/api/Instrument.java": "a33c4165bbb03ffee51563a5d430fa5e1e5696e31168845a75bf5c4e0fffcf8e",
+    "tests/fixtures/metadata-jforex-api/com/dukascopy/api/JFException.java": "8bc0d08fbd7949415bdbd875ddb457554ce9ca1e6c7d44bccc016fb926799080",
+    "tests/fixtures/metadata-jforex-api/com/dukascopy/api/plugins/IPluginContext.java": "6cecb01dfbb521732fbb481b18928c87b6046ce62a61eb7ee24e3d12317b65d5",
+    "tests/fixtures/metadata-jforex-api/com/dukascopy/api/plugins/Plugin.java": "67c21c3a40de4999755beb930323739bc59aab43c1e85e5940f6cc415c8e88f8",
+    "tests/fixtures/metadata-jforex-api/com/dukascopy/api/system/IClient.java": "f1186721a66d2388323dd4d6b069e56ed9edc5d4966996122715746480c89357"
+  },
+  "compiled_against_real_jforex_api_2_13_99_jar": false,
+  "real_jforex_api_2_13_99_compatibility_verified": false,
+  "real_runtime_methodrefs_verified": false,
+  "dukascopy_method_references": [
+    "com/dukascopy/api/IDataService.getOfflineTimeDomains:(JJLcom/dukascopy/api/Instrument;)Ljava/util/Set;",
+    "com/dukascopy/api/ITimeDomain.getEnd:()J",
+    "com/dukascopy/api/ITimeDomain.getStart:()J",
+    "com/dukascopy/api/Instrument.fromString:(Ljava/lang/String;)Lcom/dukascopy/api/Instrument;",
+    "com/dukascopy/api/JFException.<init>:(Ljava/lang/String;Ljava/lang/Throwable;)V",
+    "com/dukascopy/api/IContext.getDataService:()Lcom/dukascopy/api/IDataService;",
+    "com/dukascopy/api/plugins/IPluginContext.stop:()V",
+    "com/dukascopy/api/plugins/Plugin.<init>:()V",
+    "com/dukascopy/api/system/IClient.connect:(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V",
+    "com/dukascopy/api/system/IClient.isConnected:()Z",
+    "com/dukascopy/api/system/IClient.runPlugin:(Lcom/dukascopy/api/plugins/Plugin;Lcom/dukascopy/api/IStrategyExceptionHandler;)Ljava/util/UUID;",
+    "com/dukascopy/api/system/IClient.setCacheDirectory:(Ljava/io/File;)V"
+  ],
+  "exact_match_required": true,
+  "same_run_discovery_may_expand_allowlist": false,
+  "authorization_effect": "NONE"
+}

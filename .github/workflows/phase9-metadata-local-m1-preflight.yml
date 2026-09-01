@@ -1,0 +1,109 @@
+name: phase9-metadata-local-m1-preflight
+
+on:
+  push:
+    paths:
+      - '.github/workflows/phase9-metadata-local-m1-preflight.yml'
+      - 'research/phase9-hypothesis-redesign-20260828/runner/jforex-metadata/**'
+      - 'research/phase9-hypothesis-redesign-20260828/runner/phase9_metadata_custody.py'
+      - 'research/phase9-hypothesis-redesign-20260828/runner/phase9_metadata_net_guard.c'
+      - 'research/phase9-hypothesis-redesign-20260828/runner/run_phase9_metadata_network_synthetic.sh'
+      - 'research/phase9-hypothesis-redesign-20260828/runner/verify_phase9_metadata_local_m1.py'
+      - 'research/phase9-hypothesis-redesign-20260828/spec/metadata_only_local_m1_gate.frozen.json'
+      - 'research/phase9-hypothesis-redesign-20260828/spec/metadata_owned_method_allowlist.frozen.json'
+      - 'research/phase9-hypothesis-redesign-20260828/spec/remote_jnlp_observation_amendment.frozen.json'
+      - 'research/phase9-hypothesis-redesign-20260828/JFOREX_REMOTE_JNLP_OBSERVATION_AMENDMENT.md'
+      - 'research/phase9-hypothesis-redesign-20260828/tests/fixtures/metadata-jforex-api/**'
+      - 'research/phase9-hypothesis-redesign-20260828/tests/fixtures/MetadataNetworkTarget.c'
+      - 'research/phase9-hypothesis-redesign-20260828/tests/test_phase9_metadata_local_m1.py'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: phase9-metadata-local-m1-preflight
+  cancel-in-progress: false
+
+jobs:
+  local-synthetic-m1:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Checkout exact commit
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+          ref: ${{ github.sha }}
+
+      - name: Run targeted no-provider tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          sudo unshare --net --mount-proc env PYTHONDONTWRITEBYTECODE=1 \
+            python -m unittest \
+            research/phase9-hypothesis-redesign-20260828/tests/test_phase9_metadata_local_m1.py
+
+      - name: Compile owned module against local API stubs
+        shell: bash
+        run: |
+          set -euo pipefail
+          root='research/phase9-hypothesis-redesign-20260828'
+          classes="$RUNNER_TEMP/phase9-metadata-classes"
+          mkdir -m 0700 "$classes"
+          mapfile -t sources < <(find \
+            "$root/tests/fixtures/metadata-jforex-api" \
+            "$root/runner/jforex-metadata/src/main/java" \
+            -type f -name '*.java' -print | LC_ALL=C sort)
+          javac --release 8 -d "$classes" "${sources[@]}"
+          python "$root/runner/verify_phase9_metadata_local_m1.py" \
+            --classes-dir "$classes" \
+            --output "$RUNNER_TEMP/phase9-metadata-local-m1/METADATA_LOCAL_M1_AUDIT.json"
+
+      - name: Exercise exact synthetic destination envelope
+        shell: bash
+        run: |
+          set -euo pipefail
+          root='research/phase9-hypothesis-redesign-20260828'
+          upload="$RUNNER_TEMP/phase9-metadata-local-m1"
+          guard="$RUNNER_TEMP/phase9-metadata-net-guard"
+          target="$RUNNER_TEMP/phase9-metadata-net-target"
+          cc -std=c11 -O2 -Wall -Wextra -Werror \
+            "$root/runner/phase9_metadata_net_guard.c" -o "$guard"
+          cc -static -std=c11 -O2 -Wall -Wextra -Werror \
+            "$root/tests/fixtures/MetadataNetworkTarget.c" -o "$target"
+          chmod 0755 "$guard" "$target"
+          sudo "$root/runner/run_phase9_metadata_network_synthetic.sh" \
+            "$guard" "$target" "$upload"
+          sudo rm "$upload/server.ready"
+          sudo chown -R "$(id -u):$(id -g)" "$upload"
+          test "$(find "$upload" -type f -links +1 -print -quit)" = ''
+
+      - name: Seal exact evidence-only Artifact
+        shell: bash
+        run: |
+          set -euo pipefail
+          upload="$RUNNER_TEMP/phase9-metadata-local-m1"
+          expected=$(printf '%s\n' \
+            METADATA_LOCAL_M1_AUDIT.json \
+            network_guard.txt \
+            network_interfaces.txt \
+            network_routes.txt | LC_ALL=C sort)
+          actual=$(find "$upload" -mindepth 1 -maxdepth 1 -type f -printf '%f\n' | LC_ALL=C sort)
+          test "$actual" = "$expected"
+          test "$(find "$upload" -mindepth 1 -maxdepth 1 ! -type f -print -quit)" = ''
+          test -z "$(find "$upload" -type f \( -iname '*.csv' -o -iname '*.jar' -o -iname '*.jnlp' -o -iname '*.timestamps' \) -print -quit)"
+          (cd "$upload" && sha256sum $expected) > "$upload/artifact_manifest_sha256.txt"
+          chmod 0600 "$upload"/*
+          git diff --exit-code
+
+      - name: Upload exact local synthetic metadata
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: phase9-metadata-local-m1-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/phase9-metadata-local-m1/
+          if-no-files-found: error
+          retention-days: 14
+          include-hidden-files: false

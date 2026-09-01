@@ -4,7 +4,9 @@
 対象Repository: `tgkfnfnfv9-stack/Gpt-Verification--software`
 対象Branch: `main`
 S1B Run #2 head commit: `951c38aaa875180fa7dbbe498866a4e3ece50e9c`
-現在status: `S1B_GATE_A_PASS_GATE_B_FROZEN_ACQUISITION_BLOCKED`
+現在status: `SUPERSEDED_FOR_EXECUTION; PROVIDER_SCHEDULE_SOURCE_P0_BLOCKED; ACQUISITION_BLOCKED`
+
+> 2026-09-01 critical amendment: この文書の後半にはprovider schedule Gate導入前の旧実行順が残っています。`PHASE9_OPERATIONS_GUIDE.md`、`SESSION_STATE.json`、`NEXT_SESSION_HANDOFF.md`を正本とし、本書からS1B後の取得・Count-only・Returnへ進んではいけません。authoritative/versioned provider schedule、remote JNLP/runtime lock、SDK price/cache isolation、Energy metadata、別取得認可が完了するまでSecrets、JNLP、JForex、availability、schedule query、価格取得は禁止です。
 
 > 2026-08-30 amendment: 公開endpointと`dukascopy-go v0.2.0`の実行経路は廃止しました。この文書の旧版にあった同toolのコマンドや実行指示は有効ではありません。理由は`PROVIDER_ACQUISITION_BLOCKER.md`、代替正本は`JFOREX_SOURCE_CHANNEL_AMENDMENT.md`です。
 

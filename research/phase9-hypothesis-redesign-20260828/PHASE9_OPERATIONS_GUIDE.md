@@ -241,7 +241,7 @@ Gate B監査正本は`results/gate-b-native-allowlist/GATE_B_AUDIT.json`です�
 
 workflowはprice、return、edgeの実行ボタンを自動的に続けません。取得成功後も`full_quality_gate_passed=false`のまま停止し、calendar、H4/D1 bucket、Energy rollを別工程で監査します。
 
-凍結JNLPはdemo serviceです。Repository secretsにはJForex demo accountの認証情報だけを登録し、live accountの認証情報を使いません。ただし2026-09-01時点では`JFOREX_METADATA_ONLY_CONNECTION_AMENDMENT.md`を別途凍結しただけで、remote JNLP/runtime closure、network destination、専用Plugin bytecode、SDK内部price受信・cache非露出の証明が未完了です。したがってSecrets設定と接続dispatchはまだ禁止です。現在のmetadata-only preflightはno-secret/no-JNLP/no-JForexで契約だけを検証し、取得認可効果を持ちません。単一の`tick_volume`はBID bar volumeをcanonicalとし、ASK volumeは不一致件数のQCだけに使います。
+凍結JNLPはdemo serviceです。Repository secretsにはJForex demo accountの認証情報だけを登録し、live accountの認証情報を使いません。ただし2026-09-01時点ではlocal/synthetic専用Plugin module、owned-bytecode exact allowlist、synthetic exact-destination network namespace、private custodyまでを実装しただけで、remote JNLP/runtime closure、実network destination、SDK内部price受信・cache非露出の証明は未完了です。`JFOREX_REMOTE_JNLP_OBSERVATION_AMENDMENT.md`も別ユーザー承認待ちのproposalであり、remote workflowは存在しません。したがってSecrets設定、remote request、接続dispatchはまだ禁止です。現在のmetadata-only preflightはno-secret/no-JNLP/no-JForexでlocal/synthetic controlsだけを検証し、取得認可効果を持ちません。単一の`tick_volume`はBID bar volumeをcanonicalとし、ASK volumeは不一致件数のQCだけに使います。
 
 ### 12銘柄
 

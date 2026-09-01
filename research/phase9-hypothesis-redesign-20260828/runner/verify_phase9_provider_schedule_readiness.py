@@ -57,7 +57,7 @@ def blocked_audit(root: Path = ROOT) -> dict:
         "outcome_fields": [],
     }:
         raise ReadinessError("Provider schedule contract authorization state changed")
-    if source.exists() or inventory.exists() or allowlist.exists():
+    if any(os.path.lexists(path) for path in (source, inventory, allowlist)):
         raise ReadinessError("Blocked-state preflight cannot accept source, inventory, or allowlist bytes")
 
     phase9 = state.get("phase9", {})

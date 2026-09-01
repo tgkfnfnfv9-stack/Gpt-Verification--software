@@ -25,6 +25,10 @@ GitHub Repository tgkfnfnfv9-stack/Gpt-Verification--software のPhase 9自動�
 16. research/phase9-hypothesis-redesign-20260828/runner/phase9_actual_full_qc.py
 17. research/phase9-hypothesis-redesign-20260828/spec/provider_schedule_contract.frozen.json
 18. research/phase9-hypothesis-redesign-20260828/spec/metadata_only_jforex_schedule_gate.frozen.json
+19. research/phase9-hypothesis-redesign-20260828/spec/metadata_only_local_m1_gate.frozen.json
+20. research/phase9-hypothesis-redesign-20260828/spec/metadata_owned_method_allowlist.frozen.json
+21. research/phase9-hypothesis-redesign-20260828/JFOREX_REMOTE_JNLP_OBSERVATION_AMENDMENT.md
+22. research/phase9-hypothesis-redesign-20260828/spec/remote_jnlp_observation_amendment.frozen.json
 
 8つの論理役割A0〜A7を使用してください。同時実行上限が7なら2波に分け、サブエージェントはread-only監査、主担当だけがGitHubへCommitしてください。作業前後にremote mainを確認し、force push、reset --hard、ユーザー変更の破棄、git add .、git add -Aは禁止です。
 
@@ -46,9 +50,9 @@ Actual Full-QC実装基準は9eb7ce667bea8e76a7f9bb1f2d378eebd8957206です。�
 - acquisition_authorized=false
 - count_only_authorized=false
 
-現在はprovider schedule source readinessでP0 BLOCKEDです。`trading_calendar.json`は`provider_schedule_version=NO_VERSION_AVAILABLE_YET`であり、非価格・非JNLP・pre-connectで使えるDukascopy公式version付きcomplete historical schedule sourceはRepositoryにありません。metadata-only JForex amendmentとno-secret/no-connect静的Gateはユーザー承認済み・凍結済みですが、connection dispatch、external JNLP observation、demo Secrets設定は未認可です。
+現在はprovider schedule source readinessでP0 BLOCKEDです。`trading_calendar.json`は`provider_schedule_version=NO_VERSION_AVAILABLE_YET`であり、非価格・非JNLP・pre-connectで使えるDukascopy公式version付きcomplete historical schedule sourceはRepositoryにありません。metadata-only JForex amendmentとlocal M1専用module/bytecode/network/custody controlsは凍結済みですが、bytecode proofは凍結local synthetic API fixtureに対するものだけで、実JForex API 2.13.99 JAR/runtime互換性は未検証です。connection dispatch、external JNLP observation、demo Secrets設定は未認可です。
 
-次の単一作業は、外部requestと実接続を行わず、metadata-only Gateのlocal M1前提を解消することです。既存acquirerを物理的に含まない専用`IClient`+`Plugin` module、owned bytecode exact method allowlist、別network namespaceによるexact destination default-deny、private writable-path custodyをlocal/syntheticだけで実装・監査し、remote JNLP observation専用の別amendmentを凍結してユーザー承認を得るところまで進めてください。`external_jnlp_observation_authorized=false`の間はremote JNLP/runtime/TLS/endpointを照会しないでください。
+次の単一作業は、凍結済みremote JNLP observation proposalへの別ユーザー承認を得ることです。proposalはexact initial URLへのno-secret/no-connect単一GET、最大2 MiB、redirect no-follow、recursive runtime resource requestなしに限定されています。承認前はremote workflowを実装・dispatchせず、`external_jnlp_observation_authorized=false`のままremote JNLP/runtime/TLS/endpointを照会しないでください。承認後のみ、この限定identity observation workflowを別Commitで実装してください。
 
 公式`getOfflineTimeDomains`はweekend intervalsしか保証せず、holiday、maintenance、Energy daily session、歴史的session-rule変更、provider schedule versionの完全性は未証明です。SDK内部のmarket bytes受信・cache persistenceも`UNPROVEN`です。これらをfalseまたはcompleteと自己申告しないでください。前提証明が揃うまでmanual connection workflowをdispatchせず、24 schedule files、inventory、allowlistを作らないでください。
 

@@ -67,6 +67,8 @@ jobs:
           test "$(git hash-object "$root/spec/candidate_registry.frozen.json")" = '8740f58efe48c40ba0664606194b18b40cf14c27'
           test "$(git hash-object "$root/spec/data_requirements.frozen.json")" = '7e6a476366140e07edac4e4316f8c08a6ab4ae92'
           test "$(git hash-object "$root/policy/preregistered_research_policy.json")" = '8483418a6a75f5a6ea7d6b54ca54beb68896855f'
+          test "$(git hash-object "$root/spec/provider_schedule_contract.frozen.json")" = '52513a812d1ea6e8343bc43d80c4f4afb97808c4'
+          test "$(git hash-object "$root/spec/metadata_only_jforex_schedule_gate.frozen.json")" = 'a567e20c039e805d938139d542c147251975c130'
           python -m py_compile "$root/runner/verify_phase9_provider_schedule_readiness.py"
           python -m unittest discover -s "$root/tests" -p 'test_*.py' -v
           git diff --exit-code

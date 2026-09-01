@@ -11,7 +11,7 @@ Actual Full-QC実装基準: `9eb7ce667bea8e76a7f9bb1f2d378eebd8957206`
 ## 1. この引継ぎの結論
 
 Phase 9では、実価格データを受け入れて検査するActual Full-QC契約まで実装・監査済み。
-provider scheduleのauthoritative/versioned/price-independent source自体は未固定であり、inventoryと別Commit allowlistは未取得・未凍結。2026-09-01にmetadata-only JForex方式のamendmentとfail-closed静的Gateを別途凍結したが、接続dispatchは未認可であり、正式取得はまだ開始しない。
+provider scheduleのauthoritative/versioned/price-independent source自体は未固定であり、inventoryと別Commit allowlistは未取得・未凍結。2026-09-01にmetadata-only JForex方式のamendment、local M1専用module/bytecode/network/custody controls、remote JNLP observationの別承認proposalまでを凍結した。remote observation、接続dispatch、正式取得はいずれも未認可である。
 
 ```text
 Phase 9仮説凍結
@@ -30,6 +30,10 @@ Provider schedule source readiness
   ↓ P0 BLOCKED（公式version付き完全履歴source未固定）
 Metadata-only JForex amendment / static Gate
   ↓ FROZEN（no-secret/no-connect、dispatch認可なし）
+Local M1 module / bytecode / network / custody
+  ↓ 実装済み（local/syntheticのみ、認可効果なし）
+Remote JNLP observation amendment proposal
+  ↓ FROZEN（別ユーザー承認待ち、workflow未実装）
 Remote JNLP/runtime/network/price-isolation discovery
   ↓ 未開始
 Provider schedule inventory / allowlist
@@ -62,6 +66,10 @@ Provider schedule inventory / allowlist
 21. `research/phase9-hypothesis-redesign-20260828/runner/phase9_actual_full_qc.py`
 22. `research/phase9-hypothesis-redesign-20260828/spec/provider_schedule_contract.frozen.json`
 23. `research/phase9-hypothesis-redesign-20260828/spec/metadata_only_jforex_schedule_gate.frozen.json`
+24. `research/phase9-hypothesis-redesign-20260828/spec/metadata_only_local_m1_gate.frozen.json`
+25. `research/phase9-hypothesis-redesign-20260828/spec/metadata_owned_method_allowlist.frozen.json`
+26. `research/phase9-hypothesis-redesign-20260828/JFOREX_REMOTE_JNLP_OBSERVATION_AMENDMENT.md`
+27. `research/phase9-hypothesis-redesign-20260828/spec/remote_jnlp_observation_amendment.frozen.json`
 
 凍結仕様の優先順位は、candidate registry、data requirements、preregistered policy。Markdown要約で凍結仕様を変更しない。
 
@@ -154,6 +162,22 @@ Provider schedule inventory / allowlist
 - 価格・availability・禁止期間・Outcomeアクセス: なし
 - 取得認可効果: なし
 
+### 4.6 Local M1 / remote observation proposal
+
+- Dedicated module: `runner/jforex-metadata`
+- Local contract: `spec/metadata_only_local_m1_gate.frozen.json`
+- Owned bytecode allowlist: `spec/metadata_owned_method_allowlist.frozen.json`
+- Workflow: `.github/workflows/phase9-metadata-local-m1-preflight.yml`
+- Network: uplinkなしの独立client/server namespace間に`198.18.0.2/32 -> 198.18.0.1/32:38443`のhost routeだけを作るsynthetic test。targetは別PID namespaceのUID 65534で実行し、Landlock/seccompで他port、他address、UDP/raw/AF_UNIX、child、setns/unshare、外部writeを拒否
+- Custody: exact private 0700 directories / 0600 regular single-link files
+- Existing price acquirer: moduleから物理的に除外
+- Compile proof: 凍結したlocal synthetic API fixtureに対するexact bytecode allowlistのみPASS。実JForex API 2.13.99 JAR/runtime互換性は未検証であり残Blocker
+- Remote proposal: `JFOREX_REMOTE_JNLP_OBSERVATION_AMENDMENT.md`
+- Remote workflow: 未実装
+- `external_jnlp_observation_authorized=false`
+- `connection_dispatch_authorized=false`
+- schedule/price/Outcomeアクセス: なし
+
 ## 5. Actual Full-QCに実装済みの検査
 
 - exact 12銘柄 × M15/H1 × BID/ASK = 48系列
@@ -189,7 +213,7 @@ Provider schedule inventory / allowlist
 
 ## 7. 次に行う単一作業
 
-Metadata-only GateのM1前提を、外部requestと接続なしで解消する。専用Plugin runner、owned bytecode method allowlist、network namespace/egress、private writable-path custodyをlocal/syntheticだけで実装・監査し、remote JNLP observation専用の別amendmentを凍結してユーザー承認を得るところまでを次の単一作業とする。`external_jnlp_observation_authorized=false`の間はremote JNLP/runtime/TLS/endpointを照会しない。
+凍結済み`JFOREX_REMOTE_JNLP_OBSERVATION_AMENDMENT.md`について、exact initial URLへのno-secret/no-connect単一GET（最大2 MiB、redirect追跡なし、runtime resource取得なし）だけを観測する別承認をユーザーから得る。承認されるまではworkflowを実装・dispatchせず、`external_jnlp_observation_authorized=false`を維持し、remote JNLP/runtime/TLS/endpointを照会しない。
 
 2026-09-01のA0〜A7監査で確認した境界:
 
@@ -206,10 +230,10 @@ Metadata-only GateのM1前提を、外部requestと接続なしで解消する�
 
 ## 8. 残りの順序
 
-1. 専用Plugin/bytecode/egress/custodyをlocal/syntheticで実装・監査
-2. remote JNLP observation専用amendmentを別Commitで凍結し、別ユーザー承認を得る
-3. no-secret/no-JForexでremote JNLP/runtime/TLS/endpoint identityを観測・独立監査
-4. remote identity exact allowlistを観測Runより後の別Commitで凍結
+1. remote JNLP observation proposalの別ユーザー承認を得る
+2. 承認後だけ、exact initial URL単一GET・redirect no-followのworkflowを別Commitで実装
+3. 初期response identityを観測・独立監査
+4. 観測したLocationまたはlocally parsed resource URLを次に要求する場合、exact URL setを観測Runより後の別Commit/別承認で凍結
 5. 別manual Gateでoffline-domain evidenceを観測し、完全性を独立証明
 6. Provider schedule exact allowlistをさらに後の別Commitで検証
 7. Energy roll/session metadataを価格非参照で固定

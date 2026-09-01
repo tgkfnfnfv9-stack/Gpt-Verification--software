@@ -85,6 +85,28 @@ No 24-file inventory or canonical allowlist may be created until those semantics
 are independently proven. This amendment has no acquisition authorization
 effect.
 
+### Local M1 controls (2026-09-01)
+
+The dedicated `runner/jforex-metadata` module, exact owned-bytecode provider
+method allowlist, separate synthetic network namespace with an exact Landlock
+TCP port plus an exact `/32` host route, and private writable-path custody are
+now implemented for
+local/synthetic preflight only. The module physically excludes the existing
+price acquirer and has no executable authorized dispatch workflow.
+
+The bytecode exact-match result is compiled against a frozen local synthetic
+API fixture. It is not evidence of compatibility with the real JForex API
+2.13.99 JAR or runtime closure. Those identities and method references remain a
+separate blocker until the no-secret remote closure is approved, observed,
+audited, and frozen in a later commit.
+
+`JFOREX_REMOTE_JNLP_OBSERVATION_AMENDMENT.md` and
+`spec/remote_jnlp_observation_amendment.frozen.json` are a frozen proposal, not
+an approval. No remote observation workflow exists. Separate explicit user
+approval is still required before any remote JNLP/runtime/TLS/endpoint request.
+All provider-schedule, price, acquisition, Count-only and Outcome states remain
+blocked.
+
 ## Rejected public-endpoint P0 blockers
 
 ### 1. Provider automation permission is not established
