@@ -1,6 +1,6 @@
 # Phase 9 Exploratory FXCM Fast Track
 
-Status: `DRIVE_VAULT_V2_OPTION1_FROZEN_IMPLEMENTED_NOT_EXECUTED; V1_PERMANENTLY_BLOCKED; LEGACY_FX8_BATCH6_PAUSED`
+Status: `DRIVE_VAULT_V2_OPTION1_FROZEN_IMPLEMENTED_ROOT_PROVISIONED_NOT_EXECUTED; V1_PERMANENTLY_BLOCKED; LEGACY_FX8_BATCH6_PAUSED`
 
 ## Current canonical next step: reusable Google Drive Vault
 
@@ -11,13 +11,15 @@ Option 1を選択した。V2は2012～2025年、25通貨ペア、direct m1/H1の
 凍結present identityが取得時に欠けた場合は失敗し、root sealを作らない。
 
 - V2契約正本: `spec/fxcm_drive_vault_*_v2.frozen.json`
+- V2 Drive root: `1lZ0CkTn3tBxStf5H3V7W38ZcOsZ5Rw_v`（同一OAuth clientで作成、価格取得前は空）
 - exact availability mask: `spec/fxcm_drive_vault_availability_mask_v2.frozen.json`
 - 一括取得: `.github/workflows/phase9-exploratory-fxcm-drive-vault-acquisition-v2.yml`
 - direct: m1/H1 BID/ASK OHLC、提供時だけVolume
 - strategy canonical: M1由来M5/M15/M30/H1/H4/D1/W1
 - direct H1: QC参照のみ、補完・代替禁止
 - partition: Development 2012～2019、Strict OOS 2020～2021、Robustness 2022～2023、Final holdout 2024～2025
-- 価格取得、OAuth設定、V2 workflow、Count、Batch 6: 未実行
+- OAuth client、refresh token、同一client作成root: 設定済み（secret値はGitに保存しない）
+- GitHub Environment 3 secrets、価格取得、V2 workflow、Count、Batch 6: 未実行
 - V1 acquisition workflow: fail-closedで恒久停止
 - V2専用10 tests、探索track全173 tests: 成功
 
@@ -404,7 +406,7 @@ Outcome検定済み7候補は全件不採用で、確認済みedgeは0件であ�
 複数年データを取得し、非公開Google DriveへSHA固定shardとして保存・再利用する方式へ
 移行する。設計正本は`GOOGLE_DRIVE_DATA_VAULT_PLAN.md`である。
 
-- Drive folder ID: `1cGQrkdpSNY9RcfpniVTYNb6zE0t9nTKu`（確認時点で空）
+- V2 Drive folder ID: `1lZ0CkTn3tBxStf5H3V7W38ZcOsZ5Rw_v`（同一OAuth clientで作成、価格取得前は空）
 - V2 target period: 2012-01-01 inclusive ～ 2026-01-01 exclusive
 - V2 universe: availability確認済み25通貨ペア
 - V2 direct: m1/H1、BID/ASK OHLC、提供時Volume

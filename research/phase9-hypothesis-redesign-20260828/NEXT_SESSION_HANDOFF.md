@@ -19,8 +19,10 @@ Actual Full-QC実装基準: `9eb7ce667bea8e76a7f9bb1f2d378eebd8957206`
   SHA-256、OAuth境界を凍結し、14年matrix取得runner、private Drive finalizer、price-free
   verifier、manual single-use workflow、V2専用Testsを実装した。
 - V2専用10 testsと探索track全173 testsが成功した。
-- V1 acquisition workflowは恒久fail-closed化した。V2 workflow、価格取得、OAuth設定、
-  Drive書込み、Count、既存Batch 6は未実行であり、別の明示承認まで実行しない。
+- V1 acquisition workflowは恒久fail-closed化した。OAuth clientとrefresh tokenを作成し、
+  同一clientで空のV2 root `1lZ0CkTn3tBxStf5H3V7W38ZcOsZ5Rw_v`を作成した。
+  GitHub Environment 3 secrets、V2価格取得workflow、Count、既存Batch 6は未実行であり、
+  別の明示承認まで実行しない。
 - V2 partitionはDevelopment 2012～2019、Strict OOS 2020～2021、Robustness 2022～2023、
   Final holdout 2024～2025。Batch 6 Count区間と321～324の事前登録条件は変更していない。
 
@@ -448,9 +450,9 @@ Provider schedule inventory / allowlist
 
 ## 7. 次に行う単一作業
 
-Option 1のV2契約・runner・workflow・Testsをremote mainへ公開した後の次の単一作業は、
+Option 1のV2 root amendment・runner・Testsをremote mainへ公開した後の次の単一作業は、
 GitHub Environment `phase9-fxcm-vault-acquisition-v2`のrequired reviewerと、personal My Drive用
-OAuth 3 secretsを安全に設定する手順をユーザーへ提示すること。設定だけではV2 workflowを
+OAuth 3 secretsを安全に設定すること。設定だけではV2 workflowを
 実行しない。取得実行は、公開main SHAをユーザーが確認した後の別の明示承認を必要とする。
 
 Vault取得後もCount/Returnを自動実行しない。Drive内700 shardとmanifest/sealを独立監査し、

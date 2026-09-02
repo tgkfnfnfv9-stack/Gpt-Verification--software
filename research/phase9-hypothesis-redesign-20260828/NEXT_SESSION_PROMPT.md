@@ -53,8 +53,8 @@ Count-only、Return/OOS、新期間、頑健性テストで再利用し、本物
 - 301～320: 全件救済禁止
 - 321～324: 事前登録済み、Count未実行
 - 既存Batch 6 workflow: 実行禁止
-- Drive folder ID: `1cGQrkdpSNY9RcfpniVTYNb6zE0t9nTKu`
-- Drive folder: availability後も価格未取得で空
+- V2 Drive folder ID: `1lZ0CkTn3tBxStf5H3V7W38ZcOsZ5Rw_v`
+- V2 Drive folder: 同一OAuth clientで作成済み、価格未取得で空
 - V2 target: 2012～2025年、25通貨ペア
 - V2 direct: m1/H1 BID/ASK OHLC、提供時だけVolume
 - canonical: M1由来M5/M15/M30/H1/H4/D1/W1
@@ -65,12 +65,14 @@ Count-only、Return/OOS、新期間、頑健性テストで再利用し、本物
 - known-missing: 要求・補完・補間しない
 - frozen-present取得失敗: workflow失敗、root sealなし
 - 除外: 2010・2011年、CHFJPY/EURCAD/GBPAUD、direct D1、Tick、金銀、指数、原油、exotic FX
-- public Git/public Artifactへ価格・timestamp・Drive IDを保存しない
+- public Git/public Artifactへ価格・timestamp・OAuth secretを保存しない
+- public Run ArtifactへDrive file IDを保存しない
 - Availability Run `33627420903`: 実行・独立監査済み、response body 0 byte
 - V1 acquisition workflow: 恒久fail-closed、実行しない
 - V2 acquisition workflow: 実装済み、未実行
 - Vault価格取得: 未開始
-- Google OAuth: 未設定
+- Google OAuth client、refresh token、同一client作成root: 設定済み
+- GitHub Environment `phase9-fxcm-vault-acquisition-v2`の3 secrets: 未設定
 
 ## V2期間partition
 

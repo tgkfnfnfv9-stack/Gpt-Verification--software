@@ -226,7 +226,10 @@ def acquire_year_v2(args: argparse.Namespace) -> dict[str, Any]:
         raise VaultError("V2 work directory must not exist")
     args.work_dir.mkdir(parents=True)
     drive = GoogleDrivePrivate()
-    drive.verify_root(contract["drive_custody"]["root_folder_name"])
+    drive.verify_root(
+        contract["drive_custody"]["root_folder_name"],
+        contract["drive_custody"]["root_folder_id"],
+    )
     partition = partition_for_year_v2(partitions, args.year)
     stage_name = f"v2-staging-run-{args.run_id}-year-{args.year}"
     stage = drive.create_folder_new(

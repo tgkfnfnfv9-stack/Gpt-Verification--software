@@ -95,10 +95,10 @@ class GoogleDrivePrivate:
             raise VaultError("Drive API JSON root is not an object")
         return value
 
-    def verify_root(self, expected_name: str) -> dict:
+    def verify_root(self, expected_name: str, root_folder_id: str = ROOT_FOLDER_ID) -> dict:
         fields = "id,name,mimeType,ownedByMe,trashed,driveId,shortcutDetails,parents"
-        value = self._json_request("GET", f"https://{DRIVE_API_HOST}/drive/v3/files/{ROOT_FOLDER_ID}?fields={fields}&supportsAllDrives=false")
-        if value.get("id") != ROOT_FOLDER_ID or value.get("name") != expected_name:
+        value = self._json_request("GET", f"https://{DRIVE_API_HOST}/drive/v3/files/{root_folder_id}?fields={fields}&supportsAllDrives=false")
+        if value.get("id") != root_folder_id or value.get("name") != expected_name:
             raise VaultError("Drive root identity mismatch")
         if value.get("mimeType") != FOLDER_MIME or value.get("ownedByMe") is not True or value.get("trashed") is not False:
             raise VaultError("Drive root custody mismatch")

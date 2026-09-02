@@ -104,15 +104,16 @@ Exploratory専用partitionはcalendar-year shard境界に合わせて次へ固�
 ## Google Drive target
 
 - folder: `Phase9 FXCM Data Vault`
-- folder ID: `1cGQrkdpSNY9RcfpniVTYNb6zE0t9nTKu`
-- URL: `https://drive.google.com/drive/folders/1cGQrkdpSNY9RcfpniVTYNb6zE0t9nTKu`
-- verified state at decision time: empty
+- V2 folder ID: `1lZ0CkTn3tBxStf5H3V7W38ZcOsZ5Rw_v`
+- V2 URL: `https://drive.google.com/drive/folders/1lZ0CkTn3tBxStf5H3V7W38ZcOsZ5Rw_v`
+- V2 root was created by the same OAuth client under the frozen `drive.file` scope
+- verified state before price access: empty
 - repository is public; raw prices and reusable price archives must not be committed to Git or
   uploaded as public GitHub Artifact
 - GitHub Actions access to personal My Drive requires a separately configured least-privilege
   Google OAuth credential. The ChatGPT Drive connector is not a substitute for Actions OAuth.
-- The frozen `drive.file` scope does not grant blanket access to My Drive. The existing fixed root
-  folder must first be made accessible to the same OAuth client. If root verification fails, setup
+- The frozen `drive.file` scope does not grant blanket access to My Drive. The fixed V2 root was
+  created by the same OAuth client before price access. If exact root verification fails, setup
   stops without widening scope, checking availability or downloading prices.
 
 ## Historical rejected V1 target scope

@@ -462,12 +462,14 @@
     "next_gate": "DRIVE_VAULT_ACQUISITION_AND_INDEPENDENT_AUDIT_BEFORE_BATCH6_COUNT"
   },
   "exploratory_fxcm_google_drive_data_vault": {
-    "status": "V2_OPTION1_FROZEN_IMPLEMENTED_NOT_EXECUTED_V1_PERMANENTLY_BLOCKED",
+    "status": "V2_OPTION1_FROZEN_IMPLEMENTED_ROOT_PROVISIONED_NOT_EXECUTED_V1_PERMANENTLY_BLOCKED",
     "plan": "../phase9-exploratory-fxcm-20260901/GOOGLE_DRIVE_DATA_VAULT_PLAN.md",
     "folder_name": "Phase9 FXCM Data Vault",
-    "folder_id": "1cGQrkdpSNY9RcfpniVTYNb6zE0t9nTKu",
-    "folder_url": "https://drive.google.com/drive/folders/1cGQrkdpSNY9RcfpniVTYNb6zE0t9nTKu",
+    "folder_id": "1lZ0CkTn3tBxStf5H3V7W38ZcOsZ5Rw_v",
+    "folder_url": "https://drive.google.com/drive/folders/1lZ0CkTn3tBxStf5H3V7W38ZcOsZ5Rw_v",
     "folder_verified_empty": true,
+    "folder_created_by_same_oauth_client": true,
+    "legacy_v1_folder_id": "1cGQrkdpSNY9RcfpniVTYNb6zE0t9nTKu",
     "user_scope_decision": "OPTION_1_FXCM_AVAILABLE_SCOPE",
     "target_start_inclusive": "2012-01-01T00:00:00Z",
     "target_end_exclusive": "2026-01-01T00:00:00Z",
@@ -485,6 +487,10 @@
     "tick_data_in_initial_vault": false,
     "public_git_or_artifact_price_storage_allowed": false,
     "one_acquisition_reuse_required": true,
+    "oauth_client_created": true,
+    "oauth_refresh_token_minted": true,
+    "oauth_root_access_established": true,
+    "github_environment_secrets_configured": false,
     "oauth_configured": false,
     "acquisition_contract_frozen": true,
     "acquisition_contract": "../phase9-exploratory-fxcm-20260901/spec/fxcm_drive_vault_acquisition_v2.frozen.json",
@@ -526,7 +532,8 @@
       "PHASE9_GDRIVE_OAUTH_REFRESH_TOKEN"
     ],
     "oauth_scope": "https://www.googleapis.com/auth/drive.file",
-    "oauth_preexisting_root_access_required": true,
+    "oauth_preexisting_root_access_required": false,
+    "oauth_app_created_root_access_required": true,
     "oauth_inaccessible_root_action": "FAIL_WITHOUT_SCOPE_EXPANSION_OR_PRICE_ACCESS",
     "v2_dedicated_test_count": 10,
     "all_exploratory_test_count": 173,
@@ -536,7 +543,7 @@
     "price_acquisition_executed": false,
     "acquisition_workflow_authorized": false,
     "batch6_dispatch_allowed_before_vault_audit": false,
-    "next_gate": "PUBLISH_V2_THEN_CONFIGURE_OAUTH_WITHOUT_DISPATCH_SEPARATE_APPROVAL_REQUIRED"
+    "next_gate": "CONFIGURE_GITHUB_ENVIRONMENT_SECRETS_WITHOUT_DISPATCH_SEPARATE_APPROVAL_REQUIRED"
   },
   "provider_acquisition": {
     "status": "ACTUAL_FULL_QC_CONTRACT_FROZEN_PROVIDER_SCHEDULE_SOURCE_P0_BLOCKED",

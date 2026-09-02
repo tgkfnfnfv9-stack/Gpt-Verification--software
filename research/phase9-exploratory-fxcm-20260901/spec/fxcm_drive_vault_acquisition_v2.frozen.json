@@ -112,8 +112,10 @@
     "no_silent_missing_source": true
   },
   "drive_custody": {
-    "root_folder_id": "1cGQrkdpSNY9RcfpniVTYNb6zE0t9nTKu",
+    "root_folder_id": "1lZ0CkTn3tBxStf5H3V7W38ZcOsZ5Rw_v",
     "root_folder_name": "Phase9 FXCM Data Vault",
+    "root_created_by_same_oauth_client": true,
+    "root_verified_empty_before_price_access": true,
     "root_must_be_owned_by_user": true,
     "shared_drive_allowed": false,
     "shortcut_allowed": false,
@@ -132,7 +134,8 @@
     "github_environment": "phase9-fxcm-vault-acquisition-v2",
     "required_reviewer_recommended": true,
     "scope": "https://www.googleapis.com/auth/drive.file",
-    "preexisting_root_access_must_be_granted_to_same_oauth_client": true,
+    "preexisting_root_access_must_be_granted_to_same_oauth_client": false,
+    "app_created_root_access_required": true,
     "inaccessible_root_action": "FAIL_WITHOUT_SCOPE_EXPANSION_OR_PRICE_ACCESS",
     "secret_names": ["PHASE9_GDRIVE_OAUTH_CLIENT_ID", "PHASE9_GDRIVE_OAUTH_CLIENT_SECRET", "PHASE9_GDRIVE_OAUTH_REFRESH_TOKEN"],
     "credential_json_file_allowed": false,

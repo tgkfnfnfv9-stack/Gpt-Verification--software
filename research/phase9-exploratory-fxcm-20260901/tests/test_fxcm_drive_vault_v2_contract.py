@@ -3,12 +3,14 @@ import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import Mock
 
 
 TRACK = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(TRACK / "runner"))
 import fxcm_drive_vault_common as common  # noqa: E402
 import fxcm_drive_vault_v2_common as v2  # noqa: E402
+import fxcm_google_drive_private as drive_private  # noqa: E402
 
 
 class VaultV2ContractTests(unittest.TestCase):
@@ -35,6 +37,24 @@ class VaultV2ContractTests(unittest.TestCase):
         self.assertEqual(set(contract["target"]["excluded_unavailable_symbols"]), {"CHFJPY", "EURCAD", "GBPAUD"})
         self.assertEqual(contract["target"]["direct_periodicities"], ["m1", "H1"])
         self.assertIn("direct D1", contract["target"]["excluded"])
+        self.assertEqual(contract["drive_custody"]["root_folder_id"], v2.ROOT_FOLDER_ID_V2)
+        self.assertNotEqual(v2.ROOT_FOLDER_ID_V2, common.ROOT_FOLDER_ID)
+        self.assertTrue(contract["drive_custody"]["root_created_by_same_oauth_client"])
+        self.assertTrue(contract["drive_custody"]["root_verified_empty_before_price_access"])
+
+    def test_v2_root_verification_uses_explicit_root_without_changing_v1_default(self):
+        client = object.__new__(drive_private.GoogleDrivePrivate)
+        client._json_request = Mock(return_value={
+            "id": v2.ROOT_FOLDER_ID_V2,
+            "name": "Phase9 FXCM Data Vault",
+            "mimeType": drive_private.FOLDER_MIME,
+            "ownedByMe": True,
+            "trashed": False,
+        })
+        client.verify_root("Phase9 FXCM Data Vault", v2.ROOT_FOLDER_ID_V2)
+        request_url = client._json_request.call_args.args[1]
+        self.assertIn(v2.ROOT_FOLDER_ID_V2, request_url)
+        self.assertNotIn(common.ROOT_FOLDER_ID, request_url)
 
     def test_exact_partition_boundaries_and_batch6_lock(self):
         _, partitions, _, _, _ = v2.load_v2_contracts(*self.paths)

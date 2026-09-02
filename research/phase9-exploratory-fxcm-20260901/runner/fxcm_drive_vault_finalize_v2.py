@@ -11,7 +11,6 @@ from pathlib import Path
 from typing import Any
 
 from fxcm_drive_vault_common import (
-    ROOT_FOLDER_ID,
     VaultError,
     assert_hex64,
     canonical_sha256,
@@ -28,6 +27,7 @@ from fxcm_drive_vault_v2_common import (
     DIRECT_PERIODICITIES_V2,
     KNOWN_MISSING_SOURCE_OBJECT_COUNT_V2,
     PRESENT_SOURCE_OBJECT_COUNT_V2,
+    ROOT_FOLDER_ID_V2,
     SYMBOLS_V2,
     YEARS_V2,
     expected_year_source_count,
@@ -43,7 +43,7 @@ from fxcm_google_drive_private import FOLDER_MIME, GoogleDrivePrivate
 def create_tree_v2(drive: GoogleDrivePrivate, run_id: str) -> dict[str, Any]:
     version = {"vault_version": "v2", "run_id": run_id}
     root = drive.create_folder_new(
-        ROOT_FOLDER_ID, "v2", {**version, "state": "PROMOTING"}
+        ROOT_FOLDER_ID_V2, "v2", {**version, "state": "PROMOTING"}
     )
     manifest = drive.create_folder_new(
         root["id"], "manifest", {"vault_version": "v2", "role": "MANIFEST"}
@@ -294,8 +294,11 @@ def finalize_v2(args: argparse.Namespace) -> dict[str, Any]:
     args.work_dir.mkdir(parents=True)
     args.public_report_dir.mkdir(parents=True)
     drive = GoogleDrivePrivate()
-    drive.verify_root(contract["drive_custody"]["root_folder_name"])
-    root_children = drive.list_children(ROOT_FOLDER_ID)
+    drive.verify_root(
+        contract["drive_custody"]["root_folder_name"],
+        contract["drive_custody"]["root_folder_id"],
+    )
+    root_children = drive.list_children(ROOT_FOLDER_ID_V2)
     expected_names = {
         f"v2-staging-run-{args.run_id}-year-{year}" for year in YEARS_V2
     }
@@ -402,7 +405,7 @@ def finalize_v2(args: argparse.Namespace) -> dict[str, Any]:
         )
         drive.move_file(
             stages[year]["id"],
-            ROOT_FOLDER_ID,
+            ROOT_FOLDER_ID_V2,
             tree["staging"]["id"],
             {
                 "vault_version": "v2",
@@ -507,7 +510,7 @@ def finalize_v2(args: argparse.Namespace) -> dict[str, Any]:
         "schema_version": "phase9-exploratory-fxcm-drive-vault-custody-v2.0.0",
         "vault_version": "v2",
         "run_id": args.run_id,
-        "root_folder_id": ROOT_FOLDER_ID,
+        "root_folder_id": ROOT_FOLDER_ID_V2,
         "exact_file_id_parent_id_required": True,
         "duplicate_names_allowed": False,
         "availability_mask_sha256": mask_sha,

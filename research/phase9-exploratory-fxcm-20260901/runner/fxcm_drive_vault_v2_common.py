@@ -9,7 +9,6 @@ from typing import Any, Iterable
 from fxcm_drive_vault_common import (
     DIRECT_HEADER,
     PUBLIC_AUDIT_FILES,
-    ROOT_FOLDER_ID,
     SECRET_NAMES,
     VaultError,
     canonical_sha256,
@@ -19,6 +18,7 @@ from fxcm_drive_vault_common import (
 )
 
 
+ROOT_FOLDER_ID_V2 = "1lZ0CkTn3tBxStf5H3V7W38ZcOsZ5Rw_v"
 YEARS_V2 = tuple(range(2012, 2026))
 SYMBOLS_V2 = (
     "AUDCAD", "AUDCHF", "AUDJPY", "AUDNZD", "AUDUSD", "CADCHF", "CADJPY",
@@ -131,7 +131,7 @@ def load_v2_contracts(
         (acquisition.get("target", {}).get("known_missing_source_object_count") == KNOWN_MISSING_SOURCE_OBJECT_COUNT_V2, "missing sources"),
         (acquisition.get("target", {}).get("excluded_unavailable_symbols") == ["CHFJPY", "EURCAD", "GBPAUD"], "excluded unavailable symbols"),
         (acquisition.get("direct_schema", {}).get("required_header") == list(DIRECT_HEADER), "direct header"),
-        (acquisition.get("drive_custody", {}).get("root_folder_id") == ROOT_FOLDER_ID, "Drive root"),
+        (acquisition.get("drive_custody", {}).get("root_folder_id") == ROOT_FOLDER_ID_V2, "Drive root"),
         (acquisition.get("oauth", {}).get("secret_names") == list(SECRET_NAMES), "OAuth secrets"),
         (acquisition.get("oauth", {}).get("scope") == "https://www.googleapis.com/auth/drive.file", "OAuth scope"),
         (partitions.get("schema_version") == "phase9-exploratory-fxcm-drive-vault-partitions-v2.0.0", "partition schema"),
