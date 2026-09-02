@@ -1,6 +1,6 @@
 # Phase 9 FXCM Google Drive Data Vault Plan
 
-Status: `USER_APPROVED_PLAN_NO_PRICE_ACQUISITION_STARTED`
+Status: `V1_CONTRACT_AND_IMPLEMENTATION_COMPLETE_NOT_DISPATCHED_NO_PRICE_ACQUISITION`
 
 Recorded: 2026-09-02
 
@@ -13,6 +13,46 @@ Count-only、Return/OOS、頑健性確認はSHA固定した同じデータを再
 この文書は設計合意だけを記録する。価格取得、availability request、Count、Return、
 Outcome計算はまだ開始していない。
 
+## 2026-09-02 V1契約・実装完了
+
+再利用Vaultの契約と実行コードは完成した。ただし、ファイル公開はworkflow実行許可ではない。
+
+- 取得・custody契約: `spec/fxcm_drive_vault_acquisition_v1.frozen.json`
+- 年単位access partition: `spec/fxcm_drive_vault_partitions_v1.frozen.json`
+- shard・manifest・archive契約: `spec/fxcm_drive_vault_manifest_schema_v1.frozen.json`
+- Formal境界確認: `spec/fxcm_drive_vault_formal_boundary_amendment_v1.frozen.json`
+- HEAD-only availability runner: `runner/fxcm_drive_vault_inventory.py`
+- 年別取得・QC・package・upload runner: `runner/fxcm_drive_vault_acquire_year.py`
+- private Google Drive client: `runner/fxcm_google_drive_private.py`
+- Vault promotion/seal runner: `runner/fxcm_drive_vault_finalize.py`
+- 公開price-free audit verifier: `runner/verify_fxcm_drive_vault.py`
+- Availability workflow: `.github/workflows/phase9-exploratory-fxcm-drive-vault-availability-v1.yml`
+- 一括取得workflow: `.github/workflows/phase9-exploratory-fxcm-drive-vault-acquisition-v1.yml`
+
+両workflowは`workflow_dispatch`専用、確認済みmain SHA完全一致、Run #1 / attempt #1だけを
+許可し、まだdispatchしていない。一括取得workflowは16年matrixで年ごとに84 direct shardを
+stagingし、各Drive uploadを再downloadしてSHA-256照合する。その後、全1,344 shardだけを
+正本へ昇格し、`VAULT_SEAL.json`を最後に作る。途中失敗ではroot sealを作らない。
+
+現在のsource evidenceは21ペア・2017～2020の証明に限定される。28ペア・2010～2025が
+存在すると仮定しない。週次objectが1件でも欠ければ、銘柄を減らさずrootをsealしない。
+
+Exploratory専用partitionはcalendar-year shard境界に合わせて次へ固定した。
+
+| Partition | Interval | Drive namespace |
+|---|---|---|
+| Development | 2010-01-01～2020-01-01 exclusive | `v1/prices/` |
+| Strict OOS | 2020-01-01～2022-01-01 exclusive | `v1/sealed/oos/` |
+| Robustness | 2022-01-01～2024-01-01 exclusive | `v1/sealed/robustness/` |
+| Final holdout | 2024-01-01～2026-01-01 exclusive | `v1/sealed/final_holdout/` |
+
+これはFormal Phase 9の期間ではない。将来2019年以降のVault取得を明示承認して実行した時点で、
+旧Formalの2019年以降を「未見」とする主張を終了する。この確認文字列もworkflow必須入力である。
+
+戦略用正本はM1由来系列である。direct H1/D1はQC参照だけに使い、補完・代替しない。
+参照OHLC不一致は記録してBatch 6移行を停止するが、構造的に正常なprivate shardのcustody
+自体は無効にしない。
+
 ## Google Drive target
 
 - folder: `Phase9 FXCM Data Vault`
@@ -23,6 +63,9 @@ Outcome計算はまだ開始していない。
   uploaded as public GitHub Artifact
 - GitHub Actions access to personal My Drive requires a separately configured least-privilege
   Google OAuth credential. The ChatGPT Drive connector is not a substitute for Actions OAuth.
+- The frozen `drive.file` scope does not grant blanket access to My Drive. The existing fixed root
+  folder must first be made accessible to the same OAuth client. If root verification fails, setup
+  stops without widening scope, checking availability or downloading prices.
 
 ## Frozen target scope for the acquisition design
 

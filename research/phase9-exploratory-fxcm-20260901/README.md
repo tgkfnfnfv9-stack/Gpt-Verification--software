@@ -1,6 +1,28 @@
 # Phase 9 Exploratory FXCM Fast Track
 
-Status: `FX8_H1_ACQUISITION_QC_ONLY_NOT_FORMAL_PHASE9`
+Status: `DRIVE_VAULT_V1_IMPLEMENTED_NOT_DISPATCHED; LEGACY_FX8_BATCH6_PAUSED`
+
+## Current canonical next step: reusable Google Drive Vault
+
+候補ごとに2017～2018年を再取得して破棄する運用は終了した。G8全28通貨ペアの
+2010～2025年を一度だけ取得し、年×銘柄×direct periodicityの1,344 shardとして
+private Google Driveへ保存し、以後は同じSHA-256データを再利用するV1を実装済みである。
+
+- 契約正本: `spec/fxcm_drive_vault_*_v1.frozen.json`
+- Availability: `.github/workflows/phase9-exploratory-fxcm-drive-vault-availability-v1.yml`
+- 一括取得: `.github/workflows/phase9-exploratory-fxcm-drive-vault-acquisition-v1.yml`
+- direct: m1/H1/D1 BID/ASK OHLC、提供時だけVolume
+- strategy canonical: M1由来M5/M15/M30/H1/H4/D1/W1
+- direct H1/D1: QC参照のみ、補完・代替禁止
+- Drive folder ID: `1cGQrkdpSNY9RcfpniVTYNb6zE0t9nTKu`
+- public Git/Artifactの価格: 0件を維持
+
+契約・runner・workflow・Testsは完成したが、availability、価格取得、Batch 6は未実行。
+workflow公開は実行承認ではない。Google OAuth設定とユーザーの別の明示承認後にだけRun #1を
+実行する。321～324の候補条件は変えず、Vault独立監査と旧64系列互換性確認後にデータ入力だけを
+切り替える。
+
+以下のH1/MTF/Batch履歴は完了済みの旧探索経路として保持する。
 
 This track makes a real, provider-authorized data path executable without
 pretending that it completes Formal Phase 9.

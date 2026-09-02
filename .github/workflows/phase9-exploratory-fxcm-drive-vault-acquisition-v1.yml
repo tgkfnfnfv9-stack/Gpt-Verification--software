@@ -1,0 +1,202 @@
+name: phase9-exploratory-fxcm-private-drive-vault-acquisition-v1
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirmation:
+        description: 'Type RUN_PHASE9_EXPLORATORY_FXCM_DRIVE_VAULT_V1_2010_2025_G8_28_ONCE'
+        required: true
+        type: string
+      usage_confirmation:
+        description: 'Type I_CONFIRM_PERSONAL_NONCOMMERCIAL_USE_AND_ACCEPT_FXCM_EULA'
+        required: true
+        type: string
+      formal_acknowledgement:
+        description: 'Type I_ACCEPT_EXPLORATORY_VAULT_2019_PLUS_RETIRES_FORMAL_PHASE9_UNSEEN_CLAIMS'
+        required: true
+        type: string
+      expected_head_sha:
+        description: 'Exact published main SHA reviewed by the user'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: phase9-exploratory-fxcm-private-drive-vault-acquisition-v1
+  cancel-in-progress: false
+
+jobs:
+  preflight:
+    if: >-
+      github.repository == 'tgkfnfnfv9-stack/Gpt-Verification--software' &&
+      github.ref == 'refs/heads/main' &&
+      github.run_number == 1 &&
+      github.run_attempt == 1 &&
+      inputs.confirmation == 'RUN_PHASE9_EXPLORATORY_FXCM_DRIVE_VAULT_V1_2010_2025_G8_28_ONCE' &&
+      inputs.usage_confirmation == 'I_CONFIRM_PERSONAL_NONCOMMERCIAL_USE_AND_ACCEPT_FXCM_EULA' &&
+      inputs.formal_acknowledgement == 'I_ACCEPT_EXPLORATORY_VAULT_2019_PLUS_RETIRES_FORMAL_PHASE9_UNSEEN_CLAIMS' &&
+      inputs.expected_head_sha == github.sha
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Checkout exact reviewed main commit
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+          ref: ${{ github.sha }}
+
+      - name: Verify frozen anchors contracts tests and no credentials in Git
+        shell: bash
+        run: |
+          set -euo pipefail
+          formal='research/phase9-hypothesis-redesign-20260828'
+          track='research/phase9-exploratory-fxcm-20260901'
+          test "$(git hash-object "$formal/spec/candidate_registry.frozen.json")" = '8740f58efe48c40ba0664606194b18b40cf14c27'
+          test "$(git hash-object "$formal/spec/data_requirements.frozen.json")" = '7e6a476366140e07edac4e4316f8c08a6ab4ae92'
+          test "$(git hash-object "$formal/policy/preregistered_research_policy.json")" = '8483418a6a75f5a6ea7d6b54ca54beb68896855f'
+          test "$(sha256sum "$track/spec/fxcm_drive_vault_acquisition_v1.frozen.json" | cut -d' ' -f1)" = 'c4eb1ccff34271b126c5a34b8910ad8eba86403aff69da7dafb5ab91acb78408'
+          test "$(sha256sum "$track/spec/fxcm_drive_vault_partitions_v1.frozen.json" | cut -d' ' -f1)" = 'b96df8d1fb8c671484842f065cfce9ec9884d280798e0b7e7715732bc837cae4'
+          test "$(sha256sum "$track/spec/fxcm_drive_vault_manifest_schema_v1.frozen.json" | cut -d' ' -f1)" = 'b6f4aaf9acb6decd0d975847b4f822fbc89a50434602def4f86fbafbe6c37846'
+          test "$(sha256sum "$track/spec/fxcm_drive_vault_formal_boundary_amendment_v1.frozen.json" | cut -d' ' -f1)" = '7392b0f90a6496b616aa2de7b863c6dc396ca16a09351cc0d87cde1e358d5715'
+          PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s "$track/tests" -p 'test_fxcm_drive_vault_*.py'
+          test -z "$(git grep -IlE 'ya29\.|1//[A-Za-z0-9_-]{20,}|GOCSPX-[A-Za-z0-9_-]{20,}' -- ':!*.md' || true)"
+          git diff --exit-code
+
+  acquire-year:
+    needs: preflight
+    environment: phase9-fxcm-vault-acquisition
+    runs-on: ubuntu-24.04
+    timeout-minutes: 360
+    strategy:
+      fail-fast: false
+      max-parallel: 4
+      matrix:
+        year: [2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025]
+    steps:
+      - name: Checkout exact reviewed main commit
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+          ref: ${{ github.sha }}
+
+      - name: Acquire QC package upload and redownload-verify one year
+        shell: bash
+        env:
+          PHASE9_GDRIVE_OAUTH_CLIENT_ID: ${{ secrets.PHASE9_GDRIVE_OAUTH_CLIENT_ID }}
+          PHASE9_GDRIVE_OAUTH_CLIENT_SECRET: ${{ secrets.PHASE9_GDRIVE_OAUTH_CLIENT_SECRET }}
+          PHASE9_GDRIVE_OAUTH_REFRESH_TOKEN: ${{ secrets.PHASE9_GDRIVE_OAUTH_REFRESH_TOKEN }}
+          CONFIRMATION: ${{ inputs.confirmation }}
+          USAGE_CONFIRMATION: ${{ inputs.usage_confirmation }}
+          FORMAL_ACKNOWLEDGEMENT: ${{ inputs.formal_acknowledgement }}
+        run: |
+          set -euo pipefail
+          umask 077
+          track='research/phase9-exploratory-fxcm-20260901'
+          work="$RUNNER_TEMP/fxcm-vault-year-${{ matrix.year }}-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          echo "VAULT_YEAR_WORK=$work" >> "$GITHUB_ENV"
+          python3 "$track/runner/fxcm_drive_vault_acquire_year.py" \
+            --acquisition-contract "$track/spec/fxcm_drive_vault_acquisition_v1.frozen.json" \
+            --partitions-contract "$track/spec/fxcm_drive_vault_partitions_v1.frozen.json" \
+            --manifest-schema "$track/spec/fxcm_drive_vault_manifest_schema_v1.frozen.json" \
+            --formal-boundary "$track/spec/fxcm_drive_vault_formal_boundary_amendment_v1.frozen.json" \
+            --year '${{ matrix.year }}' --run-id "$GITHUB_RUN_ID" --run-attempt "$GITHUB_RUN_ATTEMPT" \
+            --head-sha "$GITHUB_SHA" --work-dir "$work" \
+            --confirmation "$CONFIRMATION" --usage-confirmation "$USAGE_CONFIRMATION" \
+            --formal-acknowledgement "$FORMAL_ACKNOWLEDGEMENT"
+
+      - name: Always remove local price workspace
+        if: ${{ always() }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          work="${VAULT_YEAR_WORK:-}"
+          if [[ -n "$work" ]]; then
+            expected="$RUNNER_TEMP/fxcm-vault-year-${{ matrix.year }}-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+            test "$work" = "$expected"
+            test ! -L "$work"
+            if [[ -d "$work" ]]; then
+              find "$work" -depth -type f -delete
+              find "$work" -depth -type d -empty -delete
+            fi
+            test ! -e "$work"
+          fi
+
+  finalize-vault:
+    needs: [preflight, acquire-year]
+    environment: phase9-fxcm-vault-acquisition
+    runs-on: ubuntu-24.04
+    timeout-minutes: 360
+    steps:
+      - name: Checkout exact reviewed main commit
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+          ref: ${{ github.sha }}
+
+      - name: Finalize exact 1344-shard vault and write seal last
+        shell: bash
+        env:
+          PHASE9_GDRIVE_OAUTH_CLIENT_ID: ${{ secrets.PHASE9_GDRIVE_OAUTH_CLIENT_ID }}
+          PHASE9_GDRIVE_OAUTH_CLIENT_SECRET: ${{ secrets.PHASE9_GDRIVE_OAUTH_CLIENT_SECRET }}
+          PHASE9_GDRIVE_OAUTH_REFRESH_TOKEN: ${{ secrets.PHASE9_GDRIVE_OAUTH_REFRESH_TOKEN }}
+          CONFIRMATION: ${{ inputs.confirmation }}
+          USAGE_CONFIRMATION: ${{ inputs.usage_confirmation }}
+          FORMAL_ACKNOWLEDGEMENT: ${{ inputs.formal_acknowledgement }}
+        run: |
+          set -euo pipefail
+          umask 077
+          track='research/phase9-exploratory-fxcm-20260901'
+          work="$RUNNER_TEMP/fxcm-vault-finalize-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          report="$RUNNER_TEMP/fxcm-vault-public-report-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          echo "VAULT_FINALIZE_WORK=$work" >> "$GITHUB_ENV"
+          echo "VAULT_PUBLIC_REPORT=$report" >> "$GITHUB_ENV"
+          python3 "$track/runner/fxcm_drive_vault_finalize.py" \
+            --acquisition-contract "$track/spec/fxcm_drive_vault_acquisition_v1.frozen.json" \
+            --partitions-contract "$track/spec/fxcm_drive_vault_partitions_v1.frozen.json" \
+            --manifest-schema "$track/spec/fxcm_drive_vault_manifest_schema_v1.frozen.json" \
+            --formal-boundary "$track/spec/fxcm_drive_vault_formal_boundary_amendment_v1.frozen.json" \
+            --run-id "$GITHUB_RUN_ID" --run-attempt "$GITHUB_RUN_ATTEMPT" --head-sha "$GITHUB_SHA" \
+            --work-dir "$work" --public-report-dir "$report" \
+            --confirmation "$CONFIRMATION" --usage-confirmation "$USAGE_CONFIRMATION" \
+            --formal-acknowledgement "$FORMAL_ACKNOWLEDGEMENT"
+
+      - name: Always remove private finalization workspace
+        if: ${{ always() }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          work="${VAULT_FINALIZE_WORK:-}"
+          if [[ -n "$work" ]]; then
+            expected="$RUNNER_TEMP/fxcm-vault-finalize-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+            test "$work" = "$expected"
+            test ! -L "$work"
+            if [[ -d "$work" ]]; then
+              find "$work" -depth -type f -delete
+              find "$work" -depth -type d -empty -delete
+            fi
+            test ! -e "$work"
+          fi
+
+      - name: Verify exact price-free public audit
+        shell: bash
+        run: |
+          set -euo pipefail
+          track='research/phase9-exploratory-fxcm-20260901'
+          python3 "$track/runner/verify_fxcm_drive_vault.py" \
+            --report-dir "$VAULT_PUBLIC_REPORT" --expected-head-sha "$GITHUB_SHA" --expected-run-id "$GITHUB_RUN_ID"
+          test -z "$(find "$VAULT_PUBLIC_REPORT" -type f \( -iname '*.csv' -o -iname '*.gz' -o -iname '*.tar' -o -iname '*.zst' \) -print -quit)"
+          git diff --exit-code
+
+      - name: Upload exact price-free vault audit only
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: phase9-fxcm-private-drive-vault-v1-price-free-audit-${{ github.sha }}-${{ github.run_id }}
+          path: ${{ env.VAULT_PUBLIC_REPORT }}/
+          if-no-files-found: error
+          retention-days: 14
+          include-hidden-files: false

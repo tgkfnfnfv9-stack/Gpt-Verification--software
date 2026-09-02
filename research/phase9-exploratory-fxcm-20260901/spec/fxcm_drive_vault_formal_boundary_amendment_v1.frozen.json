@@ -1,0 +1,26 @@
+{
+  "schema_version": "phase9-exploratory-fxcm-drive-vault-formal-boundary-v1.0.0",
+  "status": "FROZEN_ACKNOWLEDGEMENT_BEFORE_EXPLORATORY_VAULT_EXECUTION",
+  "frozen_at": "2026-09-02",
+  "scope": "EXPLORATORY_FXCM_DRIVE_VAULT_ONLY",
+  "formal_phase9_authorization_effect": false,
+  "formal_phase9_frozen_files_modified": false,
+  "formal_phase9_provider_jforex_track_remains_separate": true,
+  "decision": {
+    "exploratory_vault_may_be_implemented_for_2010_through_2025": true,
+    "implementation_is_not_execution_authorization": true,
+    "execution_requires_new_exact_user_confirmation": true,
+    "after_any_2019_plus_vault_acquisition_formal_unseen_claim_must_be_retired": true,
+    "vault_data_may_not_be_used_as_formal_phase9_discovery_or_promotion_evidence": true,
+    "formal_phase9_frozen_acquisition_workflow_may_not_read_vault_data": true
+  },
+  "formal_split_effect_if_executed": {
+    "phase8_seen_period": "ALREADY_CONTAMINATED",
+    "development_walk_forward": "CONTAMINATED_BY_EXPLORATORY_VAULT_ACQUISITION",
+    "strict_oos": "CONTAMINATED_BY_EXPLORATORY_VAULT_ACQUISITION",
+    "final_holdout": "CONTAMINATED_BY_EXPLORATORY_VAULT_ACQUISITION",
+    "globally_unseen_formal_holdout_inside_vault": false,
+    "future_formal_holdout_requires_data_after_2026_under_A_NEW_CONTRACT": true
+  },
+  "required_execution_acknowledgement": "I_ACCEPT_EXPLORATORY_VAULT_2019_PLUS_RETIRES_FORMAL_PHASE9_UNSEEN_CLAIMS"
+}

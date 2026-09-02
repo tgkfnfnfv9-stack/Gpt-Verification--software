@@ -462,7 +462,7 @@
     "next_gate": "DRIVE_VAULT_ACQUISITION_AND_INDEPENDENT_AUDIT_BEFORE_BATCH6_COUNT"
   },
   "exploratory_fxcm_google_drive_data_vault": {
-    "status": "USER_APPROVED_PLAN_NO_PRICE_OR_AVAILABILITY_ACQUISITION_STARTED",
+    "status": "V1_CONTRACT_RUNNER_WORKFLOWS_TESTS_COMPLETE_NOT_DISPATCHED",
     "plan": "../phase9-exploratory-fxcm-20260901/GOOGLE_DRIVE_DATA_VAULT_PLAN.md",
     "folder_name": "Phase9 FXCM Data Vault",
     "folder_id": "1cGQrkdpSNY9RcfpniVTYNb6zE0t9nTKu",
@@ -484,11 +484,39 @@
     "public_git_or_artifact_price_storage_allowed": false,
     "one_acquisition_reuse_required": true,
     "oauth_configured": false,
-    "acquisition_contract_frozen": false,
+    "acquisition_contract_frozen": true,
+    "acquisition_contract": "../phase9-exploratory-fxcm-20260901/spec/fxcm_drive_vault_acquisition_v1.frozen.json",
+    "partitions_contract": "../phase9-exploratory-fxcm-20260901/spec/fxcm_drive_vault_partitions_v1.frozen.json",
+    "manifest_schema_contract": "../phase9-exploratory-fxcm-20260901/spec/fxcm_drive_vault_manifest_schema_v1.frozen.json",
+    "formal_boundary_amendment": "../phase9-exploratory-fxcm-20260901/spec/fxcm_drive_vault_formal_boundary_amendment_v1.frozen.json",
+    "availability_workflow": ".github/workflows/phase9-exploratory-fxcm-drive-vault-availability-v1.yml",
+    "acquisition_workflow": ".github/workflows/phase9-exploratory-fxcm-drive-vault-acquisition-v1.yml",
+    "expected_shard_count": 1344,
+    "expected_source_object_count": 69888,
+    "exploratory_partitions": {
+      "development": "2010-01-01T00:00:00Z/2020-01-01T00:00:00Z",
+      "strict_oos": "2020-01-01T00:00:00Z/2022-01-01T00:00:00Z",
+      "robustness": "2022-01-01T00:00:00Z/2024-01-01T00:00:00Z",
+      "final_holdout": "2024-01-01T00:00:00Z/2026-01-01T00:00:00Z"
+    },
+    "canonical_strategy_source": "M1_DERIVED_M5_M15_M30_H1_H4_D1_W1",
+    "direct_h1_d1_role": "QC_REFERENCE_ONLY_NO_FILL_NO_SUBSTITUTION",
+    "formal_2019_plus_unseen_claim_after_execution": "RETIRED_IF_EXPLORATORY_VAULT_EXECUTES",
+    "oauth_secret_names": [
+      "PHASE9_GDRIVE_OAUTH_CLIENT_ID",
+      "PHASE9_GDRIVE_OAUTH_CLIENT_SECRET",
+      "PHASE9_GDRIVE_OAUTH_REFRESH_TOKEN"
+    ],
+    "oauth_scope": "https://www.googleapis.com/auth/drive.file",
+    "oauth_preexisting_root_access_required": true,
+    "oauth_inaccessible_root_action": "FAIL_WITHOUT_SCOPE_EXPANSION_OR_PRICE_ACCESS",
+    "new_vault_test_count": 17,
+    "all_exploratory_test_count": 159,
+    "tests_passed": true,
     "availability_inventory_executed": false,
     "price_acquisition_executed": false,
     "batch6_dispatch_allowed_before_vault_audit": false,
-    "next_gate": "IMPLEMENT_AND_PUBLISH_VAULT_CONTRACT_RUNNER_WORKFLOW_TESTS_WITHOUT_DISPATCH"
+    "next_gate": "PUBLISH_MAIN_THEN_CONFIGURE_OAUTH_WITHOUT_DISPATCH"
   },
   "provider_acquisition": {
     "status": "ACTUAL_FULL_QC_CONTRACT_FROZEN_PROVIDER_SCHEDULE_SOURCE_P0_BLOCKED",
@@ -973,8 +1001,10 @@
   ],
   "next_actions": [
     "do not dispatch the existing Batch 6 workflow and do not acquire FXCM prices at session start",
-    "freeze the approved 2010-through-2025 G8-28 Google Drive vault acquisition, temporal partition, custody, shard, QC, manifest and personal-My-Drive OAuth contract before any availability or price access",
-    "implement and publish the one-manual-run year-matrix acquisition, Full-QC, private Drive upload, local cleanup and tests without dispatch; then present exact one-time OAuth setup and manual inputs",
+    "vault V1 contracts runner workflows and tests are complete; verify their published remote main identities before any external action",
+    "configure the three personal-My-Drive OAuth secrets in GitHub Environment phase9-fxcm-vault-acquisition without dispatching a workflow",
+    "only after a separate explicit user approval run the HEAD-only availability workflow Run 1 attempt 1; do not shrink the frozen 28-pair scope when coverage is missing",
+    "only after availability independent audit and another explicit user approval run the 16-year matrix acquisition workflow Run 1 attempt 1",
     "after explicit manual authorization and an independent vault audit, change only the Batch 6 data input to exact SHA-locked Drive shards; preserve candidates 321 through 324 and every frozen frequency rule",
     "advance only candidates that pass every frozen Batch 6 frequency and breadth condition to a separately frozen Return/OOS Gate using cumulative prior outcome-tested count 7 plus any Batch 6 selections",
     "reject every Batch 6 Count failure without threshold, direction, symbol, timeframe or mechanism rescue; do not rescue any Batch 1 through Batch 5 failure including EXP-P9-MTF-319",

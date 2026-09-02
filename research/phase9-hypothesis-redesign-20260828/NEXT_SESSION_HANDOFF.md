@@ -10,6 +10,25 @@ Actual Full-QC実装基準: `9eb7ce667bea8e76a7f9bb1f2d378eebd8957206`
 
 ## 2026-09-02 latest delta
 
+- 最新remote main `695c4e8e51d137259c8761e7ddd9e1f4d0295617`から開始し、指定56ファイル
+  （48,263行、約1.77MB）と運用ガイド追加正本を全文監査した。
+- Google Drive Vault V1の取得/custody、期間、shard、manifest、Formal境界の4契約を
+  価格・availability閲覧前に凍結した。
+- G8全28ペア×2010～2025年×direct m1/H1/D1 = 1,344 shard、週次source object
+  69,888件を固定した。欠損時は28→21ペア等へ縮小せず、root sealを作らない。
+- Canonical戦略系列はM1由来M5/M15/M30/H1/H4/D1/W1。direct H1/D1はQC参照のみで
+  補完・代替禁止。参照不一致はBatch 6移行を停止する。
+- Exploratory partitionはDevelopment 2010～2019、Strict OOS 2020～2021、
+  Robustness 2022～2023、Final holdout 2024～2025へ年境界で固定した。
+  これらはFormal Phase 9 splitではない。2019年以降を実取得した場合、Formalの旧未見主張は終了する。
+- 個人My Drive OAuth secret名、`drive.file` scope、同一OAuth clientへの既存rootアクセス付与、
+  固定folder ID、親ID完全一致、
+  staging→全件再download SHA照合→1,344件昇格→最終`VAULT_SEAL.json`の順序を固定した。
+- HEAD-only availability workflowと16年matrix一括取得workflow、runner、Drive client、
+  finalizer、public price-free verifier、Testsを実装した。新規17 tests、探索全159 testsは成功。
+- 両workflowはまだdispatchしていない。availability 0、Vault価格0、Batch 6 Count 0、
+  確認済みedge 0を維持。既存Batch 6 workflowも実行禁止のまま。
+
 - Exploratory FX8 MTF Run `33508634314`でdirect m1/H1取得、
   M15/H4/D1生成、最終64 BID/ASK系列の実行を完了した。価格はcleanup済み。
 - RR-201、RR-202、PS-202、PS-203、PS-205、LV-202、PS-204の
@@ -406,19 +425,18 @@ Provider schedule inventory / allowlist
 
 ## 7. 次に行う単一作業
 
-FX8 MTF取得/QC、Batch 1〜5のCount-only、302/304/305/311/312/316/319のReturn/OOSは完了し、
-Outcome検定済み7候補は全件不採用、確認済みedgeは0件である。301〜320を救済せず、
-Batch 6の321〜324をCount閲覧前に事前登録し、専用Count-only workflowを固定した。
-ただし、ユーザーは候補Batchごとの再取得をやめ、2010〜2025年のG8全28ペアを一度だけ
-取得して個人Google Driveへ保存・再利用する方式を承認した。Drive folder IDは
-`1cGQrkdpSNY9RcfpniVTYNb6zE0t9nTKu`で、確認時点では空。価格取得はまだ開始していない。
+Vault V1の契約、runner、workflow、Testsの実装は完了した。次の単一作業は、公開済みmainの
+正確なSHAを確認し、固定rootを同一OAuth clientから参照可能にしたうえで、個人My Drive
+OAuth 3 SecretsをGitHub Environment `phase9-fxcm-vault-acquisition`へ一度だけ設定する
+ことである。rootが参照不能ならscopeを拡大せず停止する。設定後も自動実行しない。
+ユーザーが実行範囲、Formal未見主張終了、FXCM EULAを明示承認した場合だけ、まず
+HEAD-only availability Run #1を実行する。28ペア×16年×3 direct periodicityの不足が
+1件でもあればscopeを縮小せず停止する。Availability成功と独立監査後に、別の明示承認で
+一括取得Run #1へ進む。
 
-次は`../phase9-exploratory-fxcm-20260901/GOOGLE_DRIVE_DATA_VAULT_PLAN.md`に従い、
-vault acquisition/custody契約、期間partition、year/symbol/periodicity shard、QC、manifest、
-個人My Drive OAuth境界を先に凍結する。その後、one-manual-runで年別parallel取得、
-Full-QC、private Drive upload、local cleanupを行うworkflowとTestsを実装・公開する。
-ユーザーの明示承認まではworkflowをdispatchしない。既存Batch 6 workflowも実行しない。
-321〜324の条件は変更せず、vault独立監査後にデータ入力だけをSHA固定Drive shardへ替える。
+Vault取得後もCount/Returnを自動実行しない。Drive内1,344 shardとmanifest/sealを独立監査し、
+2017～2018年の旧64系列互換性が完全一致した場合だけ、321～324の条件を変えず、Batch 6の
+data inputをSHA固定Vault shardへ切り替える。既存Batch 6 workflowは引き続き実行しない。
 
 Formal trackではV1 Run `33574659277`とV2 Run `33577505327`の単一使用認可は消費済みで、
 rerun/replayしない。remote resource/JAR request、JForex接続、正式価格取得も別承認前に行わない。
@@ -438,16 +456,20 @@ rerun/replayしない。remote resource/JAR request、JForex接続、正式価�
 
 ## 8. 残りの順序
 
-1. FX8 direct m1/H1を取得し、M15/H4/D1を生成して64系列をQCする
-2. MTF 64系列QCのRun/Artifact/SHA/countを独立監査する
-3. MTF QC後に別GateでCount-onlyを実行する
-4. Count-onlyが十分な仮説だけを、凍結ルールのままReturn/OOS検証する
-5. D1 regime → H4 structure → H1 setup → M15 entryの共通ルールを比較する
-6. 金銀・Energyとvolumeに必要なproviderを別trackで固定する
-7. Formal Phase 9ではprovider schedule、Energy metadata、remote runtime closure、cache/custodyを解消する
-8. すべてのFormal Blocker解消後に、正式取得認可を別Gateで凍結する
+1. 公開済みmain SHA、Vault V1契約・workflow・Testsを再確認する
+2. 個人My Drive OAuth Secretsを専用GitHub Environmentへ設定する
+3. ユーザーの明示承認後にHEAD-only availability Run #1を一度だけ実行する
+4. 28×16×3のavailabilityを独立監査し、欠損時はscopeを縮小せず停止する
+5. 別の明示承認後に16年matrix一括取得Run #1を一度だけ実行する
+6. private Driveの1,344 shard、69,888 source identity、manifest、sealを独立監査する
+7. 旧64系列互換性を確認後、Batch 6の入力だけをVaultへ切り替えてCount-onlyを実行する
+8. Count通過候補だけをReturn/OOS→新期間→頑健性へ進め、最後にMT5を検討する
+9. Formal JForex/provider schedule/Energy trackは別のまま維持する
 
 ## 9. 絶対禁止
+
+以下の2019年境界・provider schedule禁止はFormal JForex trackに適用する。Exploratory Vaultは
+別契約・別明示承認でのみ2010～2025年を扱い、その実行時にはFormal未見主張を終了する。
 
 - Provider schedule未固定のままprice取得へ進む
 - Gate単体で `acquisition_authorized=true` にする

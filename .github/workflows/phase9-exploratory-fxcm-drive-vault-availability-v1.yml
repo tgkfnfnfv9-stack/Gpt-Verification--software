@@ -1,0 +1,104 @@
+name: phase9-exploratory-fxcm-drive-vault-head-availability-v1
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirmation:
+        description: 'Type RUN_PHASE9_EXPLORATORY_FXCM_DRIVE_VAULT_V1_HEAD_AVAILABILITY_ONLY'
+        required: true
+        type: string
+      usage_confirmation:
+        description: 'Type I_CONFIRM_PERSONAL_NONCOMMERCIAL_USE_AND_ACCEPT_FXCM_EULA'
+        required: true
+        type: string
+      formal_acknowledgement:
+        description: 'Type I_ACCEPT_EXPLORATORY_VAULT_2019_PLUS_RETIRES_FORMAL_PHASE9_UNSEEN_CLAIMS'
+        required: true
+        type: string
+      expected_head_sha:
+        description: 'Exact published main SHA reviewed by the user'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: phase9-exploratory-fxcm-drive-vault-head-availability-v1
+  cancel-in-progress: false
+
+jobs:
+  inventory-year:
+    if: >-
+      github.repository == 'tgkfnfnfv9-stack/Gpt-Verification--software' &&
+      github.ref == 'refs/heads/main' &&
+      github.run_number == 1 &&
+      github.run_attempt == 1 &&
+      inputs.confirmation == 'RUN_PHASE9_EXPLORATORY_FXCM_DRIVE_VAULT_V1_HEAD_AVAILABILITY_ONLY' &&
+      inputs.usage_confirmation == 'I_CONFIRM_PERSONAL_NONCOMMERCIAL_USE_AND_ACCEPT_FXCM_EULA' &&
+      inputs.formal_acknowledgement == 'I_ACCEPT_EXPLORATORY_VAULT_2019_PLUS_RETIRES_FORMAL_PHASE9_UNSEEN_CLAIMS' &&
+      inputs.expected_head_sha == github.sha
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    strategy:
+      fail-fast: false
+      max-parallel: 4
+      matrix:
+        year: [2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025]
+    steps:
+      - name: Checkout exact reviewed main commit
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+          ref: ${{ github.sha }}
+
+      - name: Verify frozen contracts and tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          track='research/phase9-exploratory-fxcm-20260901'
+          test "$(sha256sum "$track/spec/fxcm_drive_vault_acquisition_v1.frozen.json" | cut -d' ' -f1)" = 'c4eb1ccff34271b126c5a34b8910ad8eba86403aff69da7dafb5ab91acb78408'
+          test "$(sha256sum "$track/spec/fxcm_drive_vault_partitions_v1.frozen.json" | cut -d' ' -f1)" = 'b96df8d1fb8c671484842f065cfce9ec9884d280798e0b7e7715732bc837cae4'
+          test "$(sha256sum "$track/spec/fxcm_drive_vault_manifest_schema_v1.frozen.json" | cut -d' ' -f1)" = 'b6f4aaf9acb6decd0d975847b4f822fbc89a50434602def4f86fbafbe6c37846'
+          test "$(sha256sum "$track/spec/fxcm_drive_vault_formal_boundary_amendment_v1.frozen.json" | cut -d' ' -f1)" = '7392b0f90a6496b616aa2de7b863c6dc396ca16a09351cc0d87cde1e358d5715'
+          PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s "$track/tests" -p 'test_fxcm_drive_vault_*.py'
+          git diff --exit-code
+
+      - name: Run HEAD-only availability inventory with zero response-body reads
+        shell: bash
+        env:
+          CONFIRMATION: ${{ inputs.confirmation }}
+          USAGE_CONFIRMATION: ${{ inputs.usage_confirmation }}
+          FORMAL_ACKNOWLEDGEMENT: ${{ inputs.formal_acknowledgement }}
+        run: |
+          set -euo pipefail
+          umask 077
+          track='research/phase9-exploratory-fxcm-20260901'
+          report="$RUNNER_TEMP/fxcm-vault-availability-${{ matrix.year }}-${GITHUB_RUN_ID}"
+          echo "AVAILABILITY_REPORT=$report" >> "$GITHUB_ENV"
+          python3 "$track/runner/fxcm_drive_vault_inventory.py" \
+            --acquisition-contract "$track/spec/fxcm_drive_vault_acquisition_v1.frozen.json" \
+            --partitions-contract "$track/spec/fxcm_drive_vault_partitions_v1.frozen.json" \
+            --manifest-schema "$track/spec/fxcm_drive_vault_manifest_schema_v1.frozen.json" \
+            --formal-boundary "$track/spec/fxcm_drive_vault_formal_boundary_amendment_v1.frozen.json" \
+            --year '${{ matrix.year }}' --output-dir "$report" \
+            --confirmation "$CONFIRMATION" --usage-confirmation "$USAGE_CONFIRMATION" \
+            --formal-acknowledgement "$FORMAL_ACKNOWLEDGEMENT"
+
+      - name: Verify availability artifact is metadata-only
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(find "$AVAILABILITY_REPORT" -type f | wc -l)" -eq 2
+          test -z "$(find "$AVAILABILITY_REPORT" -type f \( -iname '*.csv' -o -iname '*.gz' -o -iname '*.tar' -o -iname '*.zst' \) -print -quit)"
+          (cd "$AVAILABILITY_REPORT" && sha256sum -c artifact_manifest_sha256.txt)
+
+      - name: Upload price-free availability metadata
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: fxcm-vault-availability-${{ matrix.year }}-${{ github.sha }}-${{ github.run_id }}
+          path: ${{ env.AVAILABILITY_REPORT }}/
+          if-no-files-found: error
+          retention-days: 14
+          include-hidden-files: false

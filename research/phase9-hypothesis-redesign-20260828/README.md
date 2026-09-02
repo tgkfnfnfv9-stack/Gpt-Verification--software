@@ -26,6 +26,14 @@
 
 旧tmp workflowによる境界事故が確認されています。`POLICY_INCIDENT_20260829.md`を参照してください。2022〜2026年は後続splitとしての有効性再監査が必要です。
 
+## Exploratory FXCM reusable vault（Formalとは別track）
+
+候補ごとの再取得を止めるため、G8全28ペア・2010～2025年を一度だけprivate Google Driveへ
+保存するVault V1の契約、runner、manual workflow、Testsを実装済みである。availabilityと
+価格取得は未実行で、既存Batch 6も停止中。Exploratory Vaultを実行した場合、2019年以降は
+Formal Phase 9の未見期間とは主張しない。詳細は
+`../phase9-exploratory-fxcm-20260901/GOOGLE_DRIVE_DATA_VAULT_PLAN.md`を参照する。
+
 公開endpoint取得は`PROVIDER_ACQUISITION_BLOCKER.md`の3件のP0により廃止しました。代わりに`JFOREX_SOURCE_CHANNEL_AMENDMENT.md`で、公式認証JForex Tester API、4つの固定取得run、H1の一律2019年8月除外を結果未閲覧で凍結しています。Java class-origin guard preflight Run `33336895081`は19/19 tests、online 1回＋offline 2回のJAR SHA一致、930-file inventory一致、外部probeのexit 86拒否でSuccessです。実証範囲はpre-connect non-bootstrap self/adversarial testだけで、実際のJForex接続、JNI/native、child process、OS-level egress、full QCは未検証です。これは監査証跡であり取得許可ではありません。市場price fileはまだ0件です。
 
 Provider schedule source P0に対して、`JFOREX_METADATA_ONLY_CONNECTION_AMENDMENT.md`と`spec/metadata_only_jforex_schedule_gate.frozen.json`は、将来のoffline-domain metadata観測境界を2026-09-01に別途凍結しました。現workflowはno-secret/no-JNLP/no-JForex/no-networkの静的preflightだけで、connection dispatchは未認可です。公式APIのweekend intervalだけではholiday、maintenance、Energy session、schedule versionの完全性を証明できないため、24-file inventoryとallowlistは未作成、取得認可はfalseのままです。
