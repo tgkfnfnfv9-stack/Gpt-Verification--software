@@ -1,7 +1,7 @@
 {
   "project": "auto-trading-research",
   "updated_at": "2026-09-02",
-  "phase": "PHASE9_EXPLORATORY_BLIND_MTF_BATCH2_RETURN_OOS_COMPLETE_NO_EDGE_NEXT_INDEPENDENT_MECHANISM_BATCH",
+  "phase": "PHASE9_EXPLORATORY_BLIND_MTF_BATCH3_PREREGISTERED_COUNT_ONLY_WORKFLOW_READY_NOT_RUN",
   "phase8": {
     "formal_hypotheses_including_pa002": 16,
     "decision": "ALL_REJECT_FOR_DEVELOPMENT",
@@ -54,7 +54,7 @@
     "legacy_non_phase9_future_period_download_detected": true
   },
   "exploratory_fxcm_multitimeframe": {
-    "status": "MTF_64_SERIES_EXECUTED_COUNT_ONLY_COMPLETE_NO_RETURN_GATE",
+    "status": "MTF_64_SERIES_EXECUTED_BATCH3_COUNT_ONLY_PREREGISTERED_NOT_RUN",
     "formal_phase9_authorization_effect": false,
     "plan": "../phase9-exploratory-fxcm-20260901/MULTI_TIMEFRAME_DATA_PLAN.md",
     "contract": "../phase9-exploratory-fxcm-20260901/spec/fxcm_multitimeframe_data_requirements.frozen.json",
@@ -236,6 +236,32 @@
     },
     "exploratory_edge_pass_candidates": [],
     "next_gate": "NEW_INDEPENDENT_MECHANISM_BATCH_NO_RESCUE_OF_302_304_OR_305"
+  },
+  "exploratory_blind_mtf_batch3_count_gate": {
+    "status": "PREREGISTERED_WORKFLOW_AND_TESTS_READY_COUNT_NOT_RUN",
+    "formal_phase9_authorization_effect": false,
+    "workflow": ".github/workflows/phase9-exploratory-fxcm-blind-mtf-batch3-count-only.yml",
+    "contract": "../phase9-exploratory-fxcm-20260901/spec/fxcm_blind_mtf_candidates_v3.frozen.json",
+    "runner": "../phase9-exploratory-fxcm-20260901/runner/fxcm_blind_mtf_count_only_v3.py",
+    "candidate_ids": ["EXP-P9-MTF-309", "EXP-P9-MTF-310", "EXP-P9-MTF-311", "EXP-P9-MTF-312"],
+    "mechanism_families": [
+      "OVEREXTENSION_MEAN_REVERSION",
+      "ACCEPTED_BREAKOUT_FAILURE_REVERSAL",
+      "FIXED_UTC_SESSION_EFFECT",
+      "CROSS_PAIR_SYNCHRONIZED_BREADTH"
+    ],
+    "confirmation": "RUN_EXPLORATORY_FXCM_BLIND_MTF_BATCH3_COUNT_ONLY_2017_2018_V1",
+    "usage_confirmation": "I_CONFIRM_PERSONAL_NONCOMMERCIAL_USE_AND_ACCEPT_FXCM_EULA",
+    "manual_single_use_run_number": 1,
+    "required_run_attempt": 1,
+    "prior_candidate_rescue": false,
+    "count_only": true,
+    "count_executed": false,
+    "return_calculated": false,
+    "research_outcomes_calculated": false,
+    "outcome_fields": [],
+    "future_return_gate_must_include_prior_three_outcome_candidates_in_multiplicity_correction": true,
+    "next_gate": "MANUAL_SINGLE_USE_BATCH3_COUNT_ONLY_RUN"
   },
   "provider_acquisition": {
     "status": "ACTUAL_FULL_QC_CONTRACT_FROZEN_PROVIDER_SCHEDULE_SOURCE_P0_BLOCKED",
@@ -719,6 +745,9 @@
     "implement MT5 EA"
   ],
   "next_actions": [
+    "dispatch the single-use Batch 3 Count-only workflow exactly once with both frozen confirmation strings; do not calculate or inspect Return, wins, PF, p-values or Outcome",
+    "if and only if a Batch 3 candidate passes its frozen frequency Gate, freeze a separate Return/OOS contract with cumulative multiplicity correction over the three prior outcome-tested candidates plus every new passer",
+    "reject every Batch 3 Count failure without threshold, direction, symbol, timeframe or exit rescue",
     "do not rerun or replay failed V1 libs JNLP Run 33574659277 or skipped Run 33575321670; V1 authorization is consumed and its HTTP request count is zero",
     "do not rerun or replay successful V2 libs JNLP Run 33577505327; its single-use authorization is consumed",
     "use the independently audited 36-entry observed URL inventory as evidence only; no entry is authorized for request or execution",

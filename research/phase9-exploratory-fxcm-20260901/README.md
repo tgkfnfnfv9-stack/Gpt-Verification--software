@@ -210,3 +210,23 @@ Run #1 / attempt #1は全step success。Artifact `9830865694`（ZIP SHA-256
 305はIS/OOSとも負で、OOSの全四半期平均も負。累積3候補補正後のbootstrap下限も負。
 threshold、direction、symbol、exit horizonを変更せず不採用とする。現在の探索的
 Outcome検定済み候補302/304/305は全件不採用、確認済みedge候補は0件。
+
+## Blind MTF Batch 3 Count-only Preregistration
+
+302/304/305を救済せず、301〜308とmechanismが重複しない4件を、最初のBatch 3
+Count閲覧前に`spec/fxcm_blind_mtf_candidates_v3.frozen.json`へ凍結した。
+
+- `EXP-P9-MTF-309`: D1 overextension → H4 exhaustion → H1 recapture
+- `EXP-P9-MTF-310`: H4 accepted breakout → structural failure → M15 reversal
+- `EXP-P9-MTF-311`: fixed 13:00 UTC London–New York overlap impulse
+- `EXP-P9-MTF-312`: target-excluded synchronized cross-pair currency breadth
+
+`runner/fxcm_blind_mtf_count_only_v3.py`と
+`.github/workflows/phase9-exploratory-fxcm-blind-mtf-batch3-count-only.yml`は、
+件数、active UTC dates、銘柄・方向・年coverage、identity SHAだけを計算する。
+Return、MFE、MAE、勝敗、PF、Drawdown、P値、信頼区間、順位、Outcomeは計算・保存しない。
+価格は同一RunのArtifact upload前に破棄し、Artifactは価格を含まない2ファイルだけとする。
+
+Count Gate通過候補がある場合だけ、別CommitでReturn/OOS契約を凍結する。その推測統計は
+Outcome検定済みの302/304/305とBatch 3通過候補を合わせた累積候補数で多重検定補正する。
+Count不通過候補のthreshold、direction、symbol、timeframe、exitは変更せず不採用とする。

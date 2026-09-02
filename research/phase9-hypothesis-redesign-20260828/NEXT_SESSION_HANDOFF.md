@@ -47,6 +47,10 @@ Actual Full-QC実装基準: `9eb7ce667bea8e76a7f9bb1f2d378eebd8957206`
   Run #2がskip。取得・Return・Outcome未開始を監査後、専用recovery Run `33587536789`を
   実行。305はIS mean R -0.1629、OOS -0.3254、OOS PF 0.7471で不採用。
   Outcome検定済み302/304/305は全件不採用。次は新しい独立mechanism batchを事前登録する。
+- Batch 3として309〜312をCount閲覧前に事前登録した。mechanismは過伸展平均回帰、
+  accepted breakout failure、固定13:00 UTC session効果、target除外cross-pair breadth。
+  専用Count-only runner、single-use manual workflow、Testsを実装済み。Countは未実行で、
+  Return、勝敗、PF、P値、Outcomeは未計算・未閲覧。次はworkflowを1回だけ手動実行する。
 
 ## 1. この引継ぎの結論
 
@@ -54,8 +58,9 @@ Phase 9では、実価格データを受け入れて検査するActual Full-QC�
 Exploratory FXCMではRun `33508634314`でdirect m1/H1取得、M15/H4/D1生成、
 FX8 × 4時間足 × BID/ASKの64系列QCまで完了した。既存7候補のCount-onlyは
 Return Gate通過0件で、Return/Outcomeは未計算。現在は、Count-onlyを通過した305だけの
-Return/OOSまで完了し、305も不採用となった。次は302/304/305を救済せず、新しい独立
-mechanism batchを結果閲覧前に事前登録する段階である。Formal provider
+Return/OOSまで完了し、305も不採用となった。302/304/305を救済せず、独立mechanismの
+Batch 3（309〜312）をCount閲覧前に事前登録し、Count-only workflowまで実装した。
+次はこのsingle-use workflowを1回だけ実行する段階である。Formal provider
 scheduleと金銀・Energyのblockerは別trackに残し、探索を遅らせない。
 
 ```text
@@ -86,7 +91,9 @@ Exploratory FX8 MTF 64系列
 305 Return-OOS
   ↓ REJECT、edge PASS 0件、救済なし
 新しい独立mechanism batch
-  ↓ NEXT: preregister before Count
+  ↓ 309〜312 preregistered / Count workflow ready
+Batch 3 Count-only
+  ↓ NEXT: one manual single-use run
 Provider schedule source readiness
   ↓ P0 BLOCKED（公式version付き完全履歴source未固定）
 Metadata-only JForex amendment / static Gate
@@ -163,6 +170,9 @@ Provider schedule inventory / allowlist
 57. `research/phase9-exploratory-fxcm-20260901/results/run-33587087527/BATCH2_RETURN_PREOUTCOME_CANCELLATION_AUDIT.json`
 58. `.github/workflows/phase9-exploratory-fxcm-blind-mtf-batch2-return-oos-recovery.yml`
 59. `research/phase9-exploratory-fxcm-20260901/results/run-33587536789/BLIND_MTF_BATCH2_RETURN_OOS_INDEPENDENT_AUDIT.json`
+60. `research/phase9-exploratory-fxcm-20260901/spec/fxcm_blind_mtf_candidates_v3.frozen.json`
+61. `research/phase9-exploratory-fxcm-20260901/runner/fxcm_blind_mtf_count_only_v3.py`
+62. `.github/workflows/phase9-exploratory-fxcm-blind-mtf-batch3-count-only.yml`
 
 凍結仕様の優先順位は、candidate registry、data requirements、preregistered policy。Markdown要約で凍結仕様を変更しない。
 
@@ -181,7 +191,7 @@ Provider schedule inventory / allowlist
 | MTF時間足 | direct m1/H1取得済み、M15/H4/D1生成済み |
 | MTF最終必要系列 | FX8 × M15/H1/H4/D1 × BID/ASK = 64系列 |
 | Actual Full-QC | 契約実装済み、実データでは未実行 |
-| Count-only | 302/304と305が通過。301/303/306/307/308は不採用 |
+| Count-only | 302/304と305が通過。301/303/306/307/308は不採用。309〜312は事前登録済み・未実行 |
 | Return検証・バックテスト | 302/304/305完了、全件不採用 |
 | 確認済みPhase 9優位性 | 0件 |
 | MT5 EA | 実装禁止 |
@@ -346,17 +356,28 @@ Provider schedule inventory / allowlist
 
 ## 7. 次に行う単一作業
 
-FX8 MTF取得/QCと、既存FX8で実行可能な7候補のCount-onlyは完了した。
-探索Return Gate通過候補は0件なので、同じFX8でReturnを計算しない。
+FX8 MTF取得/QC、Batch 1/2のCount-only、302/304/305のReturn/OOSは完了し、
+確認済みedgeは0件である。301〜308を救済せず、Batch 3の309〜312をCount閲覧前に
+事前登録し、専用Count-only workflowとTestsまで実装した。
 
-V1 Run `33574659277`は通信前に停止、V2 Run `33577505327`は成功・独立監査済み。
-両方の単一使用認可は消費済みなのでrerun/replayしない。
+次は`.github/workflows/phase9-exploratory-fxcm-blind-mtf-batch3-count-only.yml`を
+Run #1 / attempt #1として1回だけ手動実行する。入力は次の完全一致文字列を使う。
 
-次はremote runtime closureを最短で進めるため、凍結済み36 identityから実行に
-必要な最小resource setを固定し、別の完全一致手動承認Gateを作る。承認前に
-resource/JARをrequestしない。resource取得Runでも価格、schedule、availability、
-Count、Return、Outcomeへ進まない。runtime整合と価格分離が確認できた後にのみ、
-別GateでJForex接続・正式価格取得へ進む。
+```text
+confirmation:
+RUN_EXPLORATORY_FXCM_BLIND_MTF_BATCH3_COUNT_ONLY_2017_2018_V1
+
+usage_confirmation:
+I_CONFIRM_PERSONAL_NONCOMMERCIAL_USE_AND_ACCEPT_FXCM_EULA
+```
+
+このRunでは件数・coverageだけを確認する。Return、MFE、MAE、勝敗、PF、P値、
+信頼区間、順位、Outcomeを計算・表示しない。Count通過候補がある場合だけ別Commitで
+Return/OOS契約を凍結し、既にOutcome検定済みの302/304/305と新通過候補を合わせた
+累積候補数で多重検定補正する。不通過候補は条件変更せず不採用とする。
+
+Formal trackではV1 Run `33574659277`とV2 Run `33577505327`の単一使用認可は消費済みで、
+rerun/replayしない。remote resource/JAR request、JForex接続、正式価格取得も別承認前に行わない。
 
 2026-09-01のA0〜A7監査で確認した境界:
 

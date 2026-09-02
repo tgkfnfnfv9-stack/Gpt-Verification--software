@@ -19,8 +19,11 @@ GitHub Repository `tgkfnfnfv9-stack/Gpt-Verification--software` のPhase 9自動
 10. `research/phase9-exploratory-fxcm-20260901/results/run-33585508306/BLIND_MTF_BATCH2_COUNT_ONLY_INDEPENDENT_AUDIT.json`
 11. `research/phase9-exploratory-fxcm-20260901/spec/fxcm_blind_mtf_batch2_return_oos_v1.frozen.json`
 12. `research/phase9-exploratory-fxcm-20260901/results/run-33587536789/BLIND_MTF_BATCH2_RETURN_OOS_INDEPENDENT_AUDIT.json`
+13. `research/phase9-exploratory-fxcm-20260901/spec/fxcm_blind_mtf_candidates_v3.frozen.json`
+14. `research/phase9-exploratory-fxcm-20260901/runner/fxcm_blind_mtf_count_only_v3.py`
+15. `.github/workflows/phase9-exploratory-fxcm-blind-mtf-batch3-count-only.yml`
 
-作業開始時点の基準remote commitは`6c7be3c06e69d9b758189ebcbaf281016e639468`です。ただし、必ず最新remote `main`を再確認してください。
+Batch 3実装開始時点の基準remote commitは`e24fbd0f74009b30130fbd0dde3e9d33900c0ac0`です。ただし、必ず最新remote `main`を再確認してください。
 
 ## 最終目的
 
@@ -83,31 +86,30 @@ Count Run `33585508306`、Return/OOS Recovery Run `33587536789`は完了・成�
 - 3件すべて正式に不採用
 - 確認済みExploratory edge: 0件
 - 301/303/306/307/308もCount Gate不通過で不採用
+- Batch 3の309〜312はCount閲覧前に事前登録済み
+- Batch 3専用Count-only runner、single-use manual workflow、Testsは実装済み
+- Batch 3 Countは未実行。件数・合否・Return・Outcomeは未閲覧
 - 失敗候補のthreshold、direction、symbol、timeframe、exit horizon変更による救済は禁止
 - MT5 EA実装はまだ禁止
 
 ## 次の単一作業
 
-302/304/305の派生・微調整ではない、新しい独立mechanismの価格MTF仮説Batch 3を、Countを見る前に事前登録してください。
+公開済みの`.github/workflows/phase9-exploratory-fxcm-blind-mtf-batch3-count-only.yml`を
+Run #1 / attempt #1として1回だけ手動実行してください。
 
-最低条件:
+入力値:
 
-1. 既存301～308とのmechanism重複を明示的に検査する
-2. 仮説、方向、対象8銘柄、使用時間足、閾値、重複排除、Count Gateを結果閲覧前に凍結する
-3. Count-only専用workflowを実装する
-4. Count-only RunではReturn、Return符号、MFE、MAE、勝敗、勝率、PF、Drawdown、P値、信頼区間、順位、Outcomeを計算・表示しない
-5. Count通過候補だけを後続の別Return/OOS Gateへ進める
-6. 後続Return/OOSでは、既にOutcomeを検定した3候補も含む累積多重検定補正を必須とする
-7. 通過しない候補は救済しない
+confirmation:
+`RUN_EXPLORATORY_FXCM_BLIND_MTF_BATCH3_COUNT_ONLY_2017_2018_V1`
 
-新しいBatchは、少なくとも以下のように既存候補とは異なる独立mechanismを優先して検討してください。
+usage_confirmation:
+`I_CONFIRM_PERSONAL_NONCOMMERCIAL_USE_AND_ACCEPT_FXCM_EULA`
 
-- 過伸展後の平均回帰
-- 失敗ブレイク後の反転
-- 時刻固定のsession効果。ただし301のAsia range break-retestとは重複させない
-- 複数通貨ペアの同時breadthを使うcross-pair確認
-
-候補数を増やすこと自体を目的にせず、経済的・市場構造上の理由を説明できる仮説だけを事前登録してください。
+このRunでは件数・coverageだけを確認し、Return、Return符号、MFE、MAE、勝敗、勝率、
+PF、Drawdown、P値、信頼区間、順位、Outcomeを計算・表示しないでください。
+Run完了後はArtifactを独立監査し、Count通過候補だけを次の別Return/OOS Gateへ進めます。
+後続Return/OOSはOutcome検定済み302/304/305とBatch 3通過候補を合わせた累積候補数で
+多重検定補正します。Count不通過候補は救済しません。
 
 ## 厳守事項
 
@@ -120,5 +122,5 @@ Count Run `33585508306`、Return/OOS Recovery Run `33587536789`は完了・成�
 - Formal Phase 9とExploratory FXCMを混同しない
 - Formal 12市場のprovider schedule、Energy metadata、JForex runtime closureは未解決の別track
 
-まず「何を新規仮説として選び、なぜ既存301～308と独立なのか」を短く示し、その後は事前登録、実装、Tests、GitHub公開まで止まらず進めてください。手動workflowが必要になった時点で、リンクと入力値をコピー可能な形で提示してください。
+まず最新remote、workflow SHA、single-use条件を確認し、実行リンクと入力値をコピー可能な形で提示してください。
 ```

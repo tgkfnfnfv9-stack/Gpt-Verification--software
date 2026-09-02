@@ -1,0 +1,135 @@
+{
+  "schema_version": "phase9-exploratory-fxcm-blind-mtf-candidates-v3.0.0",
+  "status": "FROZEN_AFTER_BATCH2_REJECTION_BEFORE_FIRST_BATCH3_SIGNAL_COUNT",
+  "recorded_at_utc": "2026-09-02T04:03:40Z",
+  "track": "EXPLORATORY_FX8_BLIND_MTF_PRICE_ONLY_BATCH3_NOT_FORMAL_PHASE9",
+  "purpose": "Screen four economically motivated mechanisms that are independent of candidates 301 through 308, without rescuing a rejected candidate and without calculating or viewing any Batch 3 outcome.",
+  "selection_integrity": {
+    "rejected_candidates_acknowledged": [
+      "EXP-P9-MTF-301", "EXP-P9-MTF-302", "EXP-P9-MTF-303", "EXP-P9-MTF-304",
+      "EXP-P9-MTF-305", "EXP-P9-MTF-306", "EXP-P9-MTF-307", "EXP-P9-MTF-308"
+    ],
+    "outcome_tested_rejections_acknowledged": ["EXP-P9-MTF-302", "EXP-P9-MTF-304", "EXP-P9-MTF-305"],
+    "prior_threshold_direction_symbol_timeframe_or_exit_rescue_allowed": false,
+    "prior_outcomes_used_to_choose_batch3_thresholds": false,
+    "batch3_count_or_outcome_viewed_before_freeze": false,
+    "all_eight_fx_pairs_required": true,
+    "threshold_change_after_count": false,
+    "future_return_familywise_correction_must_include_prior_three_outcome_candidates": true,
+    "formal_authorization_effect": false
+  },
+  "mechanism_independence": {
+    "EXP-P9-MTF-309": {
+      "mechanism_family": "OVEREXTENSION_MEAN_REVERSION",
+      "independent_of_301_308": "Uses absolute D1 displacement from EMA20 followed by H4 exhaustion and H1 midpoint recapture; no prior candidate uses an absolute higher-timeframe overextension state."
+    },
+    "EXP-P9-MTF-310": {
+      "mechanism_family": "ACCEPTED_BREAKOUT_FAILURE_REVERSAL",
+      "independent_of_301_308": "Requires an H4 close accepted beyond a 24-bar boundary before a later H4 close fails back inside and M15 confirms reversal; it is not a wick sweep, double rejection, compression release or trend continuation."
+    },
+    "EXP-P9-MTF-311": {
+      "mechanism_family": "FIXED_UTC_SESSION_EFFECT",
+      "independent_of_301_308": "Evaluates only the H1 bar opening at 13:00 UTC as a fixed London-New York overlap event; it does not construct or retest the 00:00-06:00 Asia range used by 301."
+    },
+    "EXP-P9-MTF-312": {
+      "mechanism_family": "CROSS_PAIR_SYNCHRONIZED_BREADTH",
+      "independent_of_301_308": "Direction is derived from synchronized four-hour currency votes in the other seven pairs with the target pair excluded; candidates 301 through 311 are single-pair mechanisms."
+    }
+  },
+  "anchors": {
+    "base_count_utility_sha256": "2991575f471c19de35d04ae21d276cc25d52d9fb705587a8259f70d43639cdad",
+    "mtf_qc_runner_sha256": "09da37be5955dcf142752d70dc21542f21e5ea71835c7f1073e68f52585971cd",
+    "canonical_mtf_report_sha256": "4d7f77caa5333e017742e01606aa869f3845aa4c4f206563e2fd59e02b1e1063",
+    "batch1_candidate_contract_sha256": "8d832dbf779098d00c731d87547b30ed6944ee2c227d505e540ea95a7efaa1e3",
+    "batch2_candidate_contract_sha256": "4fac27599445d7dc28b7cffc99c8c6fdd19c640e2fb0fca1a90b9d5f799bc615",
+    "latest_outcome_audit_sha256": "83f136d8ef8ffb50bda9f92edd3a7cccb4c0b2aa4f783572147371cba56290e0"
+  },
+  "dataset": {
+    "symbols": ["AUDJPY", "AUDUSD", "EURGBP", "EURJPY", "EURUSD", "GBPJPY", "GBPUSD", "USDJPY"],
+    "start_inclusive": "2017-01-01T00:00:00Z",
+    "end_exclusive": "2018-12-31T00:00:00Z",
+    "available_timeframes": ["M15", "H1", "H4", "D1"],
+    "feature_price": "FIELDWISE_ARITHMETIC_MID_OF_SYNCHRONIZED_BID_AND_ASK_OHLC",
+    "volume_used": false,
+    "forward_fill_or_interpolation": false,
+    "persistent_prices": false
+  },
+  "common_rules": {
+    "timestamps": "UTC_BAR_OPEN",
+    "higher_timeframe_available_only_after_bucket_end": true,
+    "atr14": "MEAN_TRUE_RANGE_OF_14_BARS_ENDING_IMMEDIATELY_BEFORE_EVENT_BAR",
+    "ema": "RECURSIVE_ALPHA_2_OVER_PERIOD_PLUS_1_SEEDED_WITH_FIRST_CLOSE",
+    "entry": "NEXT_OBSERVED_BAR_OPEN_NO_LATER_THAN_TWO_NOMINAL_DURATIONS_AFTER_FINAL_CONFIRMATION_CLOSE",
+    "overlap": "SAME_CANDIDATE_INSTRUMENT_DIRECTION_KEEP_EARLIEST_THEN_DROP_ENTRIES_WITHIN_12_REAL_HOURS",
+    "episode": "CANDIDATE_PLUS_UTC_SIGNAL_DATE_PLUS_DIRECTION_KEEP_EARLIEST",
+    "signal_timestamp_or_price_in_artifact": false,
+    "forward_outcome_access": false
+  },
+  "candidates": {
+    "EXP-P9-MTF-309": {
+      "name": "D1 Overextension H4 Exhaustion H1 Recapture",
+      "mechanism": "A D1 close displaced far from EMA20 mean-reverts only after a large terminal-wick H4 exhaustion bar and an H1 close recaptures that exhaustion bar midpoint.",
+      "signal_timeframe": "H1",
+      "event_timeframes": ["D1", "H4"],
+      "d1_ema_period": 20,
+      "d1_overextension_atr_min": 2.0,
+      "h4_exhaustion_bars_max": 6,
+      "h4_exhaustion_selection": "EARLIEST_QUALIFYING_EXHAUSTION_ONLY",
+      "h4_range_atr_min": 1.5,
+      "h4_terminal_wick_ratio_min": 0.35,
+      "h1_recapture_bars_max": 4,
+      "h1_body_ratio_min": 0.45,
+      "frequency_gate": {"episodes_min": 120, "active_dates_min": 90, "instruments_min_10": 6, "max_instrument_share": 0.25, "each_year_share_min": 0.30}
+    },
+    "EXP-P9-MTF-310": {
+      "name": "H4 Accepted Breakout Failure M15 Reversal",
+      "mechanism": "An H4 close first establishes an accepted breakout beyond a 24-bar boundary, then a later H4 close fails back inside before an M15 bar confirms reversal through the failure-bar midpoint.",
+      "signal_timeframe": "M15",
+      "event_timeframe": "H4",
+      "h4_boundary_lookback": 24,
+      "h4_break_distance_atr_min": 0.10,
+      "h4_break_body_ratio_min": 0.55,
+      "h4_failure_bars_max": 2,
+      "h4_failure_selection": "EARLIEST_QUALIFYING_FAILURE_ONLY",
+      "h4_reentry_distance_atr_min": 0.05,
+      "h4_failure_body_ratio_min": 0.45,
+      "m15_confirmation_bars_max": 4,
+      "m15_body_ratio_min": 0.55,
+      "frequency_gate": {"episodes_min": 180, "active_dates_min": 120, "instruments_min_15": 6, "max_instrument_share": 0.25, "each_year_share_min": 0.30}
+    },
+    "EXP-P9-MTF-311": {
+      "name": "Fixed 13 UTC London New York Overlap Impulse",
+      "mechanism": "Only the H1 bar opening at 13:00 UTC is eligible; a bounded directional impulse is followed when its close agrees with the latest completed H4 EMA20/EMA50 state.",
+      "signal_timeframe": "H1",
+      "higher_timeframe": "H4",
+      "fixed_signal_bar_open_hour_utc": 13,
+      "h4_ema_periods": [20, 50],
+      "h1_range_atr_min": 0.80,
+      "h1_range_atr_max": 1.80,
+      "h1_body_ratio_min": 0.60,
+      "frequency_gate": {"episodes_min": 220, "active_dates_min": 180, "instruments_min_20": 6, "max_instrument_share": 0.25, "each_year_share_min": 0.30}
+    },
+    "EXP-P9-MTF-312": {
+      "name": "Leave One Pair Out Synchronized Currency Breadth",
+      "mechanism": "At each synchronized H1 close, four-hour directional votes from the other seven pairs estimate base and quote currency strength; the target pair is eligible only when its own impulse agrees with a strong leave-one-pair-out strength spread.",
+      "signal_timeframe": "H1",
+      "cross_pair_lookback_hours": 4,
+      "target_pair_excluded_from_currency_vote": true,
+      "frequency_gate_unit": "SYNCHRONIZED_UTC_DATE_PLUS_DIRECTION",
+      "instrument_breadth_gate_applicable": false,
+      "minimum_other_currency_votes": 4,
+      "normalized_currency_strength_spread_min": 1.0,
+      "target_change_atr_min": 0.50,
+      "target_body_ratio_min": 0.50,
+      "frequency_gate": {"episodes_min": 250, "active_dates_min": 180, "instruments_min_0": 0, "max_instrument_share": 1.0, "each_year_share_min": 0.30}
+    }
+  },
+  "next_gate": {
+    "count_only_first": true,
+    "return_gate_only_for_frequency_passers": true,
+    "future_cumulative_outcome_tested_candidate_count": "3_PLUS_NUMBER_OF_BATCH3_FREQUENCY_PASSERS",
+    "familywise_alpha": 0.05,
+    "return_and_oos_in_count_run": false,
+    "outcome_fields": []
+  }
+}
