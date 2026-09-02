@@ -1,0 +1,500 @@
+{
+  "attempt_started_at_utc": "2026-09-02T00:58:41.963067Z",
+  "authorization": {
+    "exact_confirmation_matched": true,
+    "external_jnlp_observation_authorized_after_run": false,
+    "gate_sha256": "0782f250c9d79bee70a862f590182c52bf550c6d08464d140d61dab39ab74487",
+    "replay_authorized": false,
+    "retry_authorized": false,
+    "single_use_authorization_consumed": true
+  },
+  "authorization_effect": "NONE",
+  "error_stage": null,
+  "error_type": null,
+  "github_identity": {
+    "event_name": "workflow_dispatch",
+    "head_sha": "b219af912b4fd5bb195fa9762e4b2a719086a02d",
+    "job_name": "observe",
+    "ref": "refs/heads/main",
+    "run_attempt": "1",
+    "run_id": "33577505327",
+    "run_number": "1"
+  },
+  "jnlp_identity": {
+    "reference_count": 36,
+    "reference_list_sha256": "47e52e3e5d672e65198e6eb28195b9d91de74f4f542b9d92b49a3c28f7f439e9",
+    "references": [
+      {
+        "authorization_status": "OBSERVED_ONLY_NOT_ALLOWED",
+        "element_local_name": "jnlp",
+        "fetched": false,
+        "ordinal": 0,
+        "raw_href": "libs.jnlp",
+        "resolved_url": "https://platform.dukascopy.com/demo_3/libs.jnlp",
+        "url_sha256": "a7f3cc5752051f66266d2c66c1a157a2cd3650fb3453f7a42bc06f9d0188f4e6"
+      },
+      {
+        "authorization_status": "OBSERVED_ONLY_NOT_ALLOWED",
+        "element_local_name": "jar",
+        "fetched": false,
+        "ordinal": 1,
+        "raw_href": "lib/transport-core-1.1.25.jar",
+        "resolved_url": "https://platform.dukascopy.com/demo_3/lib/transport-core-1.1.25.jar",
+        "url_sha256": "db986d99f2d241b23e4e1052380ab3bbd6fda58f81c06b4d32cfad4748b8ca46"
+      },
+      {
+        "authorization_status": "OBSERVED_ONLY_NOT_ALLOWED",
+        "element_local_name": "jar",
+        "fetched": false,
+        "ordinal": 2,
+        "raw_href": "lib/commons-logging-1.2.jar",
+        "resolved_url": "https://platform.dukascopy.com/demo_3/lib/commons-logging-1.2.jar",
+        "url_sha256": "155ef90f338024c89d1329bfe6b3e258ad9cd2372a86b431ac9e5a65e5a419a0"
+      },
+      {
+        "authorization_status": "OBSERVED_ONLY_NOT_ALLOWED",
+        "element_local_name": "jar",
+        "fetched": false,
+        "ordinal": 3,
+        "raw_href": "lib/dev-tools-1.0.27.jar",
+        "resolved_url": "https://platform.dukascopy.com/demo_3/lib/dev-tools-1.0.27.jar",
+        "url_sha256": "7879612c83fe864a7bebdaec630c2f8ca03d93baa845fdce30cca763db298607"
+      },
+      {
+        "authorization_status": "OBSERVED_ONLY_NOT_ALLOWED",
+        "element_local_name": "jar",
+        "fetched": false,
+        "ordinal": 4,
+        "raw_href": "lib/7zip-18.05.jar",
+        "resolved_url": "https://platform.dukascopy.com/demo_3/lib/7zip-18.05.jar",
+        "url_sha256": "77f28639e754aa2ccd5553387a220508da36db789179dc1494c98a7961e2e92b"
+      },
+      {
+        "authorization_status": "OBSERVED_ONLY_NOT_ALLOWED",
+        "element_local_name": "jar",
+        "fetched": false,
+        "ordinal": 5,
+        "raw_href": "lib/commons-lang3-3.3.2.jar",
+        "resolved_url": "https://platform.dukascopy.com/demo_3/lib/commons-lang3-3.3.2.jar",
+        "url_sha256": "202240ff037f90979d23a3eef236f541ef12a15f3d45bd674d39e8a5b9d8e65c"
+      },
+      {
+        "authorization_status": "OBSERVED_ONLY_NOT_ALLOWED",
+        "element_local_name": "jar",
+        "fetched": false,
+        "ordinal": 6,
+        "raw_href": "lib/srp6a-2.0.2.jar",
+        "resolved_url": "https://platform.dukascopy.com/demo_3/lib/srp6a-2.0.2.jar",
+        "url_sha256": "55cb1d66789c7f0323adae22a66f10d087ef43cbe4764278945c3b09c5c4d017"
+      },
+      {
+        "authorization_status": "OBSERVED_ONLY_NOT_ALLOWED",
+        "element_local_name": "jar",
+        "fetched": false,
+        "ordinal": 7,
+        "raw_href": "lib/jForex-3.6.48.jar",
+        "resolved_url": "https://platform.dukascopy.com/demo_3/lib/jForex-3.6.48.jar",
+        "url_sha256": "2a36d825a2602eafafd448c0cefafade9987217f185055887323fad82b76b516"
+      },
+      {
+        "authorization_status": "OBSERVED_ONLY_NOT_ALLOWED",
+        "element_local_name": "jar",
+        "fetched": false,
+        "ordinal": 8,
+        "raw_href": "lib/netty-resolver-4.1.45.Final.jar",
+        "resolved_url": "https://platform.dukascopy.com/demo_3/lib/netty-resolver-4.1.45.Final.jar",
+        "url_sha256": "c9dbf29c8c92ca38e59f664ad56cb0824d89ff24411bdec1b93edad31b74c4f3"
+      },
+      {
+        "authorization_status": "OBSERVED_ONLY_NOT_ALLOWED",
+        "element_local_name": "jar",
+        "fetched": false,
+        "ordinal": 9,
+        "raw_href": "lib/JForex-API-2.13.98.jar",
+        "resolved_url": "https://platform.dukascopy.com/demo_3/lib/JForex-API-2.13.98.jar",
+        "url_sha256": "32a812e2be33f780f76285bf4f9cdf4881e2141c663ccf59e38c25a473e173e8"
+      },
+      {
+        "authorization_status": "OBSERVED_ONLY_NOT_ALLOWED",
+        "element_local_name": "jar",
+        "fetched": false,
+        "ordinal": 10,
+        "raw_href": "lib/ta-lib-0.4.4dc.jar",
+        "resolved_url": "https://platform.dukascopy.com/demo_3/lib/ta-lib-0.4.4dc.jar",
+        "url_sha256": "00239b257cb34045fdfb66ef89476f08fb93771bdb97a3f87d2784a76368daae"
+      },
+      {
+        "authorization_status": "OBSERVED_ONLY_NOT_ALLOWED",
+        "element_local_name": "jar",
+        "fetched": false,
+        "ordinal": 11,
+        "raw_href": "lib/asm-5.0.3.jar",
+        "resolved_url": "https://platform.dukascopy.com/demo_3/lib/asm-5.0.3.jar",
+        "url_sha256": "f9b44d0ead02ffb1dc7b2def0a715b8e5a592a7840e0327a24cebcd835908bf3"
+      },
+      {
+        "authorization_status": "OBSERVED_ONLY_NOT_ALLOWED",
+        "element_local_name": "jar",
+        "fetched": false,
+        "ordinal": 12,
+        "raw_href": "lib/log4j-1.2.17.jar",
+        "resolved_url": "https://platform.dukascopy.com/demo_3/lib/log4j-1.2.17.jar",
+        "url_sha256": "82371f2c4424cf7d8023d24dc909421b7651a1d4c5d6a5dfc81bfffae58b1ea5"
+      },
+      {
+        "authorization_status": "OBSERVED_ONLY_NOT_ALLOWED",
+        "element_local_name": "jar",
+        "fetched": false,
+        "ordinal": 13,
+        "raw_href": "lib/netty-handler-4.1.45.Final.jar",
+        "resolved_url": "https://platform.dukascopy.com/demo_3/lib/netty-handler-4.1.45.Final.jar",
+        "url_sha256": "cccc58397aaf9cff2ea1776aa0b42a83ac5fc79523a9f2fb2314016338e612be"
+      },
+      {
+        "authorization_status": "OBSERVED_ONLY_NOT_ALLOWED",
+        "element_local_name": "jar",
+        "fetched": false,
+        "ordinal": 14,
+        "raw_href": "lib/guava-19.0.jar",
+        "resolved_url": "https://platform.dukascopy.com/demo_3/lib/guava-19.0.jar",
+        "url_sha256": "8719d1ee2463d7f878efb4f6ce5bfaa7d3611b675a5a63be1fb6db1a1afe161e"
+      },
+      {
+        "authorization_status": "OBSERVED_ONLY_NOT_ALLOWED",
+        "element_local_name": "jar",
+        "fetched": false,
+        "ordinal": 15,
+        "raw_href": "lib/commons-beanutils-1.9.3.jar",
+        "resolved_url": "https://platform.dukascopy.com/demo_3/lib/commons-beanutils-1.9.3.jar",
+        "url_sha256": "ae55c32d46c5ab67e672b7cb977763f0dee6951858a4defb7adb09aba77a6f45"
+      },
+      {
+        "authorization_status": "OBSERVED_ONLY_NOT_ALLOWED",
+        "element_local_name": "jar",
+        "fetched": false,
+        "ordinal": 16,
+        "raw_href": "lib/json-20131018.jar",
+        "resolved_url": "https://platform.dukascopy.com/demo_3/lib/json-20131018.jar",
+        "url_sha256": "49f3cecaf28f5216e8d247e144227dee5c01d729fde0d1087496c427384ac46d"
+      },
+      {
+        "authorization_status": "OBSERVED_ONLY_NOT_ALLOWED",
+        "element_local_name": "jar",
+        "fetched": false,
+        "ordinal": 17,
+        "raw_href": "lib/jakarta-oro-2.0.8.jar",
+        "resolved_url": "https://platform.dukascopy.com/demo_3/lib/jakarta-oro-2.0.8.jar",
+        "url_sha256": "2e4be2721cb000e8606ebfeaac0c6871388cb4957b6a0b6cdee335adeddf15fd"
+      },
+      {
+        "authorization_status": "OBSERVED_ONLY_NOT_ALLOWED",
+        "element_local_name": "jar",
+        "fetched": false,
+        "ordinal": 18,
+        "raw_href": "lib/jna-3.5.0.jar",
+        "resolved_url": "https://platform.dukascopy.com/demo_3/lib/jna-3.5.0.jar",
+        "url_sha256": "8006eb988deb892ff6a35f161ec8a29dc9eb4903055718117aed3118e6d23c2a"
+      },
+      {
+        "authorization_status": "OBSERVED_ONLY_NOT_ALLOWED",
+        "element_local_name": "jar",
+        "fetched": false,
+        "ordinal": 19,
+        "raw_href": "lib/lucene-core-3.4.0.jar",
+        "resolved_url": "https://platform.dukascopy.com/demo_3/lib/lucene-core-3.4.0.jar",
+        "url_sha256": "a45e9717cfc8bd6ce50c67d7b0bfa48d01b428b897339d99f23d69b0eb8511de"
+      },
+      {
+        "authorization_status": "OBSERVED_ONLY_NOT_ALLOWED",
+        "element_local_name": "jar",
+        "fetched": false,
+        "ordinal": 20,
+        "raw_href": "lib/netty-buffer-4.1.45.Final.jar",
+        "resolved_url": "https://platform.dukascopy.com/demo_3/lib/netty-buffer-4.1.45.Final.jar",
+        "url_sha256": "e371f75efdb3bcf7b35189f3f102b2404ef891dadc4631cd16b855723de7766b"
+      },
+      {
+        "authorization_status": "OBSERVED_ONLY_NOT_ALLOWED",
+        "element_local_name": "jar",
+        "fetched": false,
+        "ordinal": 21,
+        "raw_href": "lib/lucene-highlighter-3.4.0.jar",
+        "resolved_url": "https://platform.dukascopy.com/demo_3/lib/lucene-highlighter-3.4.0.jar",
+        "url_sha256": "b42e3d42e78deafbcb61180b22a720d3c0045ca714470f69b93b409457f50fd1"
+      },
+      {
+        "authorization_status": "OBSERVED_ONLY_NOT_ALLOWED",
+        "element_local_name": "jar",
+        "fetched": false,
+        "ordinal": 22,
+        "raw_href": "lib/activation-1.1.jar",
+        "resolved_url": "https://platform.dukascopy.com/demo_3/lib/activation-1.1.jar",
+        "url_sha256": "2f609ce949d1f661460f13650ca1768e84e8baa583ca0a7cca653790947738d9"
+      },
+      {
+        "authorization_status": "OBSERVED_ONLY_NOT_ALLOWED",
+        "element_local_name": "jar",
+        "fetched": false,
+        "ordinal": 23,
+        "raw_href": "lib/netty-common-4.1.45.Final.jar",
+        "resolved_url": "https://platform.dukascopy.com/demo_3/lib/netty-common-4.1.45.Final.jar",
+        "url_sha256": "b7c07134208ec229d28d5f11c72aee3a6d16f3433f466021bb56fba22ce3fd7b"
+      },
+      {
+        "authorization_status": "OBSERVED_ONLY_NOT_ALLOWED",
+        "element_local_name": "jar",
+        "fetched": false,
+        "ordinal": 24,
+        "raw_href": "lib/mail-1.4.jar",
+        "resolved_url": "https://platform.dukascopy.com/demo_3/lib/mail-1.4.jar",
+        "url_sha256": "584730f1e248d5a8981aa67fce4da5ee7d0671f0ee813ccef488fae3c196a221"
+      },
+      {
+        "authorization_status": "OBSERVED_ONLY_NOT_ALLOWED",
+        "element_local_name": "jar",
+        "fetched": false,
+        "ordinal": 25,
+        "raw_href": "lib/system-msg-1.0.32.jar",
+        "resolved_url": "https://platform.dukascopy.com/demo_3/lib/system-msg-1.0.32.jar",
+        "url_sha256": "d961b2c22bfe57dbfe8fa4b9dc9689ab51309f9dca81369bbe23c782e48616d1"
+      },
+      {
+        "authorization_status": "OBSERVED_ONLY_NOT_ALLOWED",
+        "element_local_name": "jar",
+        "fetched": false,
+        "ordinal": 26,
+        "raw_href": "lib/netty-transport-4.1.45.Final.jar",
+        "resolved_url": "https://platform.dukascopy.com/demo_3/lib/netty-transport-4.1.45.Final.jar",
+        "url_sha256": "f7f99b94805c03612324810664d2797b081d7bff30d69b28887b89981d084fcc"
+      },
+      {
+        "authorization_status": "OBSERVED_ONLY_NOT_ALLOWED",
+        "element_local_name": "jar",
+        "fetched": false,
+        "ordinal": 27,
+        "raw_href": "lib/lucene-memory-3.4.0.jar",
+        "resolved_url": "https://platform.dukascopy.com/demo_3/lib/lucene-memory-3.4.0.jar",
+        "url_sha256": "047185c9ec56626210201011fd3b75b2eab8cf8d9d6f1d336663d092e7d4ea49"
+      },
+      {
+        "authorization_status": "OBSERVED_ONLY_NOT_ALLOWED",
+        "element_local_name": "jar",
+        "fetched": false,
+        "ordinal": 28,
+        "raw_href": "lib/slf4j-api-1.7.28.jar",
+        "resolved_url": "https://platform.dukascopy.com/demo_3/lib/slf4j-api-1.7.28.jar",
+        "url_sha256": "2e12688e307295e43b40a376ac878455e006c87c67ba6826aac2a170ca1e1570"
+      },
+      {
+        "authorization_status": "OBSERVED_ONLY_NOT_ALLOWED",
+        "element_local_name": "jar",
+        "fetched": false,
+        "ordinal": 29,
+        "raw_href": "lib/commons-collections-3.2.2.jar",
+        "resolved_url": "https://platform.dukascopy.com/demo_3/lib/commons-collections-3.2.2.jar",
+        "url_sha256": "a273a9eddaf28b99eaa8a398d5550d80c61d8056febcff8c9715c76660395f07"
+      },
+      {
+        "authorization_status": "OBSERVED_ONLY_NOT_ALLOWED",
+        "element_local_name": "jar",
+        "fetched": false,
+        "ordinal": 30,
+        "raw_href": "lib/slf4j-log4j12-1.7.28.jar",
+        "resolved_url": "https://platform.dukascopy.com/demo_3/lib/slf4j-log4j12-1.7.28.jar",
+        "url_sha256": "0dacfa400b12dfad144f8fe3010ddeeb81e9c78d0888d45a52b676915a669941"
+      },
+      {
+        "authorization_status": "OBSERVED_ONLY_NOT_ALLOWED",
+        "element_local_name": "jar",
+        "fetched": false,
+        "ordinal": 31,
+        "raw_href": "lib/lucene-queries-3.4.0.jar",
+        "resolved_url": "https://platform.dukascopy.com/demo_3/lib/lucene-queries-3.4.0.jar",
+        "url_sha256": "fd05d660c4c36ab3a300584721f88e97fc3253efbdb48c838f0cabda07e1f2f7"
+      },
+      {
+        "authorization_status": "OBSERVED_ONLY_NOT_ALLOWED",
+        "element_local_name": "jar",
+        "fetched": false,
+        "ordinal": 32,
+        "raw_href": "lib/JForex-API-2.13.98-sources.jar",
+        "resolved_url": "https://platform.dukascopy.com/demo_3/lib/JForex-API-2.13.98-sources.jar",
+        "url_sha256": "d10b8372b67e3f1188bb5193c9a55c100e469a39e1dcf5117ea855c1715d058c"
+      },
+      {
+        "authorization_status": "OBSERVED_ONLY_NOT_ALLOWED",
+        "element_local_name": "jar",
+        "fetched": false,
+        "ordinal": 33,
+        "raw_href": "lib/netty-codec-4.1.45.Final.jar",
+        "resolved_url": "https://platform.dukascopy.com/demo_3/lib/netty-codec-4.1.45.Final.jar",
+        "url_sha256": "adf9dcb6a758b4bf5b351a43fc3e69246bcb99ec0861a8a0f3ef74b5dbb3d2f7"
+      },
+      {
+        "authorization_status": "OBSERVED_ONLY_NOT_ALLOWED",
+        "element_local_name": "jar",
+        "fetched": false,
+        "ordinal": 34,
+        "raw_href": "lib/ecj-3.20.0.1d.jar",
+        "resolved_url": "https://platform.dukascopy.com/demo_3/lib/ecj-3.20.0.1d.jar",
+        "url_sha256": "f5d0f165a037df73d61fb3a59bbea355e13abb40911c013af7dec947ce68847d"
+      },
+      {
+        "authorization_status": "OBSERVED_ONLY_NOT_ALLOWED",
+        "element_local_name": "jar",
+        "fetched": false,
+        "ordinal": 35,
+        "raw_href": "lib/jakarta-regexp-1.4.jar",
+        "resolved_url": "https://platform.dukascopy.com/demo_3/lib/jakarta-regexp-1.4.jar",
+        "url_sha256": "d0ab3889da90b7e433e948a88d00c45d8c838cf66b9dae6a1d38cfc3eb0fb9c2"
+      }
+    ],
+    "root_codebase": "https://platform.dukascopy.com/demo_3/",
+    "root_href": "libs.jnlp",
+    "status": "PARSED_LOCAL_IDENTITY_ONLY"
+  },
+  "prohibited_activity": {
+    "availability_request_attempted": false,
+    "credentials_referenced": false,
+    "forbidden_market_period_request_attempted": false,
+    "jforex_connect_invoked": false,
+    "market_cache_persisted": false,
+    "market_price_request_attempted": false,
+    "outcome_fields": [],
+    "phase9_price_files_acquired": 0,
+    "provider_schedule_files_acquired": 0,
+    "provider_schedule_request_attempted": false,
+    "research_outcomes_calculated": false
+  },
+  "request_scope": {
+    "credentials": "NONE",
+    "downloaded_code_executed": false,
+    "method": "GET",
+    "proxy_used": false,
+    "recursive_resource_fetch_count": 0,
+    "redirect_followed": false,
+    "response_body_bytes_max": 2097152,
+    "url": "https://platform.dukascopy.com/demo_3/libs_3.jnlp"
+  },
+  "response": {
+    "body_bytes_if_status_200": 2484,
+    "body_identity_semantics": "HTTP_ENTITY_BODY_AFTER_TRANSFER_DECODING_BEFORE_CONTENT_DECODING",
+    "body_sha256_if_status_200": "0790ca5f8e976de1c451d0fc71b6fc78322bdd686636c3864ec4906159b0f243",
+    "reason": "OK",
+    "redirect_location": null,
+    "safe_headers": {
+      "content-length": [
+        "2484"
+      ],
+      "content-type": [
+        "application/x-java-jnlp-file"
+      ],
+      "etag": [
+        "\"aed6257ddf25fadc581e309f6ff72b9f\""
+      ],
+      "last-modified": [
+        "Fri, 16 Feb 2024 07:55:12 GMT"
+      ]
+    },
+    "status": 200
+  },
+  "same_run_allowlist_frozen": false,
+  "schema_version": "phase9-remote-libs-jnlp-observation-audit-v1.0",
+  "status": "LIBS_IDENTITY_OBSERVED_RESOURCE_REQUESTS_BLOCKED",
+  "transport": {
+    "dns_resolution_call_count": 1,
+    "http_request_count": 1,
+    "peer": {
+      "address": "99.86.77.5",
+      "port": 443
+    },
+    "resolved_addresses": [
+      {
+        "address": "99.86.77.5",
+        "family": "AF_INET",
+        "port": 443,
+        "scope_id": 0
+      },
+      {
+        "address": "99.86.77.54",
+        "family": "AF_INET",
+        "port": 443,
+        "scope_id": 0
+      },
+      {
+        "address": "99.86.77.6",
+        "family": "AF_INET",
+        "port": 443,
+        "scope_id": 0
+      },
+      {
+        "address": "99.86.77.63",
+        "family": "AF_INET",
+        "port": 443,
+        "scope_id": 0
+      },
+      {
+        "address": "2600:9000:2137:3600:18:92f1:6f80:93a1",
+        "family": "AF_INET6",
+        "port": 443,
+        "scope_id": 0
+      },
+      {
+        "address": "2600:9000:2137:3800:18:92f1:6f80:93a1",
+        "family": "AF_INET6",
+        "port": 443,
+        "scope_id": 0
+      },
+      {
+        "address": "2600:9000:2137:4c00:18:92f1:6f80:93a1",
+        "family": "AF_INET6",
+        "port": 443,
+        "scope_id": 0
+      },
+      {
+        "address": "2600:9000:2137:6600:18:92f1:6f80:93a1",
+        "family": "AF_INET6",
+        "port": 443,
+        "scope_id": 0
+      },
+      {
+        "address": "2600:9000:2137:a600:18:92f1:6f80:93a1",
+        "family": "AF_INET6",
+        "port": 443,
+        "scope_id": 0
+      },
+      {
+        "address": "2600:9000:2137:c000:18:92f1:6f80:93a1",
+        "family": "AF_INET6",
+        "port": 443,
+        "scope_id": 0
+      },
+      {
+        "address": "2600:9000:2137:c600:18:92f1:6f80:93a1",
+        "family": "AF_INET6",
+        "port": 443,
+        "scope_id": 0
+      },
+      {
+        "address": "2600:9000:2137:ce00:18:92f1:6f80:93a1",
+        "family": "AF_INET6",
+        "port": 443,
+        "scope_id": 0
+      }
+    ],
+    "selected_address": {
+      "address": "99.86.77.5",
+      "family": "AF_INET",
+      "port": 443,
+      "scope_id": 0
+    },
+    "tcp_connect_attempt_count": 1,
+    "tls_cipher": [
+      "TLS_AES_128_GCM_SHA256",
+      "TLSv1.3",
+      128
+    ],
+    "tls_peer_certificate_sha256": "616df88e991b3d1f0ca1183d5155a243d7dfceb0b3f1461cb4f400d43b6003df",
+    "tls_version": "TLSv1.3"
+  }
+}

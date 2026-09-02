@@ -1,0 +1,96 @@
+{
+  "schema_version": "phase9-remote-libs-jnlp-independent-audit-v1.0",
+  "status": "PASS_IDENTITY_OBSERVED_RESOURCE_REQUESTS_BLOCKED",
+  "recorded_at_utc": "2026-09-02T01:00:00Z",
+  "run": {
+    "repository": "tgkfnfnfv9-stack/Gpt-Verification--software",
+    "workflow": "phase9-remote-libs-jnlp-observation-v2",
+    "run_id": 33577505327,
+    "run_number": 1,
+    "run_attempt": 1,
+    "event": "workflow_dispatch",
+    "ref": "refs/heads/main",
+    "head_sha": "b219af912b4fd5bb195fa9762e4b2a719086a02d",
+    "conclusion": "success",
+    "job_id": 100084589627,
+    "job_name": "observe",
+    "job_conclusion": "success",
+    "all_expected_steps_conclusion": "success"
+  },
+  "artifact": {
+    "artifact_id": 9827163991,
+    "name": "phase9-remote-libs-jnlp-observation-v2-b219af912b4fd5bb195fa9762e4b2a719086a02d-33577505327-1",
+    "reported_size_in_bytes": 4306,
+    "reported_digest": "sha256:1611851b165cf126c4feaecf1789f913c556cfdd2bc7f8501c45c13ad352d548",
+    "downloaded_zip_sha256": "1611851b165cf126c4feaecf1789f913c556cfdd2bc7f8501c45c13ad352d548",
+    "exact_member_count": 2,
+    "members": [
+      {
+        "path": "REMOTE_LIBS_JNLP_OBSERVATION_AUDIT.json",
+        "sha256": "d6d59fe9ad976470e1d16debdb7b6d5a9698728c7eeba7d6c4bd977987f26286"
+      },
+      {
+        "path": "artifact_manifest_sha256.txt",
+        "sha256": "fb439cee70851dfec847ba3e96060225f1f8d492ced04085a09afac31363ec20"
+      }
+    ],
+    "unexpected_members": [],
+    "raw_jnlp_member_count": 0,
+    "jar_member_count": 0,
+    "market_data_member_count": 0,
+    "manifest_verified": true
+  },
+  "observation": {
+    "exact_url": "https://platform.dukascopy.com/demo_3/libs_3.jnlp",
+    "method": "GET",
+    "response_status": 200,
+    "response_reason": "OK",
+    "response_content_type": "application/x-java-jnlp-file",
+    "response_body_bytes": 2484,
+    "response_body_sha256": "0790ca5f8e976de1c451d0fc71b6fc78322bdd686636c3864ec4906159b0f243",
+    "dns_resolution_call_count": 1,
+    "tcp_connect_attempt_count": 1,
+    "http_request_count": 1,
+    "redirect_followed": false,
+    "recursive_resource_fetch_count": 0,
+    "root_codebase": "https://platform.dukascopy.com/demo_3/",
+    "root_href": "libs.jnlp",
+    "reference_count": 36,
+    "reference_list_sha256": "47e52e3e5d672e65198e6eb28195b9d91de74f4f542b9d92b49a3c28f7f439e9",
+    "all_references_fetched_false": true,
+    "observed_url_allowlist_path": "research/phase9-hypothesis-redesign-20260828/spec/remote_libs_jnlp_observed_url_allowlist.frozen.json",
+    "observed_url_allowlist_sha256": "8cf549593cadeb329e2745421186007ee8e108bdfca3f1c2739c43b52310dee6"
+  },
+  "prohibited_activity": {
+    "credentials_referenced": false,
+    "downloaded_code_executed": false,
+    "jforex_connect_invoked": false,
+    "provider_schedule_request_attempted": false,
+    "availability_request_attempted": false,
+    "market_price_request_attempted": false,
+    "market_cache_persisted": false,
+    "phase9_price_files_acquired": 0,
+    "provider_schedule_files_acquired": 0,
+    "count_only_authorized": false,
+    "research_outcomes_calculated": false,
+    "outcome_fields": []
+  },
+  "authorization": {
+    "v2_single_use_authorization_consumed": true,
+    "retry_authorized": false,
+    "replay_authorized": false,
+    "same_run_allowlist_frozen": false,
+    "observed_url_request_authorized": false,
+    "jar_or_resource_request_authorized": false,
+    "jforex_connect_authorized": false,
+    "price_acquisition_authorized": false,
+    "count_only_authorized": false,
+    "outcome_access_authorized": false
+  },
+  "conclusion": {
+    "independent_artifact_verification": "PASS",
+    "runtime_identity_inventory": "36_OBSERVED_IDENTITIES_FROZEN_EVIDENCE_ONLY",
+    "market_or_research_effect": "NONE",
+    "next_external_request_requires_new_exact_manual_gate": true
+  }
+}

@@ -21,10 +21,13 @@ Actual Full-QC実装基準: `9eb7ce667bea8e76a7f9bb1f2d378eebd8957206`
   DNS/TCP/HTTP request stepはskipped、HTTP requestは0回。Run `33575321670`は
   single-use条件でskipped。V1認可は消費済みで再実行禁止。
 - 次の単一作業は、既に観測済みで未要求の
-  `https://platform.dukascopy.com/demo_3/libs_3.jnlp`を、完全一致の手動確認後に
-  V2で1回だけidentity観測すること。Workflowは
-  `.github/workflows/phase9-remote-libs-jnlp-observation-v2.yml`。
-  資格情報、JForex接続、resource/JAR、schedule、price、Outcomeアクセスは禁止。
+  `https://platform.dukascopy.com/demo_3/libs_3.jnlp`をV2 Run `33577505327`で
+  1回だけidentity観測し、HTTP 200、36参照、全参照未取得を独立監査した。
+  ArtifactはID `9827163991`、ZIP SHA-256
+  `1611851b165cf126c4feaecf1789f913c556cfdd2bc7f8501c45c13ad352d548`。
+  資格情報、JForex接続、resource/JAR、schedule、price、Count、Outcomeは0/未実行。
+- 36 exact URLは`spec/remote_libs_jnlp_observed_url_allowlist.frozen.json`へ
+  evidence-onlyで凍結済み。どのURLもrequest未認可。
 
 ## 1. この引継ぎの結論
 
@@ -98,10 +101,13 @@ Provider schedule inventory / allowlist
 31. `research/phase9-hypothesis-redesign-20260828/runner/verify_phase9_remote_jnlp_independent_audit.py`
 32. `research/phase9-hypothesis-redesign-20260828/JFOREX_REMOTE_LIBS_JNLP_OBSERVATION_REAUTHORIZATION_V2.md`
 33. `research/phase9-hypothesis-redesign-20260828/spec/remote_libs_jnlp_observation_gate_v2.frozen.json`
-34. `research/phase9-exploratory-fxcm-20260901/README.md`
-35. `research/phase9-exploratory-fxcm-20260901/MULTI_TIMEFRAME_DATA_PLAN.md`
-36. `research/phase9-exploratory-fxcm-20260901/spec/fxcm_multitimeframe_data_requirements.frozen.json`
-37. `research/phase9-exploratory-fxcm-20260901/results/run-33482595275/FXCM_CANONICAL_ALLOWLIST.json`
+34. `research/phase9-hypothesis-redesign-20260828/results/remote-libs-jnlp-run-33577505327/REMOTE_LIBS_JNLP_INDEPENDENT_AUDIT.json`
+35. `research/phase9-hypothesis-redesign-20260828/spec/remote_libs_jnlp_observed_url_allowlist.frozen.json`
+36. `research/phase9-hypothesis-redesign-20260828/runner/verify_phase9_remote_libs_jnlp_independent_audit.py`
+37. `research/phase9-exploratory-fxcm-20260901/README.md`
+38. `research/phase9-exploratory-fxcm-20260901/MULTI_TIMEFRAME_DATA_PLAN.md`
+39. `research/phase9-exploratory-fxcm-20260901/spec/fxcm_multitimeframe_data_requirements.frozen.json`
+40. `research/phase9-exploratory-fxcm-20260901/results/run-33482595275/FXCM_CANONICAL_ALLOWLIST.json`
 
 凍結仕様の優先順位は、candidate registry、data requirements、preregistered policy。Markdown要約で凍結仕様を変更しない。
 
@@ -287,19 +293,14 @@ Provider schedule inventory / allowlist
 FX8 MTF取得/QCと、既存FX8で実行可能な7候補のCount-onlyは完了した。
 探索Return Gate通過候補は0件なので、同じFX8でReturnを計算しない。
 
-V1 Run `33574659277`はoffline static verificationで停止し、外部requestは0回。
-ただしV1単一使用認可は消費済みなのでrerun/replayしない。
+V1 Run `33574659277`は通信前に停止、V2 Run `33577505327`は成功・独立監査済み。
+両方の単一使用認可は消費済みなのでrerun/replayしない。
 
-次はremote runtime closureを進めるため、修正版の手動workflow
-`.github/workflows/phase9-remote-libs-jnlp-observation-v2.yml`を新しい完全一致
-confirmationで1回だけ実行する。
-
-1. GitHub Actionsで完全一致confirmationを入力する。
-2. 既に観測済みのexact `libs_3.jnlp` URLへunauthenticated GETを1回だけ行う。
-3. response bodyは保存せず、size/SHAとローカル解析したhref identityだけを記録する。
-4. redirect、recursive fetch、JAR/resource download、code executionを禁止する。
-5. 資格情報、JForex connect、schedule、availability、price、Count、Outcomeへ進まない。
-6. Run後はArtifactを独立監査し、観測URLは別commitでのみ凍結する。
+次はremote runtime closureを最短で進めるため、凍結済み36 identityから実行に
+必要な最小resource setを固定し、別の完全一致手動承認Gateを作る。承認前に
+resource/JARをrequestしない。resource取得Runでも価格、schedule、availability、
+Count、Return、Outcomeへ進まない。runtime整合と価格分離が確認できた後にのみ、
+別GateでJForex接続・正式価格取得へ進む。
 
 2026-09-01のA0〜A7監査で確認した境界:
 

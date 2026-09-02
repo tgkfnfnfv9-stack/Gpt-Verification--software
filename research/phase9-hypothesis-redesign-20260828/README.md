@@ -48,6 +48,15 @@ literal `+`で通信前に失敗し、DNS/TCP/HTTP requestは0回でした。Run
 手動承認を必要とする修正版V2を固定しました。V2もprice、Count-only、Outcomeを
 一切扱いません。
 
+V2 Run `33577505327`はsuccessです。exact `libs_3.jnlp`へのHTTP GETは1回、
+responseは200・2,484 bytesで、`libs.jnlp` 1件とJAR 35件の計36 identityを
+観測しました。36件すべて`fetched=false`で、資格情報、JForex接続、schedule、
+availability、price、Count-only、Outcomeは未実行です。Artifact `9827163991`
+（ZIP SHA-256 `1611851b165cf126c4feaecf1789f913c556cfdd2bc7f8501c45c13ad352d548`）を
+独立検証し、`results/remote-libs-jnlp-run-33577505327/`へ監査証拠、
+`spec/remote_libs_jnlp_observed_url_allowlist.frozen.json`へ36 exact identityを
+request未認可のevidence-onlyとして凍結しました。
+
 Local M1は`runner/jforex-metadata`、`spec/metadata_owned_method_allowlist.frozen.json`、uplinkなしの独立client/server namespace＋exact `/32` host route＋Landlock/seccomp、専用private custodyとして実装しました。専用moduleは既存price acquirerを物理的に含まず、凍結local synthetic API fixtureでowned bytecodeのDukascopy method referenceをexact-matchします。これは実JForex API 2.13.99 JAR/runtime互換性の証明ではなく、その検証は残Blockerです。初期remote JNLP identity観測はRun `33500446289`で完了・独立監査済みで、初期URLの再実行は禁止されています。次のlibs JNLP観測は別workflowの完全一致手動確認が必要です。価格・schedule inventory・Outcomeは引き続き0/未計算です。
 
 `S1B_RUNTIME_QC_PREFLIGHT.md`のGate AはRun #2で完了しました。GitHub checkoutの一時token以外にDukascopy・市場資格情報は参照せず、116-JAR manifest、local synthetic JNLP parser、synthetic Full-QC primitivesを検査済みです。Gate Bは`data_manifest/native_entry_allowlist.run33376110507.json`へ別commitで凍結し、`runner/verify_phase9_gate_b.py`が保存済みRun 2 evidenceとの完全一致をfail-closedで検証します。Shaded runnerは未検査で、Gate B完了も実取得許可にはなりません。
