@@ -43,7 +43,8 @@ Actual Full-QC実装基準: `9eb7ce667bea8e76a7f9bb1f2d378eebd8957206`
   304はIS -0.1230、OOS -0.1054で不通過。edge PASSは0件。両候補は救済せず不採用。
   新しい独立価格MTF仮説305〜308を別batchとして結果未閲覧で事前登録した。
   Count-only Run `33585508306`はsuccess。305だけが441 episodesでPASS、306〜308は
-  件数Gate未達で不採用。次の単一作業は305専用Return/OOS manual Run #1。
+  件数Gate未達で不採用。初回Return workflowは二重dispatchによりRun #1がcheckout中cancel、
+  Run #2がskip。取得・Return・Outcomeは未開始。次の単一作業は専用recovery manual Run #1。
 
 ## 1. この引継ぎの結論
 
@@ -154,6 +155,8 @@ Provider schedule inventory / allowlist
 54. `research/phase9-exploratory-fxcm-20260901/spec/fxcm_blind_mtf_batch2_return_oos_v1.frozen.json`
 55. `research/phase9-exploratory-fxcm-20260901/runner/fxcm_blind_mtf_batch2_return_oos.py`
 56. `.github/workflows/phase9-exploratory-fxcm-blind-mtf-batch2-return-oos.yml`
+57. `research/phase9-exploratory-fxcm-20260901/results/run-33587087527/BATCH2_RETURN_PREOUTCOME_CANCELLATION_AUDIT.json`
+58. `.github/workflows/phase9-exploratory-fxcm-blind-mtf-batch2-return-oos-recovery.yml`
 
 凍結仕様の優先順位は、candidate registry、data requirements、preregistered policy。Markdown要約で凍結仕様を変更しない。
 

@@ -1,0 +1,162 @@
+name: phase9-exploratory-fxcm-blind-mtf-batch2-return-oos-recovery
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirmation:
+        description: 'Type RUN_EXPLORATORY_FXCM_BLIND_MTF_BATCH2_RETURN_OOS_RECOVERY_PREOUTCOME_CANCEL_2017_2018_V1'
+        required: true
+        type: string
+      usage_confirmation:
+        description: 'Type I_CONFIRM_PERSONAL_NONCOMMERCIAL_USE_AND_ACCEPT_FXCM_EULA'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  return-oos:
+    if: >-
+      ${{ github.repository == 'tgkfnfnfv9-stack/Gpt-Verification--software' &&
+          github.event_name == 'workflow_dispatch' &&
+          github.ref == 'refs/heads/main' &&
+          inputs.confirmation == 'RUN_EXPLORATORY_FXCM_BLIND_MTF_BATCH2_RETURN_OOS_RECOVERY_PREOUTCOME_CANCEL_2017_2018_V1' &&
+          inputs.usage_confirmation == 'I_CONFIRM_PERSONAL_NONCOMMERCIAL_USE_AND_ACCEPT_FXCM_EULA' &&
+          github.run_number == 1 &&
+          github.run_attempt == 1 }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 240
+    steps:
+      - name: Checkout exact dispatch commit
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+          ref: ${{ github.sha }}
+
+      - name: Verify frozen batch2 Return OOS contract and Count evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          track='research/phase9-exploratory-fxcm-20260901'
+          test "$GITHUB_RUN_NUMBER" = '1'
+          test "$GITHUB_RUN_ATTEMPT" = '1'
+          test "$(sha256sum "$track/spec/fxcm_blind_mtf_batch2_return_oos_v1.frozen.json" | cut -d' ' -f1)" = 'c7629daee50a0f4d422c74b1ef705c04939f11907c2de9226690f12a0683382a'
+          test "$(sha256sum "$track/runner/fxcm_blind_mtf_batch2_return_oos.py" | cut -d' ' -f1)" = '06714ac5e77461600024cb0818c6c303c79743058b0cfc4b26931e262f361d30'
+          test "$(sha256sum "$track/results/run-33585508306/EXPLORATORY_FXCM_BLIND_MTF_BATCH2_COUNT_ONLY.json" | cut -d' ' -f1)" = '941e0bb630059a5129e09221768853eaa9fcd01fa2118c512c0d129b24308e2f'
+          test "$(sha256sum "$track/results/run-33585508306/BLIND_MTF_BATCH2_COUNT_ONLY_INDEPENDENT_AUDIT.json" | cut -d' ' -f1)" = '378bcabf9ffcee4d5fbcc1df01779d2afdfac5de0099713fbfd294726121d036'
+          test "$(sha256sum "$track/results/run-33587087527/BATCH2_RETURN_PREOUTCOME_CANCELLATION_AUDIT.json" | cut -d' ' -f1)" = '9b8e900d91504ff530f933e10f57b02c844103f371daef9d2563fea375a9bf4f'
+          PYTHONDONTWRITEBYTECODE=1 python -m unittest discover -s "$track/tests" -p 'test_*.py'
+          test -z "$(git status --porcelain)"
+
+      - name: Reacquire and reconstruct canonical ephemeral 64-series MTF data
+        id: acquire
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          track='research/phase9-exploratory-fxcm-20260901'
+          work="$RUNNER_TEMP/phase9-batch2-return-work-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          mtf_report="$RUNNER_TEMP/phase9-batch2-return-qc-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          return_report="$RUNNER_TEMP/phase9-batch2-return-result-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          echo "PHASE9_BATCH2_RETURN_WORK=$work" >> "$GITHUB_ENV"
+          echo "PHASE9_BATCH2_RETURN_QC=$mtf_report" >> "$GITHUB_ENV"
+          echo "PHASE9_BATCH2_RETURN_RESULT=$return_report" >> "$GITHUB_ENV"
+          command=(
+            python "$track/runner/fxcm_multitimeframe_qc.py"
+            --confirmation RUN_EXPLORATORY_FXCM_FX8_MTF_2017_2018_QC_ONLY_V1
+            --usage-confirmation I_CONFIRM_PERSONAL_NONCOMMERCIAL_USE_AND_ACCEPT_FXCM_EULA
+            --contract "$track/spec/fxcm_multitimeframe_data_requirements.frozen.json"
+            --execution-contract "$track/spec/fxcm_multitimeframe_execution_contract.frozen.json"
+            --prior-h1-inventory "$track/results/run-33482595275/artifact/EXPLORATORY_FXCM_INVENTORY.json"
+            --work-dir "$work"
+            --report-dir "$mtf_report"
+          )
+          "${command[@]}"
+          test -z "$(git status --porcelain)"
+
+      - name: Calculate locked 305 Return and cumulative-adjusted OOS summary
+        shell: bash
+        run: |
+          set -euo pipefail
+          track='research/phase9-exploratory-fxcm-20260901'
+          command=(
+            python "$track/runner/fxcm_blind_mtf_batch2_return_oos.py"
+            --confirmation RUN_EXPLORATORY_FXCM_BLIND_MTF_BATCH2_RETURN_OOS_2017_2018_V1
+            --usage-confirmation I_CONFIRM_PERSONAL_NONCOMMERCIAL_USE_AND_ACCEPT_FXCM_EULA
+            --contract "$track/spec/fxcm_blind_mtf_batch2_return_oos_v1.frozen.json"
+            --current-mtf-report "$PHASE9_BATCH2_RETURN_QC/EXPLORATORY_FXCM_MTF_QC.json"
+            --work-dir "$PHASE9_BATCH2_RETURN_WORK"
+            --report-dir "$PHASE9_BATCH2_RETURN_RESULT"
+          )
+          "${command[@]}"
+          test -z "$(git status --porcelain)"
+
+      - name: Destroy all working prices before upload
+        if: ${{ always() && steps.acquire.outcome == 'success' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          work="${PHASE9_BATCH2_RETURN_WORK:-}"
+          mtf_report="${PHASE9_BATCH2_RETURN_QC:-}"
+          expected_work="$RUNNER_TEMP/phase9-batch2-return-work-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          expected_mtf="$RUNNER_TEMP/phase9-batch2-return-qc-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          test "$work" = "$expected_work"
+          test "$mtf_report" = "$expected_mtf"
+          test ! -L "$work"
+          test ! -L "$mtf_report"
+          if [[ -d "$work" ]]; then
+            find "$work" -type f -exec shred -u {} + 2>/dev/null || true
+            rm -rf -- "$work"
+          fi
+          if [[ -d "$mtf_report" ]]; then
+            rm -rf -- "$mtf_report"
+          fi
+          test ! -e "$work"
+          test ! -e "$mtf_report"
+
+      - name: Verify exact price-free batch2 Return OOS summary artifact
+        id: seal
+        shell: bash
+        run: |
+          set -euo pipefail
+          report="$PHASE9_BATCH2_RETURN_RESULT"
+          test "$report" = "$RUNNER_TEMP/phase9-batch2-return-result-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          test ! -L "$report"
+          test "$(find "$report" -mindepth 1 -maxdepth 1 -type f | wc -l)" = '2'
+          test -f "$report/EXPLORATORY_FXCM_BLIND_MTF_BATCH2_RETURN_OOS.json"
+          test -f "$report/artifact_manifest_sha256.txt"
+          test -z "$(find "$report" -type f \( -iname '*.csv' -o -iname '*.gz' -o -iname '*.zip' \) -print -quit)"
+          python - "$report/EXPLORATORY_FXCM_BLIND_MTF_BATCH2_RETURN_OOS.json" <<'PY'
+          import json
+          import sys
+          from pathlib import Path
+          value = json.loads(Path(sys.argv[1]).read_text(encoding="utf-8"))
+          assert value["status"] == "BLIND_MTF_BATCH2_RETURN_OOS_COMPLETE"
+          assert value["selected_candidates"] == ["EXP-P9-MTF-305"]
+          assert value["prior_outcome_tested_candidates"] == ["EXP-P9-MTF-302", "EXP-P9-MTF-304"]
+          assert value["cumulative_outcome_tested_candidate_count"] == 3
+          assert value["return_calculated"] is True
+          assert value["research_outcomes_calculated"] is True
+          assert value["trade_rows_in_artifact"] is False
+          assert value["price_values_in_artifact"] is False
+          assert value["signal_or_entry_timestamps_in_artifact"] is False
+          assert value["persistent_price_files_after_cleanup"] == 0
+          assert value["formal_phase9_authorization_effect"] is False
+          assert value["nonpasser_rescue_performed"] is False
+          PY
+          cd "$report"
+          sha256sum -c artifact_manifest_sha256.txt
+          cd "$GITHUB_WORKSPACE"
+          test -z "$(git status --porcelain)"
+
+      - name: Upload price-free batch2 Return OOS summary metadata
+        if: ${{ steps.seal.outcome == 'success' }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: phase9-exploratory-fxcm-blind-mtf-batch2-return-oos-recovery-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ env.PHASE9_BATCH2_RETURN_RESULT }}/
+          if-no-files-found: error
+          retention-days: 14
+          include-hidden-files: false

@@ -195,7 +195,7 @@
     "future_return_gate_must_include_prior_two_outcome_candidates_in_multiplicity_correction": true
   },
   "exploratory_blind_mtf_batch2_return_oos_gate": {
-    "status": "IMPLEMENTED_PENDING_EXACT_MANUAL_SINGLE_USE_APPROVAL",
+    "status": "ORIGINAL_RUN1_CANCELLED_PREOUTCOME_RUN2_SKIPPED_RECOVERY_GATE_PENDING",
     "formal_phase9_authorization_effect": false,
     "workflow": ".github/workflows/phase9-exploratory-fxcm-blind-mtf-batch2-return-oos.yml",
     "contract": "../phase9-exploratory-fxcm-20260901/spec/fxcm_blind_mtf_batch2_return_oos_v1.frozen.json",
@@ -211,7 +211,16 @@
     "cumulative_outcome_tested_candidate_count": 3,
     "bonferroni_one_sided_alpha_each": 0.016666666666666666,
     "return_calculated": false,
-    "research_outcomes_calculated": false
+    "research_outcomes_calculated": false,
+    "cancelled_run_id": 33587087527,
+    "skipped_duplicate_run_id": 33587087557,
+    "cancelled_before_acquisition": true,
+    "cancelled_before_return_or_outcome": true,
+    "cancelled_run_artifact_count": 0,
+    "recovery_workflow": ".github/workflows/phase9-exploratory-fxcm-blind-mtf-batch2-return-oos-recovery.yml",
+    "recovery_confirmation": "RUN_EXPLORATORY_FXCM_BLIND_MTF_BATCH2_RETURN_OOS_RECOVERY_PREOUTCOME_CANCEL_2017_2018_V1",
+    "recovery_single_use_run_number": 1,
+    "recovery_single_use_run_attempt": 1
   },
   "provider_acquisition": {
     "status": "ACTUAL_FULL_QC_CONTRACT_FROZEN_PROVIDER_SCHEDULE_SOURCE_P0_BLOCKED",

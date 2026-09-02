@@ -189,3 +189,10 @@ exit horizonを結果後に変更して救済しない。
 H1 mid ATR14正規化、2017 IS / 2018 OOS。date-cluster bootstrapは20,000回。
 過去にOutcomeを検定した302/304を含む累積3候補へBonferroni補正し、片側alphaを
 `0.016666666666666666`へ固定した。専用manual workflowはRun #1 / attempt #1のみ許可する。
+
+### Return/OOS pre-outcome cancellation recovery
+
+初回workflowは同時刻に2回dispatchされた。Run `33587087527` #1はcheckout中にcancel、
+Run `33587087557` #2はsingle-use guardでskip。両Runとも取得、signal rebuild、Return、
+Outcome、artifact生成は未開始であることを独立監査した。統計・signal・exit仕様は変更せず、
+pending Run #1をduplicateが置換しない専用recovery workflowへ移行する。

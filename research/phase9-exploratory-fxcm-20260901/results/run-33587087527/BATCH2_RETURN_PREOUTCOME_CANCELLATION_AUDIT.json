@@ -1,0 +1,51 @@
+{
+  "schema_version": "phase9-exploratory-fxcm-batch2-return-preoutcome-cancellation-audit-v1.0.0",
+  "status": "RECOVERY_ALLOWED_NO_RETURN_OR_OUTCOME_CALCULATED",
+  "audited_at_utc": "2026-09-02T03:29:00Z",
+  "workflow": ".github/workflows/phase9-exploratory-fxcm-blind-mtf-batch2-return-oos.yml",
+  "head_sha": "64f9237ef278cf637530af519a1781fd10fe8db7",
+  "runs": [
+    {
+      "run_id": 33587087527,
+      "run_number": 1,
+      "run_attempt": 1,
+      "job_id": 100113384708,
+      "conclusion": "cancelled",
+      "checkout_conclusion": "cancelled",
+      "evidence_verification_conclusion": "skipped",
+      "acquisition_conclusion": "skipped",
+      "return_oos_conclusion": "skipped",
+      "artifact_upload_conclusion": "skipped",
+      "artifact_count": 0
+    },
+    {
+      "run_id": 33587087557,
+      "run_number": 2,
+      "run_attempt": 1,
+      "conclusion": "skipped",
+      "job_count": 1,
+      "executed_step_count": 0,
+      "artifact_count": 0
+    }
+  ],
+  "boundary": {
+    "market_data_acquisition_started": false,
+    "candidate_signal_rebuild_started": false,
+    "return_calculated": false,
+    "research_outcomes_calculated": false,
+    "oos_viewed": false,
+    "artifact_created": false,
+    "statistical_contract_change_allowed": false,
+    "signal_or_exit_rule_change_allowed": false
+  },
+  "cause": "TWO_SIMULTANEOUS_DISPATCHES_REPLACED_THE_PENDING_RUN1_BEFORE_CHECKOUT_COMPLETED_THEN_RUN2_WAS_SKIPPED_BY_SINGLE_USE_GUARD",
+  "recovery": {
+    "allowed": true,
+    "must_use_unchanged_contract": "spec/fxcm_blind_mtf_batch2_return_oos_v1.frozen.json",
+    "must_use_unchanged_runner": "runner/fxcm_blind_mtf_batch2_return_oos.py",
+    "dedicated_workflow": ".github/workflows/phase9-exploratory-fxcm-blind-mtf-batch2-return-oos-recovery.yml",
+    "single_use_run_number": 1,
+    "single_use_run_attempt": 1,
+    "concurrency_group_removed_to_prevent_a_skipped_duplicate_from_replacing_pending_run1": true
+  }
+}

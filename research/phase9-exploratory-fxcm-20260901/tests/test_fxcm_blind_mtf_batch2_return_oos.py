@@ -13,6 +13,7 @@ REPO = ROOT.parents[1]
 RUNNER = ROOT / "runner/fxcm_blind_mtf_batch2_return_oos.py"
 CONTRACT = ROOT / "spec/fxcm_blind_mtf_batch2_return_oos_v1.frozen.json"
 WORKFLOW = REPO / ".github/workflows/phase9-exploratory-fxcm-blind-mtf-batch2-return-oos.yml"
+RECOVERY_WORKFLOW = REPO / ".github/workflows/phase9-exploratory-fxcm-blind-mtf-batch2-return-oos-recovery.yml"
 SPEC = importlib.util.spec_from_file_location("fxcm_blind_mtf_batch2_return_oos_tests", RUNNER)
 assert SPEC is not None and SPEC.loader is not None
 module = importlib.util.module_from_spec(SPEC)
@@ -103,6 +104,16 @@ class BlindMtfBatch2ReturnOosTests(unittest.TestCase):
         self.assertIn("EXP-P9-MTF-305", text)
         self.assertNotIn("EXP-P9-MTF-306", text)
         self.assertIn("Destroy all working prices before upload", text)
+        self.assertNotIn("schedule:", text)
+
+    def test_recovery_workflow_is_single_use_without_pending_replacement_group(self):
+        text = RECOVERY_WORKFLOW.read_text(encoding="utf-8")
+        self.assertIn("workflow_dispatch:", text)
+        self.assertIn("github.run_number == 1", text)
+        self.assertIn("RECOVERY_PREOUTCOME_CANCEL", text)
+        self.assertIn(module.CONFIRMATION, text)
+        self.assertNotIn("concurrency:", text)
+        self.assertIn("BATCH2_RETURN_PREOUTCOME_CANCELLATION_AUDIT.json", text)
         self.assertNotIn("schedule:", text)
 
 
