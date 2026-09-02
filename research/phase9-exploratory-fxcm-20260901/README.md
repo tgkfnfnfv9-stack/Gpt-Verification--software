@@ -260,6 +260,35 @@ OOS PF 1.05以上、正のOOS銘柄5以上、正のOOS四半期3以上をすべ�
 timestampを含まないsummary 2ファイルだけとする。結果通過時もMT5へ直行せず、
 別の新期間・頑健性Gateを必須とする。
 
+### Batch 4 Return/OOS Run 33604445976
+
+Run #1 / attempt #1は全step success。Artifact `9836839336`（ZIP SHA-256
+`4dd014a48132c69c55d4e7236d9f719dbc76cb09ace1799de03bd8155f2fdbc2`）を
+独立検証し、exact 2 files、manifest一致、価格・trade row・timestamp保存0を確認した。
+追加dispatch Run `33604446632`（#2）はsingle-use guardでskip、Artifact 0である。
+
+| Candidate | Completed | 2017 mean R | 2018 OOS mean R | OOS PF | Bootstrap lower | Decision |
+|---|---:|---:|---:|---:|---:|---|
+| EXP-P9-MTF-316 | 951/1018 | -0.0729 | 0.0260 | 1.0305 | -0.1522 | REJECT |
+
+316はOOS平均と四半期breadthだけを通過したが、completion、IS平均、補正後bootstrap下限、
+PF、銘柄breadthを通過しなかった。閾値・方向・銘柄・timeframe・exitを変更せず不採用。
+Outcome検定済み6候補は全件不採用で、確認済みedgeは0件である。
+
+## Blind MTF Batch 5 Count-only Preregistration
+
+301〜316を救済せず、次の独立mechanismを最初のBatch 5 Count閲覧前に
+`spec/fxcm_blind_mtf_candidates_v5.frozen.json`へ固定した。
+
+- `EXP-P9-MTF-317`: Asia session range → London breakout persistence
+- `EXP-P9-MTF-318`: expanded D1 bar extreme-close persistence
+- `EXP-P9-MTF-319`: H1 upside/downside realized semivariance imbalance reversion
+- `EXP-P9-MTF-320`: fixed-time daily cross-sectional dispersion convergence
+
+専用workflowは件数・coverage・identityだけを計算する。Return、勝敗、PF、P値、信頼区間、
+順位、Outcomeは計算・表示・保存しない。通過候補がある場合だけ、既にOutcomeを検定した
+6候補を含む累積多重検定補正Return/OOS Gateを別途凍結する。
+
 ### Batch 3 Return/OOS Run 33593743345
 
 Run #1 / attempt #1は全step success。Artifact `9832993158`（ZIP SHA-256

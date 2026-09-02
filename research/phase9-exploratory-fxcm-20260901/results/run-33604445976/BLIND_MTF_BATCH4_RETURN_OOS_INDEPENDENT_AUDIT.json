@@ -1,0 +1,91 @@
+{
+  "artifact": {
+    "artifact_id": 9836839336,
+    "exact_member_count": 2,
+    "github_digest_match": true,
+    "github_size_in_bytes": 2307,
+    "manifest_verification_pass": true,
+    "members": {
+      "EXPLORATORY_FXCM_BLIND_MTF_BATCH4_RETURN_OOS.json": "36cbee3076b35d0b9ea95f01c30e008f63e932ee883649c45a1497f8c1cd3d1d",
+      "artifact_manifest_sha256.txt": "55d99832b3b14fa2b9d83912a8d3d8f6f7b4d78d98f8f485e131573ac57ef07e"
+    },
+    "name": "phase9-exploratory-fxcm-blind-mtf-batch4-return-oos-d0d089f723019b22df9f97a670604ffb424d5185-33604445976-1",
+    "unexpected_member_count": 0,
+    "zip_integrity_pass": true,
+    "zip_sha256": "4dd014a48132c69c55d4e7236d9f719dbc76cb09ace1799de03bd8155f2fdbc2"
+  },
+  "audited_at_utc": "2026-09-02T07:53:00Z",
+  "candidate_decisions": {
+    "EXP-P9-MTF-316": {
+      "completed_outcome_count": 951,
+      "decision": "REJECT_NO_THRESHOLD_DIRECTION_SYMBOL_OR_EXIT_RESCUE",
+      "exploratory_edge_pass": false,
+      "failed_conditions": [
+        "minimum_outcome_completion_rate",
+        "in_sample_mean_r_strictly_positive",
+        "oos_date_cluster_bootstrap_lower_bound_strictly_positive",
+        "minimum_oos_profit_factor",
+        "minimum_positive_oos_instruments"
+      ],
+      "is_2017_mean_r": -0.0729042922,
+      "locked_primary_episode_count": 1018,
+      "oos_2018_mean_r": 0.0260372132,
+      "oos_2018_outcome_count": 473,
+      "oos_2018_profit_factor": 1.0304906085,
+      "oos_bootstrap_99_1667_percent_lower_mean_r": -0.1521923046,
+      "outcome_completion_rate": 0.9341846758,
+      "positive_oos_calendar_quarter_count": 3,
+      "positive_oos_instrument_count": 4
+    }
+  },
+  "confirmed_exploratory_edge_candidate_count": 0,
+  "custody_boundary": {
+    "formal_phase9_authorization_effect": false,
+    "persistent_price_files_after_cleanup": 0,
+    "price_values_in_artifact": false,
+    "signal_or_entry_timestamps_in_artifact": false,
+    "trade_rows_in_artifact": false
+  },
+  "duplicate_dispatch": {
+    "artifact_count": 0,
+    "conclusion": "skipped",
+    "job_id": 100165142390,
+    "research_effect": false,
+    "run_id": 33604446632,
+    "run_number": 2
+  },
+  "exploratory_edge_pass_candidates": [],
+  "identity_and_method_checks": {
+    "bonferroni_one_sided_alpha_each": 0.008333333333333333,
+    "canonical_mtf_report_sha256": "4d7f77caa5333e017742e01606aa869f3845aa4c4f206563e2fd59e02b1e1063",
+    "contract_sha256": "b591230ce4eeeb5263f75bc24d6549c5020306b44bc9f363b123e0a8c9c829b8",
+    "count_and_completion_arithmetic_pass": true,
+    "count_result_sha256": "bef8d10de3f68be0dfb6e9e051a764530b4571a9a4154d9c8b76c2d4aa37af83",
+    "cumulative_outcome_tested_candidate_count": 6,
+    "excluded_count_failures_not_evaluated": true,
+    "fixed_horizon_hours": 12,
+    "gate_conditions_independently_reproduced": true,
+    "nonpasser_rescue_performed": false,
+    "prior_outcome_tested_candidate_count": 5,
+    "result_dependent_rule_change": false,
+    "selected_candidates_exact": true,
+    "split": {
+      "in_sample": "2017",
+      "out_of_sample": "2018"
+    },
+    "spread_inclusive_bid_ask_execution": true
+  },
+  "next_action": "PREREGISTER_NEW_INDEPENDENT_MECHANISM_BATCH_BEFORE_COUNT_NO_RESCUE_OF_301_THROUGH_316",
+  "outcome_tested_exploratory_candidate_count": 6,
+  "schema_version": "phase9-exploratory-fxcm-blind-mtf-batch4-return-oos-independent-audit-v1.0.0",
+  "status": "INDEPENDENT_AUDIT_PASS_NO_EDGE_CANDIDATE",
+  "workflow_run": {
+    "all_steps_success": true,
+    "conclusion": "success",
+    "head_sha": "d0d089f723019b22df9f97a670604ffb424d5185",
+    "job_id": 100165153117,
+    "run_attempt": 1,
+    "run_id": 33604445976,
+    "run_number": 1
+  }
+}

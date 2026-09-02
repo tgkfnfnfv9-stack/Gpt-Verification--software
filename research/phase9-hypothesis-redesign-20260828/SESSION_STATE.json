@@ -346,7 +346,7 @@
     "next_gate": "BATCH4_RETURN_OOS_FOR_316_ONLY"
   },
   "exploratory_blind_mtf_batch4_return_oos_gate": {
-    "status": "FROZEN_PRE_OUTCOME_WORKFLOW_AND_TESTS_READY",
+    "status": "COMPLETED_REJECTED_NO_EDGE",
     "formal_phase9_authorization_effect": false,
     "workflow": ".github/workflows/phase9-exploratory-fxcm-blind-mtf-batch4-return-oos.yml",
     "contract": "../phase9-exploratory-fxcm-20260901/spec/fxcm_blind_mtf_batch4_return_oos_v1.frozen.json",
@@ -364,9 +364,37 @@
     "cumulative_outcome_tested_candidate_count": 6,
     "bonferroni_one_sided_alpha_each": 0.008333333333333333,
     "minimum_oos_outcomes": 240,
+    "return_calculated": true,
+    "research_outcomes_calculated": true,
+    "completed_run_id": 33604445976,
+    "completed_job_id": 100165153117,
+    "completed_artifact_id": 9836839336,
+    "artifact_zip_sha256": "4dd014a48132c69c55d4e7236d9f719dbc76cb09ace1799de03bd8155f2fdbc2",
+    "duplicate_skipped_run_id": 33604446632,
+    "results": {
+      "EXP-P9-MTF-316": {"completion_rate": 0.9341846758, "is_mean_r": -0.0729042922, "oos_mean_r": 0.0260372132, "oos_profit_factor": 1.0304906085, "oos_bootstrap_lower_mean_r": -0.1521923046, "pass": false}
+    },
+    "exploratory_edge_pass_candidates": [],
+    "next_gate": "NEW_INDEPENDENT_MECHANISM_BATCH_NO_RESCUE_OF_301_THROUGH_316"
+  },
+  "exploratory_blind_mtf_batch5_count_gate": {
+    "status": "PREREGISTERED_WORKFLOW_AND_TESTS_READY_COUNT_NOT_RUN",
+    "formal_phase9_authorization_effect": false,
+    "workflow": ".github/workflows/phase9-exploratory-fxcm-blind-mtf-batch5-count-only.yml",
+    "contract": "../phase9-exploratory-fxcm-20260901/spec/fxcm_blind_mtf_candidates_v5.frozen.json",
+    "runner": "../phase9-exploratory-fxcm-20260901/runner/fxcm_blind_mtf_count_only_v5.py",
+    "candidate_ids": ["EXP-P9-MTF-317", "EXP-P9-MTF-318", "EXP-P9-MTF-319", "EXP-P9-MTF-320"],
+    "confirmation": "RUN_EXPLORATORY_FXCM_BLIND_MTF_BATCH5_COUNT_ONLY_2017_2018_V1",
+    "usage_confirmation": "I_CONFIRM_PERSONAL_NONCOMMERCIAL_USE_AND_ACCEPT_FXCM_EULA",
+    "manual_single_use_run_number": 1,
+    "required_run_attempt": 1,
+    "count_only": true,
+    "count_executed": false,
     "return_calculated": false,
     "research_outcomes_calculated": false,
-    "next_gate": "MANUAL_SINGLE_USE_BATCH4_RETURN_OOS_RUN"
+    "outcome_fields": [],
+    "prior_outcome_tested_candidate_count": 6,
+    "next_gate": "MANUAL_SINGLE_USE_BATCH5_COUNT_ONLY_RUN"
   },
   "provider_acquisition": {
     "status": "ACTUAL_FULL_QC_CONTRACT_FROZEN_PROVIDER_SCHEDULE_SOURCE_P0_BLOCKED",

@@ -1,0 +1,99 @@
+{
+  "schema_version": "phase9-exploratory-fxcm-blind-mtf-candidates-v5.0.0",
+  "status": "FROZEN_AFTER_BATCH4_REJECTION_BEFORE_FIRST_BATCH5_SIGNAL_COUNT",
+  "recorded_at_utc": "2026-09-02T08:00:00Z",
+  "track": "EXPLORATORY_FX8_BLIND_MTF_PRICE_ONLY_BATCH5_NOT_FORMAL_PHASE9",
+  "purpose": "Screen four mechanisms independent of candidates 301 through 316 without rescuing any rejection and without calculating or viewing any Batch 5 outcome.",
+  "selection_integrity": {
+    "rejected_candidates_acknowledged": ["EXP-P9-MTF-301", "EXP-P9-MTF-302", "EXP-P9-MTF-303", "EXP-P9-MTF-304", "EXP-P9-MTF-305", "EXP-P9-MTF-306", "EXP-P9-MTF-307", "EXP-P9-MTF-308", "EXP-P9-MTF-309", "EXP-P9-MTF-310", "EXP-P9-MTF-311", "EXP-P9-MTF-312", "EXP-P9-MTF-313", "EXP-P9-MTF-314", "EXP-P9-MTF-315", "EXP-P9-MTF-316"],
+    "outcome_tested_rejections_acknowledged": ["EXP-P9-MTF-302", "EXP-P9-MTF-304", "EXP-P9-MTF-305", "EXP-P9-MTF-311", "EXP-P9-MTF-312", "EXP-P9-MTF-316"],
+    "prior_threshold_direction_symbol_timeframe_or_exit_rescue_allowed": false,
+    "prior_outcomes_used_to_choose_batch5_thresholds": false,
+    "batch5_count_or_outcome_viewed_before_freeze": false,
+    "all_eight_fx_pairs_required": true,
+    "threshold_change_after_count": false,
+    "future_return_familywise_correction_must_include_prior_six_outcome_candidates": true,
+    "formal_authorization_effect": false
+  },
+  "mechanism_independence": {
+    "EXP-P9-MTF-317": {"mechanism_family": "ASIA_RANGE_LONDON_BREAKOUT_PERSISTENCE", "independent_of_301_316": "Uses a fixed 00:00-05:00 UTC session range and an 08:00 UTC close outside that range; no prior mechanism defines and breaks a fixed multi-hour session range."},
+    "EXP-P9-MTF-318": {"mechanism_family": "EXPANDED_DAILY_CLOSE_LOCATION_PERSISTENCE", "independent_of_301_316": "Uses only a completed D1 range expansion and its close location, then enters at a fixed next-session hour; it does not reuse prior compression, pullback, impulse, or parity rules."},
+    "EXP-P9-MTF-319": {"mechanism_family": "INTRADAY_SEMIVARIANCE_IMBALANCE_REVERSION", "independent_of_301_316": "Uses the ratio of positive and negative squared H1 returns over a fixed rolling window; no prior candidate measures realized upside-versus-downside semivariance."},
+    "EXP-P9-MTF-320": {"mechanism_family": "DAILY_CROSS_SECTIONAL_DISPERSION_CONVERGENCE", "independent_of_301_316": "Uses fixed-time 24-hour ATR-normalized cross-sectional dispersion and trades extreme ranks toward convergence; unlike 315 it is daily mean reversion rather than weekly momentum."}
+  },
+  "anchors": {
+    "base_count_utility_sha256": "2991575f471c19de35d04ae21d276cc25d52d9fb705587a8259f70d43639cdad",
+    "mtf_qc_runner_sha256": "09da37be5955dcf142752d70dc21542f21e5ea71835c7f1073e68f52585971cd",
+    "canonical_mtf_report_sha256": "4d7f77caa5333e017742e01606aa869f3845aa4c4f206563e2fd59e02b1e1063",
+    "batch1_candidate_contract_sha256": "8d832dbf779098d00c731d87547b30ed6944ee2c227d505e540ea95a7efaa1e3",
+    "batch2_candidate_contract_sha256": "4fac27599445d7dc28b7cffc99c8c6fdd19c640e2fb0fca1a90b9d5f799bc615",
+    "batch3_candidate_contract_sha256": "54b73dcf66ced89abc9a33cc68689af7d3180ee7ed4c0db329ab49f24d7faa7e",
+    "batch4_candidate_contract_sha256": "cc2c6ef49b8e8119f48406311d0cd8ba06803c063b92593425681dff7c7c63e9",
+    "latest_outcome_audit_sha256": "13d72363defbb95e8c606b316d7a8e64390629452f2968b079e63968b190bd89"
+  },
+  "dataset": {
+    "symbols": ["AUDJPY", "AUDUSD", "EURGBP", "EURJPY", "EURUSD", "GBPJPY", "GBPUSD", "USDJPY"],
+    "start_inclusive": "2017-01-01T00:00:00Z",
+    "end_exclusive": "2018-12-31T00:00:00Z",
+    "available_timeframes": ["M15", "H1", "H4", "D1"],
+    "feature_price": "FIELDWISE_ARITHMETIC_MID_OF_SYNCHRONIZED_BID_AND_ASK_OHLC",
+    "volume_used": false,
+    "forward_fill_or_interpolation": false,
+    "persistent_prices": false
+  },
+  "common_rules": {
+    "timestamps": "UTC_BAR_OPEN",
+    "higher_timeframe_available_only_after_bucket_end": true,
+    "atr14": "MEAN_TRUE_RANGE_OF_14_BARS_ENDING_IMMEDIATELY_BEFORE_EVENT_BAR",
+    "entry": "NEXT_OBSERVED_H1_BAR_OPEN_NO_LATER_THAN_TWO_HOURS_AFTER_CONFIRMATION_CLOSE",
+    "overlap": "SAME_CANDIDATE_INSTRUMENT_DIRECTION_KEEP_EARLIEST_THEN_DROP_ENTRIES_WITHIN_12_REAL_HOURS",
+    "episode": "CANDIDATE_PLUS_UTC_SIGNAL_DATE_PLUS_DIRECTION_KEEP_EARLIEST",
+    "signal_timestamp_or_price_in_artifact": false,
+    "forward_outcome_access": false
+  },
+  "candidates": {
+    "EXP-P9-MTF-317": {
+      "name": "Asian Session Range London Breakout Persistence",
+      "signal_timeframe": "H1",
+      "range_hours_utc": [0, 1, 2, 3, 4, 5],
+      "confirmation_bar_open_hour_utc": 8,
+      "close_beyond_range_atr_min": 0.10,
+      "frequency_gate": {"episodes_min": 300, "active_dates_min": 180, "instruments_min_20": 6, "max_instrument_share": 0.22, "each_year_share_min": 0.30}
+    },
+    "EXP-P9-MTF-318": {
+      "name": "Expanded Daily Bar Close-Location Persistence",
+      "signal_timeframe": "D1_TO_H1",
+      "range_atr_min": 1.25,
+      "extreme_close_fraction": 0.20,
+      "fixed_entry_decision_hour_utc": 8,
+      "frequency_gate": {"episodes_min": 160, "active_dates_min": 120, "instruments_min_12": 6, "max_instrument_share": 0.22, "each_year_share_min": 0.30}
+    },
+    "EXP-P9-MTF-319": {
+      "name": "H1 Realized Semivariance Imbalance Reversion",
+      "signal_timeframe": "H1",
+      "return_observations": 24,
+      "dominant_to_opposite_semivariance_ratio_min": 4.0,
+      "minimum_total_atr_normalized_move": 1.0,
+      "frequency_gate": {"episodes_min": 400, "active_dates_min": 240, "instruments_min_30": 6, "max_instrument_share": 0.22, "each_year_share_min": 0.30}
+    },
+    "EXP-P9-MTF-320": {
+      "name": "Daily Cross-Sectional Dispersion Convergence",
+      "signal_timeframe": "H1",
+      "fixed_decision_bar_open_hour_utc": 12,
+      "lookback_hours": 24,
+      "dispersion_score_range_min": 1.50,
+      "long_bottom_rank_count": 2,
+      "short_top_rank_count": 2,
+      "ties": "BREAK_BY_ASCENDING_SYMBOL_NAME_AFTER_SCORE",
+      "frequency_gate": {"episodes_min": 400, "active_dates_min": 150, "instruments_min_30": 6, "max_instrument_share": 0.25, "each_year_share_min": 0.30}
+    }
+  },
+  "next_gate": {
+    "count_only_first": true,
+    "return_gate_only_for_frequency_passers": true,
+    "future_cumulative_outcome_tested_candidate_count": "6_PLUS_NUMBER_OF_BATCH5_FREQUENCY_PASSERS",
+    "familywise_alpha": 0.05,
+    "return_and_oos_in_count_run": false,
+    "outcome_fields": []
+  }
+}
