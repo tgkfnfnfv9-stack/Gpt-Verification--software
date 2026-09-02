@@ -289,6 +289,36 @@ Outcome検定済み6候補は全件不採用で、確認済みedgeは0件であ�
 順位、Outcomeは計算・表示・保存しない。通過候補がある場合だけ、既にOutcomeを検定した
 6候補を含む累積多重検定補正Return/OOS Gateを別途凍結する。
 
+### Batch 5 Count-only Run 33607154053
+
+Run #1 / attempt #1は全step success。Artifact `9837905049`（ZIP SHA-256
+`43967420efba6bd9c8b036e6415db3f73c2e20ab13a41607cd3245dd7dee1c29`）を
+独立検証し、exact 2 files、manifest一致、価格保存0、Return/Outcome未計算を確認した。
+
+| Candidate | Episodes | Active dates | Count decision |
+|---|---:|---:|---|
+| EXP-P9-MTF-317 | 759 | 485 | REJECT |
+| EXP-P9-MTF-318 | 148 | 127 | REJECT |
+| EXP-P9-MTF-319 | 948 | 570 | PASS |
+| EXP-P9-MTF-320 | 664 | 332 | REJECT |
+
+317と320は銘柄集中、318は最低件数と銘柄breadthを通過しなかった。閾値、方向、銘柄、
+timeframe、exitを変更せず不採用とし、319だけを別Return/OOS Gateへ送る。
+
+## Blind MTF Batch 5 Return/OOS Gate
+
+319のReturn閲覧前に`spec/fxcm_blind_mtf_batch5_return_oos_v1.frozen.json`を固定した。
+H1次バーopenから12時間後のH1 openまでを、LONG ASK→BID、SHORT BID→ASKで評価し、
+entry前H1 mid ATR14で正規化する。2017 IS / 2018 OOS、UTC entry-date cluster
+bootstrap 20,000回を使用する。過去にOutcomeを検定した302/304/305/311/312/316を
+含む累積7候補にBonferroni補正し、片側alphaは`0.05 / 7`である。
+
+OOS最低220件、completion 95%以上、IS/OOS平均正、99.2857% bootstrap下限正、
+OOS PF 1.05以上、正のOOS銘柄5以上、正のOOS四半期3以上をすべて要求する。
+専用manual workflowはRun #1 / attempt #1のみ許可し、Artifactは価格・trade row・
+timestampを含まないsummary 2ファイルだけとする。通過時もMT5へ直行せず、
+別の新期間・頑健性Gateを必須とする。
+
 ### Batch 3 Return/OOS Run 33593743345
 
 Run #1 / attempt #1は全step success。Artifact `9832993158`（ZIP SHA-256

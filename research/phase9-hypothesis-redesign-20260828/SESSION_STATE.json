@@ -1,7 +1,7 @@
 {
   "project": "auto-trading-research",
   "updated_at": "2026-09-02",
-  "phase": "PHASE9_EXPLORATORY_BLIND_MTF_BATCH3_RETURN_REJECTED_BATCH4_COUNT_PREREGISTERED_WORKFLOW_READY_NOT_RUN",
+  "phase": "PHASE9_EXPLORATORY_BLIND_MTF_BATCH5_COUNT_COMPLETE_319_RETURN_OOS_PREREGISTERED_WORKFLOW_READY_NOT_RUN",
   "phase8": {
     "formal_hypotheses_including_pa002": 16,
     "decision": "ALL_REJECT_FOR_DEVELOPMENT",
@@ -54,7 +54,7 @@
     "legacy_non_phase9_future_period_download_detected": true
   },
   "exploratory_fxcm_multitimeframe": {
-    "status": "MTF_64_SERIES_EXECUTED_BATCH3_RETURN_REJECTED_BATCH4_COUNT_PREREGISTERED_NOT_RUN",
+    "status": "MTF_64_SERIES_EXECUTED_BATCH5_COUNT_COMPLETE_319_RETURN_OOS_PREREGISTERED_NOT_RUN",
     "formal_phase9_authorization_effect": false,
     "plan": "../phase9-exploratory-fxcm-20260901/MULTI_TIMEFRAME_DATA_PLAN.md",
     "contract": "../phase9-exploratory-fxcm-20260901/spec/fxcm_multitimeframe_data_requirements.frozen.json",
@@ -378,7 +378,7 @@
     "next_gate": "NEW_INDEPENDENT_MECHANISM_BATCH_NO_RESCUE_OF_301_THROUGH_316"
   },
   "exploratory_blind_mtf_batch5_count_gate": {
-    "status": "PREREGISTERED_WORKFLOW_AND_TESTS_READY_COUNT_NOT_RUN",
+    "status": "RUN_33607154053_SUCCESS_INDEPENDENT_AUDIT_PASS_ONE_FREQUENCY_CANDIDATE_NO_OUTCOME",
     "formal_phase9_authorization_effect": false,
     "workflow": ".github/workflows/phase9-exploratory-fxcm-blind-mtf-batch5-count-only.yml",
     "contract": "../phase9-exploratory-fxcm-20260901/spec/fxcm_blind_mtf_candidates_v5.frozen.json",
@@ -389,12 +389,48 @@
     "manual_single_use_run_number": 1,
     "required_run_attempt": 1,
     "count_only": true,
-    "count_executed": false,
+    "count_executed": true,
     "return_calculated": false,
     "research_outcomes_calculated": false,
     "outcome_fields": [],
+    "completed_run_id": 33607154053,
+    "completed_job_id": 100173643491,
+    "completed_artifact_id": 9837905049,
+    "artifact_zip_sha256": "43967420efba6bd9c8b036e6415db3f73c2e20ab13a41607cd3245dd7dee1c29",
+    "results": {
+      "EXP-P9-MTF-317": {"primary_episode_count": 759, "active_utc_date_count": 485, "pass": false},
+      "EXP-P9-MTF-318": {"primary_episode_count": 148, "active_utc_date_count": 127, "pass": false},
+      "EXP-P9-MTF-319": {"primary_episode_count": 948, "active_utc_date_count": 570, "pass": true},
+      "EXP-P9-MTF-320": {"primary_episode_count": 664, "active_utc_date_count": 332, "pass": false}
+    },
+    "frequency_pass_candidates": ["EXP-P9-MTF-319"],
+    "rejected_without_rescue": ["EXP-P9-MTF-317", "EXP-P9-MTF-318", "EXP-P9-MTF-320"],
     "prior_outcome_tested_candidate_count": 6,
-    "next_gate": "MANUAL_SINGLE_USE_BATCH5_COUNT_ONLY_RUN"
+    "next_gate": "SEPARATE_BATCH5_RETURN_OOS_GATE_FOR_319_ONLY"
+  },
+  "exploratory_blind_mtf_batch5_return_oos_gate": {
+    "status": "PREREGISTERED_WORKFLOW_AND_TESTS_READY_RETURN_NOT_RUN",
+    "formal_phase9_authorization_effect": false,
+    "workflow": ".github/workflows/phase9-exploratory-fxcm-blind-mtf-batch5-return-oos.yml",
+    "contract": "../phase9-exploratory-fxcm-20260901/spec/fxcm_blind_mtf_batch5_return_oos_v1.frozen.json",
+    "runner": "../phase9-exploratory-fxcm-20260901/runner/fxcm_blind_mtf_batch5_return_oos.py",
+    "selected_candidates": ["EXP-P9-MTF-319"],
+    "excluded_frequency_failures": ["EXP-P9-MTF-317", "EXP-P9-MTF-318", "EXP-P9-MTF-320"],
+    "candidate_return_or_outcome_viewed_before_freeze": false,
+    "confirmation": "RUN_EXPLORATORY_FXCM_BLIND_MTF_BATCH5_RETURN_OOS_2017_2018_V1",
+    "usage_confirmation": "I_CONFIRM_PERSONAL_NONCOMMERCIAL_USE_AND_ACCEPT_FXCM_EULA",
+    "manual_single_use_run_number": 1,
+    "required_run_attempt": 1,
+    "fixed_horizon_hours": 12,
+    "in_sample_year": 2017,
+    "out_of_sample_year": 2018,
+    "prior_outcome_tested_candidate_count": 6,
+    "cumulative_outcome_tested_candidate_count": 7,
+    "bonferroni_one_sided_alpha_each": 0.0071428571428571435,
+    "minimum_oos_outcomes": 220,
+    "return_calculated": false,
+    "research_outcomes_calculated": false,
+    "next_gate": "MANUAL_SINGLE_USE_BATCH5_RETURN_OOS_FOR_319_ONLY"
   },
   "provider_acquisition": {
     "status": "ACTUAL_FULL_QC_CONTRACT_FROZEN_PROVIDER_SCHEDULE_SOURCE_P0_BLOCKED",
@@ -878,9 +914,9 @@
     "implement MT5 EA"
   ],
   "next_actions": [
-    "dispatch the single-use Batch 3 Count-only workflow exactly once with both frozen confirmation strings; do not calculate or inspect Return, wins, PF, p-values or Outcome",
-    "if and only if a Batch 3 candidate passes its frozen frequency Gate, freeze a separate Return/OOS contract with cumulative multiplicity correction over the three prior outcome-tested candidates plus every new passer",
-    "reject every Batch 3 Count failure without threshold, direction, symbol, timeframe or exit rescue",
+    "dispatch the single-use Batch 5 Return/OOS workflow for EXP-P9-MTF-319 exactly once with both frozen confirmation strings",
+    "if and only if EXP-P9-MTF-319 passes every frozen Return/OOS condition, freeze a separate robustness and new-period confirmation Gate before MT5 work",
+    "if EXP-P9-MTF-319 fails, reject it without threshold, direction, symbol, timeframe or exit rescue; do not rescue Batch 5 Count failures 317, 318 or 320",
     "do not rerun or replay failed V1 libs JNLP Run 33574659277 or skipped Run 33575321670; V1 authorization is consumed and its HTTP request count is zero",
     "do not rerun or replay successful V2 libs JNLP Run 33577505327; its single-use authorization is consumed",
     "use the independently audited 36-entry observed URL inventory as evidence only; no entry is authorized for request or execution",

@@ -67,7 +67,11 @@ Actual Full-QC実装基準: `9eb7ce667bea8e76a7f9bb1f2d378eebd8957206`
   PF 1.0305、bootstrap lower -0.1522でREJECT。追加Run #2はskip。316を救済しない。
 - Batch 5として317〜320をCount閲覧前に事前登録した。固定session range breakout、
   D1 extreme-close persistence、semivariance imbalance、cross-sectional convergenceの
-  独立4 mechanism。Count-only workflowとTestsを実装済み。
+  独立4 mechanism。Count-only Run `33607154053`はsuccess。317=759、318=148、
+  319=948、320=664で、319だけがCount PASS。Artifactを独立監査し、価格保存0、
+  Return/Outcome未計算を確認した。317/318/320は救済しない。319専用Return/OOS契約を
+  Return閲覧前に凍結し、累積7候補Bonferroni（片側alpha 0.05/7）のsingle-use
+  workflowとTestsを実装済み。
 
 ## 1. この引継ぎの結論
 
@@ -78,7 +82,8 @@ Return Gate通過0件で、Return/Outcomeは未計算。現在は、Count-only�
 Return/OOSまで完了し、305も不採用となった。Batch 3も309/310をCount不通過、311/312を
 Return/OOS不通過として全件不採用にした。確認済みedgeは0件。301〜312を救済せず、
 独立mechanismのBatch 4（313〜316）はReturn/OOSまで完了し、全件不採用となった。
-次はBatch 5 Count-only single-use workflowを1回だけ実行する段階である。Formal provider
+Batch 5は317/318/320をCount不通過で不採用とし、319だけをReturn/OOSへ進める。
+次はBatch 5 Return/OOS single-use workflowを1回だけ実行する段階である。Formal provider
 scheduleと金銀・Energyのblockerは別trackに残し、探索を遅らせない。
 
 ```text
@@ -121,9 +126,11 @@ Batch 4 Count-only
 316 Return-OOS
   ↓ REJECT、edge PASS 0件、救済なし
 新しい独立mechanism Batch 5
-  ↓ 317〜320 preregistered / Count workflow ready
+  ↓ 317〜320 preregistered / Count完了
 Batch 5 Count-only
-  ↓ NEXT: one manual single-use run（Return/Outcomeなし）
+  ↓ 319 PASS、317/318/320 REJECT（Return/Outcomeなし、救済なし）
+319 Return-OOS
+  ↓ NEXT: one manual single-use run
 Provider schedule source readiness
   ↓ P0 BLOCKED（公式version付き完全履歴source未固定）
 Metadata-only JForex amendment / static Gate
@@ -386,24 +393,25 @@ Provider schedule inventory / allowlist
 
 ## 7. 次に行う単一作業
 
-FX8 MTF取得/QC、Batch 1〜4のCount-only、302/304/305/311/312/316のReturn/OOSは完了し、
+FX8 MTF取得/QC、Batch 1〜5のCount-only、302/304/305/311/312/316のReturn/OOSは完了し、
 Outcome検定済み6候補は全件不採用、確認済みedgeは0件である。301〜316を救済せず、
-Batch 5の317〜320をCount閲覧前に事前登録し、専用Count-only workflowを固定した。
+Batch 5の317〜320をCount閲覧前に事前登録して実行し、319だけがCountを通過した。
+317/318/320は救済しない。319専用Return/OOS契約はReturn閲覧前に固定済みである。
 
-次は`.github/workflows/phase9-exploratory-fxcm-blind-mtf-batch5-count-only.yml`を
+次は`.github/workflows/phase9-exploratory-fxcm-blind-mtf-batch5-return-oos.yml`を
 Run #1 / attempt #1として1回だけ手動実行する。入力は次の完全一致文字列を使う。
 
 ```text
 confirmation:
-RUN_EXPLORATORY_FXCM_BLIND_MTF_BATCH5_COUNT_ONLY_2017_2018_V1
+RUN_EXPLORATORY_FXCM_BLIND_MTF_BATCH5_RETURN_OOS_2017_2018_V1
 
 usage_confirmation:
 I_CONFIRM_PERSONAL_NONCOMMERCIAL_USE_AND_ACCEPT_FXCM_EULA
 ```
 
-このRunでは件数・coverage・identityだけを確認し、Return、勝敗、PF、P値、Outcomeを
-計算・表示しない。Count通過候補だけを、過去6候補を含む累積多重検定補正Return/OOS
-Gateへ進める。不通過候補は条件変更、方向反転、銘柄限定、exit変更で救済しない。
+このRunでは319だけを、過去6候補を含む累積7候補Bonferroni、2017 IS / 2018 OOS、
+spread込み12時間固定returnで評価する。全固定条件を通過した場合だけ別の新期間・
+頑健性Gateへ進める。不通過なら条件変更、方向反転、銘柄限定、exit変更で救済しない。
 
 Formal trackではV1 Run `33574659277`とV2 Run `33577505327`の単一使用認可は消費済みで、
 rerun/replayしない。remote resource/JAR request、JForex接続、正式価格取得も別承認前に行わない。

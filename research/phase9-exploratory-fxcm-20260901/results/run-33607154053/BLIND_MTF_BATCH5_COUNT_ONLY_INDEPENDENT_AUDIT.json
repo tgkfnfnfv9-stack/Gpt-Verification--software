@@ -1,0 +1,109 @@
+{
+  "artifact": {
+    "artifact_id": 9837905049,
+    "exact_member_count": 2,
+    "github_digest_match": true,
+    "github_size_in_bytes": 2388,
+    "manifest_verification_pass": true,
+    "members": {
+      "EXPLORATORY_FXCM_BLIND_MTF_BATCH5_COUNT_ONLY.json": "f94a3c953fed409f0dc14bd40865770979223001fc4ceeb084cb672e39b9a1d3",
+      "artifact_manifest_sha256.txt": "23735abe8f5704ef1b9f804779039e9d107980ad9a903ad529f27cb2fc74372f"
+    },
+    "name": "phase9-exploratory-fxcm-blind-mtf-batch5-count-only-5acfd8bd07c45667bab3163b9c759eeea9deed7a-33607154053-1",
+    "unexpected_member_count": 0,
+    "zip_integrity_pass": true,
+    "zip_sha256": "43967420efba6bd9c8b036e6415db3f73c2e20ab13a41607cd3245dd7dee1c29"
+  },
+  "audited_at_utc": "2026-09-02T08:25:00Z",
+  "custody_boundary": {
+    "formal_phase9_authorization_effect": false,
+    "outcome_fields": [],
+    "persistent_price_files_after_cleanup": 0,
+    "price_values_in_artifact": false,
+    "research_outcomes_calculated": false,
+    "return_calculated": false,
+    "signal_or_entry_timestamps_in_artifact": false,
+    "trade_rows_in_artifact": false
+  },
+  "decisions": {
+    "EXP-P9-MTF-317": {
+      "active_utc_date_count": 485,
+      "decision": "REJECT_NO_THRESHOLD_OR_SUBSET_RESCUE",
+      "failed_conditions": [
+        "max_instrument_share"
+      ],
+      "frequency_gate_pass": false,
+      "primary_episode_count": 759
+    },
+    "EXP-P9-MTF-318": {
+      "active_utc_date_count": 127,
+      "decision": "REJECT_NO_THRESHOLD_OR_SUBSET_RESCUE",
+      "failed_conditions": [
+        "episodes_min",
+        "instruments_min_12"
+      ],
+      "frequency_gate_pass": false,
+      "primary_episode_count": 148
+    },
+    "EXP-P9-MTF-319": {
+      "active_utc_date_count": 570,
+      "counts_by_year": {
+        "2017": 488,
+        "2018": 460
+      },
+      "decision": "PASS_TO_SEPARATE_RETURN_OOS_GATE",
+      "frequency_gate_pass": true,
+      "instruments_with_at_least_30_episodes": 8,
+      "maximum_instrument_share": 0.1951476793,
+      "primary_episode_count": 948
+    },
+    "EXP-P9-MTF-320": {
+      "active_utc_date_count": 332,
+      "decision": "REJECT_NO_THRESHOLD_OR_SUBSET_RESCUE",
+      "failed_conditions": [
+        "max_instrument_share"
+      ],
+      "frequency_gate_pass": false,
+      "primary_episode_count": 664
+    }
+  },
+  "frequency_pass_candidates": [
+    "EXP-P9-MTF-319"
+  ],
+  "identity_checks": {
+    "all_eight_instruments_present": true,
+    "batch5_contract_sha256": "88cffdcc16e058c09c6309f618d7eab1bb4558b6210469786c6bc40bc3bc0265",
+    "both_years_present": true,
+    "candidate_set_exact": true,
+    "canonical_mtf_report_sha256": "4d7f77caa5333e017742e01606aa869f3845aa4c4f206563e2fd59e02b1e1063",
+    "count_arithmetic_pass": true,
+    "current_mtf_report_sha256": "7f0ea2bcbb5f0939ae0b40f0dfad7a477e25ff6b64681c45c8bc09c61f5fd7b5",
+    "frequency_gate_reproduced": true,
+    "no_result_dependent_rule_change": true,
+    "run_identity_exact": true
+  },
+  "multiplicity_boundary": {
+    "cumulative_outcome_tested_candidate_count_after_next_gate": 7,
+    "new_selected_candidate_count": 1,
+    "prior_outcome_tested_candidate_count": 6,
+    "required_bonferroni_alpha_per_candidate": 0.007142857142857143,
+    "required_familywise_alpha": 0.05
+  },
+  "next_action": "FREEZE_SEPARATE_CUMULATIVE_SEVEN_CANDIDATE_MULTIPLICITY_ADJUSTED_RETURN_OOS_GATE_FOR_319_ONLY",
+  "rejected_without_rescue": [
+    "EXP-P9-MTF-317",
+    "EXP-P9-MTF-318",
+    "EXP-P9-MTF-320"
+  ],
+  "schema_version": "phase9-exploratory-fxcm-blind-mtf-batch5-count-only-independent-audit-v1.0.0",
+  "status": "INDEPENDENT_AUDIT_PASS_ONE_FREQUENCY_CANDIDATE_NO_OUTCOME",
+  "workflow_run": {
+    "all_steps_success": true,
+    "conclusion": "success",
+    "head_sha": "5acfd8bd07c45667bab3163b9c759eeea9deed7a",
+    "job_id": 100173643491,
+    "run_attempt": 1,
+    "run_id": 33607154053,
+    "run_number": 1
+  }
+}
