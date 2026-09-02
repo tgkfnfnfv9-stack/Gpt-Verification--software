@@ -59,7 +59,10 @@ Actual Full-QC実装基準: `9eb7ce667bea8e76a7f9bb1f2d378eebd8957206`
   -0.2578で、両方REJECT。独立監査済みでedge PASSは0件、301〜312を救済しない。
 - Batch 4として313〜316をCount閲覧前に事前登録した。weekend gap reversion、month-end
   fixing reversal、weekly cross-sectional momentum、triangular parity dislocationの4 mechanism。
-  Count-only runner、single-use manual workflow、Testsを実装済み。Count/Return/Outcomeは未閲覧。
+  Count-only Run `33597873310`はsuccess。313=147、314=25、315=174でREJECT、316=1018で
+  PASS。Run #2 `33597873428`はsingle-use guardでskip。Artifactを独立監査しReturn/Outcome
+  未計算を確認した。313〜315は救済しない。316専用Return/OOS契約を結果閲覧前に凍結し、
+  累積6候補Bonferroni（片側alpha 0.05/6）のsingle-use workflowとTestsを実装済み。
 
 ## 1. この引継ぎの結論
 
@@ -69,8 +72,8 @@ FX8 × 4時間足 × BID/ASKの64系列QCまで完了した。既存7候補のCo
 Return Gate通過0件で、Return/Outcomeは未計算。現在は、Count-onlyを通過した305だけの
 Return/OOSまで完了し、305も不採用となった。Batch 3も309/310をCount不通過、311/312を
 Return/OOS不通過として全件不採用にした。確認済みedgeは0件。301〜312を救済せず、
-独立mechanismのBatch 4（313〜316）をCount前に固定した。次はBatch 4 Count-only
-single-use workflowを1回だけ実行する段階である。Formal provider
+独立mechanismのBatch 4（313〜316）はCountを完了し、316だけがPASSした。次は316専用の
+Batch 4 Return/OOS single-use workflowを1回だけ実行する段階である。Formal provider
 scheduleと金銀・Energyのblockerは別trackに残し、探索を遅らせない。
 
 ```text
@@ -107,9 +110,11 @@ Batch 3 Count-only
 311 / 312 Return-OOS
   ↓ REJECT 2件、edge PASS 0件、救済なし
 新しい独立mechanism Batch 4
-  ↓ 313〜316 preregistered / Count workflow ready
+  ↓ 313〜316 preregistered / Count完了
 Batch 4 Count-only
-  ↓ NEXT: one manual single-use run（Return/Outcomeなし）
+  ↓ 316 PASS、313〜315 REJECT（Return/Outcomeなし、救済なし）
+316 Return-OOS
+  ↓ NEXT: one manual single-use run（累積6候補Bonferroni）
 Provider schedule source readiness
   ↓ P0 BLOCKED（公式version付き完全履歴source未固定）
 Metadata-only JForex amendment / static Gate
@@ -372,25 +377,26 @@ Provider schedule inventory / allowlist
 
 ## 7. 次に行う単一作業
 
-FX8 MTF取得/QC、Batch 1〜3のCount-only、302/304/305/311/312のReturn/OOSは完了し、
+FX8 MTF取得/QC、Batch 1〜4のCount-only、302/304/305/311/312のReturn/OOSは完了し、
 Outcome検定済み5候補は全件不採用、確認済みedgeは0件である。301〜312を救済せず、
-Batch 4の313〜316をCount閲覧前に事前登録し、専用Count-only workflowとTestsを実装した。
+Batch 4の313〜316をCount閲覧前に事前登録した。Countでは316だけがPASSし、313〜315は
+救済せず不採用。316専用Return/OOS契約とworkflowをReturn閲覧前に固定した。
 
-次は`.github/workflows/phase9-exploratory-fxcm-blind-mtf-batch4-count-only.yml`を
+次は`.github/workflows/phase9-exploratory-fxcm-blind-mtf-batch4-return-oos.yml`を
 Run #1 / attempt #1として1回だけ手動実行する。入力は次の完全一致文字列を使う。
 
 ```text
 confirmation:
-RUN_EXPLORATORY_FXCM_BLIND_MTF_BATCH4_COUNT_ONLY_2017_2018_V1
+RUN_EXPLORATORY_FXCM_BLIND_MTF_BATCH4_RETURN_OOS_2017_2018_V1
 
 usage_confirmation:
 I_CONFIRM_PERSONAL_NONCOMMERCIAL_USE_AND_ACCEPT_FXCM_EULA
 ```
 
-このRunでは件数・coverageだけを確認する。Return、Return符号、MFE、MAE、勝敗、PF、
-P値、信頼区間、順位、Outcomeを計算・表示しない。Count通過候補だけを別Return/OOS
-Gateへ送り、過去にOutcome検定した5候補も含む累積候補数で多重検定補正する。
-不通過候補と301〜312は条件変更、方向反転、銘柄限定、exit変更で救済しない。
+このRunは316だけをspread込み12時間固定return、2017 IS / 2018 OOSで評価する。
+過去にOutcome検定した5候補を含む累積6候補Bonferroniを適用する。全条件PASS時だけ
+別の新期間・頑健性Gateへ進め、FAILなら条件変更、方向反転、銘柄限定、exit変更で
+救済しない。
 
 Formal trackではV1 Run `33574659277`とV2 Run `33577505327`の単一使用認可は消費済みで、
 rerun/replayしない。remote resource/JAR request、JForex接続、正式価格取得も別承認前に行わない。

@@ -1,0 +1,119 @@
+{
+  "artifact": {
+    "artifact_id": 9834301243,
+    "exact_member_count": 2,
+    "github_digest_match": true,
+    "github_size_in_bytes": 2358,
+    "manifest_verification_pass": true,
+    "members": {
+      "EXPLORATORY_FXCM_BLIND_MTF_BATCH4_COUNT_ONLY.json": "bef8d10de3f68be0dfb6e9e051a764530b4571a9a4154d9c8b76c2d4aa37af83",
+      "artifact_manifest_sha256.txt": "ab82b829515892f86167c22ad30933eed4554757d77a8b4dbcb11b0c16cfa955"
+    },
+    "name": "phase9-exploratory-fxcm-blind-mtf-batch4-count-only-32130aa04ba0d67625f60be1df5bbb098f690984-33597873310-1",
+    "unexpected_member_count": 0,
+    "zip_integrity_pass": true,
+    "zip_sha256": "db29def40b5110d5564ac7089a6e197a4c8a9b15437a0bdc021464aa084e7ebc"
+  },
+  "audited_at_utc": "2026-09-02T06:27:00Z",
+  "custody_boundary": {
+    "formal_phase9_authorization_effect": false,
+    "outcome_fields": [],
+    "persistent_price_files_after_cleanup": 0,
+    "price_values_in_artifact": false,
+    "research_outcomes_calculated": false,
+    "return_calculated": false,
+    "signal_or_entry_timestamps_in_artifact": false,
+    "trade_rows_in_artifact": false
+  },
+  "decisions": {
+    "EXP-P9-MTF-313": {
+      "active_utc_date_count": 97,
+      "decision": "REJECT_NO_THRESHOLD_OR_SUBSET_RESCUE",
+      "failed_conditions": [
+        "max_instrument_share"
+      ],
+      "frequency_gate_pass": false,
+      "primary_episode_count": 147
+    },
+    "EXP-P9-MTF-314": {
+      "active_utc_date_count": 19,
+      "decision": "REJECT_NO_THRESHOLD_OR_SUBSET_RESCUE",
+      "failed_conditions": [
+        "episodes_min",
+        "instruments_min_8",
+        "max_instrument_share"
+      ],
+      "frequency_gate_pass": false,
+      "primary_episode_count": 25
+    },
+    "EXP-P9-MTF-315": {
+      "active_utc_date_count": 87,
+      "decision": "REJECT_NO_THRESHOLD_OR_SUBSET_RESCUE",
+      "failed_conditions": [
+        "episodes_min",
+        "instruments_min_20"
+      ],
+      "frequency_gate_pass": false,
+      "primary_episode_count": 174
+    },
+    "EXP-P9-MTF-316": {
+      "active_utc_date_count": 510,
+      "counts_by_year": {
+        "2017": 516,
+        "2018": 502
+      },
+      "decision": "PASS_TO_SEPARATE_RETURN_OOS_GATE",
+      "frequency_gate_pass": true,
+      "instruments_with_at_least_15_episodes": 7,
+      "maximum_instrument_share": 0.2180746562,
+      "primary_episode_count": 1018
+    }
+  },
+  "duplicate_dispatch": {
+    "artifact_count": 0,
+    "conclusion": "skipped",
+    "job_id": 100144924860,
+    "research_effect": false,
+    "run_id": 33597873428,
+    "run_number": 2
+  },
+  "frequency_pass_candidates": [
+    "EXP-P9-MTF-316"
+  ],
+  "identity_checks": {
+    "all_eight_instruments_present": true,
+    "batch4_contract_sha256": "cc2c6ef49b8e8119f48406311d0cd8ba06803c063b92593425681dff7c7c63e9",
+    "both_years_present": true,
+    "candidate_set_exact": true,
+    "canonical_mtf_report_sha256": "4d7f77caa5333e017742e01606aa869f3845aa4c4f206563e2fd59e02b1e1063",
+    "count_arithmetic_pass": true,
+    "current_mtf_report_sha256": "40d4e662fcae33a97aa70e9e5be4342ed84841de388337fc8417df3b50965100",
+    "frequency_gate_reproduced": true,
+    "no_result_dependent_rule_change": true,
+    "run_identity_exact": true
+  },
+  "multiplicity_boundary": {
+    "cumulative_outcome_tested_candidate_count_after_next_gate": 6,
+    "new_selected_candidate_count": 1,
+    "prior_outcome_tested_candidate_count": 5,
+    "required_bonferroni_alpha_per_candidate": 0.008333333333333333,
+    "required_familywise_alpha": 0.05
+  },
+  "next_action": "FREEZE_SEPARATE_CUMULATIVE_SIX_CANDIDATE_MULTIPLICITY_ADJUSTED_RETURN_OOS_GATE_FOR_316_ONLY",
+  "rejected_without_rescue": [
+    "EXP-P9-MTF-313",
+    "EXP-P9-MTF-314",
+    "EXP-P9-MTF-315"
+  ],
+  "schema_version": "phase9-exploratory-fxcm-blind-mtf-batch4-count-only-independent-audit-v1.0.0",
+  "status": "INDEPENDENT_AUDIT_PASS_ONE_FREQUENCY_CANDIDATE_NO_OUTCOME",
+  "workflow_run": {
+    "all_steps_success": true,
+    "conclusion": "success",
+    "head_sha": "32130aa04ba0d67625f60be1df5bbb098f690984",
+    "job_id": 100144923392,
+    "run_attempt": 1,
+    "run_id": 33597873310,
+    "run_number": 1
+  }
+}

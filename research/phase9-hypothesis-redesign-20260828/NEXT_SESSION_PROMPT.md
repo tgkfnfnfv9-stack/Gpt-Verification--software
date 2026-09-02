@@ -24,8 +24,10 @@ GitHub Repository `tgkfnfnfv9-stack/Gpt-Verification--software` のPhase 9自動
 15. `research/phase9-exploratory-fxcm-20260901/spec/fxcm_blind_mtf_batch3_return_oos_v1.frozen.json`
 16. `research/phase9-exploratory-fxcm-20260901/results/run-33593743345/BLIND_MTF_BATCH3_RETURN_OOS_INDEPENDENT_AUDIT.json`
 17. `research/phase9-exploratory-fxcm-20260901/spec/fxcm_blind_mtf_candidates_v4.frozen.json`
-18. `research/phase9-exploratory-fxcm-20260901/runner/fxcm_blind_mtf_count_only_v4.py`
-19. `.github/workflows/phase9-exploratory-fxcm-blind-mtf-batch4-count-only.yml`
+18. `research/phase9-exploratory-fxcm-20260901/results/run-33597873310/BLIND_MTF_BATCH4_COUNT_ONLY_INDEPENDENT_AUDIT.json`
+19. `research/phase9-exploratory-fxcm-20260901/spec/fxcm_blind_mtf_batch4_return_oos_v1.frozen.json`
+20. `research/phase9-exploratory-fxcm-20260901/runner/fxcm_blind_mtf_batch4_return_oos.py`
+21. `.github/workflows/phase9-exploratory-fxcm-blind-mtf-batch4-return-oos.yml`
 
 必ず最新remote `main`を再確認し、workflowが公開済みのcommitと一致することを確認してください。
 
@@ -61,6 +63,10 @@ GPT側で複数銘柄・複数時間足の実データを使い、結果後の�
 - 310: Count 157、REJECT
 - 311: Count 280、Return/OOS REJECT
 - 312: Count 1028、Return/OOS REJECT
+- 313: Count 147、REJECT
+- 314: Count 25、REJECT
+- 315: Count 174、REJECT
+- 316: Count 1018、Count PASS、Return/OOS未実行
 - Outcome検定済み302/304/305/311/312は全件不採用
 - 確認済みExploratory edgeは0件
 
@@ -98,32 +104,56 @@ exact 2 files、manifest、価格0、Return/Outcome未計算を独立監査済�
 - 312: IS mean R -0.0616、OOS mean R -0.0021、OOS PF 0.9980、bootstrap lower -0.2578、REJECT
 - edge PASS 0件。条件変更や方向反転による救済は行わない
 
-## Batch 4事前登録済み
+## Batch 4 Count-only完了
 
 - 313: weekend opening gap same-bar reversion
 - 314: month-end fixing-window stretch reversal
 - 315: Monday five-day cross-sectional relative momentum
 - 316: synchronized triangular-parity dislocation reversion
 - 301〜312とは独立したmechanismで、Batch 4 Count/Return/Outcome閲覧前に固定済み
-- Count-onlyでは件数・coverage・identityだけを計算し、Return、勝敗、PF、P値、Outcomeは扱わない
+- Run `33597873310`（#1 / attempt #1）は全step success、Artifact `9834301243`
+- ZIP SHA-256 `db29def40b5110d5564ac7089a6e197a4c8a9b15437a0bdc021464aa084e7ebc`
+- exact 2 files、manifest、価格0、Return/Outcome未計算を独立監査済み
+- 313: primary 147、active dates 97、REJECT（concentration）
+- 314: primary 25、active dates 19、REJECT（件数・breadth・concentration）
+- 315: primary 174、active dates 87、REJECT（件数・breadth）
+- 316: primary 1018、active dates 510、Count PASS
+- 追加dispatch Run `33597873428`（#2）はsingle-use guardでskip、Artifact 0
+- 313〜315は救済せず、316だけをReturn/OOSへ進める
+
+## Batch 4 Return/OOS事前登録済み
+
+- 対象: 316だけ
+- Return/Outcome閲覧前の凍結: true
+- entry: signalで固定済みの次H1 bar open
+- exit: entryから正確に12時間後のH1 open
+- LONG: ASK entry / BID exit、SHORT: BID entry / ASK exit
+- normalization: entry前H1 mid ATR14
+- split: 2017 IS / 2018 OOS（entry UTC year）
+- bootstrap: UTC entry-date cluster、20,000回
+- multiplicity: 過去302/304/305/311/312を含む累積6候補Bonferroni
+- one-sided alpha each: `0.008333333333333333`（99.1667% lower bound）
+- minimum OOS outcomes: 240（Countだけを見てReturn前に固定）
+- passはcompletion、IS/OOS平均、bootstrap下限、PF、銘柄breadth、四半期breadthの全条件必須
+- Artifactはsummaryのみ。価格、trade row、signal/entry timestampを保存しない
 
 ## 次の単一作業
 
-公開済みの`.github/workflows/phase9-exploratory-fxcm-blind-mtf-batch4-count-only.yml`を
+公開済みの`.github/workflows/phase9-exploratory-fxcm-blind-mtf-batch4-return-oos.yml`を
 Run #1 / attempt #1として1回だけ手動実行してください。
 
 実行リンク:
-`https://github.com/tgkfnfnfv9-stack/Gpt-Verification--software/actions/workflows/phase9-exploratory-fxcm-blind-mtf-batch4-count-only.yml`
+`https://github.com/tgkfnfnfv9-stack/Gpt-Verification--software/actions/workflows/phase9-exploratory-fxcm-blind-mtf-batch4-return-oos.yml`
 
 入力値:
 
 confirmation:
-`RUN_EXPLORATORY_FXCM_BLIND_MTF_BATCH4_COUNT_ONLY_2017_2018_V1`
+`RUN_EXPLORATORY_FXCM_BLIND_MTF_BATCH4_RETURN_OOS_2017_2018_V1`
 
 usage_confirmation:
 `I_CONFIRM_PERSONAL_NONCOMMERCIAL_USE_AND_ACCEPT_FXCM_EULA`
 
-Run完了後はArtifactを独立監査し、Count通過候補だけを別Return/OOS Gateへ進めてください。後続Gateは過去にOutcome検定した5候補を含む累積候補数で多重検定補正します。不通過候補は閾値、方向、銘柄、timeframe、exit horizonを変更して救済しないでください。
+Run完了後はArtifactを独立監査し、316が全条件を通過した場合だけ新期間・頑健性Gateを結果後調整なしで別途凍結してください。不通過なら316を救済せず、新しい独立mechanism BatchをCount前に事前登録してください。
 
 ## 厳守事項
 

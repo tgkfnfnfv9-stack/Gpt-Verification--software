@@ -1,0 +1,197 @@
+{
+  "candidate_signal_counts_calculated": true,
+  "canonical_mtf_report_sha256": "4d7f77caa5333e017742e01606aa869f3845aa4c4f206563e2fd59e02b1e1063",
+  "contract_sha256": "cc2c6ef49b8e8119f48406311d0cd8ba06803c063b92593425681dff7c7c63e9",
+  "current_mtf_report_sha256": "40d4e662fcae33a97aa70e9e5be4342ed84841de388337fc8417df3b50965100",
+  "dataset": {
+    "end_exclusive": "2018-12-31T00:00:00Z",
+    "price_or_event_timestamp_in_artifact": false,
+    "start_inclusive": "2017-01-01T00:00:00Z",
+    "symbols": [
+      "AUDJPY",
+      "AUDUSD",
+      "EURGBP",
+      "EURJPY",
+      "EURUSD",
+      "GBPJPY",
+      "GBPUSD",
+      "USDJPY"
+    ],
+    "timeframes": [
+      "M15",
+      "H1",
+      "H4",
+      "D1"
+    ]
+  },
+  "formal_phase9_authorization_effect": false,
+  "frequency_pass_candidates": [
+    "EXP-P9-MTF-316"
+  ],
+  "future_cumulative_multiplicity_required": true,
+  "next_gate": "FREEZE_SEPARATE_CUMULATIVE_MULTIPLICITY_ADJUSTED_RETURN_OOS_GATE_FOR_FREQUENCY_PASSERS_ONLY",
+  "outcome_fields": [],
+  "persistent_price_files_after_cleanup": 0,
+  "prior_candidate_rescue_performed": false,
+  "prior_outcome_tested_candidate_count": 5,
+  "research_outcomes_calculated": false,
+  "result_dependent_rule_change": false,
+  "return_calculated": false,
+  "run_identity": {
+    "head_sha": "32130aa04ba0d67625f60be1df5bbb098f690984",
+    "run_attempt": "1",
+    "run_id": "33597873310"
+  },
+  "schema_version": "phase9-exploratory-fxcm-blind-mtf-batch4-count-only-result-v1.0.0",
+  "status": "BLIND_MTF_BATCH4_COUNT_ONLY_COMPLETE_NO_OUTCOME",
+  "strategy_results": [
+    {
+      "active_utc_date_count": 97,
+      "counts_by_direction": {
+        "LONG": 78,
+        "SHORT": 69
+      },
+      "counts_by_instrument": {
+        "AUDJPY": 55,
+        "AUDUSD": 13,
+        "EURGBP": 27,
+        "EURJPY": 13,
+        "EURUSD": 12,
+        "GBPJPY": 14,
+        "GBPUSD": 11,
+        "USDJPY": 2
+      },
+      "counts_by_year": {
+        "2017": 71,
+        "2018": 76
+      },
+      "deduplicated_signal_identity_sha256": "50ab356f50ce6e120a711adbb4ecf59bc4dde81b0be309d80212e6603a031ccd",
+      "exploratory_frequency_pass": false,
+      "formal_phase9_effect": false,
+      "instrument_breadth_pass": true,
+      "instrument_concentration_pass": false,
+      "overlap_deduplicated_signal_count": 352,
+      "primary_episode_count": 147,
+      "primary_episode_identity_sha256": "c2dfd9d68f6ff0e3bc9dd567a97e9bf032cab100e2f9c5e367954fdcda563cb1",
+      "raw_signal_count": 352,
+      "raw_signal_identity_sha256": "50ab356f50ce6e120a711adbb4ecf59bc4dde81b0be309d80212e6603a031ccd",
+      "strategy_id": "EXP-P9-MTF-313",
+      "year_coverage_pass": true,
+      "year_shares": {
+        "2017": 0.48299319727891155,
+        "2018": 0.5170068027210885
+      }
+    },
+    {
+      "active_utc_date_count": 19,
+      "counts_by_direction": {
+        "LONG": 12,
+        "SHORT": 13
+      },
+      "counts_by_instrument": {
+        "AUDJPY": 3,
+        "AUDUSD": 7,
+        "EURGBP": 4,
+        "EURJPY": 2,
+        "EURUSD": 2,
+        "GBPJPY": 2,
+        "GBPUSD": 0,
+        "USDJPY": 5
+      },
+      "counts_by_year": {
+        "2017": 15,
+        "2018": 10
+      },
+      "deduplicated_signal_identity_sha256": "17aca18981ca185bf24c52af72cde1db60acb5c51c5247f8f1d4595996ae8a3f",
+      "exploratory_frequency_pass": false,
+      "formal_phase9_effect": false,
+      "instrument_breadth_pass": false,
+      "instrument_concentration_pass": false,
+      "overlap_deduplicated_signal_count": 39,
+      "primary_episode_count": 25,
+      "primary_episode_identity_sha256": "31e82d9700ce154cba1e1d795439388f9c817acdc08c15725e8802fc69d9c09a",
+      "raw_signal_count": 39,
+      "raw_signal_identity_sha256": "17aca18981ca185bf24c52af72cde1db60acb5c51c5247f8f1d4595996ae8a3f",
+      "strategy_id": "EXP-P9-MTF-314",
+      "year_coverage_pass": true,
+      "year_shares": {
+        "2017": 0.6,
+        "2018": 0.4
+      }
+    },
+    {
+      "active_utc_date_count": 87,
+      "counts_by_direction": {
+        "LONG": 87,
+        "SHORT": 87
+      },
+      "counts_by_instrument": {
+        "AUDJPY": 37,
+        "AUDUSD": 34,
+        "EURGBP": 41,
+        "EURJPY": 17,
+        "EURUSD": 15,
+        "GBPJPY": 25,
+        "GBPUSD": 5,
+        "USDJPY": 0
+      },
+      "counts_by_year": {
+        "2017": 82,
+        "2018": 92
+      },
+      "deduplicated_signal_identity_sha256": "82222b282e897bd5c752d98f8e6498b6cafb5e6c14a972a861f16639fcd41da8",
+      "exploratory_frequency_pass": false,
+      "formal_phase9_effect": false,
+      "instrument_breadth_pass": false,
+      "instrument_concentration_pass": true,
+      "overlap_deduplicated_signal_count": 348,
+      "primary_episode_count": 174,
+      "primary_episode_identity_sha256": "cd27ec05cf88946e64051171bb1ed9c51c69e4618ba619c196c9bb2095806b06",
+      "raw_signal_count": 348,
+      "raw_signal_identity_sha256": "82222b282e897bd5c752d98f8e6498b6cafb5e6c14a972a861f16639fcd41da8",
+      "strategy_id": "EXP-P9-MTF-315",
+      "year_coverage_pass": true,
+      "year_shares": {
+        "2017": 0.47126436781609193,
+        "2018": 0.5287356321839081
+      }
+    },
+    {
+      "active_utc_date_count": 510,
+      "counts_by_direction": {
+        "LONG": 508,
+        "SHORT": 510
+      },
+      "counts_by_instrument": {
+        "AUDJPY": 200,
+        "AUDUSD": 199,
+        "EURGBP": 165,
+        "EURJPY": 111,
+        "EURUSD": 222,
+        "GBPJPY": 55,
+        "GBPUSD": 56,
+        "USDJPY": 10
+      },
+      "counts_by_year": {
+        "2017": 516,
+        "2018": 502
+      },
+      "deduplicated_signal_identity_sha256": "3b72e2be637807fc2605ad81474b1f8071fa8e71ec683466950d6063314b60fd",
+      "exploratory_frequency_pass": true,
+      "formal_phase9_effect": false,
+      "instrument_breadth_pass": true,
+      "instrument_concentration_pass": true,
+      "overlap_deduplicated_signal_count": 3462,
+      "primary_episode_count": 1018,
+      "primary_episode_identity_sha256": "86eaa9f9dd3f7c7f95a45f594cb21cf803b82277d57750367b3b359c163d74d4",
+      "raw_signal_count": 6534,
+      "raw_signal_identity_sha256": "d478497b33c8a91112109d8007103a5b713cdc8f30b07cdcb289ff019fbfae17",
+      "strategy_id": "EXP-P9-MTF-316",
+      "year_coverage_pass": true,
+      "year_shares": {
+        "2017": 0.5068762278978389,
+        "2018": 0.4931237721021611
+      }
+    }
+  ]
+}
