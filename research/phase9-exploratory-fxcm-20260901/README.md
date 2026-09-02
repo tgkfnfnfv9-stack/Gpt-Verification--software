@@ -1,6 +1,6 @@
 # Phase 9 Exploratory FXCM Fast Track
 
-Status: `DRIVE_VAULT_V2_OPTION1_FROZEN_IMPLEMENTED_ROOT_PROVISIONED_NOT_EXECUTED; V1_PERMANENTLY_BLOCKED; LEGACY_FX8_BATCH6_PAUSED`
+Status: `DRIVE_VAULT_V2_OPTION1_ENVIRONMENT_CONFIGURED_NOT_EXECUTED; V1_PERMANENTLY_BLOCKED; LEGACY_FX8_BATCH6_PAUSED`
 
 ## Current canonical next step: reusable Google Drive Vault
 
@@ -19,7 +19,8 @@ Option 1を選択した。V2は2012～2025年、25通貨ペア、direct m1/H1の
 - direct H1: QC参照のみ、補完・代替禁止
 - partition: Development 2012～2019、Strict OOS 2020～2021、Robustness 2022～2023、Final holdout 2024～2025
 - OAuth client、refresh token、同一client作成root: 設定済み（secret値はGitに保存しない）
-- GitHub Environment 3 secrets、価格取得、V2 workflow、Count、Batch 6: 未実行
+- GitHub Environment、required reviewer、OAuth 3 secrets: 設定済み（値はチャット・Git・Artifactへ非公開）
+- 価格取得、V2 workflow、Count、Batch 6: 未実行
 - V1 acquisition workflow: fail-closedで恒久停止
 - V2専用11 tests、探索track全174 tests: 成功
 - V2 acquisition workflowのpreflightは、app-created root反映後の取得契約SHA-256と同期済み

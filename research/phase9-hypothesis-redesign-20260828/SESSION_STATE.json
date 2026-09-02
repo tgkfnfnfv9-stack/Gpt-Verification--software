@@ -490,8 +490,16 @@
     "oauth_client_created": true,
     "oauth_refresh_token_minted": true,
     "oauth_root_access_established": true,
-    "github_environment_secrets_configured": false,
-    "oauth_configured": false,
+    "github_environment_created": true,
+    "github_environment_required_reviewer": "tgkfnfnfv9-stack",
+    "github_environment_prevent_self_review": false,
+    "github_environment_administrator_bypass_allowed": false,
+    "github_environment_wait_timer_enabled": false,
+    "github_environment_deployment_branch_policy": "NO_RESTRICTION_WORKFLOW_SELF_GATED_TO_MAIN",
+    "github_environment_secrets_configured": true,
+    "github_environment_secret_count": 3,
+    "github_environment_secret_values_read_by_agent": false,
+    "oauth_configured": true,
     "acquisition_contract_frozen": true,
     "acquisition_contract": "../phase9-exploratory-fxcm-20260901/spec/fxcm_drive_vault_acquisition_v2.frozen.json",
     "acquisition_contract_sha256": "209a133895f4035fba9036fb4d05b4ebc8279011110069ad0021c5830e5b2e6a",
@@ -545,7 +553,7 @@
     "price_acquisition_executed": false,
     "acquisition_workflow_authorized": false,
     "batch6_dispatch_allowed_before_vault_audit": false,
-    "next_gate": "CONFIGURE_GITHUB_ENVIRONMENT_SECRETS_WITHOUT_DISPATCH_SEPARATE_APPROVAL_REQUIRED"
+    "next_gate": "STOP_AWAIT_EXPLICIT_V2_ACQUISITION_AUTHORIZATION_AND_REVIEWED_PUBLIC_MAIN_SHA"
   },
   "provider_acquisition": {
     "status": "ACTUAL_FULL_QC_CONTRACT_FROZEN_PROVIDER_SCHEDULE_SOURCE_P0_BLOCKED",

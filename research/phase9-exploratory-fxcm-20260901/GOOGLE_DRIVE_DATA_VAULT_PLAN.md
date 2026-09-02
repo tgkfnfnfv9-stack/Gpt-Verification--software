@@ -1,6 +1,6 @@
 # Phase 9 FXCM Google Drive Data Vault Plan
 
-Status: `V2_OPTION1_FROZEN_IMPLEMENTED_NOT_EXECUTED_NO_PRICE_ACQUISITION`
+Status: `V2_OPTION1_ENVIRONMENT_CONFIGURED_NOT_EXECUTED_NO_PRICE_ACQUISITION`
 
 Recorded: 2026-09-02
 
@@ -37,8 +37,9 @@ V2のOAuth境界はpersonal My Drive、`drive.file` scope、専用GitHub Environ
 review済みmain SHA完全一致、4確認文字列完全一致を要求する。public Artifactは価格・timestamp・
 Drive ID・outcomeを含まないexact 2ファイルだけである。
 
-実装・Testsの公開は価格取得の承認ではない。Google OAuth設定、V2 workflow実行、Count、
-既存Batch 6は別の明示承認まで行わない。
+実装・Testsの公開後、専用Environment、required reviewer、OAuth 3 secretsを設定した。
+secret値はチャット、Git、ログ、Artifactへ出していない。この設定は価格取得の承認ではない。
+V2 workflow実行、Count、既存Batch 6は別の明示承認まで行わない。
 
 価格取得、Count、Return、Outcome計算はまだ開始していない。HEAD-only availability
 だけはRun `33627420903`で完了し、次の独立監査によりV1 target不成立を確認した。

@@ -72,7 +72,10 @@ Count-only、Return/OOS、新期間、頑健性テストで再利用し、本物
 - V2 acquisition workflow: 実装済み、未実行
 - Vault価格取得: 未開始
 - Google OAuth client、refresh token、同一client作成root: 設定済み
-- GitHub Environment `phase9-fxcm-vault-acquisition-v2`の3 secrets: 未設定
+- GitHub Environment `phase9-fxcm-vault-acquisition-v2`: 作成済み
+- required reviewer `tgkfnfnfv9-stack`: 設定済み
+- Prevent self-review: off、administrator bypass: off、wait timer: off
+- OAuth 3 secrets: Environmentへ設定済み（値を取得・表示・再入力させない）
 
 ## V2期間partition
 
@@ -89,14 +92,12 @@ Batch 6のCount範囲は凍結済みの
 
 ## 次に行う作業
 
-1. 最新remote main、V2凍結契約、Tests、workflowを確認する。
-2. GitHub Environment `phase9-fxcm-vault-acquisition-v2`のrequired reviewerと、personal My Drive用
-   OAuth 3 secretsの設定手順を提示する。secret値をログ、CLI引数、ファイル、Artifactへ出さない。
-3. OAuth設定を行っても、V2 workflowは実行しない。
-4. ユーザーが公開main SHAを確認し、別の明示承認を与えた場合だけV2 Run #1 attempt #1を一度実行する。
-5. 取得後はprivate Driveの700 shard、manifest、SHA-256、mask、sealを独立監査する。
-6. 旧64系列互換性を確認するまでBatch 6へ進まない。321～324の条件とfrequency Gateを変更しない。
-7. Count通過候補だけをReturn/OOS→新期間→頑健性へ進める。
+1. 最新remote main、V2凍結契約、Tests、workflow、Environment設定完了状態を確認する。
+2. 現在は停止し、V2 workflowを実行しない。secret値を取得・表示・再入力させない。
+3. ユーザーが公開main SHAを確認し、別の明示承認を与えた場合だけV2 Run #1 attempt #1を一度実行する。
+4. 取得後はprivate Driveの700 shard、manifest、SHA-256、mask、sealを独立監査する。
+5. 旧64系列互換性を確認するまでBatch 6へ進まない。321～324の条件とfrequency Gateを変更しない。
+6. Count通過候補だけをReturn/OOS→新期間→頑健性へ進める。
 
 取得/QC → Count-only → Return/OOS → 新期間・頑健性 → MT5の順序を厳守してください。
 ```

@@ -23,8 +23,8 @@ Actual Full-QC実装基準: `9eb7ce667bea8e76a7f9bb1f2d378eebd8957206`
   workflow testで実ファイルSHAとの一致を固定した。
 - V1 acquisition workflowは恒久fail-closed化した。OAuth clientとrefresh tokenを作成し、
   同一clientで空のV2 root `1lZ0CkTn3tBxStf5H3V7W38ZcOsZ5Rw_v`を作成した。
-  GitHub Environment 3 secrets、V2価格取得workflow、Count、既存Batch 6は未実行であり、
-  別の明示承認まで実行しない。
+  GitHub Environment、required reviewer、OAuth 3 secretsを設定した。V2価格取得workflow、
+  Count、既存Batch 6は未実行であり、別の明示承認まで実行しない。
 - V2 partitionはDevelopment 2012～2019、Strict OOS 2020～2021、Robustness 2022～2023、
   Final holdout 2024～2025。Batch 6 Count区間と321～324の事前登録条件は変更していない。
 
@@ -452,10 +452,10 @@ Provider schedule inventory / allowlist
 
 ## 7. 次に行う単一作業
 
-Option 1のV2 root amendment・runner・Testsをremote mainへ公開した後の次の単一作業は、
-GitHub Environment `phase9-fxcm-vault-acquisition-v2`のrequired reviewerと、personal My Drive用
-OAuth 3 secretsを安全に設定すること。設定だけではV2 workflowを
-実行しない。取得実行は、公開main SHAをユーザーが確認した後の別の明示承認を必要とする。
+Option 1のV2 root amendment・runner・Testsをremote mainへ公開し、GitHub Environment
+`phase9-fxcm-vault-acquisition-v2`のrequired reviewerとpersonal My Drive用OAuth 3 secretsを
+安全に設定した。次の単一作業はここで停止し、別の明示承認を待つことである。取得実行は、
+公開main SHAをユーザーが確認した後の別の明示承認を必要とする。
 
 Vault取得後もCount/Returnを自動実行しない。Drive内700 shardとmanifest/sealを独立監査し、
 2017～2018年の旧64系列互換性が完全一致した場合だけ、321～324の条件を変えず、Batch 6の
@@ -481,7 +481,7 @@ rerun/replayしない。remote resource/JAR request、JForex接続、正式価�
 
 1. Availability独立監査正本とV1取得停止を確認する
 2. Option 1 V2の公開main SHAとTestsを確認する
-3. 専用GitHub EnvironmentとOAuth 3 secretsを設定するがworkflowは実行しない
+3. 専用GitHub EnvironmentとOAuth 3 secretsを設定するがworkflowは実行しない（完了）
 4. 別の明示承認後だけV2を一度取得し、private Driveの700 shardとmanifest/SHA/sealを独立監査する
 5. 旧64系列互換性を確認後、Batch 6の入力だけをVaultへ切り替えてCount-onlyを実行する
 6. Count通過候補だけをReturn/OOS→新期間→頑健性へ進め、最後にMT5を検討する
