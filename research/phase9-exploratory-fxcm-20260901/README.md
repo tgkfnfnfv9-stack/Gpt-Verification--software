@@ -105,3 +105,32 @@ canonical 64-series identityに一致するデータを一時領域へ再取得�
 signal/episode件数、期間・銘柄・方向の分布だけを計算する。価格はArtifact前に
 破棄する。Return、勝敗、MFE、MAE、Edge、P値、順位、Outcomeは計算しない。
 frequency Gate通過候補だけが、後続の別Return/OOS Gate対象になる。
+
+## Blind MTF Count-only Run 33580789080
+
+Run #1 / attempt #1は全step success。Artifact `9828546981`（ZIP SHA-256
+`8f597982ac8a879f4c40781665fe12a289733f0ee162bdd486d424b0bed0b1a0`）を
+独立検証し、exact 2 files、manifest一致、価格ファイル0、Return/Outcome未計算を
+確認した。primary episode件数とfrequency Gateは次のとおり。
+
+| Candidate | Episodes | Active dates | Frequency Gate |
+|---|---:|---:|---|
+| EXP-P9-MTF-301 | 166 | 153 | FAIL |
+| EXP-P9-MTF-302 | 455 | 364 | PASS |
+| EXP-P9-MTF-303 | 92 | 89 | FAIL |
+| EXP-P9-MTF-304 | 494 | 394 | PASS |
+
+次の別Gateは`EXP-P9-MTF-302`と`EXP-P9-MTF-304`だけを評価する。契約は
+`spec/fxcm_blind_mtf_return_oos_v1.frozen.json`へReturn閲覧前に固定した。
+
+- entry: signalで固定済みの次H1 bar open
+- LONG: ASK entry / BID exit、SHORT: BID entry / ASK exit
+- exit: entryから正確に12時間後のH1 open
+- return: executable price差 ÷ entry前H1 ATR14
+- split: 2017 IS / 2018 OOS（entry UTC year）
+- inference: UTC entry date cluster bootstrap 20,000回
+- multiplicity: 2候補Bonferroni、one-sided alpha 0.025 each
+- Artifact: summaryのみ。trade row、価格、signal/entry timestampは保存しない
+
+OOS件数、completion、IS/OOS平均、bootstrap lower bound、Profit Factor、
+銘柄breadth、四半期breadthの全条件を満たした候補だけが次の新期間確認対象になる。

@@ -1,0 +1,71 @@
+{
+  "schema_version": "phase9-exploratory-fxcm-blind-mtf-count-independent-audit-v1.0.0",
+  "status": "INDEPENDENT_AUDIT_PASS_TWO_FREQUENCY_CANDIDATES_NO_OUTCOME",
+  "audited_at_utc": "2026-09-02T02:01:00Z",
+  "workflow_run": {
+    "run_id": 33580789080,
+    "run_number": 1,
+    "run_attempt": 1,
+    "job_id": 100094443697,
+    "head_sha": "9cbe40aecd1103e067ef9fef9276248cc7eb59c9",
+    "conclusion": "success"
+  },
+  "artifact": {
+    "artifact_id": 9828546981,
+    "name": "phase9-exploratory-fxcm-blind-mtf-count-only-9cbe40aecd1103e067ef9fef9276248cc7eb59c9-33580789080-1",
+    "github_size_in_bytes": 2296,
+    "zip_sha256": "8f597982ac8a879f4c40781665fe12a289733f0ee162bdd486d424b0bed0b1a0",
+    "exact_member_count": 2,
+    "members": {
+      "EXPLORATORY_FXCM_BLIND_MTF_COUNT_ONLY.json": "d139955ce607b400c63c31de1f0e8d30269af28175932f0bcef2e9f4841e240a",
+      "artifact_manifest_sha256.txt": "fd68c04099d9fdf33dc934db5d0f24357976cabeefc0072f19aff9278676faa6"
+    },
+    "zip_integrity_pass": true,
+    "manifest_verification_pass": true,
+    "unexpected_member_count": 0
+  },
+  "identity_checks": {
+    "contract_sha256": "8d832dbf779098d00c731d87547b30ed6944ee2c227d505e540ea95a7efaa1e3",
+    "canonical_mtf_report_sha256": "4d7f77caa5333e017742e01606aa869f3845aa4c4f206563e2fd59e02b1e1063",
+    "run_identity_exact": true,
+    "candidate_order_exact": true,
+    "count_arithmetic_pass": true,
+    "all_eight_instruments_present": true,
+    "both_years_present": true
+  },
+  "frequency_results": {
+    "EXP-P9-MTF-301": {
+      "primary_episode_count": 166,
+      "active_utc_date_count": 153,
+      "frequency_pass": false
+    },
+    "EXP-P9-MTF-302": {
+      "primary_episode_count": 455,
+      "active_utc_date_count": 364,
+      "frequency_pass": true
+    },
+    "EXP-P9-MTF-303": {
+      "primary_episode_count": 92,
+      "active_utc_date_count": 89,
+      "frequency_pass": false
+    },
+    "EXP-P9-MTF-304": {
+      "primary_episode_count": 494,
+      "active_utc_date_count": 394,
+      "frequency_pass": true
+    }
+  },
+  "frequency_pass_candidates": [
+    "EXP-P9-MTF-302",
+    "EXP-P9-MTF-304"
+  ],
+  "outcome_boundary": {
+    "return_calculated": false,
+    "research_outcomes_calculated": false,
+    "outcome_fields": [],
+    "price_or_event_timestamp_in_artifact": false,
+    "persistent_price_files_after_cleanup": 0,
+    "formal_phase9_authorization_effect": false
+  },
+  "next_gate": "FREEZE_SEPARATE_RETURN_OOS_CONTRACT_THEN_RUN_ONLY_EXP_P9_MTF_302_AND_EXP_P9_MTF_304"
+}

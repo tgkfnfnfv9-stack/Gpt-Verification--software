@@ -1,0 +1,105 @@
+{
+  "schema_version": "phase9-exploratory-fxcm-blind-mtf-return-oos-v1.0.0",
+  "status": "FROZEN_AFTER_COUNT_BEFORE_FIRST_RETURN_OR_OUTCOME",
+  "recorded_at_utc": "2026-09-02T02:03:00Z",
+  "purpose": "Evaluate only the two blind MTF frequency passers with one fixed spread-inclusive return definition and a locked 2017 in-sample / 2018 out-of-sample decision rule.",
+  "selection_integrity": {
+    "selection_basis": "COUNT_FREQUENCY_BREADTH_CONCENTRATION_AND_YEAR_COVERAGE_ONLY",
+    "candidate_return_or_outcome_viewed_before_freeze": false,
+    "result_dependent_signal_rule_change": false,
+    "result_dependent_exit_or_gate_change": false,
+    "nonpasser_rescue_allowed": false,
+    "selected_candidates": [
+      "EXP-P9-MTF-302",
+      "EXP-P9-MTF-304"
+    ],
+    "excluded_frequency_failures": [
+      "EXP-P9-MTF-301",
+      "EXP-P9-MTF-303"
+    ]
+  },
+  "anchors": {
+    "blind_candidate_contract_sha256": "8d832dbf779098d00c731d87547b30ed6944ee2c227d505e540ea95a7efaa1e3",
+    "blind_count_runner_sha256": "71e5f7a1cf6ea4a4566f7c6bc2d60463ec121a9e4ad33f54c8bd61cbceb1f323",
+    "count_result_sha256": "d139955ce607b400c63c31de1f0e8d30269af28175932f0bcef2e9f4841e240a",
+    "count_independent_audit_sha256": "f3bc338f9f1f2f3b5e1c39636f85dc85d30481fdca282884b4289b6cb33b9ecd",
+    "canonical_mtf_report_sha256": "4d7f77caa5333e017742e01606aa869f3845aa4c4f206563e2fd59e02b1e1063"
+  },
+  "signal_identity_locks": {
+    "EXP-P9-MTF-302": {
+      "primary_episode_count": 455,
+      "primary_episode_identity_sha256": "f92423b061219845264539d00c0bb489d4e1b42b5bdad5a57acf26156ce609f8"
+    },
+    "EXP-P9-MTF-304": {
+      "primary_episode_count": 494,
+      "primary_episode_identity_sha256": "48d999a60588629a5740ac7dcb2024bdb35efcfecddd2d79a1524d3fc43932b0"
+    }
+  },
+  "dataset": {
+    "symbols": ["AUDJPY", "AUDUSD", "EURGBP", "EURJPY", "EURUSD", "GBPJPY", "GBPUSD", "USDJPY"],
+    "start_inclusive": "2017-01-01T00:00:00Z",
+    "end_exclusive": "2018-12-31T00:00:00Z",
+    "signal_timeframe": "H1",
+    "execution_price_sides": ["BID", "ASK"],
+    "forward_fill_or_interpolation": false,
+    "persistent_prices": false
+  },
+  "execution_model": {
+    "entry_time": "LOCKED_SIGNAL_NEXT_OBSERVED_H1_BAR_OPEN",
+    "long_entry": "ASK_OPEN",
+    "long_exit": "BID_OPEN",
+    "short_entry": "BID_OPEN",
+    "short_exit": "ASK_OPEN",
+    "fixed_horizon_hours": 12,
+    "exit_time": "ENTRY_TIME_PLUS_EXACTLY_12_HOURS_H1_OPEN",
+    "missing_exact_exit": "EXCLUDE_AND_COUNT",
+    "commission": "ZERO_ADDITIONAL_COMMISSION_SPREAD_ALREADY_EMBEDDED_IN_BID_ASK",
+    "slippage": "ZERO_ADDITIONAL_HISTORICAL_QUOTE_OPEN",
+    "stop_loss": null,
+    "take_profit": null,
+    "position_sizing": "ONE_EQUAL_WEIGHT_EPISODE",
+    "return_unit": "SIGNED_EXECUTABLE_PRICE_CHANGE_DIVIDED_BY_H1_MID_ATR14_BEFORE_ENTRY_BAR"
+  },
+  "split": {
+    "assignment_key": "ENTRY_TIME_UTC_YEAR",
+    "in_sample": "2017",
+    "out_of_sample": "2018",
+    "oos_used_for_rule_or_threshold_selection": false
+  },
+  "inference": {
+    "bootstrap_unit": "UTC_ENTRY_DATE_CLUSTER",
+    "bootstrap_resamples": 20000,
+    "familywise_alpha": 0.05,
+    "candidate_count": 2,
+    "bonferroni_one_sided_alpha_each": 0.025,
+    "reported_lower_confidence_bound": 0.975,
+    "deterministic_seeds": {
+      "EXP-P9-MTF-302": 9302,
+      "EXP-P9-MTF-304": 9304
+    }
+  },
+  "candidate_pass_gate": {
+    "minimum_oos_outcomes": 180,
+    "minimum_outcome_completion_rate": 0.95,
+    "in_sample_mean_r_strictly_positive": true,
+    "oos_mean_r_strictly_positive": true,
+    "oos_date_cluster_bootstrap_lower_bound_strictly_positive": true,
+    "minimum_oos_profit_factor": 1.05,
+    "minimum_positive_oos_instruments": 5,
+    "minimum_positive_oos_calendar_quarters": 3,
+    "all_conditions_required": true
+  },
+  "reporting": {
+    "summary_metrics_only": true,
+    "trade_rows": false,
+    "price_values": false,
+    "signal_or_entry_timestamps": false,
+    "candidate_ranking": false,
+    "formal_phase9_authorization_effect": false
+  },
+  "decision": {
+    "if_pass": "EXPLORATORY_EDGE_CANDIDATE_REQUIRES_SEPARATE_ROBUSTNESS_AND_NEW_PERIOD_CONFIRMATION",
+    "if_fail": "REJECT_FOR_FURTHER_EXPLORATORY_DEVELOPMENT_NO_THRESHOLD_RESCUE",
+    "automatic_mt5_or_live_trading": false
+  }
+}

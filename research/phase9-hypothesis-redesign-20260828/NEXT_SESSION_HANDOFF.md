@@ -33,8 +33,12 @@ Actual Full-QC実装基準: `9eb7ce667bea8e76a7f9bb1f2d378eebd8957206`
   `REMOTE_RUNTIME_VERSION_DECISION_20260902.md`に停止判断を固定した。
 - 優位性探索を再開するため、既存7候補の閾値を変更せず、新しい価格のみの
   FX8 MTF仮説4件（EXP-P9-MTF-301〜304）を結果未閲覧で事前登録した。
-  次の単一作業は専用workflowのCount-only Run #1。Return、勝敗、MFE、MAE、
-  Edge、Outcomeは計算せず、frequency Gate通過候補だけを別Return/OOS Gateへ送る。
+  Count-only Run `33580789080`はsuccess。302が455 episodes、304が494 episodesで
+  frequency PASS。301（166）と303（92）はFAIL。Return、勝敗、MFE、MAE、Edge、
+  Outcomeは未計算。
+- 次の単一作業は302/304だけの別Return/OOS workflow Run #1。2017 IS / 2018 OOS、
+  spread込み12時間固定return、date-cluster bootstrap、多重検定補正を結果閲覧前に
+  `spec/fxcm_blind_mtf_return_oos_v1.frozen.json`へ固定済み。
 
 ## 1. この引継ぎの結論
 
@@ -65,6 +69,8 @@ Exploratory FX8 MTF 64系列
 既存7候補 Count-only
   ↓ 完了、Return Gate通過0件、Outcome未計算
 新規4仮説 Blind MTF Count-only
+  ↓ PASS 2件（302 / 304）、FAIL 2件（301 / 303）
+302 / 304 Return-OOS
   ↓ NEXT: manual single-use Run #1
 Provider schedule source readiness
   ↓ P0 BLOCKED（公式version付き完全履歴source未固定）
@@ -127,6 +133,10 @@ Provider schedule inventory / allowlist
 42. `research/phase9-exploratory-fxcm-20260901/spec/fxcm_blind_mtf_candidates_v1.frozen.json`
 43. `research/phase9-exploratory-fxcm-20260901/runner/fxcm_blind_mtf_count_only.py`
 44. `.github/workflows/phase9-exploratory-fxcm-blind-mtf-count-only.yml`
+45. `research/phase9-exploratory-fxcm-20260901/results/run-33580789080/BLIND_MTF_COUNT_INDEPENDENT_AUDIT.json`
+46. `research/phase9-exploratory-fxcm-20260901/spec/fxcm_blind_mtf_return_oos_v1.frozen.json`
+47. `research/phase9-exploratory-fxcm-20260901/runner/fxcm_blind_mtf_return_oos.py`
+48. `.github/workflows/phase9-exploratory-fxcm-blind-mtf-return-oos.yml`
 
 凍結仕様の優先順位は、candidate registry、data requirements、preregistered policy。Markdown要約で凍結仕様を変更しない。
 
@@ -145,7 +155,7 @@ Provider schedule inventory / allowlist
 | MTF時間足 | direct m1/H1取得済み、M15/H4/D1生成済み |
 | MTF最終必要系列 | FX8 × M15/H1/H4/D1 × BID/ASK = 64系列 |
 | Actual Full-QC | 契約実装済み、実データでは未実行 |
-| Count-only | 既存7候補完了・通過0件。新規4仮説は実装済み・Run待ち |
+| Count-only | 既存7候補通過0件。新規4仮説は302/304の2件PASS |
 | Return検証・バックテスト | 未開始 |
 | 確認済みPhase 9優位性 | 0件 |
 | MT5 EA | 実装禁止 |
