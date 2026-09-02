@@ -150,3 +150,18 @@ Run #1 / attempt #1は全step success。Artifact `9829327227`（ZIP SHA-256
 304はIS/OOSとも負。edge PASSは0件。閾値、方向、銘柄、exit horizonを結果後に
 調整せず、両候補を不採用とする。次は302/304のrescueではなく、新しい独立仮説を
 結果を見る前に別specへ事前登録する。
+
+## Blind MTF Batch 2 Count-only
+
+302/304の不採用確定後、新しい価格のみの独立MTF仮説4件を
+`spec/fxcm_blind_mtf_candidates_v2.frozen.json`へ最初のV2 Count前に固定した。
+
+- `EXP-P9-MTF-305`: D1 bias + H4 NR7 compression + H1 release
+- `EXP-P9-MTF-306`: D1 three-bar pullback + H4 trend resumption
+- `EXP-P9-MTF-307`: H4 double rejection + H1 neckline break
+- `EXP-P9-MTF-308`: H4 trend + H1 volatility shock + M15 shallow-pullback continuation
+
+これは302/304のthreshold、direction、symbol、exit horizonの救済ではない。
+専用workflowは件数・breadth・年coverageだけを計算し、Return/Outcomeは計算しない。
+frequency PASSが出た場合の後続Return Gateは、すでにOutcomeを検定した2候補も含む
+cumulative multiplicity correctionを必須とする。

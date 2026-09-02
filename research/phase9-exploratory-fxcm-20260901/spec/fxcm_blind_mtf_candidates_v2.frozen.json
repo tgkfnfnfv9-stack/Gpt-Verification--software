@@ -1,0 +1,114 @@
+{
+  "schema_version": "phase9-exploratory-fxcm-blind-mtf-candidates-v2.0.0",
+  "status": "FROZEN_AFTER_V1_REJECTIONS_BEFORE_FIRST_V2_SIGNAL_COUNT",
+  "recorded_at_utc": "2026-09-02T02:45:00Z",
+  "track": "EXPLORATORY_FX8_BLIND_MTF_PRICE_ONLY_BATCH2_NOT_FORMAL_PHASE9",
+  "purpose": "Screen four new price-only MTF mechanisms without rescuing or modifying rejected candidates 302 and 304 and without accessing any V2 outcome.",
+  "selection_integrity": {
+    "v1_rejections_acknowledged": ["EXP-P9-MTF-302", "EXP-P9-MTF-304"],
+    "v1_threshold_direction_symbol_or_exit_rescue_allowed": false,
+    "v1_outcomes_used_to_choose_v2_thresholds": false,
+    "v2_candidate_return_or_outcome_viewed": false,
+    "all_eight_fx_pairs_required": true,
+    "threshold_change_after_count": false,
+    "future_return_familywise_correction_must_include_prior_two_outcome_candidates": true,
+    "formal_authorization_effect": false
+  },
+  "anchors": {
+    "base_count_utility_sha256": "2991575f471c19de35d04ae21d276cc25d52d9fb705587a8259f70d43639cdad",
+    "mtf_qc_runner_sha256": "09da37be5955dcf142752d70dc21542f21e5ea71835c7f1073e68f52585971cd",
+    "canonical_mtf_report_sha256": "4d7f77caa5333e017742e01606aa869f3845aa4c4f206563e2fd59e02b1e1063",
+    "v1_return_result_sha256": "4bb5005c7a3487a179c2ba30af6dac70443537d929628081baf9992dd6e1170e",
+    "v1_return_independent_audit_sha256": "29a04b2934374fe26e3bb3b8f08f26cac480cb869bc1864a67f015c3cc0b0478"
+  },
+  "dataset": {
+    "symbols": ["AUDJPY", "AUDUSD", "EURGBP", "EURJPY", "EURUSD", "GBPJPY", "GBPUSD", "USDJPY"],
+    "start_inclusive": "2017-01-01T00:00:00Z",
+    "end_exclusive": "2018-12-31T00:00:00Z",
+    "available_timeframes": ["M15", "H1", "H4", "D1"],
+    "feature_price": "FIELDWISE_ARITHMETIC_MID_OF_SYNCHRONIZED_BID_AND_ASK_OHLC",
+    "volume_used": false,
+    "forward_fill_or_interpolation": false,
+    "persistent_prices": false
+  },
+  "common_rules": {
+    "timestamps": "UTC_BAR_OPEN",
+    "higher_timeframe_available_only_after_bucket_end": true,
+    "atr14": "MEAN_TRUE_RANGE_OF_14_BARS_ENDING_IMMEDIATELY_BEFORE_EVENT_BAR",
+    "ema": "RECURSIVE_ALPHA_2_OVER_PERIOD_PLUS_1_SEEDED_WITH_FIRST_CLOSE",
+    "entry": "NEXT_OBSERVED_BAR_OPEN_NO_LATER_THAN_TWO_NOMINAL_DURATIONS_AFTER_FINAL_CONFIRMATION_CLOSE",
+    "overlap": "SAME_CANDIDATE_INSTRUMENT_DIRECTION_KEEP_EARLIEST_THEN_DROP_ENTRIES_WITHIN_12_REAL_HOURS",
+    "episode": "CANDIDATE_PLUS_UTC_SIGNAL_DATE_PLUS_DIRECTION_KEEP_EARLIEST",
+    "signal_timestamp_or_price_in_artifact": false,
+    "forward_outcome_access": false
+  },
+  "candidates": {
+    "EXP-P9-MTF-305": {
+      "name": "D1-Biased H4 NR7 Compression Release",
+      "mechanism": "An H4 narrowest-range-in-seven compression releases through its boundary on H1 while the latest completed D1 20-bar momentum agrees.",
+      "signal_timeframe": "H1",
+      "event_timeframe": "H4",
+      "higher_timeframe": "D1",
+      "h4_narrow_range_lookback": 7,
+      "h4_range_atr_max": 0.75,
+      "d1_change_bars": 20,
+      "d1_change_atr_min": 1.0,
+      "h1_confirmation_bars_max": 6,
+      "h1_break_distance_atr_min": 0.05,
+      "h1_range_atr_min": 0.80,
+      "h1_body_ratio_min": 0.55,
+      "frequency_gate": {"episodes_min": 250, "active_dates_min": 150, "instruments_min_20": 6, "max_instrument_share": 0.25, "each_year_share_min": 0.30}
+    },
+    "EXP-P9-MTF-306": {
+      "name": "D1 Three-Bar Pullback H4 Trend Resumption",
+      "mechanism": "Three completed D1 bars pull against an EMA20/EMA50 trend by a bounded ATR depth, followed by an H4 directional boundary break.",
+      "signal_timeframe": "H4",
+      "higher_timeframe": "D1",
+      "d1_ema_periods": [20, 50],
+      "pullback_bars": 3,
+      "pullback_depth_atr_min": 0.50,
+      "pullback_depth_atr_max": 2.00,
+      "h4_confirmation_bars_max": 6,
+      "h4_boundary_lookback": 4,
+      "h4_break_distance_atr_min": 0.05,
+      "h4_body_ratio_min": 0.55,
+      "frequency_gate": {"episodes_min": 120, "active_dates_min": 90, "instruments_min_10": 6, "max_instrument_share": 0.25, "each_year_share_min": 0.30}
+    },
+    "EXP-P9-MTF-307": {
+      "name": "H4 Double Rejection H1 Neckline Break",
+      "mechanism": "Two H4 terminal-wick rejections of the same 30-bar extreme are followed by an H1 break through the between-rejection neckline.",
+      "signal_timeframe": "H1",
+      "event_timeframe": "H4",
+      "boundary_lookback": 30,
+      "second_rejection_bars_max": 8,
+      "boundary_distance_atr_max": 0.20,
+      "terminal_wick_ratio_min": 0.40,
+      "h1_confirmation_bars_max": 4,
+      "h1_break_distance_atr_min": 0.05,
+      "h1_body_ratio_min": 0.45,
+      "frequency_gate": {"episodes_min": 180, "active_dates_min": 120, "instruments_min_15": 6, "max_instrument_share": 0.25, "each_year_share_min": 0.30}
+    },
+    "EXP-P9-MTF-308": {
+      "name": "H4-Trend H1 Shock M15 Shallow-Pullback Continuation",
+      "mechanism": "An H1 directional volatility shock aligned with completed H4 EMA20/EMA50 trend resumes after a bounded M15 shallow pullback.",
+      "signal_timeframe": "M15",
+      "event_timeframe": "H1",
+      "higher_timeframe": "H4",
+      "h4_ema_periods": [20, 50],
+      "h1_shock_range_atr_min": 1.80,
+      "h1_shock_body_ratio_min": 0.65,
+      "m15_confirmation_bars_max": 8,
+      "m15_pullback_bars_min": 2,
+      "m15_pullback_depth_shock_range_max": 0.50,
+      "m15_resume_boundary_lookback": 2,
+      "m15_resume_body_ratio_min": 0.50,
+      "frequency_gate": {"episodes_min": 300, "active_dates_min": 180, "instruments_min_20": 6, "max_instrument_share": 0.25, "each_year_share_min": 0.30}
+    }
+  },
+  "next_gate": {
+    "count_only_first": true,
+    "return_gate_only_for_frequency_passers": true,
+    "return_and_oos_in_count_run": false,
+    "outcome_fields": []
+  }
+}
