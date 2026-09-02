@@ -89,8 +89,9 @@ Return/OOS不通過として全件不採用にした。確認済みedgeは0件�
 独立mechanismのBatch 4（313〜316）はReturn/OOSまで完了し、全件不採用となった。
 Batch 5は317/318/320をCount不通過、319をReturn/OOS不通過で全件不採用とした。
 Outcome検定済み7候補は全件不採用、確認済みedgeは0件である。次は独立mechanism
-Batch 6 Count-only single-use workflowを1回だけ実行する段階である。Formal provider
-scheduleと金銀・Energyのblockerは別trackに残し、探索を遅らせない。
+Batch 6の実行前に、ユーザー承認済みGoogle Drive Data Vaultの契約・実装・Testsを
+価格取得なしで公開する段階である。既存Batch 6 workflowはまだ実行しない。Formal
+provider scheduleと金銀・Energyのblockerは別trackに残し、探索を遅らせない。
 
 ```text
 Phase 9仮説凍結
@@ -140,7 +141,9 @@ Batch 5 Count-only
 新しい独立mechanism Batch 6
   ↓ 321〜324 preregistered / Count workflow ready
 Batch 6 Count-only
-  ↓ NEXT: one manual single-use run（Return/Outcomeなし）
+  ↓ PAUSED: Drive vault移行・独立監査後に実行（Return/Outcomeなし）
+Google Drive Data Vault v1
+  ↓ NEXT: 契約・partition・shard・QC・OAuth境界・workflowを価格取得なしで実装
 Provider schedule source readiness
   ↓ P0 BLOCKED（公式version付き完全履歴source未固定）
 Metadata-only JForex amendment / static Gate
@@ -406,21 +409,16 @@ Provider schedule inventory / allowlist
 FX8 MTF取得/QC、Batch 1〜5のCount-only、302/304/305/311/312/316/319のReturn/OOSは完了し、
 Outcome検定済み7候補は全件不採用、確認済みedgeは0件である。301〜320を救済せず、
 Batch 6の321〜324をCount閲覧前に事前登録し、専用Count-only workflowを固定した。
+ただし、ユーザーは候補Batchごとの再取得をやめ、2010〜2025年のG8全28ペアを一度だけ
+取得して個人Google Driveへ保存・再利用する方式を承認した。Drive folder IDは
+`1cGQrkdpSNY9RcfpniVTYNb6zE0t9nTKu`で、確認時点では空。価格取得はまだ開始していない。
 
-次は`.github/workflows/phase9-exploratory-fxcm-blind-mtf-batch6-count-only.yml`を
-Run #1 / attempt #1として1回だけ手動実行する。入力は次の完全一致文字列を使う。
-
-```text
-confirmation:
-RUN_EXPLORATORY_FXCM_BLIND_MTF_BATCH6_COUNT_ONLY_2017_2018_V1
-
-usage_confirmation:
-I_CONFIRM_PERSONAL_NONCOMMERCIAL_USE_AND_ACCEPT_FXCM_EULA
-```
-
-このRunでは件数・coverage・identityだけを確認し、Return、勝敗、PF、P値、Outcomeを
-計算・表示しない。Count通過候補だけを、過去7候補を含む累積多重検定補正Return/OOS
-Gateへ進める。不通過候補は条件変更、方向反転、銘柄限定、exit変更で救済しない。
+次は`../phase9-exploratory-fxcm-20260901/GOOGLE_DRIVE_DATA_VAULT_PLAN.md`に従い、
+vault acquisition/custody契約、期間partition、year/symbol/periodicity shard、QC、manifest、
+個人My Drive OAuth境界を先に凍結する。その後、one-manual-runで年別parallel取得、
+Full-QC、private Drive upload、local cleanupを行うworkflowとTestsを実装・公開する。
+ユーザーの明示承認まではworkflowをdispatchしない。既存Batch 6 workflowも実行しない。
+321〜324の条件は変更せず、vault独立監査後にデータ入力だけをSHA固定Drive shardへ替える。
 
 Formal trackではV1 Run `33574659277`とV2 Run `33577505327`の単一使用認可は消費済みで、
 rerun/replayしない。remote resource/JAR request、JForex接続、正式価格取得も別承認前に行わない。

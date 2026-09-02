@@ -348,6 +348,24 @@ Outcome検定済み7候補は全件不採用で、確認済みedgeは0件であ�
 順位、Outcomeは計算・表示・保存しない。通過候補がある場合だけ、既にOutcomeを検定した
 7候補を含む累積多重検定補正Return/OOS Gateを別途凍結する。
 
+## Google Drive Data Vault migration decision
+
+ユーザー承認により、候補Batchごとに同じ期間を再取得して破棄する方式から、一度だけ
+複数年データを取得し、非公開Google DriveへSHA固定shardとして保存・再利用する方式へ
+移行する。設計正本は`GOOGLE_DRIVE_DATA_VAULT_PLAN.md`である。
+
+- Drive folder ID: `1cGQrkdpSNY9RcfpniVTYNb6zE0t9nTKu`（確認時点で空）
+- target period: 2010-01-01 inclusive ～ 2026-01-01 exclusive
+- universe: G8全28通貨ペア
+- direct: m1/H1/D1、BID/ASK OHLC、提供時Volume
+- derived: M5/M15/M30/H1/H4/D1/W1
+- Tick、金銀、指数、原油、exotic FXは初期vault対象外
+- OOS、robustness、final holdoutはGate前に読まない別区画
+- public Git/Artifactへ価格を保存しない
+
+価格・availability取得は未開始である。既存Batch 6 workflowはvault移行と独立監査が
+完了するまでdispatchしない。321〜324の事前登録条件は変更しない。
+
 ### Batch 3 Return/OOS Run 33593743345
 
 Run #1 / attempt #1は全step success。Artifact `9832993158`（ZIP SHA-256

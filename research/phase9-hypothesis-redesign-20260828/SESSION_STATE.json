@@ -1,7 +1,7 @@
 {
   "project": "auto-trading-research",
   "updated_at": "2026-09-02",
-  "phase": "PHASE9_EXPLORATORY_BLIND_MTF_BATCH5_RETURN_REJECTED_BATCH6_COUNT_PREREGISTERED_WORKFLOW_READY_NOT_RUN",
+  "phase": "PHASE9_EXPLORATORY_BATCH6_COUNT_UNSEEN_GOOGLE_DRIVE_VAULT_PLAN_APPROVED_NO_ACQUISITION",
   "phase8": {
     "formal_hypotheses_including_pa002": 16,
     "decision": "ALL_REJECT_FOR_DEVELOPMENT",
@@ -54,7 +54,7 @@
     "legacy_non_phase9_future_period_download_detected": true
   },
   "exploratory_fxcm_multitimeframe": {
-    "status": "MTF_64_SERIES_EXECUTED_BATCH5_RETURN_REJECTED_BATCH6_COUNT_PREREGISTERED_NOT_RUN",
+    "status": "MTF_64_SERIES_EXECUTED_BATCH5_RETURN_REJECTED_BATCH6_COUNT_PREREGISTERED_DRIVE_VAULT_MIGRATION_PENDING",
     "formal_phase9_authorization_effect": false,
     "plan": "../phase9-exploratory-fxcm-20260901/MULTI_TIMEFRAME_DATA_PLAN.md",
     "contract": "../phase9-exploratory-fxcm-20260901/spec/fxcm_multitimeframe_data_requirements.frozen.json",
@@ -442,7 +442,7 @@
     "next_gate": "NEW_INDEPENDENT_MECHANISM_BATCH_NO_RESCUE_OF_301_THROUGH_320"
   },
   "exploratory_blind_mtf_batch6_count_gate": {
-    "status": "PREREGISTERED_WORKFLOW_AND_TESTS_READY_COUNT_NOT_RUN",
+    "status": "PREREGISTERED_COUNT_NOT_RUN_PAUSED_PENDING_DRIVE_VAULT_MIGRATION",
     "formal_phase9_authorization_effect": false,
     "workflow": ".github/workflows/phase9-exploratory-fxcm-blind-mtf-batch6-count-only.yml",
     "contract": "../phase9-exploratory-fxcm-20260901/spec/fxcm_blind_mtf_candidates_v6.frozen.json",
@@ -459,7 +459,36 @@
     "research_outcomes_calculated": false,
     "outcome_fields": [],
     "prior_outcome_tested_candidate_count": 7,
-    "next_gate": "MANUAL_SINGLE_USE_BATCH6_COUNT_ONLY_RUN"
+    "next_gate": "DRIVE_VAULT_ACQUISITION_AND_INDEPENDENT_AUDIT_BEFORE_BATCH6_COUNT"
+  },
+  "exploratory_fxcm_google_drive_data_vault": {
+    "status": "USER_APPROVED_PLAN_NO_PRICE_OR_AVAILABILITY_ACQUISITION_STARTED",
+    "plan": "../phase9-exploratory-fxcm-20260901/GOOGLE_DRIVE_DATA_VAULT_PLAN.md",
+    "folder_name": "Phase9 FXCM Data Vault",
+    "folder_id": "1cGQrkdpSNY9RcfpniVTYNb6zE0t9nTKu",
+    "folder_url": "https://drive.google.com/drive/folders/1cGQrkdpSNY9RcfpniVTYNb6zE0t9nTKu",
+    "folder_verified_empty": true,
+    "target_start_inclusive": "2010-01-01T00:00:00Z",
+    "target_end_exclusive": "2026-01-01T00:00:00Z",
+    "target_symbols": [
+      "AUDCAD", "AUDCHF", "AUDJPY", "AUDNZD", "AUDUSD", "CADCHF", "CADJPY",
+      "CHFJPY", "EURAUD", "EURCAD", "EURCHF", "EURGBP", "EURJPY", "EURNZD",
+      "EURUSD", "GBPAUD", "GBPCAD", "GBPCHF", "GBPJPY", "GBPNZD", "GBPUSD",
+      "NZDCAD", "NZDCHF", "NZDJPY", "NZDUSD", "USDCAD", "USDCHF", "USDJPY"
+    ],
+    "direct_periodicities": ["m1", "H1", "D1"],
+    "derived_timeframes": ["M5", "M15", "M30", "H1", "H4", "D1", "W1"],
+    "bid_ask_ohlc_required": true,
+    "volume_if_supplied": true,
+    "tick_data_in_initial_vault": false,
+    "public_git_or_artifact_price_storage_allowed": false,
+    "one_acquisition_reuse_required": true,
+    "oauth_configured": false,
+    "acquisition_contract_frozen": false,
+    "availability_inventory_executed": false,
+    "price_acquisition_executed": false,
+    "batch6_dispatch_allowed_before_vault_audit": false,
+    "next_gate": "IMPLEMENT_AND_PUBLISH_VAULT_CONTRACT_RUNNER_WORKFLOW_TESTS_WITHOUT_DISPATCH"
   },
   "provider_acquisition": {
     "status": "ACTUAL_FULL_QC_CONTRACT_FROZEN_PROVIDER_SCHEDULE_SOURCE_P0_BLOCKED",
@@ -943,7 +972,10 @@
     "implement MT5 EA"
   ],
   "next_actions": [
-    "dispatch the single-use Batch 6 Count-only workflow for EXP-P9-MTF-321 through EXP-P9-MTF-324 exactly once with both frozen confirmation strings; do not compute or display Return, win/loss, profit factor, p-value or Outcome",
+    "do not dispatch the existing Batch 6 workflow and do not acquire FXCM prices at session start",
+    "freeze the approved 2010-through-2025 G8-28 Google Drive vault acquisition, temporal partition, custody, shard, QC, manifest and personal-My-Drive OAuth contract before any availability or price access",
+    "implement and publish the one-manual-run year-matrix acquisition, Full-QC, private Drive upload, local cleanup and tests without dispatch; then present exact one-time OAuth setup and manual inputs",
+    "after explicit manual authorization and an independent vault audit, change only the Batch 6 data input to exact SHA-locked Drive shards; preserve candidates 321 through 324 and every frozen frequency rule",
     "advance only candidates that pass every frozen Batch 6 frequency and breadth condition to a separately frozen Return/OOS Gate using cumulative prior outcome-tested count 7 plus any Batch 6 selections",
     "reject every Batch 6 Count failure without threshold, direction, symbol, timeframe or mechanism rescue; do not rescue any Batch 1 through Batch 5 failure including EXP-P9-MTF-319",
     "do not rerun or replay failed V1 libs JNLP Run 33574659277 or skipped Run 33575321670; V1 authorization is consumed and its HTTP request count is zero",

@@ -35,6 +35,7 @@ GitHub Repository `tgkfnfnfv9-stack/Gpt-Verification--software` のPhase 9自動
 26. `research/phase9-exploratory-fxcm-20260901/spec/fxcm_blind_mtf_candidates_v6.frozen.json`
 27. `research/phase9-exploratory-fxcm-20260901/runner/fxcm_blind_mtf_count_only_v6.py`
 28. `.github/workflows/phase9-exploratory-fxcm-blind-mtf-batch6-count-only.yml`
+29. `research/phase9-exploratory-fxcm-20260901/GOOGLE_DRIVE_DATA_VAULT_PLAN.md`
 
 必ず最新remote `main`を再確認し、workflowが公開済みのcommitと一致することを確認してください。
 
@@ -187,23 +188,29 @@ exact 2 files、manifest、価格0、Return/Outcome未計算を独立監査済�
 - 301〜320とは独立したmechanismとしてBatch 6 Count前に固定済み
 - Count-onlyではReturn、勝敗、PF、P値、Outcomeを計算・表示しない
 
+## Google Drive Data Vault移行をユーザー承認済み
+
+- 価格取得はまだ開始していない
+- Drive folder: `Phase9 FXCM Data Vault`
+- folder ID: `1cGQrkdpSNY9RcfpniVTYNb6zE0t9nTKu`
+- 確認時点でfolderは空
+- 期間: 2010-01-01 inclusive ～ 2026-01-01 exclusive
+- 対象: G8全28通貨ペア
+- direct: m1/H1/D1のBID/ASK OHLC、Volumeが提供される場合はVolumeも保存
+- derived: M5/M15/M30/H1/H4/D1/W1
+- FXCM取得は1回だけ。年×銘柄×periodicity shardをDriveへ保存し、以後SHA固定で再利用する
+- OOS・robustness・final holdoutは別区画として、Gate通過前に読み込まない
+- public Git/Artifactへ価格を保存しない
+- 既存Batch 6 workflowはDrive移行完了まで実行しない。321〜324の凍結条件は変更しない
+
 ## 次の単一作業
 
-公開済みの`.github/workflows/phase9-exploratory-fxcm-blind-mtf-batch6-count-only.yml`を
-Run #1 / attempt #1として1回だけ手動実行してください。
-
-実行リンク:
-`https://github.com/tgkfnfnfv9-stack/Gpt-Verification--software/actions/workflows/phase9-exploratory-fxcm-blind-mtf-batch6-count-only.yml`
-
-入力値:
-
-confirmation:
-`RUN_EXPLORATORY_FXCM_BLIND_MTF_BATCH6_COUNT_ONLY_2017_2018_V1`
-
-usage_confirmation:
-`I_CONFIRM_PERSONAL_NONCOMMERCIAL_USE_AND_ACCEPT_FXCM_EULA`
-
-Run完了後はArtifactを独立監査し、Count通過候補だけを過去7候補を含む累積多重検定補正Return/OOS Gateへ進めてください。不通過候補は救済しないでください。
+価格取得や既存Batch 6 workflowの実行はまだ行わないでください。最初に
+`GOOGLE_DRIVE_DATA_VAULT_PLAN.md`に従い、versioned vault契約、期間partition、shard形式、
+QC、manifest、個人My Drive用OAuth secret境界を価格閲覧前に凍結してください。その後、
+1回の手動認可で年別parallel取得・Full-QC・Drive保存・local cleanupまで行うworkflowと
+Testsを実装し、GitHubへ公開してください。workflowは公開しても、そのセッションでは
+ユーザーの明示承認前に実行しないでください。
 
 ## 厳守事項
 
@@ -216,5 +223,5 @@ Run完了後はArtifactを独立監査し、Count通過候補だけを過去7候
 - Formal Phase 9とExploratory FXCMを混同しない
 - Formal 12市場のprovider schedule、Energy metadata、JForex runtime closureは未解決の別track
 
-まず最新remote、workflow SHA、single-use条件を確認し、実行リンクと入力値をコピー可能な形で提示してください。
+まず最新remoteとDrive vault計画を確認し、価格取得なしで実装・Tests・公開まで進めてください。
 ```
