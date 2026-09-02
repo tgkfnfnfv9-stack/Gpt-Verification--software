@@ -1,6 +1,6 @@
 # Phase 9 Exploratory FXCM Fast Track
 
-Status: `DRIVE_VAULT_V1_IMPLEMENTED_NOT_DISPATCHED; LEGACY_FX8_BATCH6_PAUSED`
+Status: `DRIVE_VAULT_V1_AVAILABILITY_AUDITED_TARGET_UNAVAILABLE_ACQUISITION_BLOCKED; LEGACY_FX8_BATCH6_PAUSED`
 
 ## Current canonical next step: reusable Google Drive Vault
 
@@ -17,10 +17,16 @@ private Google Driveへ保存し、以後は同じSHA-256データを再利用�
 - Drive folder ID: `1cGQrkdpSNY9RcfpniVTYNb6zE0t9nTKu`
 - public Git/Artifactの価格: 0件を維持
 
-契約・runner・workflow・Testsは完成したが、availability、価格取得、Batch 6は未実行。
-workflow公開は実行承認ではない。Google OAuth設定とユーザーの別の明示承認後にだけRun #1を
-実行する。321～324の候補条件は変えず、Vault独立監査と旧64系列互換性確認後にデータ入力だけを
-切り替える。
+Availability Run `33627420903`は16年すべて成功し、16 Artifactを独立監査した。
+要求69,888 source objectのうち36,000件だけがHTTP 200、33,888件が404だった。
+2010・2011年は全件なし、direct D1は全件なし、`CHFJPY`・`EURCAD`・`GBPAUD`は
+全期間なしである。response body読取りは0 byte、価格取得も0件である。
+
+正本監査は
+`results/run-33627420903/FXCM_DRIVE_VAULT_AVAILABILITY_INDEPENDENT_AUDIT.json`。
+凍結V1 targetは成立しないため、一括取得workflowを実行してはならない。対象を黙って
+縮小せず、新しいsourceまたは明示承認された別V2 scopeを決めるまで停止する。
+321～324と既存Batch 6も未実行のまま維持する。
 
 以下のH1/MTF/Batch履歴は完了済みの旧探索経路として保持する。
 

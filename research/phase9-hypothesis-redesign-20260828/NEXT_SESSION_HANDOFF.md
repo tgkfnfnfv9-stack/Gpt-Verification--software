@@ -10,6 +10,15 @@ Actual Full-QC実装基準: `9eb7ce667bea8e76a7f9bb1f2d378eebd8957206`
 
 ## 2026-09-02 latest delta
 
+- Vault availability Run `33627420903`はhead
+  `182f73dc41c5d6efcb0a5fd0a71bce3bbcffc825`で16年すべて成功した。16 Artifactの
+  manifest SHAと69,888件のexact identity/URL setを独立監査した。
+- HTTP 200は36,000件、404は33,888件、response bodyは0 byte。2010・2011年、direct D1
+  全件、`CHFJPY`・`EURCAD`・`GBPAUD`全期間が不在でV1 targetは成立しない。
+- 正本は
+  `research/phase9-exploratory-fxcm-20260901/results/run-33627420903/FXCM_DRIVE_VAULT_AVAILABILITY_INDEPENDENT_AUDIT.json`。
+  V1一括取得を実行せず、新sourceまたは明示承認された別V2 scopeまで停止する。監査回帰
+  4 testsを追加し、Vault新規21 tests、探索全163 testsを成功させた。
 - 最新remote main `695c4e8e51d137259c8761e7ddd9e1f4d0295617`から開始し、指定56ファイル
   （48,263行、約1.77MB）と運用ガイド追加正本を全文監査した。
 - Google Drive Vault V1の取得/custody、期間、shard、manifest、Formal境界の4契約を
@@ -26,8 +35,8 @@ Actual Full-QC実装基準: `9eb7ce667bea8e76a7f9bb1f2d378eebd8957206`
   staging→全件再download SHA照合→1,344件昇格→最終`VAULT_SEAL.json`の順序を固定した。
 - HEAD-only availability workflowと16年matrix一括取得workflow、runner、Drive client、
   finalizer、public price-free verifier、Testsを実装した。新規17 tests、探索全159 testsは成功。
-- 両workflowはまだdispatchしていない。availability 0、Vault価格0、Batch 6 Count 0、
-  確認済みedge 0を維持。既存Batch 6 workflowも実行禁止のまま。
+- Availability Run #1だけ実行済み。Vault価格0、Batch 6 Count 0、確認済みedge 0を維持。
+  一括取得workflowと既存Batch 6 workflowは実行禁止のまま。
 
 - Exploratory FX8 MTF Run `33508634314`でdirect m1/H1取得、
   M15/H4/D1生成、最終64 BID/ASK系列の実行を完了した。価格はcleanup済み。
@@ -425,14 +434,10 @@ Provider schedule inventory / allowlist
 
 ## 7. 次に行う単一作業
 
-Vault V1の契約、runner、workflow、Testsの実装は完了した。次の単一作業は、公開済みmainの
-正確なSHAを確認し、固定rootを同一OAuth clientから参照可能にしたうえで、個人My Drive
-OAuth 3 SecretsをGitHub Environment `phase9-fxcm-vault-acquisition`へ一度だけ設定する
-ことである。rootが参照不能ならscopeを拡大せず停止する。設定後も自動実行しない。
-ユーザーが実行範囲、Formal未見主張終了、FXCM EULAを明示承認した場合だけ、まず
-HEAD-only availability Run #1を実行する。28ペア×16年×3 direct periodicityの不足が
-1件でもあればscopeを縮小せず停止する。Availability成功と独立監査後に、別の明示承認で
-一括取得Run #1へ進む。
+Availability Run #1と独立監査は完了し、凍結V1 targetが不成立と確定した。次の単一作業は、
+目的である「一度取得して繰り返し再利用」を維持しながら、G8全28ペア・必要期間・BID/ASK
+OHLCを満たす別sourceを選ぶか、利用可能なFXCM範囲だけの別V2を明示承認するかを決めること。
+V1一括取得、OAuth Secrets設定、Drive書込みは行わない。
 
 Vault取得後もCount/Returnを自動実行しない。Drive内1,344 shardとmanifest/sealを独立監査し、
 2017～2018年の旧64系列互換性が完全一致した場合だけ、321～324の条件を変えず、Batch 6の
@@ -456,15 +461,14 @@ rerun/replayしない。remote resource/JAR request、JForex接続、正式価�
 
 ## 8. 残りの順序
 
-1. 公開済みmain SHA、Vault V1契約・workflow・Testsを再確認する
-2. 個人My Drive OAuth Secretsを専用GitHub Environmentへ設定する
-3. ユーザーの明示承認後にHEAD-only availability Run #1を一度だけ実行する
-4. 28×16×3のavailabilityを独立監査し、欠損時はscopeを縮小せず停止する
-5. 別の明示承認後に16年matrix一括取得Run #1を一度だけ実行する
-6. private Driveの1,344 shard、69,888 source identity、manifest、sealを独立監査する
-7. 旧64系列互換性を確認後、Batch 6の入力だけをVaultへ切り替えてCount-onlyを実行する
-8. Count通過候補だけをReturn/OOS→新期間→頑健性へ進め、最後にMT5を検討する
-9. Formal JForex/provider schedule/Energy trackは別のまま維持する
+1. Availability独立監査正本とV1取得停止を確認する
+2. 全28ペア・必要期間・BID/ASK OHLCを満たす別source、または別V2 scopeを決定する
+3. 決定後に新しい取得/custody/partition/shard/QC契約を事前凍結する
+4. Testsとworkflowを実装・公開しても、自動実行しない
+5. 別の明示承認後だけ一度取得し、private Driveのmanifest/SHA/sealを独立監査する
+6. 旧64系列互換性を確認後、Batch 6の入力だけをVaultへ切り替えてCount-onlyを実行する
+7. Count通過候補だけをReturn/OOS→新期間→頑健性へ進め、最後にMT5を検討する
+8. Formal JForex/provider schedule/Energy trackは別のまま維持する
 
 ## 9. 絶対禁止
 

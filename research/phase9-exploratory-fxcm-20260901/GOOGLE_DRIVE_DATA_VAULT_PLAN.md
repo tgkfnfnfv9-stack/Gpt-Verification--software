@@ -1,6 +1,6 @@
 # Phase 9 FXCM Google Drive Data Vault Plan
 
-Status: `V1_CONTRACT_AND_IMPLEMENTATION_COMPLETE_NOT_DISPATCHED_NO_PRICE_ACQUISITION`
+Status: `V1_AVAILABILITY_AUDITED_TARGET_UNAVAILABLE_ACQUISITION_BLOCKED_NO_PRICE_ACQUISITION`
 
 Recorded: 2026-09-02
 
@@ -10,8 +10,25 @@ FXCM価格を候補Batchごとに再取得して破棄する運用を終了し�
 一度だけ複数年データを取得してGoogle Driveの非公開研究フォルダへ保存し、以後の
 Count-only、Return/OOS、頑健性確認はSHA固定した同じデータを再利用する。
 
-この文書は設計合意だけを記録する。価格取得、availability request、Count、Return、
-Outcome計算はまだ開始していない。
+価格取得、Count、Return、Outcome計算はまだ開始していない。HEAD-only availability
+だけはRun `33627420903`で完了し、次の独立監査によりV1 target不成立を確認した。
+
+## 2026-09-02 Availability Run #1 independent audit
+
+- audit: `results/run-33627420903/FXCM_DRIVE_VAULT_AVAILABILITY_INDEPENDENT_AUDIT.json`
+- exact target identities: 69,888
+- HTTP 200 present: 36,000
+- HTTP 404 missing: 33,888
+- response body bytes read: 0
+- 2010・2011年: m1/H1/D1すべて不在
+- direct D1: 全16年・28ペアで不在
+- 全期間不在: `CHFJPY`, `EURCAD`, `GBPAUD`
+- 25ペアのm1/H1が52週揃う年: 2012～2018、2021～2023
+- partial: 2019、2020、2024、2025
+
+Run成功はtarget完全性の成功を意味しない。V1 acquisitionは未承認かつ実行禁止である。
+欠損を無視したscope縮小、D1の無断削除、25ペアへの無断変更を行わない。新しいsourceを
+選ぶか、別V2 scopeを明示承認して凍結するまでDrive取得を開始しない。
 
 ## 2026-09-02 V1契約・実装完了
 
@@ -30,7 +47,8 @@ Outcome計算はまだ開始していない。
 - 一括取得workflow: `.github/workflows/phase9-exploratory-fxcm-drive-vault-acquisition-v1.yml`
 
 両workflowは`workflow_dispatch`専用、確認済みmain SHA完全一致、Run #1 / attempt #1だけを
-許可し、まだdispatchしていない。一括取得workflowは16年matrixで年ごとに84 direct shardを
+許可する。Availability Run #1は消費済みで再実行しない。一括取得workflowは未実行かつ
+現在実行禁止である。一括取得workflowは16年matrixで年ごとに84 direct shardを
 stagingし、各Drive uploadを再downloadしてSHA-256照合する。その後、全1,344 shardだけを
 正本へ昇格し、`VAULT_SEAL.json`を最後に作る。途中失敗ではroot sealを作らない。
 

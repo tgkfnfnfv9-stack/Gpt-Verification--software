@@ -462,7 +462,7 @@
     "next_gate": "DRIVE_VAULT_ACQUISITION_AND_INDEPENDENT_AUDIT_BEFORE_BATCH6_COUNT"
   },
   "exploratory_fxcm_google_drive_data_vault": {
-    "status": "V1_CONTRACT_RUNNER_WORKFLOWS_TESTS_COMPLETE_NOT_DISPATCHED",
+    "status": "V1_AVAILABILITY_AUDITED_TARGET_UNAVAILABLE_ACQUISITION_BLOCKED",
     "plan": "../phase9-exploratory-fxcm-20260901/GOOGLE_DRIVE_DATA_VAULT_PLAN.md",
     "folder_name": "Phase9 FXCM Data Vault",
     "folder_id": "1cGQrkdpSNY9RcfpniVTYNb6zE0t9nTKu",
@@ -491,6 +491,15 @@
     "formal_boundary_amendment": "../phase9-exploratory-fxcm-20260901/spec/fxcm_drive_vault_formal_boundary_amendment_v1.frozen.json",
     "availability_workflow": ".github/workflows/phase9-exploratory-fxcm-drive-vault-availability-v1.yml",
     "acquisition_workflow": ".github/workflows/phase9-exploratory-fxcm-drive-vault-acquisition-v1.yml",
+    "availability_independent_audit": "../phase9-exploratory-fxcm-20260901/results/run-33627420903/FXCM_DRIVE_VAULT_AVAILABILITY_INDEPENDENT_AUDIT.json",
+    "availability_run_id": 33627420903,
+    "availability_head_sha": "182f73dc41c5d6efcb0a5fd0a71bce3bbcffc825",
+    "availability_required_source_object_count": 69888,
+    "availability_present_source_object_count": 36000,
+    "availability_missing_source_object_count": 33888,
+    "availability_direct_d1_present_count": 0,
+    "availability_fully_unavailable_years": [2010, 2011],
+    "availability_fully_unavailable_symbols": ["CHFJPY", "EURCAD", "GBPAUD"],
     "expected_shard_count": 1344,
     "expected_source_object_count": 69888,
     "exploratory_partitions": {
@@ -510,13 +519,15 @@
     "oauth_scope": "https://www.googleapis.com/auth/drive.file",
     "oauth_preexisting_root_access_required": true,
     "oauth_inaccessible_root_action": "FAIL_WITHOUT_SCOPE_EXPANSION_OR_PRICE_ACCESS",
-    "new_vault_test_count": 17,
-    "all_exploratory_test_count": 159,
+    "new_vault_test_count": 21,
+    "all_exploratory_test_count": 163,
     "tests_passed": true,
-    "availability_inventory_executed": false,
+    "availability_inventory_executed": true,
+    "availability_inventory_independently_audited": true,
     "price_acquisition_executed": false,
+    "acquisition_workflow_authorized": false,
     "batch6_dispatch_allowed_before_vault_audit": false,
-    "next_gate": "PUBLISH_MAIN_THEN_CONFIGURE_OAUTH_WITHOUT_DISPATCH"
+    "next_gate": "CHOOSE_NEW_SOURCE_OR_EXPLICIT_SEPARATE_V2_SCOPE_NO_V1_ACQUISITION"
   },
   "provider_acquisition": {
     "status": "ACTUAL_FULL_QC_CONTRACT_FROZEN_PROVIDER_SCHEDULE_SOURCE_P0_BLOCKED",

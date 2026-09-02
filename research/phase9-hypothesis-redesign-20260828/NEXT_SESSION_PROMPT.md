@@ -37,6 +37,7 @@ GitHub Repository `tgkfnfnfv9-stack/Gpt-Verification--software` のPhase 9研究
 25. `research/phase9-exploratory-fxcm-20260901/runner/fxcm_blind_mtf_count_only_v6.py`
 26. `.github/workflows/phase9-exploratory-fxcm-blind-mtf-batch6-count-only.yml`
 27. `research/phase9-exploratory-fxcm-20260901/results/run-33610462879/BLIND_MTF_BATCH5_RETURN_OOS_INDEPENDENT_AUDIT.json`
+28. `research/phase9-exploratory-fxcm-20260901/results/run-33627420903/FXCM_DRIVE_VAULT_AVAILABILITY_INDEPENDENT_AUDIT.json`
 
 ## 目的
 
@@ -60,7 +61,9 @@ GPT側のCount-only、Return/OOS、新期間、頑健性テストで再利用し
 - source identity: 16×28×3×52 = 69,888件
 - Tick、金銀、指数、原油、exotic FX: V1対象外
 - public Git/public Artifactへ価格を保存しない
-- availability workflow: 未実行
+- availability workflow Run `33627420903`: 実行・独立監査済み
+- availability: 69,888件中36,000件存在、33,888件404
+- 2010・2011年、direct D1全件、CHFJPY/EURCAD/GBPAUD全期間が不在
 - acquisition workflow: 未実行
 - Vault価格取得: 未開始
 - Google OAuth: 未設定
@@ -80,20 +83,13 @@ Batch 6のCount範囲は凍結済みの
 
 ## 次に行う作業
 
-1. remote main、契約SHA、workflowが一致し、Testsが成功することを確認する。
-2. 個人My Drive OAuthの次の3 SecretsをGitHub Environment
-   `phase9-fxcm-vault-acquisition`へ設定する手順をユーザーへ案内する。
-   - `PHASE9_GDRIVE_OAUTH_CLIENT_ID`
-   - `PHASE9_GDRIVE_OAUTH_CLIENT_SECRET`
-   - `PHASE9_GDRIVE_OAUTH_REFRESH_TOKEN`
-   `drive.file` scopeと同じOAuth clientから固定root folderを参照可能にする必要がある。
-   rootが参照不能でもscopeを自動拡大せず、availability・価格取得前に停止する。
-3. 設定してもworkflowを自動実行しない。
-4. ユーザーの別の明示承認後だけ、HEAD-only availability workflow Run #1を実行する。
-5. 28ペア×16年×3周期の不足が1件でもあればscopeを縮小せず停止する。
-6. Availabilityを独立監査し、別の明示承認後だけ一括取得workflow Run #1を実行する。
-7. private Driveの1,344 shard、69,888 source identity、manifest、SHA、sealを監査する。
-8. Vault取得後もBatch 6を自動実行しない。旧64系列互換性を確認してから、データ入力だけを
+1. remote main、Availability独立監査正本、Testsを確認する。
+2. 凍結V1 targetは不成立なので、一括取得workflow、OAuth設定、Drive書込みを実行しない。
+3. G8全28ペア・必要期間・BID/ASK OHLCを満たす別sourceを選ぶか、利用可能なFXCM範囲だけの
+   別V2 scopeをユーザーが明示承認するかを決める。黙って25ペアへ縮小しない。
+4. 決定後に別versionの取得/custody/partition/shard/QC契約を事前凍結する。
+5. 実装・Tests・公開後も、別の明示承認前には価格取得を実行しない。
+6. Vault取得後もBatch 6を自動実行しない。旧64系列互換性を確認してから、データ入力だけを
    Vaultへ切り替える。321～324の条件とfrequency Gateは変更しない。
 
 取得/QC → Count-only → Return/OOS → 新期間・頑健性 → MT5の順序を厳守してください。

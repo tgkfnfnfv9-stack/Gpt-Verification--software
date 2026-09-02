@@ -1,0 +1,369 @@
+{
+  "schema_version": "phase9-exploratory-fxcm-drive-vault-availability-independent-audit-v1.0.0",
+  "status": "COMPLETE_BLOCK_V1_ACQUISITION_TARGET_UNAVAILABLE",
+  "audited_at": "2026-09-02",
+  "workflow_run": {
+    "run_id": 33627420903,
+    "run_number": 1,
+    "run_attempt": 1,
+    "head_sha": "182f73dc41c5d6efcb0a5fd0a71bce3bbcffc825",
+    "workflow": ".github/workflows/phase9-exploratory-fxcm-drive-vault-availability-v1.yml",
+    "conclusion": "success",
+    "artifact_count": 16
+  },
+  "frozen_contract_sha256": {
+    "fxcm_drive_vault_acquisition_v1.frozen.json": "c4eb1ccff34271b126c5a34b8910ad8eba86403aff69da7dafb5ab91acb78408",
+    "fxcm_drive_vault_partitions_v1.frozen.json": "b96df8d1fb8c671484842f065cfce9ec9884d280798e0b7e7715732bc837cae4",
+    "fxcm_drive_vault_manifest_schema_v1.frozen.json": "b6f4aaf9acb6decd0d975847b4f822fbc89a50434602def4f86fbafbe6c37846",
+    "fxcm_drive_vault_formal_boundary_amendment_v1.frozen.json": "7392b0f90a6496b616aa2de7b863c6dc396ca16a09351cc0d87cde1e358d5715"
+  },
+  "independent_validation": {
+    "artifact_manifest_sha256_all_passed": true,
+    "exact_year_set_2010_through_2025": true,
+    "exact_source_identity_and_url_set_all_years": true,
+    "exact_report_object_count_each_year": 4368,
+    "total_response_body_bytes_read": 0,
+    "unexpected_status_or_error_class_count": 0,
+    "scope_shrunk": false,
+    "price_acquisition_executed": false,
+    "research_outcomes_calculated": false
+  },
+  "target": {
+    "years": 16,
+    "symbols": 28,
+    "direct_periodicities": [
+      "m1",
+      "H1",
+      "D1"
+    ],
+    "endpoint_week_indices_per_year": 52,
+    "required_source_object_count": 69888
+  },
+  "result": {
+    "present_source_object_count": 36000,
+    "missing_or_unavailable_source_object_count": 33888,
+    "all_target_objects_present": false,
+    "missing_http_class": "404_MISSING",
+    "periodicity": {
+      "m1": {
+        "required": 23296,
+        "present": 17966,
+        "missing": 5330
+      },
+      "H1": {
+        "required": 23296,
+        "present": 18034,
+        "missing": 5262
+      },
+      "D1": {
+        "required": 23296,
+        "present": 0,
+        "missing": 23296
+      }
+    },
+    "years_fully_unavailable": [
+      2010,
+      2011
+    ],
+    "symbols_fully_unavailable": [
+      "CHFJPY",
+      "EURCAD",
+      "GBPAUD"
+    ],
+    "complete_52_week_m1_and_H1_block": {
+      "years": [
+        2012,
+        2013,
+        2014,
+        2015,
+        2016,
+        2017,
+        2018,
+        2021,
+        2022,
+        2023
+      ],
+      "symbol_count": 25,
+      "excluded_symbols": [
+        "CHFJPY",
+        "EURCAD",
+        "GBPAUD"
+      ]
+    },
+    "partial_years": [
+      2019,
+      2020,
+      2024,
+      2025
+    ]
+  },
+  "year_summary": [
+    {
+      "year": 2010,
+      "source_object_count": 4368,
+      "present_count": 0,
+      "missing_or_unavailable_count": 4368,
+      "all_target_objects_present": false,
+      "price_response_body_bytes_read": 0
+    },
+    {
+      "year": 2011,
+      "source_object_count": 4368,
+      "present_count": 0,
+      "missing_or_unavailable_count": 4368,
+      "all_target_objects_present": false,
+      "price_response_body_bytes_read": 0
+    },
+    {
+      "year": 2012,
+      "source_object_count": 4368,
+      "present_count": 2600,
+      "missing_or_unavailable_count": 1768,
+      "all_target_objects_present": false,
+      "price_response_body_bytes_read": 0
+    },
+    {
+      "year": 2013,
+      "source_object_count": 4368,
+      "present_count": 2600,
+      "missing_or_unavailable_count": 1768,
+      "all_target_objects_present": false,
+      "price_response_body_bytes_read": 0
+    },
+    {
+      "year": 2014,
+      "source_object_count": 4368,
+      "present_count": 2600,
+      "missing_or_unavailable_count": 1768,
+      "all_target_objects_present": false,
+      "price_response_body_bytes_read": 0
+    },
+    {
+      "year": 2015,
+      "source_object_count": 4368,
+      "present_count": 2600,
+      "missing_or_unavailable_count": 1768,
+      "all_target_objects_present": false,
+      "price_response_body_bytes_read": 0
+    },
+    {
+      "year": 2016,
+      "source_object_count": 4368,
+      "present_count": 2600,
+      "missing_or_unavailable_count": 1768,
+      "all_target_objects_present": false,
+      "price_response_body_bytes_read": 0
+    },
+    {
+      "year": 2017,
+      "source_object_count": 4368,
+      "present_count": 2600,
+      "missing_or_unavailable_count": 1768,
+      "all_target_objects_present": false,
+      "price_response_body_bytes_read": 0
+    },
+    {
+      "year": 2018,
+      "source_object_count": 4368,
+      "present_count": 2600,
+      "missing_or_unavailable_count": 1768,
+      "all_target_objects_present": false,
+      "price_response_body_bytes_read": 0
+    },
+    {
+      "year": 2019,
+      "source_object_count": 4368,
+      "present_count": 2558,
+      "missing_or_unavailable_count": 1810,
+      "all_target_objects_present": false,
+      "price_response_body_bytes_read": 0
+    },
+    {
+      "year": 2020,
+      "source_object_count": 4368,
+      "present_count": 2558,
+      "missing_or_unavailable_count": 1810,
+      "all_target_objects_present": false,
+      "price_response_body_bytes_read": 0
+    },
+    {
+      "year": 2021,
+      "source_object_count": 4368,
+      "present_count": 2600,
+      "missing_or_unavailable_count": 1768,
+      "all_target_objects_present": false,
+      "price_response_body_bytes_read": 0
+    },
+    {
+      "year": 2022,
+      "source_object_count": 4368,
+      "present_count": 2600,
+      "missing_or_unavailable_count": 1768,
+      "all_target_objects_present": false,
+      "price_response_body_bytes_read": 0
+    },
+    {
+      "year": 2023,
+      "source_object_count": 4368,
+      "present_count": 2600,
+      "missing_or_unavailable_count": 1768,
+      "all_target_objects_present": false,
+      "price_response_body_bytes_read": 0
+    },
+    {
+      "year": 2024,
+      "source_object_count": 4368,
+      "present_count": 2479,
+      "missing_or_unavailable_count": 1889,
+      "all_target_objects_present": false,
+      "price_response_body_bytes_read": 0
+    },
+    {
+      "year": 2025,
+      "source_object_count": 4368,
+      "present_count": 2405,
+      "missing_or_unavailable_count": 1963,
+      "all_target_objects_present": false,
+      "price_response_body_bytes_read": 0
+    }
+  ],
+  "decision": {
+    "v1_acquisition_workflow_authorized": false,
+    "action": "DO_NOT_DISPATCH_ACQUISITION_WORKFLOW",
+    "reason": "FROZEN_2010_2025_G8_28_M1_H1_D1_TARGET_IS_NOT_AVAILABLE_AT_THE_FROZEN_FXCM_ENDPOINT",
+    "silent_scope_reduction_allowed": false,
+    "root_seal_allowed": false,
+    "batch6_allowed": false,
+    "next_required_decision": "USER_MUST_CHOOSE_A_NEW_SOURCE_OR_EXPLICITLY_AUTHORIZE_A_SEPARATE_V2_SCOPE"
+  },
+  "source_artifacts": [
+    {
+      "year": 2010,
+      "artifact_id": 9845808133,
+      "artifact_name": "fxcm-vault-availability-2010-182f73dc41c5d6efcb0a5fd0a71bce3bbcffc825-33627420903",
+      "size_in_bytes": 20743,
+      "zip_sha256": "feac577ffe443694a7fcb777475865e77150ea7ac28de84fd97b43e982e43d1b",
+      "report_sha256": "4256ceec1f59739c91efa8354b2a27e2befe3edae75fe472186d9b5fc924a944"
+    },
+    {
+      "year": 2011,
+      "artifact_id": 9845830151,
+      "artifact_name": "fxcm-vault-availability-2011-182f73dc41c5d6efcb0a5fd0a71bce3bbcffc825-33627420903",
+      "size_in_bytes": 20744,
+      "zip_sha256": "e1d90fdcbb2fb07c6fd9a45661c69faa82dfcbf36fbf918e27e99e4f5672f207",
+      "report_sha256": "1042959a9608bebd822259ae0edd0a4c06dd9bce4038b5c9b79428c8a54e4f41"
+    },
+    {
+      "year": 2012,
+      "artifact_id": 9845567994,
+      "artifact_name": "fxcm-vault-availability-2012-182f73dc41c5d6efcb0a5fd0a71bce3bbcffc825-33627420903",
+      "size_in_bytes": 32353,
+      "zip_sha256": "dc16a240e38a422fdc86b5f091151d293d0798d5d40e6dc04d57fd087d73d869",
+      "report_sha256": "619edb7b56c30060f62ac7af1eb1a11e2697c41d66feb22d1a78e0a55b525ba3"
+    },
+    {
+      "year": 2013,
+      "artifact_id": 9845867092,
+      "artifact_name": "fxcm-vault-availability-2013-182f73dc41c5d6efcb0a5fd0a71bce3bbcffc825-33627420903",
+      "size_in_bytes": 32424,
+      "zip_sha256": "b6d88bfc282c5f481f381acb6ddb1d08ec56818d0458a128911cb04d7c26004a",
+      "report_sha256": "0f85e8dc57693edb85e8c0c0206ac9f3f777ccff012d4bc681e35bb389041ffe"
+    },
+    {
+      "year": 2014,
+      "artifact_id": 9845745586,
+      "artifact_name": "fxcm-vault-availability-2014-182f73dc41c5d6efcb0a5fd0a71bce3bbcffc825-33627420903",
+      "size_in_bytes": 32404,
+      "zip_sha256": "538f42e68c0b6366766f4c9eb909cad16b7f0da53fae8db5432687ab1f21daf7",
+      "report_sha256": "fd7b507ebe40d4322a1fa1cb8e0bb611366a2541e540b78c0e1d1dffca121484"
+    },
+    {
+      "year": 2015,
+      "artifact_id": 9846056202,
+      "artifact_name": "fxcm-vault-availability-2015-182f73dc41c5d6efcb0a5fd0a71bce3bbcffc825-33627420903",
+      "size_in_bytes": 32466,
+      "zip_sha256": "fef5a3e4fc9be8669eda3177c90bb2717c50d5426d5f4a4fdb27c6d8eaf4a1e3",
+      "report_sha256": "3a7d020c82dab5a458177aae5c9847c7c89af99e20afbd3a8f317d14f2a8313b"
+    },
+    {
+      "year": 2016,
+      "artifact_id": 9846185085,
+      "artifact_name": "fxcm-vault-availability-2016-182f73dc41c5d6efcb0a5fd0a71bce3bbcffc825-33627420903",
+      "size_in_bytes": 32379,
+      "zip_sha256": "d53688d578ef6a889d0ef155ba9d99d25475402a7bbe7b3500466a2833216461",
+      "report_sha256": "19a0e8ebc4e04788eccfdb179a148654dbf1f7cf8b0c7b95638564fb2a676bd4"
+    },
+    {
+      "year": 2017,
+      "artifact_id": 9846106121,
+      "artifact_name": "fxcm-vault-availability-2017-182f73dc41c5d6efcb0a5fd0a71bce3bbcffc825-33627420903",
+      "size_in_bytes": 32404,
+      "zip_sha256": "dc3466067de5bf8f9e42fdecfa83a9dd4696d1f4d5ee41b61d7a29a89cc0a0c9",
+      "report_sha256": "dafb06adeda5ff44baefe299199115554448fa5fd8b23f1f4374b251d9631204"
+    },
+    {
+      "year": 2018,
+      "artifact_id": 9846222666,
+      "artifact_name": "fxcm-vault-availability-2018-182f73dc41c5d6efcb0a5fd0a71bce3bbcffc825-33627420903",
+      "size_in_bytes": 32275,
+      "zip_sha256": "26a5675604dcc4acdde7eb3dbc5ad7ca8984f3a6c74233771071bd8bb79e23a6",
+      "report_sha256": "d7bb989e8fedd5750c7179bfe5db69e5bac3c102b1360f8a5f6b622e1ebdf151"
+    },
+    {
+      "year": 2019,
+      "artifact_id": 9846269303,
+      "artifact_name": "fxcm-vault-availability-2019-182f73dc41c5d6efcb0a5fd0a71bce3bbcffc825-33627420903",
+      "size_in_bytes": 32219,
+      "zip_sha256": "e89245449ffacba9ae31f781d3180cc00e25318fcb8ad1907a3cca3fa76a1a63",
+      "report_sha256": "0cfb27876dd07753093e08c4e4e61d11b7f18610a3d1799ca30426e13d5aa596"
+    },
+    {
+      "year": 2020,
+      "artifact_id": 9846542662,
+      "artifact_name": "fxcm-vault-availability-2020-182f73dc41c5d6efcb0a5fd0a71bce3bbcffc825-33627420903",
+      "size_in_bytes": 32400,
+      "zip_sha256": "b4de10316cc53b7913ed7ce54fb6235b9fc4a7aaf175c7843eafdb393add38a8",
+      "report_sha256": "2eb2346d77c4f2ca75e9edc544fdba3a22c0189f8f62fe4e6842d4ed6a1ebb52"
+    },
+    {
+      "year": 2021,
+      "artifact_id": 9846614643,
+      "artifact_name": "fxcm-vault-availability-2021-182f73dc41c5d6efcb0a5fd0a71bce3bbcffc825-33627420903",
+      "size_in_bytes": 32091,
+      "zip_sha256": "bd1107067823bab357ccc985b5075c5f31a0dfb5cdc240f06ec9ee6eba01d12d",
+      "report_sha256": "4a2c51f1299b91370400fde26dc03c7fda7477ba017300ed5bd5cafbc7df8d94"
+    },
+    {
+      "year": 2022,
+      "artifact_id": 9846549349,
+      "artifact_name": "fxcm-vault-availability-2022-182f73dc41c5d6efcb0a5fd0a71bce3bbcffc825-33627420903",
+      "size_in_bytes": 32265,
+      "zip_sha256": "0e7cb6fe6784997deee0fb4f677b246ace6647e9d71af7e4ec75767e369c1b56",
+      "report_sha256": "a48dcdbc95d0c779e3eb6c66bcc26a48b839e9ad3882f724fea33582e6706073"
+    },
+    {
+      "year": 2023,
+      "artifact_id": 9846591061,
+      "artifact_name": "fxcm-vault-availability-2023-182f73dc41c5d6efcb0a5fd0a71bce3bbcffc825-33627420903",
+      "size_in_bytes": 32045,
+      "zip_sha256": "f7b093c3ddaccc7cf73e852005c4d583fa80cba0945f56fd5f147b1f3b739ea6",
+      "report_sha256": "948bb0073a57edc4dbfb83d9377cacf042ee9c2ac715367e3c209c324bb6e789"
+    },
+    {
+      "year": 2024,
+      "artifact_id": 9846854706,
+      "artifact_name": "fxcm-vault-availability-2024-182f73dc41c5d6efcb0a5fd0a71bce3bbcffc825-33627420903",
+      "size_in_bytes": 31616,
+      "zip_sha256": "62b5b79d175fd5ffff03d0ebd2280b594a65184257f786df83f3275751ad4894",
+      "report_sha256": "57258112886c4004374ce7e5dcb019f08cfaeec94cbdd010ed30485b64242dba"
+    },
+    {
+      "year": 2025,
+      "artifact_id": 9846740509,
+      "artifact_name": "fxcm-vault-availability-2025-182f73dc41c5d6efcb0a5fd0a71bce3bbcffc825-33627420903",
+      "size_in_bytes": 31693,
+      "zip_sha256": "4fc94008200d2a19ae1a52c984ced3064d21c4f29eb217c1f72e9d45c187ed28",
+      "report_sha256": "9cf60fe19541d6d329999072eebc666ad99c3591ad8d733b8960b2d2b31a970d"
+    }
+  ]
+}
