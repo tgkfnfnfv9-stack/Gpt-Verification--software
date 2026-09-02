@@ -18,7 +18,9 @@ Actual Full-QC実装基準: `9eb7ce667bea8e76a7f9bb1f2d378eebd8957206`
 - V2の取得/custody、Development/OOS/robustness/final holdout、shard/archive、QC、manifest、
   SHA-256、OAuth境界を凍結し、14年matrix取得runner、private Drive finalizer、price-free
   verifier、manual single-use workflow、V2専用Testsを実装した。
-- V2専用10 testsと探索track全173 testsが成功した。
+- V2専用11 testsと探索track全174 testsが成功した。
+- V2 acquisition workflowのpreflightを、app-created root反映後の取得契約SHA-256へ同期し、
+  workflow testで実ファイルSHAとの一致を固定した。
 - V1 acquisition workflowは恒久fail-closed化した。OAuth clientとrefresh tokenを作成し、
   同一clientで空のV2 root `1lZ0CkTn3tBxStf5H3V7W38ZcOsZ5Rw_v`を作成した。
   GitHub Environment 3 secrets、V2価格取得workflow、Count、既存Batch 6は未実行であり、

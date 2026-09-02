@@ -12,6 +12,7 @@ TRACK = Path(__file__).resolve().parents[1]
 V1 = ROOT / ".github/workflows/phase9-exploratory-fxcm-drive-vault-acquisition-v1.yml"
 V2 = ROOT / ".github/workflows/phase9-exploratory-fxcm-drive-vault-acquisition-v2.yml"
 VERIFY = TRACK / "runner/verify_fxcm_drive_vault_v2.py"
+ACQUISITION_V2 = TRACK / "spec/fxcm_drive_vault_acquisition_v2.frozen.json"
 MASK_SHA256 = "0dcda17adbe53c9572492425405c7feb4b972e0b0312dcbf6d04c0aa4e20f014"
 sys.path.insert(0, str(TRACK / "runner"))
 import fxcm_drive_vault_common as common  # noqa: E402
@@ -29,6 +30,11 @@ class VaultV2WorkflowTests(unittest.TestCase):
         self.assertIn("environment: phase9-fxcm-vault-acquisition-v2", text)
         self.assertIn("contents: read", text)
         self.assertNotIn("id-token: write", text)
+        acquisition_sha256 = common.sha256_file(ACQUISITION_V2)
+        self.assertRegex(
+            text,
+            rf"sha256sum .*fxcm_drive_vault_acquisition_v2\.frozen\.json.*= '{acquisition_sha256}'",
+        )
 
     def test_v2_matrix_scope_secrets_and_price_free_artifact_are_exact(self):
         text = V2.read_text()

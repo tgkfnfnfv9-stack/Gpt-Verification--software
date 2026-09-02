@@ -58,7 +58,7 @@ jobs:
         run: |
           set -euo pipefail
           track='research/phase9-exploratory-fxcm-20260901'
-          test "$(sha256sum "$track/spec/fxcm_drive_vault_acquisition_v2.frozen.json" | cut -d' ' -f1)" = '2c7e55c8620a3d63d47aa56d489843d3dcc7598535a9ed3f86d3fa3e3256d202'
+          test "$(sha256sum "$track/spec/fxcm_drive_vault_acquisition_v2.frozen.json" | cut -d' ' -f1)" = '209a133895f4035fba9036fb4d05b4ebc8279011110069ad0021c5830e5b2e6a'
           test "$(sha256sum "$track/spec/fxcm_drive_vault_partitions_v2.frozen.json" | cut -d' ' -f1)" = 'b8e588f7cf69b1cefe64271c3a426b1fa88b9182c9f75fdee0644d9049d2c42b'
           test "$(sha256sum "$track/spec/fxcm_drive_vault_manifest_schema_v2.frozen.json" | cut -d' ' -f1)" = '11417d92df817bccadeb826590cd40ea44d0aaff64c1a6203cc12d105d5e1037'
           test "$(sha256sum "$track/spec/fxcm_drive_vault_formal_boundary_amendment_v2.frozen.json" | cut -d' ' -f1)" = 'f516904dfeace5c9bac87c7ba2d65a5970a1aced8c884817e6a1fd77ddd2a042'

@@ -21,7 +21,8 @@ Option 1を選択した。V2は2012～2025年、25通貨ペア、direct m1/H1の
 - OAuth client、refresh token、同一client作成root: 設定済み（secret値はGitに保存しない）
 - GitHub Environment 3 secrets、価格取得、V2 workflow、Count、Batch 6: 未実行
 - V1 acquisition workflow: fail-closedで恒久停止
-- V2専用10 tests、探索track全173 tests: 成功
+- V2専用11 tests、探索track全174 tests: 成功
+- V2 acquisition workflowのpreflightは、app-created root反映後の取得契約SHA-256と同期済み
 
 V2を公開しても実行許可にはならない。別のユーザー明示承認まではV2 workflowを実行しない。
 取得後も自動でCountへ進まず、private Drive custodyと旧64系列互換性を独立監査する。
