@@ -1,0 +1,67 @@
+{
+  "schema_version": "phase9-exploratory-fxcm-blind-mtf-return-oos-independent-audit-v1.0.0",
+  "status": "INDEPENDENT_AUDIT_PASS_NO_EDGE_CANDIDATE",
+  "audited_at_utc": "2026-09-02T02:38:00Z",
+  "workflow_run": {
+    "run_id": 33582968006,
+    "run_number": 1,
+    "run_attempt": 1,
+    "job_id": 100101002194,
+    "head_sha": "bcb907b692b396bacc081ca143e2b3d89cf70523",
+    "conclusion": "success"
+  },
+  "artifact": {
+    "artifact_id": 9829327227,
+    "name": "phase9-exploratory-fxcm-blind-mtf-return-oos-bcb907b692b396bacc081ca143e2b3d89cf70523-33582968006-1",
+    "github_size_in_bytes": 2659,
+    "zip_sha256": "1b91f15f868aaaac845f39b7949a1aea8c776bdddc1242adf01023e9bfae7e33",
+    "exact_member_count": 2,
+    "members": {
+      "EXPLORATORY_FXCM_BLIND_MTF_RETURN_OOS.json": "4bb5005c7a3487a179c2ba30af6dac70443537d929628081baf9992dd6e1170e",
+      "artifact_manifest_sha256.txt": "c227201be7b645cbe4b51ca263429a7f578aeb8657c6dc7432006491c4dca716"
+    },
+    "zip_integrity_pass": true,
+    "manifest_verification_pass": true,
+    "unexpected_member_count": 0
+  },
+  "identity_checks": {
+    "return_contract_sha256": "8c5cf65c7fcd8fbd6c6236fb15b77acd6828269a90f1b9161c016fabd23a2d4b",
+    "count_result_sha256": "d139955ce607b400c63c31de1f0e8d30269af28175932f0bcef2e9f4841e240a",
+    "canonical_mtf_report_sha256": "4d7f77caa5333e017742e01606aa869f3845aa4c4f206563e2fd59e02b1e1063",
+    "selected_candidates_exact": true,
+    "run_identity_exact": true,
+    "return_summary_arithmetic_pass": true,
+    "gate_decision_reproduced": true
+  },
+  "decisions": {
+    "EXP-P9-MTF-302": {
+      "decision": "REJECT_NO_THRESHOLD_OR_SUBSET_RESCUE",
+      "in_sample_mean_r": -0.1384168981,
+      "oos_mean_r": 0.0903906529,
+      "oos_profit_factor": 1.1100053237,
+      "oos_bootstrap_lower_mean_r": -0.2371380984,
+      "oos_positive_instruments": 4,
+      "oos_positive_quarters": 2,
+      "gate_pass": false
+    },
+    "EXP-P9-MTF-304": {
+      "decision": "REJECT_NO_THRESHOLD_OR_SUBSET_RESCUE",
+      "in_sample_mean_r": -0.1230096695,
+      "oos_mean_r": -0.105445562,
+      "oos_profit_factor": 0.9120453609,
+      "oos_bootstrap_lower_mean_r": -0.4688187438,
+      "oos_positive_instruments": 4,
+      "oos_positive_quarters": 1,
+      "gate_pass": false
+    }
+  },
+  "exploratory_edge_pass_candidates": [],
+  "custody_boundary": {
+    "trade_rows_in_artifact": false,
+    "price_values_in_artifact": false,
+    "signal_or_entry_timestamps_in_artifact": false,
+    "persistent_price_files_after_cleanup": 0,
+    "formal_phase9_authorization_effect": false
+  },
+  "next_action": "PREREGISTER_NEW_INDEPENDENT_PRICE_ONLY_MTF_HYPOTHESES_NO_RESCUE_OF_302_OR_304"
+}

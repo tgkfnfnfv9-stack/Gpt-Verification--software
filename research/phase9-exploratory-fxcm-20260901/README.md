@@ -134,3 +134,19 @@ Run #1 / attempt #1は全step success。Artifact `9828546981`（ZIP SHA-256
 
 OOS件数、completion、IS/OOS平均、bootstrap lower bound、Profit Factor、
 銘柄breadth、四半期breadthの全条件を満たした候補だけが次の新期間確認対象になる。
+
+## Blind MTF Return/OOS Run 33582968006
+
+Run #1 / attempt #1は全step success。Artifact `9829327227`（ZIP SHA-256
+`1b91f15f868aaaac845f39b7949a1aea8c776bdddc1242adf01023e9bfae7e33`）を
+独立検証し、exact 2 files、manifest一致、価格・trade row・timestamp保存0を確認した。
+
+| Candidate | 2017 mean R | 2018 OOS mean R | OOS PF | Bootstrap lower | Decision |
+|---|---:|---:|---:|---:|---|
+| EXP-P9-MTF-302 | -0.1384 | 0.0904 | 1.1100 | -0.2371 | REJECT |
+| EXP-P9-MTF-304 | -0.1230 | -0.1054 | 0.9120 | -0.4688 | REJECT |
+
+302はOOS平均だけが正でもIS、bootstrap、銘柄breadth、四半期breadthを通らず、
+304はIS/OOSとも負。edge PASSは0件。閾値、方向、銘柄、exit horizonを結果後に
+調整せず、両候補を不採用とする。次は302/304のrescueではなく、新しい独立仮説を
+結果を見る前に別specへ事前登録する。

@@ -1,7 +1,7 @@
 {
   "project": "auto-trading-research",
   "updated_at": "2026-09-02",
-  "phase": "PHASE9_EXPLORATORY_BLIND_MTF_RETURN_OOS_GATE_IMPLEMENTED_PENDING_MANUAL_RUN_FORMAL_ACQUISITION_BLOCKED",
+  "phase": "PHASE9_EXPLORATORY_BLIND_MTF_RETURN_OOS_COMPLETE_NO_EDGE_NEXT_INDEPENDENT_BATCH_PENDING",
   "phase8": {
     "formal_hypotheses_including_pa002": 16,
     "decision": "ALL_REJECT_FOR_DEVELOPMENT",
@@ -150,20 +150,28 @@
     "next_gate": "SEPARATE_RETURN_OOS_GATE_FOR_FREQUENCY_PASSERS_ONLY"
   },
   "exploratory_blind_mtf_return_oos_gate": {
-    "status": "IMPLEMENTED_PENDING_EXACT_MANUAL_SINGLE_USE_APPROVAL",
+    "status": "RUN_33582968006_SUCCESS_INDEPENDENT_AUDIT_PASS_NO_EDGE_CANDIDATE",
     "formal_phase9_authorization_effect": false,
     "workflow": ".github/workflows/phase9-exploratory-fxcm-blind-mtf-return-oos.yml",
     "contract": "../phase9-exploratory-fxcm-20260901/spec/fxcm_blind_mtf_return_oos_v1.frozen.json",
     "selected_candidates": ["EXP-P9-MTF-302", "EXP-P9-MTF-304"],
     "confirmation": "RUN_EXPLORATORY_FXCM_BLIND_MTF_RETURN_OOS_2017_2018_V1",
     "usage_confirmation": "I_CONFIRM_PERSONAL_NONCOMMERCIAL_USE_AND_ACCEPT_FXCM_EULA",
-    "manual_single_use_run_number": 1,
+    "completed_run_id": 33582968006,
+    "completed_job_id": 100101002194,
+    "completed_artifact_id": 9829327227,
+    "artifact_zip_sha256": "1b91f15f868aaaac845f39b7949a1aea8c776bdddc1242adf01023e9bfae7e33",
     "split": {"in_sample": "2017", "out_of_sample": "2018"},
     "fixed_horizon_hours": 12,
     "spread_inclusive_bid_ask_execution": true,
-    "return_calculated": false,
-    "research_outcomes_calculated": false,
-    "next_gate": "SEPARATE_ROBUSTNESS_AND_NEW_PERIOD_CONFIRMATION_FOR_EDGE_PASSERS_ONLY"
+    "return_calculated": true,
+    "research_outcomes_calculated": true,
+    "results": {
+      "EXP-P9-MTF-302": {"is_mean_r": -0.1384168981, "oos_mean_r": 0.0903906529, "oos_profit_factor": 1.1100053237, "pass": false},
+      "EXP-P9-MTF-304": {"is_mean_r": -0.1230096695, "oos_mean_r": -0.105445562, "oos_profit_factor": 0.9120453609, "pass": false}
+    },
+    "exploratory_edge_pass_candidates": [],
+    "next_gate": "NEW_INDEPENDENT_PRICE_ONLY_MTF_HYPOTHESIS_BATCH_NO_RESCUE"
   },
   "provider_acquisition": {
     "status": "ACTUAL_FULL_QC_CONTRACT_FROZEN_PROVIDER_SCHEDULE_SOURCE_P0_BLOCKED",

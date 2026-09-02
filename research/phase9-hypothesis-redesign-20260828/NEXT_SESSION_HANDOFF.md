@@ -38,7 +38,10 @@ Actual Full-QC実装基準: `9eb7ce667bea8e76a7f9bb1f2d378eebd8957206`
   Outcomeは未計算。
 - 次の単一作業は302/304だけの別Return/OOS workflow Run #1。2017 IS / 2018 OOS、
   spread込み12時間固定return、date-cluster bootstrap、多重検定補正を結果閲覧前に
-  `spec/fxcm_blind_mtf_return_oos_v1.frozen.json`へ固定済み。
+  `spec/fxcm_blind_mtf_return_oos_v1.frozen.json`へ固定し、Run `33582968006`で実行済み。
+- 302はIS mean R -0.1384、OOS +0.0904だがbootstrap lower -0.2371で不通過。
+  304はIS -0.1230、OOS -0.1054で不通過。edge PASSは0件。両候補は救済せず不採用。
+  次は新しい独立価格MTF仮説を別batchとして結果未閲覧で事前登録する。
 
 ## 1. この引継ぎの結論
 
@@ -71,7 +74,9 @@ Exploratory FX8 MTF 64系列
 新規4仮説 Blind MTF Count-only
   ↓ PASS 2件（302 / 304）、FAIL 2件（301 / 303）
 302 / 304 Return-OOS
-  ↓ NEXT: manual single-use Run #1
+  ↓ FAIL 2件、edge PASS 0件、救済なし
+新しい独立MTF仮説batch
+  ↓ NEXT: preregister before Count
 Provider schedule source readiness
   ↓ P0 BLOCKED（公式version付き完全履歴source未固定）
 Metadata-only JForex amendment / static Gate
@@ -137,6 +142,7 @@ Provider schedule inventory / allowlist
 46. `research/phase9-exploratory-fxcm-20260901/spec/fxcm_blind_mtf_return_oos_v1.frozen.json`
 47. `research/phase9-exploratory-fxcm-20260901/runner/fxcm_blind_mtf_return_oos.py`
 48. `.github/workflows/phase9-exploratory-fxcm-blind-mtf-return-oos.yml`
+49. `research/phase9-exploratory-fxcm-20260901/results/run-33582968006/BLIND_MTF_RETURN_OOS_INDEPENDENT_AUDIT.json`
 
 凍結仕様の優先順位は、candidate registry、data requirements、preregistered policy。Markdown要約で凍結仕様を変更しない。
 
@@ -156,7 +162,7 @@ Provider schedule inventory / allowlist
 | MTF最終必要系列 | FX8 × M15/H1/H4/D1 × BID/ASK = 64系列 |
 | Actual Full-QC | 契約実装済み、実データでは未実行 |
 | Count-only | 既存7候補通過0件。新規4仮説は302/304の2件PASS |
-| Return検証・バックテスト | 未開始 |
+| Return検証・バックテスト | 302/304完了、両方不採用 |
 | 確認済みPhase 9優位性 | 0件 |
 | MT5 EA | 実装禁止 |
 | `acquisition_authorized` | `false` |
