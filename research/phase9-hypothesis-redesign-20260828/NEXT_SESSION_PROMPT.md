@@ -1,102 +1,124 @@
 # 次セッションへ送る文章
 
-以下をそのままコピーして、新しいセッションへ送る。
+以下のコードブロックを、そのまま新しいセッションへ送る。
 
 ```text
-GitHub Repository tgkfnfnfv9-stack/Gpt-Verification--software のPhase 9自動売買研究を引き継いでください。
+GitHub Repository `tgkfnfnfv9-stack/Gpt-Verification--software` のPhase 9自動売買研究を引き継いでください。
 
-最初に以下を完全に読んでください。
+最初にremote `main`を確認し、次のファイルを省略せず完全に読んでください。
 
-1. AGENTS.md
-2. research/phase9-hypothesis-redesign-20260828/NEXT_SESSION_HANDOFF.md
-3. research/phase9-hypothesis-redesign-20260828/PHASE9_OPERATIONS_GUIDE.md
-4. research/phase9-hypothesis-redesign-20260828/PHASE9_DATA_ACQUISITION_VALIDATION_RUNBOOK.md
-5. research/phase9-hypothesis-redesign-20260828/POLICY_INCIDENT_20260829.md
-6. research/phase9-hypothesis-redesign-20260828/POLICY_INCIDENT_20260830.md
-7. research/phase9-hypothesis-redesign-20260828/PROVIDER_ACQUISITION_BLOCKER.md
-8. research/phase9-hypothesis-redesign-20260828/JFOREX_SOURCE_CHANNEL_AMENDMENT.md
-9. research/phase9-hypothesis-redesign-20260828/JFOREX_METADATA_ONLY_CONNECTION_AMENDMENT.md
-10. research/phase9-hypothesis-redesign-20260828/SESSION_STATE.json
-11. research/phase9-hypothesis-redesign-20260828/DESIGN_DECISIONS.md
-12. research/phase9-hypothesis-redesign-20260828/HYPOTHESIS_PORTFOLIO_FINAL.md
-13. research/phase9-hypothesis-redesign-20260828/spec/candidate_registry.frozen.json
-14. research/phase9-hypothesis-redesign-20260828/spec/data_requirements.frozen.json
-15. research/phase9-hypothesis-redesign-20260828/policy/preregistered_research_policy.json
-16. research/phase9-hypothesis-redesign-20260828/runner/phase9_actual_full_qc.py
-17. research/phase9-hypothesis-redesign-20260828/spec/provider_schedule_contract.frozen.json
-18. research/phase9-hypothesis-redesign-20260828/spec/metadata_only_jforex_schedule_gate.frozen.json
-19. research/phase9-hypothesis-redesign-20260828/spec/metadata_only_local_m1_gate.frozen.json
-20. research/phase9-hypothesis-redesign-20260828/spec/metadata_owned_method_allowlist.frozen.json
-21. research/phase9-hypothesis-redesign-20260828/JFOREX_REMOTE_JNLP_OBSERVATION_AMENDMENT.md
-22. research/phase9-hypothesis-redesign-20260828/spec/remote_jnlp_observation_amendment.frozen.json
-23. research/phase9-hypothesis-redesign-20260828/spec/remote_jnlp_initial_observation_gate.frozen.json
-24. research/phase9-hypothesis-redesign-20260828/results/remote-jnlp-run-33500446289/REMOTE_JNLP_INDEPENDENT_AUDIT.json
-25. research/phase9-hypothesis-redesign-20260828/spec/remote_jnlp_observed_url_allowlist.frozen.json
-26. research/phase9-hypothesis-redesign-20260828/runner/verify_phase9_remote_jnlp_independent_audit.py
-27. research/phase9-exploratory-fxcm-20260901/README.md
-28. research/phase9-exploratory-fxcm-20260901/MULTI_TIMEFRAME_DATA_PLAN.md
-29. research/phase9-exploratory-fxcm-20260901/spec/fxcm_multitimeframe_data_requirements.frozen.json
-30. research/phase9-exploratory-fxcm-20260901/results/run-33482595275/FXCM_CANONICAL_ALLOWLIST.json
+1. `AGENTS.md`
+2. `research/phase9-hypothesis-redesign-20260828/NEXT_SESSION_HANDOFF.md`
+3. `research/phase9-hypothesis-redesign-20260828/SESSION_STATE.json`
+4. `research/phase9-exploratory-fxcm-20260901/README.md`
+5. `research/phase9-exploratory-fxcm-20260901/MULTI_TIMEFRAME_DATA_PLAN.md`
+6. `research/phase9-exploratory-fxcm-20260901/spec/fxcm_blind_mtf_candidates_v1.frozen.json`
+7. `research/phase9-exploratory-fxcm-20260901/results/run-33580789080/BLIND_MTF_COUNT_INDEPENDENT_AUDIT.json`
+8. `research/phase9-exploratory-fxcm-20260901/results/run-33582968006/BLIND_MTF_RETURN_OOS_INDEPENDENT_AUDIT.json`
+9. `research/phase9-exploratory-fxcm-20260901/spec/fxcm_blind_mtf_candidates_v2.frozen.json`
+10. `research/phase9-exploratory-fxcm-20260901/results/run-33585508306/BLIND_MTF_BATCH2_COUNT_ONLY_INDEPENDENT_AUDIT.json`
+11. `research/phase9-exploratory-fxcm-20260901/spec/fxcm_blind_mtf_batch2_return_oos_v1.frozen.json`
+12. `research/phase9-exploratory-fxcm-20260901/results/run-33587536789/BLIND_MTF_BATCH2_RETURN_OOS_INDEPENDENT_AUDIT.json`
 
-8つの論理役割A0〜A7を使用してください。同時実行上限が7なら2波に分け、サブエージェントはread-only監査、主担当だけがGitHubへCommitしてください。作業前後にremote mainを確認し、force push、reset --hard、ユーザー変更の破棄、git add .、git add -Aは禁止です。
+作業開始時点の基準remote commitは`6c7be3c06e69d9b758189ebcbaf281016e639468`です。ただし、必ず最新remote `main`を再確認してください。
 
-Actual Full-QC実装基準は9eb7ce667bea8e76a7f9bb1f2d378eebd8957206です。現在のremote mainには、その後の引継ぎ文書Commitも含まれるため、作業開始時に最新remote mainを確認してください。
+## 最終目的
 
-現在はFormal alpha 11件＋Risk overlay 1件、全12確認項目がUNTESTED_PREREGISTEREDです。Phase 9価格ファイル0件、確認済み優位性0件です。Actual Full-QC契約は実装済みですが、実データでは未実行です。Count-only、Return検証、バックテストは未開始です。
+GPT側で複数銘柄・複数時間足の実データを使い、結果後の条件調整に頼らない本物の優位性を見つけることです。優位性が未見OOS・新期間・頑健性確認を通過した場合だけMT5化し、その後にGPT判断＋自動売買へ進みます。
 
-完了済み:
+データ取得や監査を無限に続けること自体が目的ではありません。Formal provider/JForex blockerは別trackとして保持し、Exploratory FXCMによる優位性探索を止めないでください。
 
-- S1B Gate A Run 33376110507: completed/success
-- Gate B native exact allowlist: PASS、取得認可効果なし
-- Gate C2 runtime mapping exact allowlist: PASS、取得認可効果なし
-- Gate C3 Run 33455444958 / Job 99694321791 / Artifact 9781258311: completed/success
-- Gate C3 ZIP SHA-256: 4cee963b9c3ffa7bb88bec5287a36de82ec4197c8c7e7e2277ea313acd4970c8
-- Actual Full-QC contract Run 33459534741 / Job 99706597775 / Artifact 9782660195: completed/success
-- Actual Full-QC contract ZIP SHA-256: af4d807d725c0a6207e19d3fbadc0157603bb8cd40474545564012938c59f4d5
-- Full-QC tests 131 PASS、A6/A7 P0/P1なし
-- Remote JNLP initial identity observation Run 33500446289 / Job 99832303024 / Artifact 9797466074: completed/success
-- Remote observation implementation Commit: aa9d46a6a42936042a406bdf339f07d378cc79b7
-- Artifact ZIP SHA-256: 5a0339a026ea2ac0a7382b3ad7e0510a303609ab8817d55a268b55108415b8d2
-- exact initial URLへのunauthenticated GET 1回だけを実施。HTTP 200、2445 bytes、body SHA-256 4e5adcbb29116e7f17b3babfc4aa47590d06baca50a98745d300d4824a1a70e9
-- redirect、recursive resource、Credential、JForex connect、availability、provider schedule、price、禁止期間、Outcomeへのアクセスなし
-- Run/Job/Artifact/head/ZIPは独立監査済み。観測5 exact URLは元Runとは別Commitでevidence-only allowlistとして凍結済み
-- 単一使用認可は消費済み。rerun/replay/follow-up URL requestは未認可
-- Exploratory FXCM Run 33482595275 / Job 99775327873 / Artifact 9790552032: completed/success
-- FX8 direct H1 BID/ASK、2017–2018、832 source objects、98,910 barsを取得・QC済み
-- 使用可能97,644 bars、ASK Open < BID Open 1,266 barsは価格変更せずBID/ASK両方を隔離
-- raw価格はsame-run cleanup済み。Git/Artifactには価格を保存していない
-- MTF必要範囲はFX8 × M15/H1/H4/D1 × BID/ASK = 64系列
-- direct m1/H1を取得し、m1→M15、H1→H4/D1を完全UTC bucketだけで生成する要件を凍結済み
-- acquisition_authorized=false
-- count_only_authorized=false
-- research_outcomes_calculated=false
+## 取得・QC済みデータ
 
-現在の優先課題は、H1だけで止まっているFXCM exploratory trackをマルチタイムフレーム化することです。Formal provider schedule/JForex blockerの追加監査は後回しにしてください。
+- Provider: FXCM CandleData（個人・非商用利用）
+- 対象: `AUDJPY, AUDUSD, EURGBP, EURJPY, EURUSD, GBPJPY, GBPUSD, USDJPY`
+- 期間: 2017-01-01 inclusive ～ 2018-12-31 exclusive
+- direct取得: M1/H1 BID/ASK
+- 生成: M1→M15、H1→H4/D1
+- 完全UTC bucketのみ使用。不完全bucketはdrop/count。Forward Fill禁止
+- 最終構成: FX8 × M15/H1/H4/D1 × BID/ASK = 64系列
+- MTF QC Run: `33508634314`、完了・成功
+- 価格データは各Run内でcleanup済み。Git/Artifactへ永続保存していない
 
-次の単一作業は、`fxcm_multitimeframe_data_requirements.frozen.json`に完全一致するFX8 m1/H1取得＋M15/H4/D1生成＋QC workflowを実装し、1回実行することです。対象は8通貨ペア、2017-01-01 inclusive～2018-12-31 exclusive、direct m1/H1、BID/ASKです。最終64系列を作ります。
+## 完了済み探索
 
-MTFの役割はD1=regime、H4=structure/pullback/range、H1=setup、M15=entry timingです。m1→M15は15本、H1→H4は4本、H1→D1は24本の完全UTC bucketだけを使い、不完全bucketはdrop/count、Forward Fillは禁止します。m1由来H1はdirect H1とのQC照合専用です。
+### Blind MTF Batch 1
 
-取得/QC Runではsignal count、Return、Return符号、MFE、MAE、Edge、勝敗、勝率、Profit Factor、Drawdown、累積R、P値、信頼区間、順位、Outcome chartを計算しないでください。MTF 64系列QC完了後に別GateでCount-only、その完了後にReturn/OOS検証へ進みます。
+- 301: Count 166、REJECT
+- 302: Count 455、Count PASS → Return/OOS REJECT
+- 303: Count 92、REJECT
+- 304: Count 494、Count PASS → Return/OOS REJECT
 
-公式`getOfflineTimeDomains`はweekend intervalsしか保証せず、holiday、maintenance、Energy daily session、歴史的session-rule変更、provider schedule versionの完全性は未証明です。SDK内部のmarket bytes受信・cache persistenceも`UNPROVEN`です。これらをfalseまたはcompleteと自己申告しないでください。前提証明が揃うまでmanual connection workflowをdispatchせず、24 schedule files、inventory、allowlistを作らないでください。
+Return/OOS Run `33582968006`:
 
-P0解消後にのみ、provider schedule inventoryを価格データとは独立して正式取得し、Run ID、head SHA、Artifact ID、Artifact ZIP SHA、provider/version、UTC/BAR_OPEN、24 schedule fileのpath/SHA/count/first/last、aggregate SHAを監査した後、別Commitでcanonical exact-match allowlistを凍結してください。
+- 302: IS mean R `-0.1384168981`、OOS mean R `0.0903906529`、OOS PF `1.1100053237`、bootstrap lower `-0.2371380984`
+- 304: IS mean R `-0.1230096695`、OOS mean R `-0.105445562`、OOS PF `0.9120453609`、bootstrap lower `-0.4688187438`
+- edge PASS 0件
 
-同一Runのinventoryで自己認可しないでください。Canonical path、Git strict ancestor、freeze parent、Git object byte一致、tracked/unmodifiedをfail-closedで検証してください。この作業だけでacquisition_authorized=trueに変更しないでください。
+### Blind MTF Batch 2
 
-FXCM無料CandleDataにないXAUUSD、XAGUSD、BRENTCMDUSD、LIGHTCMDUSD、tick volumeはFX8 MTF trackへ混ぜないでください。別provider/別trackとして後で固定します。Formal Phase 9のprovider schedule、Energy metadata、remote runtime closure、実API互換性、cache/custody blockerも未解決のままです。
+- 305: Count 441、Count PASS → Return/OOS REJECT
+- 306: Count 51、REJECT
+- 307: Count 52、REJECT
+- 308: Count 260、REJECT
 
-将来の正式取得範囲:
+Count Run `33585508306`、Return/OOS Recovery Run `33587536789`は完了・成功。
 
-- 12銘柄 × M15/H1 × BID/ASK = 48系列
-- M15: 2013-01-01 inclusiveから2019-08-28 exclusive
-- H1: 2013-01-01 inclusiveから2019-08-01 exclusive
-- H4/D1はcanonical H1から完全UTC bucketだけを派生
-- 欠損は記録し、Forward Fill、期間延長、H1 tailの復活は禁止
-- Raw市場CSV、cache、資格情報をGitや公開Artifactへ保存しない
+305 Return/OOS:
 
-Count-only完了前はReturn、Return符号、MFE、MAE、Edge、勝敗、勝率、Profit Factor、Drawdown、累積R、P値、信頼区間、順位、Outcome chartを計算・表示・閲覧しないでください。Phase 9 JSONを既存Outcome viewerへ読み込まないでください。Development、OOS、Final Holdoutの先行照会・取得、旧仮説の再最適化、結果を見た銘柄・時間足選択、MT5 EA実装は禁止です。
+- completed outcomes: 420/441
+- 2017 IS mean R: `-0.1628590969`
+- 2018 OOS mean R: `-0.3253655373`
+- OOS PF: `0.7470933829`
+- 累積3候補Bonferroni補正済みbootstrap lower: `-0.7277185378`
+- OOS positive instruments: 4/8
+- OOS positive quarters: 0/4
+- edge PASS: false
 
-実装、Tests、A7 red-team、GitHubへのatomic Commit、remote head・Actions監査まで進め、Commit SHA、変更ファイル、残Blocker、価格アクセス、禁止期間アクセス、Outcome未計算を報告してください。
+初回Return workflowのRun `33587087527`はcheckout中cancel、重複Run `33587087557`はskip。両方とも取得・Return・Outcome・Artifact 0であることを監査済みです。その後、統計仕様を変えずRecovery Run `33587536789`を実行しています。
+
+## 現在地
+
+- Outcome検定済み探索候補: 302、304、305の3件
+- 3件すべて正式に不採用
+- 確認済みExploratory edge: 0件
+- 301/303/306/307/308もCount Gate不通過で不採用
+- 失敗候補のthreshold、direction、symbol、timeframe、exit horizon変更による救済は禁止
+- MT5 EA実装はまだ禁止
+
+## 次の単一作業
+
+302/304/305の派生・微調整ではない、新しい独立mechanismの価格MTF仮説Batch 3を、Countを見る前に事前登録してください。
+
+最低条件:
+
+1. 既存301～308とのmechanism重複を明示的に検査する
+2. 仮説、方向、対象8銘柄、使用時間足、閾値、重複排除、Count Gateを結果閲覧前に凍結する
+3. Count-only専用workflowを実装する
+4. Count-only RunではReturn、Return符号、MFE、MAE、勝敗、勝率、PF、Drawdown、P値、信頼区間、順位、Outcomeを計算・表示しない
+5. Count通過候補だけを後続の別Return/OOS Gateへ進める
+6. 後続Return/OOSでは、既にOutcomeを検定した3候補も含む累積多重検定補正を必須とする
+7. 通過しない候補は救済しない
+
+新しいBatchは、少なくとも以下のように既存候補とは異なる独立mechanismを優先して検討してください。
+
+- 過伸展後の平均回帰
+- 失敗ブレイク後の反転
+- 時刻固定のsession効果。ただし301のAsia range break-retestとは重複させない
+- 複数通貨ペアの同時breadthを使うcross-pair確認
+
+候補数を増やすこと自体を目的にせず、経済的・市場構造上の理由を説明できる仮説だけを事前登録してください。
+
+## 厳守事項
+
+- 取得/QC → Count-only → Return/OOS → 新期間・頑健性 → MT5のGate順序を守る
+- 結果を見た後の閾値変更、銘柄限定、方向限定、exit変更は禁止
+- 価格CSV、cache、資格情報をGitや公開Artifactへ保存しない
+- `audit/`などユーザー所有の未追跡変更へ触れない
+- `git add .`、`git add -A`、force push、reset --hardは禁止
+- Commit対象を明示的にstageし、remote head・tree一致まで確認する
+- Formal Phase 9とExploratory FXCMを混同しない
+- Formal 12市場のprovider schedule、Energy metadata、JForex runtime closureは未解決の別track
+
+まず「何を新規仮説として選び、なぜ既存301～308と独立なのか」を短く示し、その後は事前登録、実装、Tests、GitHub公開まで止まらず進めてください。手動workflowが必要になった時点で、リンクと入力値をコピー可能な形で提示してください。
 ```

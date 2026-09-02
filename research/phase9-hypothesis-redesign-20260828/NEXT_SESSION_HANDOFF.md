@@ -187,7 +187,8 @@ Provider schedule inventory / allowlist
 | MT5 EA | 実装禁止 |
 | `acquisition_authorized` | `false` |
 | `count_only_authorized` | `false` |
-| `research_outcomes_calculated` | `false` |
+| Formal Phase 9 `research_outcomes_calculated` | `false` |
+| Exploratory FXCM Outcome検定 | 302/304/305の3件完了、全件不採用 |
 
 ## 4. 完了済み証跡
 
