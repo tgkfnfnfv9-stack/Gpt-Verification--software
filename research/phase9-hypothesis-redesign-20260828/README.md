@@ -57,7 +57,14 @@ availability、price、Count-only、Outcomeは未実行です。Artifact `982716
 `spec/remote_libs_jnlp_observed_url_allowlist.frozen.json`へ36 exact identityを
 request未認可のevidence-onlyとして凍結しました。
 
-Local M1は`runner/jforex-metadata`、`spec/metadata_owned_method_allowlist.frozen.json`、uplinkなしの独立client/server namespace＋exact `/32` host route＋Landlock/seccomp、専用private custodyとして実装しました。専用moduleは既存price acquirerを物理的に含まず、凍結local synthetic API fixtureでowned bytecodeのDukascopy method referenceをexact-matchします。これは実JForex API 2.13.99 JAR/runtime互換性の証明ではなく、その検証は残Blockerです。初期remote JNLP identity観測はRun `33500446289`で完了・独立監査済みで、初期URLの再実行は禁止されています。次のlibs JNLP観測は別workflowの完全一致手動確認が必要です。価格・schedule inventory・Outcomeは引き続き0/未計算です。
+ただし観測runtimeはclient `3.6.48` / API `2.13.98`で、正式channelに凍結した
+`3.6.51` / `2.13.99`とは一致しません。古い36 resourceの取得は研究を前進させず
+version混在を生むため停止しました。判断は
+`REMOTE_RUNTIME_VERSION_DECISION_20260902.md`に固定しています。探索側では、QC済み
+FXCM 64系列を再利用する価格のみの新規MTF仮説4件を結果未閲覧で事前登録し、
+Count-only専用Gateを実装しました。通過候補だけを別Return/OOS Gateへ進めます。
+
+Local M1は`runner/jforex-metadata`、`spec/metadata_owned_method_allowlist.frozen.json`、uplinkなしの独立client/server namespace＋exact `/32` host route＋Landlock/seccomp、専用private custodyとして実装しました。専用moduleは既存price acquirerを物理的に含まず、凍結local synthetic API fixtureでowned bytecodeのDukascopy method referenceをexact-matchします。これは実JForex API 2.13.99 JAR/runtime互換性の証明ではなく、その検証は残Blockerです。初期remote JNLP identity観測はRun `33500446289`、libs JNLP identity観測はRun `33577505327`で完了・独立監査済みで、両URLの再実行は禁止されています。Formal価格・schedule inventory・Outcomeは引き続き0/未計算です。
 
 `S1B_RUNTIME_QC_PREFLIGHT.md`のGate AはRun #2で完了しました。GitHub checkoutの一時token以外にDukascopy・市場資格情報は参照せず、116-JAR manifest、local synthetic JNLP parser、synthetic Full-QC primitivesを検査済みです。Gate Bは`data_manifest/native_entry_allowlist.run33376110507.json`へ別commitで凍結し、`runner/verify_phase9_gate_b.py`が保存済みRun 2 evidenceとの完全一致をfail-closedで検証します。Shaded runnerは未検査で、Gate B完了も実取得許可にはなりません。
 

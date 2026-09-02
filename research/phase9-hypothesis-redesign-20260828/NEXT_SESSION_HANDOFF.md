@@ -28,11 +28,22 @@ Actual Full-QC実装基準: `9eb7ce667bea8e76a7f9bb1f2d378eebd8957206`
   資格情報、JForex接続、resource/JAR、schedule、price、Count、Outcomeは0/未実行。
 - 36 exact URLは`spec/remote_libs_jnlp_observed_url_allowlist.frozen.json`へ
   evidence-onlyで凍結済み。どのURLもrequest未認可。
+- 観測JNLPはclient `3.6.48` / API `2.13.98`で、凍結済み正式channelの
+  client `3.6.51` / API `2.13.99`と不一致。古い36 resourceは取得せず、
+  `REMOTE_RUNTIME_VERSION_DECISION_20260902.md`に停止判断を固定した。
+- 優位性探索を再開するため、既存7候補の閾値を変更せず、新しい価格のみの
+  FX8 MTF仮説4件（EXP-P9-MTF-301〜304）を結果未閲覧で事前登録した。
+  次の単一作業は専用workflowのCount-only Run #1。Return、勝敗、MFE、MAE、
+  Edge、Outcomeは計算せず、frequency Gate通過候補だけを別Return/OOS Gateへ送る。
 
 ## 1. この引継ぎの結論
 
 Phase 9では、実価格データを受け入れて検査するActual Full-QC契約まで実装・監査済み。
-加えて、Exploratory FXCM Run `33482595275`でFX8・H1・2017–2018の実価格832 source objects／98,910 barsを取得・QCし、97,644 barsを使用可能、`ASK Open < BID Open` 1,266 barsを隔離した。ただしraw価格はsame-run cleanup済みで、M15/H4/D1は未生成のためMTF検証はまだ開始できない。次の優先作業はFXCM direct m1/H1を取得し、M15/H4/D1を完全bucketだけから生成して64系列をQCすることである。Formal provider scheduleと金銀・Energyのblockerは別に残る。
+Exploratory FXCMではRun `33508634314`でdirect m1/H1取得、M15/H4/D1生成、
+FX8 × 4時間足 × BID/ASKの64系列QCまで完了した。既存7候補のCount-onlyは
+Return Gate通過0件で、Return/Outcomeは未計算。現在は、結果を見る前に固定した
+新しい独立MTF仮説4件のCount-only Gateを実行する段階である。Formal provider
+scheduleと金銀・Energyのblockerは別trackに残し、探索を遅らせない。
 
 ```text
 Phase 9仮説凍結
@@ -50,7 +61,11 @@ Actual 48-series Full-QC契約
 Exploratory FXCM FX8 H1実価格
   ↓ Run 33482595275 PASS（98,910 bars、1,266 crossed rows隔離）
 Exploratory FX8 MTF 64系列
-  ↓ NEXT: direct m1/H1取得 → M15/H4/D1生成 → QC
+  ↓ PASS（Run 33508634314、価格cleanup済み）
+既存7候補 Count-only
+  ↓ 完了、Return Gate通過0件、Outcome未計算
+新規4仮説 Blind MTF Count-only
+  ↓ NEXT: manual single-use Run #1
 Provider schedule source readiness
   ↓ P0 BLOCKED（公式version付き完全履歴source未固定）
 Metadata-only JForex amendment / static Gate
@@ -108,6 +123,10 @@ Provider schedule inventory / allowlist
 38. `research/phase9-exploratory-fxcm-20260901/MULTI_TIMEFRAME_DATA_PLAN.md`
 39. `research/phase9-exploratory-fxcm-20260901/spec/fxcm_multitimeframe_data_requirements.frozen.json`
 40. `research/phase9-exploratory-fxcm-20260901/results/run-33482595275/FXCM_CANONICAL_ALLOWLIST.json`
+41. `research/phase9-hypothesis-redesign-20260828/REMOTE_RUNTIME_VERSION_DECISION_20260902.md`
+42. `research/phase9-exploratory-fxcm-20260901/spec/fxcm_blind_mtf_candidates_v1.frozen.json`
+43. `research/phase9-exploratory-fxcm-20260901/runner/fxcm_blind_mtf_count_only.py`
+44. `.github/workflows/phase9-exploratory-fxcm-blind-mtf-count-only.yml`
 
 凍結仕様の優先順位は、candidate registry、data requirements、preregistered policy。Markdown要約で凍結仕様を変更しない。
 
@@ -123,10 +142,10 @@ Provider schedule inventory / allowlist
 | Phase 9価格ファイル | 0件 |
 | Exploratory FXCM取得 | FX8・H1・2017–2018、98,910 bars取得済み |
 | Exploratory FXCM使用可能 | 97,644 bars、crossed quote 1,266 bars隔離 |
-| MTF時間足 | H1のみ取得済み。m1/M15/H4/D1は未取得・未生成 |
+| MTF時間足 | direct m1/H1取得済み、M15/H4/D1生成済み |
 | MTF最終必要系列 | FX8 × M15/H1/H4/D1 × BID/ASK = 64系列 |
 | Actual Full-QC | 契約実装済み、実データでは未実行 |
-| Count-only | 未開始 |
+| Count-only | 既存7候補完了・通過0件。新規4仮説は実装済み・Run待ち |
 | Return検証・バックテスト | 未開始 |
 | 確認済みPhase 9優位性 | 0件 |
 | MT5 EA | 実装禁止 |

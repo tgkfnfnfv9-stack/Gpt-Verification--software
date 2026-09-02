@@ -1,0 +1,113 @@
+{
+  "schema_version": "phase9-exploratory-fxcm-blind-mtf-candidates-v1.0.0",
+  "status": "FROZEN_BEFORE_FIRST_SIGNAL_COUNT_NO_OUTCOME_EVER_VIEWED",
+  "recorded_at_utc": "2026-09-02T01:10:00Z",
+  "track": "EXPLORATORY_FX8_BLIND_MTF_PRICE_ONLY_NOT_FORMAL_PHASE9",
+  "purpose": "Test four new independently specified price-only MTF mechanisms on the existing FX8 dataset without volume, metals, energy or outcome access.",
+  "design_boundary": {
+    "prior_information_used": [
+      "existing data availability and QC",
+      "prior candidate Count-only coverage results",
+      "no prior or current Return, MFE, MAE, win/loss, edge or Outcome"
+    ],
+    "prior_count_results_may_not_select_instruments_or_directions": true,
+    "all_eight_fx_pairs_required": true,
+    "threshold_change_after_count": false,
+    "replacement_or_rescue_of_formal_phase9": false,
+    "formal_authorization_effect": false
+  },
+  "anchors": {
+    "base_count_utility_sha256": "2991575f471c19de35d04ae21d276cc25d52d9fb705587a8259f70d43639cdad",
+    "mtf_qc_runner_sha256": "09da37be5955dcf142752d70dc21542f21e5ea71835c7f1073e68f52585971cd",
+    "count_entry_gate_sha256": "1080a9674b80ebd99e88d1d3c3f54e9fa36b5f02d5b1d51346e8ce42ca9c88e6",
+    "canonical_mtf_report_sha256": "4d7f77caa5333e017742e01606aa869f3845aa4c4f206563e2fd59e02b1e1063"
+  },
+  "dataset": {
+    "symbols": ["AUDJPY", "AUDUSD", "EURGBP", "EURJPY", "EURUSD", "GBPJPY", "GBPUSD", "USDJPY"],
+    "start_inclusive": "2017-01-01T00:00:00Z",
+    "end_exclusive": "2018-12-31T00:00:00Z",
+    "available_timeframes": ["M15", "H1", "H4", "D1"],
+    "feature_price": "FIELDWISE_ARITHMETIC_MID_OF_SYNCHRONIZED_BID_AND_ASK_OHLC",
+    "volume_used": false,
+    "forward_fill_or_interpolation": false,
+    "persistent_prices": false
+  },
+  "common_rules": {
+    "timestamps": "UTC_BAR_OPEN",
+    "higher_timeframe_available_only_after_bucket_end": true,
+    "atr14": "MEAN_TRUE_RANGE_OF_14_BARS_ENDING_IMMEDIATELY_BEFORE_EVENT_BAR",
+    "ema": "RECURSIVE_ALPHA_2_OVER_PERIOD_PLUS_1_SEEDED_WITH_FIRST_CLOSE",
+    "entry": "NEXT_OBSERVED_BAR_OPEN_NO_LATER_THAN_TWO_NOMINAL_DURATIONS_AFTER_FINAL_CONFIRMATION_CLOSE",
+    "overlap": "SAME_CANDIDATE_INSTRUMENT_DIRECTION_KEEP_EARLIEST_THEN_DROP_ENTRIES_WITHIN_12_REAL_HOURS",
+    "episode": "CANDIDATE_PLUS_UTC_SIGNAL_DATE_PLUS_DIRECTION_KEEP_EARLIEST",
+    "signal_timestamp_or_price_in_artifact": false,
+    "forward_outcome_access": false
+  },
+  "candidates": {
+    "EXP-P9-MTF-301": {
+      "name": "Asia Range Break-Retest With H4 Bias",
+      "mechanism": "Session inventory accumulated during 00:00-06:00 UTC continues when a later directional break retests the fixed range while the latest completed H4 EMA slope agrees.",
+      "signal_timeframe": "M15",
+      "higher_timeframe": "H4",
+      "range_slots_utc": [0, 1, 2, 3, 4, 5],
+      "break_window_utc_start_inclusive": 7,
+      "break_window_utc_end_exclusive": 12,
+      "break_selection": "EARLIEST_DIRECTIONALLY_ELIGIBLE_BREAK_PER_UTC_DATE_ONLY",
+      "h4_ema_period": 20,
+      "h4_slope_bars": 5,
+      "h4_slope_atr_min": 0.10,
+      "break_distance_atr_min": 0.10,
+      "break_body_ratio_min": 0.50,
+      "retest_bars_max": 4,
+      "retest_boundary_distance_atr_max": 0.20,
+      "retest_close_location_min": 0.60,
+      "frequency_gate": {"episodes_min": 300, "active_dates_min": 180, "instruments_min_20": 6, "max_instrument_share": 0.25, "each_year_share_min": 0.30}
+    },
+    "EXP-P9-MTF-302": {
+      "name": "H4 Liquidity Sweep With H1 Midpoint Rejection",
+      "mechanism": "A wick through a prior H4 extreme reverses when H4 closes back inside and a subsequent H1 bar crosses the sweep midpoint without a new meaningful extreme.",
+      "signal_timeframe": "H1",
+      "event_timeframe": "H4",
+      "boundary_lookback": 20,
+      "sweep_distance_atr_min": 0.10,
+      "terminal_wick_ratio_min": 0.40,
+      "h1_confirmation_bars_max": 3,
+      "new_extreme_atr_max": 0.10,
+      "confirmation_body_ratio_min": 0.40,
+      "frequency_gate": {"episodes_min": 250, "active_dates_min": 150, "instruments_min_20": 6, "max_instrument_share": 0.25, "each_year_share_min": 0.30}
+    },
+    "EXP-P9-MTF-303": {
+      "name": "D1 Inside Compression H4 Expansion",
+      "mechanism": "A completed D1 inside bar with below-normal range releases directional energy when H4 closes beyond its boundary with a large directional body.",
+      "signal_timeframe": "H4",
+      "event_timeframe": "D1",
+      "inside_range_atr_max": 0.80,
+      "break_distance_h4_atr_min": 0.10,
+      "break_range_h4_atr_min": 1.20,
+      "break_body_ratio_min": 0.55,
+      "h4_bars_after_d1_max": 6,
+      "frequency_gate": {"episodes_min": 180, "active_dates_min": 120, "instruments_min_15": 6, "max_instrument_share": 0.25, "each_year_share_min": 0.30}
+    },
+    "EXP-P9-MTF-304": {
+      "name": "D1-H4 Aligned H1 Impulse Continuation",
+      "mechanism": "A fresh H1 impulse continues when completed D1 and H4 directional states agree and the impulse breaks a short boundary with strong body but non-extreme range.",
+      "signal_timeframe": "H1",
+      "higher_timeframes": ["D1", "H4"],
+      "d1_change_bars": 20,
+      "d1_change_atr_min": 1.00,
+      "h4_ema_periods": [20, 50],
+      "h1_boundary_lookback": 8,
+      "h1_break_distance_atr_min": 0.05,
+      "h1_range_atr_min": 0.80,
+      "h1_range_atr_max": 1.80,
+      "h1_body_ratio_min": 0.60,
+      "frequency_gate": {"episodes_min": 400, "active_dates_min": 220, "instruments_min_30": 6, "max_instrument_share": 0.25, "each_year_share_min": 0.30}
+    }
+  },
+  "next_gate": {
+    "count_only_first": true,
+    "return_gate_only_for_frequency_passers": true,
+    "return_and_oos_in_count_run": false,
+    "outcome_fields": []
+  }
+}

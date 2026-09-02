@@ -87,3 +87,21 @@ H1だけではマルチタイムフレーム研究に不足するため、次の
 次のRunは取得・集約・QCだけに限定する。Count-only、signal、Return、
 Outcomeは自動的に続けない。金銀・EnergyはFXCM無料CandleDataの範囲外
 なので、FX8 MTF trackと混ぜず、別provider/別trackで扱う。
+
+## Blind MTF Count-only V1
+
+既存7候補はFX8 subsetのCount-onlyでReturn Gate通過0件だった。Returnや
+Outcomeは一度も計算していない。この状態で、既存候補の閾値を調整せず、
+価格だけで成立する新しい独立MTF仮説4件を
+`spec/fxcm_blind_mtf_candidates_v1.frozen.json`へ結果未閲覧で事前登録した。
+
+- `EXP-P9-MTF-301`: Asia range break-retest + H4 bias
+- `EXP-P9-MTF-302`: H4 liquidity sweep + H1 midpoint rejection
+- `EXP-P9-MTF-303`: D1 inside compression + H4 expansion
+- `EXP-P9-MTF-304`: D1/H4 alignment + H1 impulse continuation
+
+`.github/workflows/phase9-exploratory-fxcm-blind-mtf-count-only.yml`は、既存の
+canonical 64-series identityに一致するデータを一時領域へ再取得し、4候補の
+signal/episode件数、期間・銘柄・方向の分布だけを計算する。価格はArtifact前に
+破棄する。Return、勝敗、MFE、MAE、Edge、P値、順位、Outcomeは計算しない。
+frequency Gate通過候補だけが、後続の別Return/OOS Gate対象になる。

@@ -1,0 +1,163 @@
+name: phase9-exploratory-fxcm-blind-mtf-count-only
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirmation:
+        description: 'Type RUN_EXPLORATORY_FXCM_BLIND_MTF_COUNT_ONLY_2017_2018_V1'
+        required: true
+        type: string
+      usage_confirmation:
+        description: 'Type I_CONFIRM_PERSONAL_NONCOMMERCIAL_USE_AND_ACCEPT_FXCM_EULA'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: phase9-exploratory-fxcm-blind-mtf-count-only-single-use
+  cancel-in-progress: false
+
+jobs:
+  count-only:
+    if: >-
+      ${{ github.repository == 'tgkfnfnfv9-stack/Gpt-Verification--software' &&
+          github.event_name == 'workflow_dispatch' &&
+          github.ref == 'refs/heads/main' &&
+          inputs.confirmation == 'RUN_EXPLORATORY_FXCM_BLIND_MTF_COUNT_ONLY_2017_2018_V1' &&
+          inputs.usage_confirmation == 'I_CONFIRM_PERSONAL_NONCOMMERCIAL_USE_AND_ACCEPT_FXCM_EULA' &&
+          github.run_number == 1 &&
+          github.run_attempt == 1 }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 240
+    steps:
+      - name: Checkout exact dispatch commit
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+          ref: ${{ github.sha }}
+
+      - name: Verify blind preregistration and price-free boundary
+        shell: bash
+        run: |
+          set -euo pipefail
+          track='research/phase9-exploratory-fxcm-20260901'
+          test "$GITHUB_RUN_NUMBER" = '1'
+          test "$GITHUB_RUN_ATTEMPT" = '1'
+          contract_sha="$(sha256sum "$track/spec/fxcm_blind_mtf_candidates_v1.frozen.json" | cut -d' ' -f1)"
+          runner_sha="$(sha256sum "$track/runner/fxcm_blind_mtf_count_only.py" | cut -d' ' -f1)"
+          test "$contract_sha" = '8d832dbf779098d00c731d87547b30ed6944ee2c227d505e540ea95a7efaa1e3'
+          test "$runner_sha" = '71e5f7a1cf6ea4a4566f7c6bc2d60463ec121a9e4ad33f54c8bd61cbceb1f323'
+          PYTHONDONTWRITEBYTECODE=1 python -m unittest discover -s "$track/tests" -p 'test_*.py'
+          test -z "$(git status --porcelain)"
+
+      - name: Reacquire and reconstruct canonical ephemeral 64-series MTF data
+        id: acquire
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          track='research/phase9-exploratory-fxcm-20260901'
+          work="$RUNNER_TEMP/phase9-blind-mtf-work-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          mtf_report="$RUNNER_TEMP/phase9-blind-mtf-qc-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          count_report="$RUNNER_TEMP/phase9-blind-mtf-count-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          echo "PHASE9_BLIND_MTF_WORK=$work" >> "$GITHUB_ENV"
+          echo "PHASE9_BLIND_MTF_QC=$mtf_report" >> "$GITHUB_ENV"
+          echo "PHASE9_BLIND_MTF_COUNT=$count_report" >> "$GITHUB_ENV"
+          command=(
+            python "$track/runner/fxcm_multitimeframe_qc.py"
+            --confirmation RUN_EXPLORATORY_FXCM_FX8_MTF_2017_2018_QC_ONLY_V1
+            --usage-confirmation I_CONFIRM_PERSONAL_NONCOMMERCIAL_USE_AND_ACCEPT_FXCM_EULA
+            --contract "$track/spec/fxcm_multitimeframe_data_requirements.frozen.json"
+            --execution-contract "$track/spec/fxcm_multitimeframe_execution_contract.frozen.json"
+            --prior-h1-inventory "$track/results/run-33482595275/artifact/EXPLORATORY_FXCM_INVENTORY.json"
+            --work-dir "$work"
+            --report-dir "$mtf_report"
+          )
+          "${command[@]}"
+          test -z "$(git status --porcelain)"
+
+      - name: Calculate four blind MTF candidate counts only
+        shell: bash
+        run: |
+          set -euo pipefail
+          track='research/phase9-exploratory-fxcm-20260901'
+          command=(
+            python "$track/runner/fxcm_blind_mtf_count_only.py"
+            --confirmation RUN_EXPLORATORY_FXCM_BLIND_MTF_COUNT_ONLY_2017_2018_V1
+            --usage-confirmation I_CONFIRM_PERSONAL_NONCOMMERCIAL_USE_AND_ACCEPT_FXCM_EULA
+            --contract "$track/spec/fxcm_blind_mtf_candidates_v1.frozen.json"
+            --current-mtf-report "$PHASE9_BLIND_MTF_QC/EXPLORATORY_FXCM_MTF_QC.json"
+            --work-dir "$PHASE9_BLIND_MTF_WORK"
+            --report-dir "$PHASE9_BLIND_MTF_COUNT"
+          )
+          "${command[@]}"
+          test -z "$(git status --porcelain)"
+
+      - name: Destroy all working prices before upload
+        if: ${{ always() && steps.acquire.outcome == 'success' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          work="${PHASE9_BLIND_MTF_WORK:-}"
+          mtf_report="${PHASE9_BLIND_MTF_QC:-}"
+          expected_work="$RUNNER_TEMP/phase9-blind-mtf-work-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          expected_mtf="$RUNNER_TEMP/phase9-blind-mtf-qc-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          test "$work" = "$expected_work"
+          test "$mtf_report" = "$expected_mtf"
+          test ! -L "$work"
+          test ! -L "$mtf_report"
+          if [[ -d "$work" ]]; then
+            find "$work" -type f -exec shred -u {} + 2>/dev/null || true
+            rm -rf -- "$work"
+          fi
+          if [[ -d "$mtf_report" ]]; then
+            rm -rf -- "$mtf_report"
+          fi
+          test ! -e "$work"
+          test ! -e "$mtf_report"
+
+      - name: Verify exact price-free Count-only artifact
+        id: seal
+        shell: bash
+        run: |
+          set -euo pipefail
+          report="$PHASE9_BLIND_MTF_COUNT"
+          test "$report" = "$RUNNER_TEMP/phase9-blind-mtf-count-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          test ! -L "$report"
+          test "$(find "$report" -mindepth 1 -maxdepth 1 -type f | wc -l)" = '2'
+          test -f "$report/EXPLORATORY_FXCM_BLIND_MTF_COUNT_ONLY.json"
+          test -f "$report/artifact_manifest_sha256.txt"
+          test -z "$(find "$report" -type f \( -iname '*.csv' -o -iname '*.gz' -o -iname '*.zip' \) -print -quit)"
+          python - "$report/EXPLORATORY_FXCM_BLIND_MTF_COUNT_ONLY.json" <<'PY'
+          import json
+          import sys
+          from pathlib import Path
+          value = json.loads(Path(sys.argv[1]).read_text(encoding="utf-8"))
+          assert value["status"] == "BLIND_MTF_COUNT_ONLY_COMPLETE_NO_OUTCOME"
+          assert [row["strategy_id"] for row in value["strategy_results"]] == [
+              "EXP-P9-MTF-301", "EXP-P9-MTF-302", "EXP-P9-MTF-303", "EXP-P9-MTF-304",
+          ]
+          assert value["candidate_signal_counts_calculated"] is True
+          assert value["formal_count_only_authorized"] is False
+          assert value["return_calculated"] is False
+          assert value["research_outcomes_calculated"] is False
+          assert value["outcome_fields"] == []
+          assert value["persistent_price_files_after_cleanup"] == 0
+          PY
+          cd "$report"
+          sha256sum -c artifact_manifest_sha256.txt
+          cd "$GITHUB_WORKSPACE"
+          test -z "$(git status --porcelain)"
+
+      - name: Upload price-free blind MTF Count-only metadata
+        if: ${{ steps.seal.outcome == 'success' }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: phase9-exploratory-fxcm-blind-mtf-count-only-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ env.PHASE9_BLIND_MTF_COUNT }}/
+          if-no-files-found: error
+          retention-days: 14
+          include-hidden-files: false
