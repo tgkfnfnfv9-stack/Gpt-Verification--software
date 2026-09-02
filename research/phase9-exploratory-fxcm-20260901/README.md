@@ -165,3 +165,27 @@ Run #1 / attempt #1は全step success。Artifact `9829327227`（ZIP SHA-256
 専用workflowは件数・breadth・年coverageだけを計算し、Return/Outcomeは計算しない。
 frequency PASSが出た場合の後続Return Gateは、すでにOutcomeを検定した2候補も含む
 cumulative multiplicity correctionを必須とする。
+
+### Batch 2 Count-only Run 33585508306
+
+Run #1 / attempt #1は全step success。Artifact `9830183542`（ZIP SHA-256
+`82c450636f6ab27d773df7b1106e42d5933123c5b4948842586a3358127ee82a`）を
+独立検証し、exact 2 files、manifest一致、価格・Return・Outcome保存0を確認した。
+
+| Candidate | Episodes | Active dates | Count decision |
+|---|---:|---:|---|
+| EXP-P9-MTF-305 | 441 | 355 | PASS |
+| EXP-P9-MTF-306 | 51 | 51 | REJECT |
+| EXP-P9-MTF-307 | 52 | 51 | REJECT |
+| EXP-P9-MTF-308 | 260 | 226 | REJECT |
+
+305だけを次のReturn/OOS Gateへ送る。306〜308のthreshold、direction、symbol、
+exit horizonを結果後に変更して救済しない。
+
+## Blind MTF Batch 2 Return/OOS Gate
+
+305のReturn閲覧前に`spec/fxcm_blind_mtf_batch2_return_oos_v1.frozen.json`を固定した。
+実行定義はH1次バーopen、12時間固定、LONGはASK→BID、SHORTはBID→ASK、
+H1 mid ATR14正規化、2017 IS / 2018 OOS。date-cluster bootstrapは20,000回。
+過去にOutcomeを検定した302/304を含む累積3候補へBonferroni補正し、片側alphaを
+`0.016666666666666666`へ固定した。専用manual workflowはRun #1 / attempt #1のみ許可する。

@@ -1,7 +1,7 @@
 {
   "project": "auto-trading-research",
   "updated_at": "2026-09-02",
-  "phase": "PHASE9_EXPLORATORY_BLIND_MTF_BATCH2_COUNT_GATE_IMPLEMENTED_PENDING_MANUAL_RUN",
+  "phase": "PHASE9_EXPLORATORY_BLIND_MTF_BATCH2_RETURN_OOS_GATE_IMPLEMENTED_PENDING_MANUAL_RUN",
   "phase8": {
     "formal_hypotheses_including_pa002": 16,
     "decision": "ALL_REJECT_FOR_DEVELOPMENT",
@@ -174,7 +174,7 @@
     "next_gate": "NEW_INDEPENDENT_PRICE_ONLY_MTF_HYPOTHESIS_BATCH_NO_RESCUE"
   },
   "exploratory_blind_mtf_batch2_count_gate": {
-    "status": "IMPLEMENTED_PENDING_EXACT_MANUAL_SINGLE_USE_APPROVAL",
+    "status": "RUN_33585508306_SUCCESS_INDEPENDENT_AUDIT_PASS_ONE_FREQUENCY_CANDIDATE",
     "formal_phase9_authorization_effect": false,
     "workflow": ".github/workflows/phase9-exploratory-fxcm-blind-mtf-batch2-count-only.yml",
     "contract": "../phase9-exploratory-fxcm-20260901/spec/fxcm_blind_mtf_candidates_v2.frozen.json",
@@ -182,11 +182,36 @@
     "confirmation": "RUN_EXPLORATORY_FXCM_BLIND_MTF_BATCH2_COUNT_ONLY_2017_2018_V1",
     "usage_confirmation": "I_CONFIRM_PERSONAL_NONCOMMERCIAL_USE_AND_ACCEPT_FXCM_EULA",
     "manual_single_use_run_number": 1,
+    "completed_run_id": 33585508306,
+    "completed_job_id": 100108707493,
+    "completed_artifact_id": 9830183542,
+    "artifact_zip_sha256": "82c450636f6ab27d773df7b1106e42d5933123c5b4948842586a3358127ee82a",
     "v1_candidate_rescue": false,
     "count_only": true,
     "return_calculated": false,
     "research_outcomes_calculated": false,
+    "frequency_pass_candidates": ["EXP-P9-MTF-305"],
+    "rejected_without_rescue": ["EXP-P9-MTF-306", "EXP-P9-MTF-307", "EXP-P9-MTF-308"],
     "future_return_gate_must_include_prior_two_outcome_candidates_in_multiplicity_correction": true
+  },
+  "exploratory_blind_mtf_batch2_return_oos_gate": {
+    "status": "IMPLEMENTED_PENDING_EXACT_MANUAL_SINGLE_USE_APPROVAL",
+    "formal_phase9_authorization_effect": false,
+    "workflow": ".github/workflows/phase9-exploratory-fxcm-blind-mtf-batch2-return-oos.yml",
+    "contract": "../phase9-exploratory-fxcm-20260901/spec/fxcm_blind_mtf_batch2_return_oos_v1.frozen.json",
+    "selected_candidates": ["EXP-P9-MTF-305"],
+    "excluded_frequency_failures": ["EXP-P9-MTF-306", "EXP-P9-MTF-307", "EXP-P9-MTF-308"],
+    "confirmation": "RUN_EXPLORATORY_FXCM_BLIND_MTF_BATCH2_RETURN_OOS_2017_2018_V1",
+    "usage_confirmation": "I_CONFIRM_PERSONAL_NONCOMMERCIAL_USE_AND_ACCEPT_FXCM_EULA",
+    "manual_single_use_run_number": 1,
+    "split": {"in_sample": "2017", "out_of_sample": "2018"},
+    "fixed_horizon_hours": 12,
+    "spread_inclusive_bid_ask_execution": true,
+    "prior_outcome_tested_candidate_count": 2,
+    "cumulative_outcome_tested_candidate_count": 3,
+    "bonferroni_one_sided_alpha_each": 0.016666666666666666,
+    "return_calculated": false,
+    "research_outcomes_calculated": false
   },
   "provider_acquisition": {
     "status": "ACTUAL_FULL_QC_CONTRACT_FROZEN_PROVIDER_SCHEDULE_SOURCE_P0_BLOCKED",

@@ -41,16 +41,17 @@ Actual Full-QC実装基準: `9eb7ce667bea8e76a7f9bb1f2d378eebd8957206`
   `spec/fxcm_blind_mtf_return_oos_v1.frozen.json`へ固定し、Run `33582968006`で実行済み。
 - 302はIS mean R -0.1384、OOS +0.0904だがbootstrap lower -0.2371で不通過。
   304はIS -0.1230、OOS -0.1054で不通過。edge PASSは0件。両候補は救済せず不採用。
-  新しい独立価格MTF仮説305〜308を別batchとして結果未閲覧で事前登録し、
-  Count-only workflowを実装済み。次の単一作業はmanual Run #1。
+  新しい独立価格MTF仮説305〜308を別batchとして結果未閲覧で事前登録した。
+  Count-only Run `33585508306`はsuccess。305だけが441 episodesでPASS、306〜308は
+  件数Gate未達で不採用。次の単一作業は305専用Return/OOS manual Run #1。
 
 ## 1. この引継ぎの結論
 
 Phase 9では、実価格データを受け入れて検査するActual Full-QC契約まで実装・監査済み。
 Exploratory FXCMではRun `33508634314`でdirect m1/H1取得、M15/H4/D1生成、
 FX8 × 4時間足 × BID/ASKの64系列QCまで完了した。既存7候補のCount-onlyは
-Return Gate通過0件で、Return/Outcomeは未計算。現在は、結果を見る前に固定した
-新しい独立MTF仮説4件のCount-only Gateを実行する段階である。Formal provider
+Return Gate通過0件で、Return/Outcomeは未計算。現在は、Count-onlyを通過した305だけの
+Return/OOS Gateを実行する段階である。Formal provider
 scheduleと金銀・Energyのblockerは別trackに残し、探索を遅らせない。
 
 ```text
@@ -77,7 +78,9 @@ Exploratory FX8 MTF 64系列
 302 / 304 Return-OOS
   ↓ FAIL 2件、edge PASS 0件、救済なし
 新しい独立MTF仮説batch
-  ↓ 305〜308 preregistered、NEXT: Count-only manual Run #1
+  ↓ Count完了：305 PASS、306〜308 REJECT（救済なし）
+305 Return-OOS
+  ↓ NEXT: 累積3候補Bonferroni補正済みmanual Run #1
 Provider schedule source readiness
   ↓ P0 BLOCKED（公式version付き完全履歴source未固定）
 Metadata-only JForex amendment / static Gate
@@ -147,6 +150,10 @@ Provider schedule inventory / allowlist
 50. `research/phase9-exploratory-fxcm-20260901/spec/fxcm_blind_mtf_candidates_v2.frozen.json`
 51. `research/phase9-exploratory-fxcm-20260901/runner/fxcm_blind_mtf_count_only_v2.py`
 52. `.github/workflows/phase9-exploratory-fxcm-blind-mtf-batch2-count-only.yml`
+53. `research/phase9-exploratory-fxcm-20260901/results/run-33585508306/BLIND_MTF_BATCH2_COUNT_ONLY_INDEPENDENT_AUDIT.json`
+54. `research/phase9-exploratory-fxcm-20260901/spec/fxcm_blind_mtf_batch2_return_oos_v1.frozen.json`
+55. `research/phase9-exploratory-fxcm-20260901/runner/fxcm_blind_mtf_batch2_return_oos.py`
+56. `.github/workflows/phase9-exploratory-fxcm-blind-mtf-batch2-return-oos.yml`
 
 凍結仕様の優先順位は、candidate registry、data requirements、preregistered policy。Markdown要約で凍結仕様を変更しない。
 
@@ -165,8 +172,8 @@ Provider schedule inventory / allowlist
 | MTF時間足 | direct m1/H1取得済み、M15/H4/D1生成済み |
 | MTF最終必要系列 | FX8 × M15/H1/H4/D1 × BID/ASK = 64系列 |
 | Actual Full-QC | 契約実装済み、実データでは未実行 |
-| Count-only | 既存7候補通過0件。新規4仮説は302/304の2件PASS |
-| Return検証・バックテスト | 302/304完了、両方不採用 |
+| Count-only | 302/304と305が通過。301/303/306/307/308は不採用 |
+| Return検証・バックテスト | 302/304完了・両方不採用。305は実行待ち |
 | 確認済みPhase 9優位性 | 0件 |
 | MT5 EA | 実装禁止 |
 | `acquisition_authorized` | `false` |

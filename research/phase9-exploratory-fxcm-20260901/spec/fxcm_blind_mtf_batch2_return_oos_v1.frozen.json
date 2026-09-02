@@ -1,0 +1,109 @@
+{
+  "schema_version": "phase9-exploratory-fxcm-blind-mtf-batch2-return-oos-v1.0.0",
+  "status": "FROZEN_AFTER_BATCH2_COUNT_BEFORE_FIRST_BATCH2_RETURN_OR_OUTCOME",
+  "recorded_at_utc": "2026-09-02T03:18:00Z",
+  "purpose": "Evaluate only EXP-P9-MTF-305 with the already frozen spread-inclusive return definition, a locked 2017 in-sample / 2018 out-of-sample split, and cumulative multiplicity correction over all three exploratory candidates whose outcomes have been tested.",
+  "selection_integrity": {
+    "selection_basis": "BATCH2_COUNT_FREQUENCY_BREADTH_CONCENTRATION_AND_YEAR_COVERAGE_ONLY",
+    "candidate_return_or_outcome_viewed_before_freeze": false,
+    "result_dependent_signal_rule_change": false,
+    "result_dependent_exit_or_gate_change": false,
+    "nonpasser_rescue_allowed": false,
+    "selected_candidates": [
+      "EXP-P9-MTF-305"
+    ],
+    "excluded_frequency_failures": [
+      "EXP-P9-MTF-306",
+      "EXP-P9-MTF-307",
+      "EXP-P9-MTF-308"
+    ],
+    "prior_outcome_tested_rejections": [
+      "EXP-P9-MTF-302",
+      "EXP-P9-MTF-304"
+    ]
+  },
+  "anchors": {
+    "batch2_candidate_contract_sha256": "4fac27599445d7dc28b7cffc99c8c6fdd19c640e2fb0fca1a90b9d5f799bc615",
+    "batch2_count_runner_sha256": "f918a0590e2c7922d072553570a4aa44abbb0aa1ce01c606956e55fab7e9020c",
+    "batch2_count_result_sha256": "941e0bb630059a5129e09221768853eaa9fcd01fa2118c512c0d129b24308e2f",
+    "batch2_count_independent_audit_sha256": "378bcabf9ffcee4d5fbcc1df01779d2afdfac5de0099713fbfd294726121d036",
+    "prior_return_result_sha256": "4bb5005c7a3487a179c2ba30af6dac70443537d929628081baf9992dd6e1170e",
+    "prior_return_independent_audit_sha256": "29a04b2934374fe26e3bb3b8f08f26cac480cb869bc1864a67f015c3cc0b0478",
+    "canonical_mtf_report_sha256": "4d7f77caa5333e017742e01606aa869f3845aa4c4f206563e2fd59e02b1e1063"
+  },
+  "signal_identity_locks": {
+    "EXP-P9-MTF-305": {
+      "primary_episode_count": 441,
+      "primary_episode_identity_sha256": "103e9dc2f69f93e65ceebf47d2f9997605605592a448f76fe14529fe67048dab"
+    }
+  },
+  "dataset": {
+    "symbols": ["AUDJPY", "AUDUSD", "EURGBP", "EURJPY", "EURUSD", "GBPJPY", "GBPUSD", "USDJPY"],
+    "start_inclusive": "2017-01-01T00:00:00Z",
+    "end_exclusive": "2018-12-31T00:00:00Z",
+    "signal_timeframe": "H1",
+    "execution_price_sides": ["BID", "ASK"],
+    "forward_fill_or_interpolation": false,
+    "persistent_prices": false
+  },
+  "execution_model": {
+    "entry_time": "LOCKED_SIGNAL_NEXT_OBSERVED_H1_BAR_OPEN",
+    "long_entry": "ASK_OPEN",
+    "long_exit": "BID_OPEN",
+    "short_entry": "BID_OPEN",
+    "short_exit": "ASK_OPEN",
+    "fixed_horizon_hours": 12,
+    "exit_time": "ENTRY_TIME_PLUS_EXACTLY_12_HOURS_H1_OPEN",
+    "missing_exact_exit": "EXCLUDE_AND_COUNT",
+    "commission": "ZERO_ADDITIONAL_COMMISSION_SPREAD_ALREADY_EMBEDDED_IN_BID_ASK",
+    "slippage": "ZERO_ADDITIONAL_HISTORICAL_QUOTE_OPEN",
+    "stop_loss": null,
+    "take_profit": null,
+    "position_sizing": "ONE_EQUAL_WEIGHT_EPISODE",
+    "return_unit": "SIGNED_EXECUTABLE_PRICE_CHANGE_DIVIDED_BY_H1_MID_ATR14_BEFORE_ENTRY_BAR"
+  },
+  "split": {
+    "assignment_key": "ENTRY_TIME_UTC_YEAR",
+    "in_sample": "2017",
+    "out_of_sample": "2018",
+    "oos_used_for_rule_or_threshold_selection": false
+  },
+  "inference": {
+    "bootstrap_unit": "UTC_ENTRY_DATE_CLUSTER",
+    "bootstrap_resamples": 20000,
+    "familywise_alpha": 0.05,
+    "prior_outcome_tested_candidate_count": 2,
+    "new_selected_candidate_count": 1,
+    "cumulative_outcome_tested_candidate_count": 3,
+    "multiplicity_method": "BONFERRONI_ACROSS_ALL_OUTCOME_TESTED_EXPLORATORY_CANDIDATES",
+    "bonferroni_one_sided_alpha_each": 0.016666666666666666,
+    "reported_lower_confidence_bound": 0.9833333333333333,
+    "deterministic_seeds": {
+      "EXP-P9-MTF-305": 9305
+    }
+  },
+  "candidate_pass_gate": {
+    "minimum_oos_outcomes": 180,
+    "minimum_outcome_completion_rate": 0.95,
+    "in_sample_mean_r_strictly_positive": true,
+    "oos_mean_r_strictly_positive": true,
+    "oos_date_cluster_bootstrap_lower_bound_strictly_positive": true,
+    "minimum_oos_profit_factor": 1.05,
+    "minimum_positive_oos_instruments": 5,
+    "minimum_positive_oos_calendar_quarters": 3,
+    "all_conditions_required": true
+  },
+  "reporting": {
+    "summary_metrics_only": true,
+    "trade_rows": false,
+    "price_values": false,
+    "signal_or_entry_timestamps": false,
+    "candidate_ranking": false,
+    "formal_phase9_authorization_effect": false
+  },
+  "decision": {
+    "if_pass": "EXPLORATORY_EDGE_CANDIDATE_REQUIRES_SEPARATE_ROBUSTNESS_AND_NEW_PERIOD_CONFIRMATION",
+    "if_fail": "REJECT_FOR_FURTHER_EXPLORATORY_DEVELOPMENT_NO_THRESHOLD_RESCUE",
+    "automatic_mt5_or_live_trading": false
+  }
+}

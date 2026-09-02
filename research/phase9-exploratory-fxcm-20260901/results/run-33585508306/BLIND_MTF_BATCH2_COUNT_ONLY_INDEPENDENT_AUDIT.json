@@ -1,0 +1,93 @@
+{
+  "schema_version": "phase9-exploratory-fxcm-blind-mtf-batch2-count-only-independent-audit-v1.0.0",
+  "status": "INDEPENDENT_AUDIT_PASS_ONE_FREQUENCY_CANDIDATE",
+  "audited_at_utc": "2026-09-02T03:17:00Z",
+  "workflow_run": {
+    "run_id": 33585508306,
+    "run_number": 1,
+    "run_attempt": 1,
+    "job_id": 100108707493,
+    "head_sha": "4cb800e2c562e75a9a4d578b4c0a05a62a654f94",
+    "conclusion": "success"
+  },
+  "artifact": {
+    "artifact_id": 9830183542,
+    "name": "phase9-exploratory-fxcm-blind-mtf-batch2-count-only-4cb800e2c562e75a9a4d578b4c0a05a62a654f94-33585508306-1",
+    "github_size_in_bytes": 2358,
+    "zip_sha256": "82c450636f6ab27d773df7b1106e42d5933123c5b4948842586a3358127ee82a",
+    "exact_member_count": 2,
+    "members": {
+      "EXPLORATORY_FXCM_BLIND_MTF_BATCH2_COUNT_ONLY.json": "941e0bb630059a5129e09221768853eaa9fcd01fa2118c512c0d129b24308e2f",
+      "artifact_manifest_sha256.txt": "3b81533105218e42fefe435325e9ddffcd7a45072119b5dbb4cd6e2d9896c585"
+    },
+    "zip_integrity_pass": true,
+    "manifest_verification_pass": true,
+    "unexpected_member_count": 0
+  },
+  "identity_checks": {
+    "batch2_contract_sha256": "4fac27599445d7dc28b7cffc99c8c6fdd19c640e2fb0fca1a90b9d5f799bc615",
+    "canonical_mtf_report_sha256": "4d7f77caa5333e017742e01606aa869f3845aa4c4f206563e2fd59e02b1e1063",
+    "current_mtf_report_sha256": "3f32661a88397158e2ac45c9bae1722b3c9bb76ac4e086479301a6a3c0fe149c",
+    "candidate_set_exact": true,
+    "run_identity_exact": true,
+    "frequency_gate_reproduced": true,
+    "no_result_dependent_rule_change": true
+  },
+  "decisions": {
+    "EXP-P9-MTF-305": {
+      "decision": "PASS_TO_SEPARATE_RETURN_OOS_GATE",
+      "primary_episode_count": 441,
+      "active_utc_date_count": 355,
+      "qualifying_instrument_count": 8,
+      "counts_by_year": {
+        "2017": 210,
+        "2018": 231
+      },
+      "frequency_gate_pass": true
+    },
+    "EXP-P9-MTF-306": {
+      "decision": "REJECT_NO_THRESHOLD_OR_SUBSET_RESCUE",
+      "primary_episode_count": 51,
+      "episodes_min": 120,
+      "active_utc_date_count": 51,
+      "active_dates_min": 90,
+      "frequency_gate_pass": false
+    },
+    "EXP-P9-MTF-307": {
+      "decision": "REJECT_NO_THRESHOLD_OR_SUBSET_RESCUE",
+      "primary_episode_count": 52,
+      "episodes_min": 180,
+      "active_utc_date_count": 51,
+      "active_dates_min": 120,
+      "frequency_gate_pass": false
+    },
+    "EXP-P9-MTF-308": {
+      "decision": "REJECT_NO_THRESHOLD_OR_SUBSET_RESCUE",
+      "primary_episode_count": 260,
+      "episodes_min": 300,
+      "active_utc_date_count": 226,
+      "active_dates_min": 180,
+      "frequency_gate_pass": false
+    }
+  },
+  "frequency_pass_candidates": [
+    "EXP-P9-MTF-305"
+  ],
+  "custody_boundary": {
+    "return_calculated": false,
+    "research_outcomes_calculated": false,
+    "trade_rows_in_artifact": false,
+    "price_values_in_artifact": false,
+    "signal_or_entry_timestamps_in_artifact": false,
+    "persistent_price_files_after_cleanup": 0,
+    "formal_phase9_authorization_effect": false
+  },
+  "multiplicity_boundary": {
+    "prior_outcome_tested_candidate_count": 2,
+    "new_candidate_count": 1,
+    "cumulative_outcome_tested_candidate_count_after_next_gate": 3,
+    "required_familywise_alpha": 0.05,
+    "required_bonferroni_alpha_per_candidate": 0.016666666666666666
+  },
+  "next_action": "IMPLEMENT_SEPARATE_CUMULATIVE_MULTIPLICITY_ADJUSTED_RETURN_OOS_GATE_FOR_EXP_P9_MTF_305_ONLY"
+}
