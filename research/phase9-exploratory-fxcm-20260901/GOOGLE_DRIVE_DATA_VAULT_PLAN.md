@@ -1,6 +1,6 @@
 # Phase 9 FXCM Google Drive Data Vault Plan
 
-Status: `V1_AVAILABILITY_AUDITED_TARGET_UNAVAILABLE_ACQUISITION_BLOCKED_NO_PRICE_ACQUISITION`
+Status: `V2_OPTION1_FROZEN_IMPLEMENTED_NOT_EXECUTED_NO_PRICE_ACQUISITION`
 
 Recorded: 2026-09-02
 
@@ -9,6 +9,36 @@ Recorded: 2026-09-02
 FXCM価格を候補Batchごとに再取得して破棄する運用を終了し、取得・QCと検証を分離する。
 一度だけ複数年データを取得してGoogle Driveの非公開研究フォルダへ保存し、以後の
 Count-only、Return/OOS、頑健性確認はSHA固定した同じデータを再利用する。
+
+## 2026-09-02 Option 1 / V2 frozen implementation
+
+ユーザーはV1 availabilityの実測結果に基づくOption 1を明示選択した。V2は次へ固定した。
+
+- 2012～2025年、FXCMで全期間利用可能な25通貨ペア
+- direct m1/H1 BID/ASK OHLC、14年×25ペア×2 periodicity = 700 shard
+- base 36,400 identity、frozen-present 36,000 identity、known-missing 400 identity
+- exact mask: `spec/fxcm_drive_vault_availability_mask_v2.frozen.json`
+- strategy canonical: M1由来M5/M15/M30/H1/H4/D1/W1
+- direct H1: 完全性・OHLC一致のQC参照だけに使用し、価格の補完・代替には使わない
+- 既知欠損週: 要求せず、barを生成せず、補完・補間しない
+- frozen-presentの取得失敗: workflow失敗、root sealなし
+- V1 acquisition: workflow preflightを恒久fail-closed化
+- V2 workflow: `.github/workflows/phase9-exploratory-fxcm-drive-vault-acquisition-v2.yml`
+
+| Partition | Interval | Drive namespace |
+|---|---|---|
+| Development | 2012-01-01～2020-01-01 exclusive | `v2/prices/` |
+| Strict OOS | 2020-01-01～2022-01-01 exclusive | `v2/sealed/oos/` |
+| Robustness | 2022-01-01～2024-01-01 exclusive | `v2/sealed/robustness/` |
+| Final holdout | 2024-01-01～2026-01-01 exclusive | `v2/sealed/final_holdout/` |
+
+V2のOAuth境界はpersonal My Drive、`drive.file` scope、専用GitHub Environment
+`phase9-fxcm-vault-acquisition-v2`、3 secret名だけである。workflowはmanual Run #1 / attempt #1、
+review済みmain SHA完全一致、4確認文字列完全一致を要求する。public Artifactは価格・timestamp・
+Drive ID・outcomeを含まないexact 2ファイルだけである。
+
+実装・Testsの公開は価格取得の承認ではない。Google OAuth設定、V2 workflow実行、Count、
+既存Batch 6は別の明示承認まで行わない。
 
 価格取得、Count、Return、Outcome計算はまだ開始していない。HEAD-only availability
 だけはRun `33627420903`で完了し、次の独立監査によりV1 target不成立を確認した。
@@ -85,7 +115,7 @@ Exploratory専用partitionはcalendar-year shard境界に合わせて次へ固�
   folder must first be made accessible to the same OAuth client. If root verification fails, setup
   stops without widening scope, checking availability or downloading prices.
 
-## Frozen target scope for the acquisition design
+## Historical rejected V1 target scope
 
 - provider: FXCM CandleData, personal non-commercial use only
 - target interval: `[2010-01-01T00:00:00Z, 2026-01-01T00:00:00Z)`
@@ -105,7 +135,7 @@ The 28-pair list is fixed before the availability inventory. Missing source cove
 reported, not silently converted into result-dependent symbol selection. XAUUSD, XAGUSD,
 indices, oil and exotic FX are outside this vault version and require separate contracts.
 
-## Direct and derived periodicities
+## Historical V1 direct and derived periodicities
 
 Direct provider inputs:
 
@@ -135,7 +165,7 @@ derived for signal calculation, but BID/ASK must remain available for spread-inc
 Tick data is not part of the initial vault. It may be acquired under a separate post-edge Gate
 only if MT5 execution validation needs intrabar sequencing or slippage evidence.
 
-## Storage layout and identity
+## Historical V1 storage layout and identity
 
 Acquisition should run once from one explicit manual authorization, using a year matrix internally.
 The Drive output must be sharded so later tests download only the required subset.

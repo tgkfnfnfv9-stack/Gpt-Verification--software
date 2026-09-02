@@ -10,6 +10,20 @@ Actual Full-QC実装基準: `9eb7ce667bea8e76a7f9bb1f2d378eebd8957206`
 
 ## 2026-09-02 latest delta
 
+- ユーザーはFXCM availability実測範囲を使うOption 1を選択した。別source探索は停止し、
+  V2を2012～2025年、25通貨ペア、direct m1/H1、700 shardへ固定した。
+- V1の36,400候補identityから既知404の400件をexact versioned maskへ固定し、存在確認済み
+  36,000件だけをV2取得allowlistにした。既知欠損は要求・補完・補間しない。凍結presentが
+  取得時に欠ければ失敗し、root sealを作らない。
+- V2の取得/custody、Development/OOS/robustness/final holdout、shard/archive、QC、manifest、
+  SHA-256、OAuth境界を凍結し、14年matrix取得runner、private Drive finalizer、price-free
+  verifier、manual single-use workflow、V2専用Testsを実装した。
+- V2専用10 testsと探索track全173 testsが成功した。
+- V1 acquisition workflowは恒久fail-closed化した。V2 workflow、価格取得、OAuth設定、
+  Drive書込み、Count、既存Batch 6は未実行であり、別の明示承認まで実行しない。
+- V2 partitionはDevelopment 2012～2019、Strict OOS 2020～2021、Robustness 2022～2023、
+  Final holdout 2024～2025。Batch 6 Count区間と321～324の事前登録条件は変更していない。
+
 - Vault availability Run `33627420903`はhead
   `182f73dc41c5d6efcb0a5fd0a71bce3bbcffc825`で16年すべて成功した。16 Artifactの
   manifest SHAと69,888件のexact identity/URL setを独立監査した。
@@ -434,12 +448,12 @@ Provider schedule inventory / allowlist
 
 ## 7. 次に行う単一作業
 
-Availability Run #1と独立監査は完了し、凍結V1 targetが不成立と確定した。次の単一作業は、
-目的である「一度取得して繰り返し再利用」を維持しながら、G8全28ペア・必要期間・BID/ASK
-OHLCを満たす別sourceを選ぶか、利用可能なFXCM範囲だけの別V2を明示承認するかを決めること。
-V1一括取得、OAuth Secrets設定、Drive書込みは行わない。
+Option 1のV2契約・runner・workflow・Testsをremote mainへ公開した後の次の単一作業は、
+GitHub Environment `phase9-fxcm-vault-acquisition-v2`のrequired reviewerと、personal My Drive用
+OAuth 3 secretsを安全に設定する手順をユーザーへ提示すること。設定だけではV2 workflowを
+実行しない。取得実行は、公開main SHAをユーザーが確認した後の別の明示承認を必要とする。
 
-Vault取得後もCount/Returnを自動実行しない。Drive内1,344 shardとmanifest/sealを独立監査し、
+Vault取得後もCount/Returnを自動実行しない。Drive内700 shardとmanifest/sealを独立監査し、
 2017～2018年の旧64系列互換性が完全一致した場合だけ、321～324の条件を変えず、Batch 6の
 data inputをSHA固定Vault shardへ切り替える。既存Batch 6 workflowは引き続き実行しない。
 
@@ -462,13 +476,12 @@ rerun/replayしない。remote resource/JAR request、JForex接続、正式価�
 ## 8. 残りの順序
 
 1. Availability独立監査正本とV1取得停止を確認する
-2. 全28ペア・必要期間・BID/ASK OHLCを満たす別source、または別V2 scopeを決定する
-3. 決定後に新しい取得/custody/partition/shard/QC契約を事前凍結する
-4. Testsとworkflowを実装・公開しても、自動実行しない
-5. 別の明示承認後だけ一度取得し、private Driveのmanifest/SHA/sealを独立監査する
-6. 旧64系列互換性を確認後、Batch 6の入力だけをVaultへ切り替えてCount-onlyを実行する
-7. Count通過候補だけをReturn/OOS→新期間→頑健性へ進め、最後にMT5を検討する
-8. Formal JForex/provider schedule/Energy trackは別のまま維持する
+2. Option 1 V2の公開main SHAとTestsを確認する
+3. 専用GitHub EnvironmentとOAuth 3 secretsを設定するがworkflowは実行しない
+4. 別の明示承認後だけV2を一度取得し、private Driveの700 shardとmanifest/SHA/sealを独立監査する
+5. 旧64系列互換性を確認後、Batch 6の入力だけをVaultへ切り替えてCount-onlyを実行する
+6. Count通過候補だけをReturn/OOS→新期間→頑健性へ進め、最後にMT5を検討する
+7. Formal JForex/provider schedule/Energy trackは別のまま維持する
 
 ## 9. 絶対禁止
 

@@ -1,0 +1,72 @@
+{
+  "schema_version": "phase9-exploratory-fxcm-drive-vault-partitions-v2.0.0",
+  "status": "FROZEN_AFTER_AVAILABILITY_BEFORE_PRICE_ACCESS",
+  "frozen_at": "2026-09-02",
+  "track": "EXPLORATORY_FXCM_DRIVE_VAULT_NOT_FORMAL_PHASE9",
+  "outer_interval": {
+    "start_inclusive": "2012-01-01T00:00:00Z",
+    "end_exclusive": "2026-01-01T00:00:00Z"
+  },
+  "partitions": [
+    {
+      "id": "DEVELOPMENT",
+      "start_inclusive": "2012-01-01T00:00:00Z",
+      "end_exclusive": "2020-01-01T00:00:00Z",
+      "years": [2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019],
+      "storage_namespace": "prices",
+      "access_state_after_acquisition": "QC_ONLY_UNTIL_SEPARATE_RESEARCH_GATE",
+      "scientific_label": "EXPLORATORY_DEVELOPMENT_NOT_FORMAL_PHASE9"
+    },
+    {
+      "id": "STRICT_OOS",
+      "start_inclusive": "2020-01-01T00:00:00Z",
+      "end_exclusive": "2022-01-01T00:00:00Z",
+      "years": [2020, 2021],
+      "storage_namespace": "sealed/oos",
+      "access_state_after_acquisition": "SEALED_MANIFEST_ONLY_NO_RESEARCH_READ",
+      "scientific_label": "EXPLORATORY_CANDIDATE_SPECIFIC_OOS_NOT_FORMAL_PHASE9"
+    },
+    {
+      "id": "ROBUSTNESS",
+      "start_inclusive": "2022-01-01T00:00:00Z",
+      "end_exclusive": "2024-01-01T00:00:00Z",
+      "years": [2022, 2023],
+      "storage_namespace": "sealed/robustness",
+      "access_state_after_acquisition": "SEALED_MANIFEST_ONLY_NO_RESEARCH_READ",
+      "scientific_label": "EXPLORATORY_ROBUSTNESS_PRIOR_NON_PHASE9_ACCESS_EXISTS"
+    },
+    {
+      "id": "FINAL_HOLDOUT",
+      "start_inclusive": "2024-01-01T00:00:00Z",
+      "end_exclusive": "2026-01-01T00:00:00Z",
+      "years": [2024, 2025],
+      "storage_namespace": "sealed/final_holdout",
+      "access_state_after_acquisition": "SEALED_MANIFEST_ONLY_NO_RESEARCH_READ",
+      "scientific_label": "EXPLORATORY_CANDIDATE_SPECIFIC_RESERVED_NOT_GLOBALLY_UNSEEN"
+    }
+  ],
+  "availability_mask_rule": {
+    "known_missing_weeks_are_excluded_before_price_access": true,
+    "same_mask_applies_to_all_research_stages": true,
+    "forward_fill_allowed": false,
+    "interpolation_allowed": false,
+    "outcome_dependent_mask_change_allowed": false
+  },
+  "batch6_compatibility_interval": {
+    "start_inclusive": "2017-01-01T00:00:00Z",
+    "end_exclusive": "2018-12-31T00:00:00Z",
+    "rule": "Preserve the frozen Batch 6 interval exactly, including exclusion of 2018-12-31.",
+    "access_authorized": false
+  },
+  "access_rules": {
+    "acquisition_qc_may_process_all_partitions_without_signals_or_outcomes": true,
+    "storage_is_not_research_access_authorization": true,
+    "consumer_must_use_exact_partition_manifest_and_availability_mask": true,
+    "count_only_requires_separate_contract_and_approval": true,
+    "return_oos_requires_count_passers_and_separate_contract_and_approval": true,
+    "robustness_requires_return_oos_pass_and_separate_contract_and_approval": true,
+    "final_holdout_requires_all_prior_gates_and_one_separate_execution": true,
+    "cross_partition_read_prohibited": true,
+    "failed_candidate_rescue_prohibited": true
+  }
+}

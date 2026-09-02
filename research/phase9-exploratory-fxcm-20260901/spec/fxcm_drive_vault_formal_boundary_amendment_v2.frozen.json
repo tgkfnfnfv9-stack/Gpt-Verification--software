@@ -1,0 +1,22 @@
+{
+  "schema_version": "phase9-exploratory-fxcm-drive-vault-formal-boundary-v2.0.0",
+  "status": "FROZEN_BEFORE_V2_PRICE_ACCESS",
+  "frozen_at": "2026-09-02",
+  "vault_version": "v2",
+  "formal_phase9_authorization_effect": false,
+  "v1_availability_only_effect": "NO_PRICE_OBSERVED_FORMAL_UNSEEN_STATE_UNCHANGED",
+  "v2_execution_effect": {
+    "trigger": "ANY_V2_PRICE_RESPONSE_BODY_IS_READ",
+    "globally_unseen_formal_holdout_inside_vault": false,
+    "formal_2019_plus_unseen_claim": "RETIRED",
+    "exploratory_partitions_are_formal_partitions": false
+  },
+  "required_workflow_acknowledgement": "I_ACCEPT_EXPLORATORY_VAULT_2019_PLUS_RETIRES_FORMAL_PHASE9_UNSEEN_CLAIMS",
+  "research_boundaries": {
+    "v2_price_acquisition_executed": false,
+    "count_only_authorized": false,
+    "batch6_authorized": false,
+    "return_or_outcome_authorized": false,
+    "confirmed_edge_count": 0
+  }
+}

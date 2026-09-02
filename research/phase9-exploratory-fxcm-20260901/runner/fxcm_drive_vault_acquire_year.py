@@ -170,7 +170,14 @@ def _canonical_event(symbol: str, periodicity: str, year: int, week: int, source
 
 
 def process_direct_shard(
-    contract: dict, year: int, symbol: str, periodicity: str, work_dir: Path, opener
+    contract: dict,
+    year: int,
+    symbol: str,
+    periodicity: str,
+    work_dir: Path,
+    opener,
+    weeks: tuple[int, ...] = WEEKS,
+    vault_version: str = "v1",
 ) -> tuple[Path, dict]:
     shard_dir = work_dir / f"{symbol}-{periodicity}"
     source_dir = shard_dir / "source"
@@ -178,7 +185,9 @@ def process_direct_shard(
     source_dir.mkdir(parents=True)
     canonical_dir.mkdir()
     source_objects: list[dict] = []
-    for week in WEEKS:
+    if not weeks or tuple(sorted(set(weeks))) != weeks or any(week not in WEEKS for week in weeks):
+        raise VaultError("invalid frozen source week set")
+    for week in weeks:
         url = source_url(contract, year, symbol, periodicity, week)
         source_path = source_dir / f"{week:02d}.csv.gz"
         size, digest = download_source(opener, url, source_path)
@@ -276,12 +285,15 @@ def process_direct_shard(
     if observed == 0 or usable == 0 or first is None or last is None:
         raise VaultError("empty direct calendar-year shard")
     payload = {
-        "schema_version": "phase9-exploratory-fxcm-drive-vault-shard-payload-v1.0.0",
-        "vault_version": "v1",
+        "schema_version": f"phase9-exploratory-fxcm-drive-vault-shard-payload-{vault_version}.0.0",
+        "vault_version": vault_version,
         "year": year,
         "symbol": symbol,
         "periodicity": periodicity,
         "calendar_clip": {"start_inclusive": iso_utc(year_start), "end_exclusive": iso_utc(year_end)},
+        "base_week_count": len(WEEKS),
+        "present_week_indices": list(weeks),
+        "known_missing_week_indices": [week for week in WEEKS if week not in set(weeks)],
         "source_object_count": len(source_objects),
         "source_objects": source_objects,
         "observed_row_count": observed,
@@ -466,14 +478,14 @@ def derive_qc(m1_path: Path, h1_path: Path, d1_path: Path, year: int) -> dict:
     return result
 
 
-def make_archive(shard_dir: Path, output_path: Path) -> str:
+def make_archive(shard_dir: Path, output_path: Path, weeks: tuple[int, ...] = WEEKS) -> str:
     if output_path.exists() or output_path.is_symlink():
         raise VaultError("archive destination must be new")
     tar_path = output_path.with_suffix("")
     members = [
         ("SHARD_PAYLOAD_MANIFEST.json", shard_dir / "SHARD_PAYLOAD_MANIFEST.json"),
         ("canonical/prices.csv", shard_dir / "canonical/prices.csv"),
-        *[(f"source/{week:02d}.csv.gz", shard_dir / "source" / f"{week:02d}.csv.gz") for week in WEEKS],
+        *[(f"source/{week:02d}.csv.gz", shard_dir / "source" / f"{week:02d}.csv.gz") for week in weeks],
     ]
     with tarfile.open(tar_path, "x", format=tarfile.USTAR_FORMAT) as archive:
         for name, path in members:

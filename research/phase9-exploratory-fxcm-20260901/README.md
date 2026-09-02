@@ -1,8 +1,30 @@
 # Phase 9 Exploratory FXCM Fast Track
 
-Status: `DRIVE_VAULT_V1_AVAILABILITY_AUDITED_TARGET_UNAVAILABLE_ACQUISITION_BLOCKED; LEGACY_FX8_BATCH6_PAUSED`
+Status: `DRIVE_VAULT_V2_OPTION1_FROZEN_IMPLEMENTED_NOT_EXECUTED; V1_PERMANENTLY_BLOCKED; LEGACY_FX8_BATCH6_PAUSED`
 
 ## Current canonical next step: reusable Google Drive Vault
+
+2026-09-02、ユーザーはAvailability Run `33627420903`で確認できたFXCM範囲を使う
+Option 1を選択した。V2は2012～2025年、25通貨ペア、direct m1/H1の700 shardとする。
+36,400 endpoint identityのうち、HEADで存在を確認したexact 36,000件だけを取得allowlistとし、
+既知404の400件をversioned maskへ固定した。既知欠損は要求せず、補完・補間しない。
+凍結present identityが取得時に欠けた場合は失敗し、root sealを作らない。
+
+- V2契約正本: `spec/fxcm_drive_vault_*_v2.frozen.json`
+- exact availability mask: `spec/fxcm_drive_vault_availability_mask_v2.frozen.json`
+- 一括取得: `.github/workflows/phase9-exploratory-fxcm-drive-vault-acquisition-v2.yml`
+- direct: m1/H1 BID/ASK OHLC、提供時だけVolume
+- strategy canonical: M1由来M5/M15/M30/H1/H4/D1/W1
+- direct H1: QC参照のみ、補完・代替禁止
+- partition: Development 2012～2019、Strict OOS 2020～2021、Robustness 2022～2023、Final holdout 2024～2025
+- 価格取得、OAuth設定、V2 workflow、Count、Batch 6: 未実行
+- V1 acquisition workflow: fail-closedで恒久停止
+- V2専用10 tests、探索track全173 tests: 成功
+
+V2を公開しても実行許可にはならない。別のユーザー明示承認まではV2 workflowを実行しない。
+取得後も自動でCountへ進まず、private Drive custodyと旧64系列互換性を独立監査する。
+
+## Historical V1 availability result
 
 候補ごとに2017～2018年を再取得して破棄する運用は終了した。G8全28通貨ペアの
 2010～2025年を一度だけ取得し、年×銘柄×direct periodicityの1,344 shardとして
@@ -383,16 +405,18 @@ Outcome検定済み7候補は全件不採用で、確認済みedgeは0件であ�
 移行する。設計正本は`GOOGLE_DRIVE_DATA_VAULT_PLAN.md`である。
 
 - Drive folder ID: `1cGQrkdpSNY9RcfpniVTYNb6zE0t9nTKu`（確認時点で空）
-- target period: 2010-01-01 inclusive ～ 2026-01-01 exclusive
-- universe: G8全28通貨ペア
-- direct: m1/H1/D1、BID/ASK OHLC、提供時Volume
+- V2 target period: 2012-01-01 inclusive ～ 2026-01-01 exclusive
+- V2 universe: availability確認済み25通貨ペア
+- V2 direct: m1/H1、BID/ASK OHLC、提供時Volume
 - derived: M5/M15/M30/H1/H4/D1/W1
+- exact identity: base 36,400、取得allowlist 36,000、既知欠損mask 400
 - Tick、金銀、指数、原油、exotic FXは初期vault対象外
 - OOS、robustness、final holdoutはGate前に読まない別区画
 - public Git/Artifactへ価格を保存しない
 
-価格・availability取得は未開始である。既存Batch 6 workflowはvault移行と独立監査が
-完了するまでdispatchしない。321〜324の事前登録条件は変更しない。
+AvailabilityはRun `33627420903`で完了したが、価格取得は未開始である。V1取得workflowは
+恒久停止し、V2取得workflowも別の明示承認前には実行しない。既存Batch 6 workflowはvault
+移行と独立監査が完了するまでdispatchしない。321〜324の事前登録条件は変更しない。
 
 ### Batch 3 Return/OOS Run 33593743345
 

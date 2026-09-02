@@ -1,0 +1,80 @@
+{
+  "schema_version": "phase9-exploratory-fxcm-drive-vault-manifest-schema-v2.0.0",
+  "status": "FROZEN_AFTER_AVAILABILITY_BEFORE_PRICE_ACCESS",
+  "frozen_at": "2026-09-02",
+  "shard_identity_fields": [
+    "vault_version", "contract_sha256", "partitions_sha256", "availability_mask_sha256",
+    "run_id", "run_attempt", "head_sha", "year", "symbol", "periodicity", "partition_id",
+    "archive_name", "archive_sha256", "archive_bytes", "canonical_row_count",
+    "canonical_first_timestamp_utc", "canonical_last_timestamp_utc",
+    "canonical_timestamp_sha256", "canonical_csv_sha256", "base_week_count",
+    "present_week_indices", "known_missing_week_indices", "source_object_count", "source_objects",
+    "observed_row_count", "usable_row_count", "crossed_quote_count",
+    "crossed_quote_event_sha256", "duplicate_count", "gap_segment_count",
+    "missing_nominal_slot_count", "volume_status", "field_schema", "qc_status",
+    "drive_parent_role", "drive_upload_redownload_sha256_verified"
+  ],
+  "source_object_fields": ["week_index", "url", "http_status", "bytes", "sha256", "row_count"],
+  "year_manifest": {
+    "exact_shard_count": 50,
+    "exact_symbol_count": 25,
+    "exact_direct_periodicity_count": 2,
+    "source_object_count_from_frozen_mask": true,
+    "duplicate_shards_allowed": false,
+    "partial_year_seal_allowed": false,
+    "drive_file_ids_public": false
+  },
+  "vault_manifest": {
+    "exact_year_count": 14,
+    "exact_shard_count": 700,
+    "exact_present_source_object_count": 36000,
+    "known_missing_source_object_count": 400,
+    "self_hash_included": false,
+    "digest_file": "vault_manifest_sha256.txt",
+    "seal_file": "VAULT_SEAL.json",
+    "seal_uploaded_last": true
+  },
+  "archive": {
+    "extension": ".tar.zst",
+    "exact_members": [
+      "SHARD_PAYLOAD_MANIFEST.json",
+      "canonical/prices.csv",
+      "source/{present_week_index_zero_padded_2}.csv.gz for the exact frozen present set"
+    ],
+    "member_order": "manifest, canonical CSV, then exact present source weeks ascending",
+    "tar_format": "USTAR",
+    "mtime": 0,
+    "uid": 0,
+    "gid": 0,
+    "uname": "",
+    "gname": "",
+    "file_mode_octal": "0644",
+    "symlink_allowed": false,
+    "hardlink_allowed": false,
+    "absolute_path_allowed": false,
+    "parent_traversal_allowed": false,
+    "zstd_level": 19,
+    "zstd_threads": 1,
+    "zstd_version_recorded_per_run": true
+  },
+  "canonical_csv": {
+    "encoding": "UTF-8",
+    "newline": "LF",
+    "header": [
+      "timestamp_utc", "bid_open", "bid_high", "bid_low", "bid_close",
+      "ask_open", "ask_high", "ask_low", "ask_close", "volume_status", "volume"
+    ],
+    "timestamp_format": "YYYY-MM-DDTHH:MM:SSZ",
+    "decimal_rule": "Exact source decimal normalized with fixed-point format; no binary-float conversion",
+    "volume_absence_rule": "Use volume_status ABSENT_FROM_SOURCE_SCHEMA and empty volume; never substitute zero"
+  },
+  "public_artifact": {
+    "exact_files": ["VAULT_RUN_PRICE_FREE_AUDIT.json", "artifact_manifest_sha256.txt"],
+    "maximum_total_bytes": 1048576,
+    "prices_allowed": false,
+    "timestamps_allowed": false,
+    "drive_file_or_folder_ids_allowed": false,
+    "oauth_or_resumable_session_values_allowed": false,
+    "outcome_fields_allowed": false
+  }
+}

@@ -30,6 +30,7 @@ concurrency:
 jobs:
   preflight:
     if: >-
+      false &&
       github.repository == 'tgkfnfnfv9-stack/Gpt-Verification--software' &&
       github.ref == 'refs/heads/main' &&
       github.run_number == 1 &&
