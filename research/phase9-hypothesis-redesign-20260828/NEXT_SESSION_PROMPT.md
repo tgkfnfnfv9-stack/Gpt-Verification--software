@@ -5,7 +5,7 @@
 ```text
 GitHub Repository `tgkfnfnfv9-stack/Gpt-Verification--software` のPhase 9自動売買研究を引き継いでください。
 
-最初にremote `main`を確認し、次のファイルを省略せず完全に読んでください。
+最初に最新remote `main`を確認し、次のファイルを省略せず完全に読んでください。
 
 1. `AGENTS.md`
 2. `research/phase9-hypothesis-redesign-20260828/NEXT_SESSION_HANDOFF.md`
@@ -20,10 +20,12 @@ GitHub Repository `tgkfnfnfv9-stack/Gpt-Verification--software` のPhase 9自動
 11. `research/phase9-exploratory-fxcm-20260901/spec/fxcm_blind_mtf_batch2_return_oos_v1.frozen.json`
 12. `research/phase9-exploratory-fxcm-20260901/results/run-33587536789/BLIND_MTF_BATCH2_RETURN_OOS_INDEPENDENT_AUDIT.json`
 13. `research/phase9-exploratory-fxcm-20260901/spec/fxcm_blind_mtf_candidates_v3.frozen.json`
-14. `research/phase9-exploratory-fxcm-20260901/runner/fxcm_blind_mtf_count_only_v3.py`
-15. `.github/workflows/phase9-exploratory-fxcm-blind-mtf-batch3-count-only.yml`
+14. `research/phase9-exploratory-fxcm-20260901/results/run-33591731464/BLIND_MTF_BATCH3_COUNT_ONLY_INDEPENDENT_AUDIT.json`
+15. `research/phase9-exploratory-fxcm-20260901/spec/fxcm_blind_mtf_batch3_return_oos_v1.frozen.json`
+16. `research/phase9-exploratory-fxcm-20260901/runner/fxcm_blind_mtf_batch3_return_oos.py`
+17. `.github/workflows/phase9-exploratory-fxcm-blind-mtf-batch3-return-oos.yml`
 
-Batch 3実装開始時点の基準remote commitは`e24fbd0f74009b30130fbd0dde3e9d33900c0ac0`です。ただし、必ず最新remote `main`を再確認してください。
+必ず最新remote `main`を再確認し、workflowが公開済みのcommitと一致することを確認してください。
 
 ## 最終目的
 
@@ -45,71 +47,65 @@ GPT側で複数銘柄・複数時間足の実データを使い、結果後の�
 
 ## 完了済み探索
 
-### Blind MTF Batch 1
-
 - 301: Count 166、REJECT
-- 302: Count 455、Count PASS → Return/OOS REJECT
+- 302: Count 455、Return/OOS REJECT
 - 303: Count 92、REJECT
-- 304: Count 494、Count PASS → Return/OOS REJECT
-
-Return/OOS Run `33582968006`:
-
-- 302: IS mean R `-0.1384168981`、OOS mean R `0.0903906529`、OOS PF `1.1100053237`、bootstrap lower `-0.2371380984`
-- 304: IS mean R `-0.1230096695`、OOS mean R `-0.105445562`、OOS PF `0.9120453609`、bootstrap lower `-0.4688187438`
-- edge PASS 0件
-
-### Blind MTF Batch 2
-
-- 305: Count 441、Count PASS → Return/OOS REJECT
+- 304: Count 494、Return/OOS REJECT
+- 305: Count 441、Return/OOS REJECT
 - 306: Count 51、REJECT
 - 307: Count 52、REJECT
 - 308: Count 260、REJECT
+- Outcome検定済み302/304/305は全件不採用
+- 確認済みExploratory edgeは0件
 
-Count Run `33585508306`、Return/OOS Recovery Run `33587536789`は完了・成功。
+## Batch 3 Count-only完了
 
-305 Return/OOS:
+Run `33591731464`（Run #1 / attempt #1）は全step success。Artifact `9832271295`、
+ZIP SHA-256 `d518961c48852a450c587dde85ab4f62f288408c35bfddc1764126baae9ae068`。
+exact 2 files、manifest、価格0、Return/Outcome未計算を独立監査済みです。
 
-- completed outcomes: 420/441
-- 2017 IS mean R: `-0.1628590969`
-- 2018 OOS mean R: `-0.3253655373`
-- OOS PF: `0.7470933829`
-- 累積3候補Bonferroni補正済みbootstrap lower: `-0.7277185378`
-- OOS positive instruments: 4/8
-- OOS positive quarters: 0/4
-- edge PASS: false
+- 309: primary 22、active dates 20、REJECT
+- 310: primary 157、active dates 148、REJECT
+- 311: primary 280、active dates 237、Count PASS
+- 312: primary 1028、active dates 516、Count PASS
 
-初回Return workflowのRun `33587087527`はcheckout中cancel、重複Run `33587087557`はskip。両方とも取得・Return・Outcome・Artifact 0であることを監査済みです。その後、統計仕様を変えずRecovery Run `33587536789`を実行しています。
+309/310は救済しません。311/312だけを次のReturn/OOS Gateへ進めます。
 
-## 現在地
+## Return閲覧前に凍結済みのBatch 3 Gate
 
-- Outcome検定済み探索候補: 302、304、305の3件
-- 3件すべて正式に不採用
-- 確認済みExploratory edge: 0件
-- 301/303/306/307/308もCount Gate不通過で不採用
-- Batch 3の309〜312はCount閲覧前に事前登録済み
-- Batch 3専用Count-only runner、single-use manual workflow、Testsは実装済み
-- Batch 3 Countは未実行。件数・合否・Return・Outcomeは未閲覧
-- 失敗候補のthreshold、direction、symbol、timeframe、exit horizon変更による救済は禁止
-- MT5 EA実装はまだ禁止
+- 対象: 311、312だけ
+- Return/Outcome閲覧前の凍結: true
+- entry: signalで固定済みの次H1 bar open
+- exit: entryから正確に12時間後のH1 open
+- LONG: ASK entry / BID exit
+- SHORT: BID entry / ASK exit
+- normalization: entry前H1 mid ATR14
+- split: 2017 IS / 2018 OOS（entry UTC year）
+- bootstrap: UTC entry-date cluster、20,000回
+- multiplicity: 過去302/304/305を含む累積5候補Bonferroni
+- one-sided alpha each: 0.01（99% lower bound）
+- minimum OOS outcomes: 120（Countだけを見てReturn前に固定）
+- passはcompletion、IS/OOS平均、bootstrap下限、PF、銘柄breadth、四半期breadthの全条件必須
+- Artifactはsummaryのみ。価格、trade row、signal/entry timestampを保存しない
+- passしても次は別の新期間・頑健性Gate。MT5へ自動移行しない
 
 ## 次の単一作業
 
-公開済みの`.github/workflows/phase9-exploratory-fxcm-blind-mtf-batch3-count-only.yml`を
+公開済みの`.github/workflows/phase9-exploratory-fxcm-blind-mtf-batch3-return-oos.yml`を
 Run #1 / attempt #1として1回だけ手動実行してください。
+
+実行リンク:
+`https://github.com/tgkfnfnfv9-stack/Gpt-Verification--software/actions/workflows/phase9-exploratory-fxcm-blind-mtf-batch3-return-oos.yml`
 
 入力値:
 
 confirmation:
-`RUN_EXPLORATORY_FXCM_BLIND_MTF_BATCH3_COUNT_ONLY_2017_2018_V1`
+`RUN_EXPLORATORY_FXCM_BLIND_MTF_BATCH3_RETURN_OOS_2017_2018_V1`
 
 usage_confirmation:
 `I_CONFIRM_PERSONAL_NONCOMMERCIAL_USE_AND_ACCEPT_FXCM_EULA`
 
-このRunでは件数・coverageだけを確認し、Return、Return符号、MFE、MAE、勝敗、勝率、
-PF、Drawdown、P値、信頼区間、順位、Outcomeを計算・表示しないでください。
-Run完了後はArtifactを独立監査し、Count通過候補だけを次の別Return/OOS Gateへ進めます。
-後続Return/OOSはOutcome検定済み302/304/305とBatch 3通過候補を合わせた累積候補数で
-多重検定補正します。Count不通過候補は救済しません。
+Run完了後はArtifactを独立監査し、凍結済みGateの全条件を候補別に再計算・照合してください。通過候補がある場合だけ新期間・頑健性確認へ進め、不通過候補は閾値、方向、銘柄、timeframe、exit horizonを変更して救済しないでください。
 
 ## 厳守事項
 
