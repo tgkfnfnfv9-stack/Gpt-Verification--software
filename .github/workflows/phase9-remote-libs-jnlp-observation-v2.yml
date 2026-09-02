@@ -1,0 +1,110 @@
+name: phase9-remote-libs-jnlp-observation-v2
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirmation:
+        description: 'Type OBSERVE_PHASE9_REMOTE_LIBS_JNLP_IDENTITY_ONLY_NO_CONNECT_NO_SECRETS_V2'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: phase9-remote-libs-jnlp-observation-v2-single-use
+  cancel-in-progress: false
+
+jobs:
+  observe:
+    if: >-
+      ${{ github.repository == 'tgkfnfnfv9-stack/Gpt-Verification--software' &&
+          github.event_name == 'workflow_dispatch' &&
+          github.ref == 'refs/heads/main' &&
+          inputs.confirmation == 'OBSERVE_PHASE9_REMOTE_LIBS_JNLP_IDENTITY_ONLY_NO_CONNECT_NO_SECRETS_V2' &&
+          github.run_number == 1 &&
+          github.run_attempt == 1 }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout exact manually approved commit
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+          ref: ${{ github.sha }}
+
+      - name: Verify corrected frozen source evidence and exact one-shot Gate offline
+        shell: bash
+        run: |
+          bash research/phase9-hypothesis-redesign-20260828/runner/verify_phase9_remote_libs_jnlp_observation_v2_static.sh
+
+      - name: Initialize private identity-only evidence directory
+        id: initialize
+        shell: bash
+        run: |
+          set -euo pipefail
+          evidence="$RUNNER_TEMP/phase9-remote-libs-jnlp-v2-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          mkdir -m 0700 "$evidence"
+          echo "PHASE9_REMOTE_LIBS_JNLP_EVIDENCE=$evidence" >> "$GITHUB_ENV"
+
+      - name: Consume V2 approval with one exact libs JNLP identity request
+        shell: bash
+        env:
+          EXACT_CONFIRMATION: ${{ inputs.confirmation }}
+        run: |
+          set -euo pipefail
+          root='research/phase9-hypothesis-redesign-20260828'
+          command=(
+            python "$root/runner/phase9_remote_libs_jnlp_observer.py"
+            --gate "$root/spec/remote_libs_jnlp_observation_gate_v2.frozen.json"
+            --output "$PHASE9_REMOTE_LIBS_JNLP_EVIDENCE/REMOTE_LIBS_JNLP_OBSERVATION_AUDIT.json"
+            --confirmation "$EXACT_CONFIRMATION"
+            --github-event-name "$GITHUB_EVENT_NAME"
+            --github-ref "$GITHUB_REF"
+            --github-sha "$GITHUB_SHA"
+            --github-run-id "$GITHUB_RUN_ID"
+            --github-run-number "$GITHUB_RUN_NUMBER"
+            --github-run-attempt "$GITHUB_RUN_ATTEMPT"
+            --github-job "$GITHUB_JOB"
+          )
+          clean_env=(
+            env
+            -u http_proxy -u https_proxy -u HTTP_PROXY -u HTTPS_PROXY
+            -u ALL_PROXY -u all_proxy -u NO_PROXY -u no_proxy -u SSLKEYLOGFILE
+            PYTHONDONTWRITEBYTECODE=1
+          )
+          "${clean_env[@]}" "${command[@]}"
+
+      - name: Seal exact price-free identity evidence
+        id: seal
+        if: ${{ always() && steps.initialize.outcome == 'success' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          root='research/phase9-hypothesis-redesign-20260828'
+          evidence="$PHASE9_REMOTE_LIBS_JNLP_EVIDENCE"
+          audit="$evidence/REMOTE_LIBS_JNLP_OBSERVATION_AUDIT.json"
+          test -f "$audit"
+          test ! -L "$audit"
+          only_member="$(find "$evidence" -mindepth 1 -maxdepth 1 -type f -printf '%f\n')"
+          test "$only_member" = 'REMOTE_LIBS_JNLP_OBSERVATION_AUDIT.json'
+          cd "$evidence"
+          sha256sum REMOTE_LIBS_JNLP_OBSERVATION_AUDIT.json > artifact_manifest_sha256.txt
+          cd "$GITHUB_WORKSPACE"
+          chmod 0600 "$evidence"/*
+          PYTHONDONTWRITEBYTECODE=1 python "$root/runner/verify_phase9_remote_libs_jnlp_observation_v2.py" artifact --directory "$evidence"
+          test -z "$(find "$evidence" -type f \( -iname '*.jnlp' -o -iname '*.jar' -o -iname '*.csv' \) -print -quit)"
+          test "$(find "$evidence" -mindepth 1 -maxdepth 1 -type f | wc -l)" = '2'
+          test -z "$(git status --porcelain)"
+
+      - name: Upload exact identity-only Artifact
+        if: ${{ always() && steps.seal.outcome == 'success' }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: phase9-remote-libs-jnlp-observation-v2-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ env.PHASE9_REMOTE_LIBS_JNLP_EVIDENCE }}/
+          if-no-files-found: error
+          retention-days: 14
+          include-hidden-files: false

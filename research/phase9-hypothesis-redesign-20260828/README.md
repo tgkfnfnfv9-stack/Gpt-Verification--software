@@ -1,6 +1,6 @@
 # Phase 9 Hypothesis Redesign
 
-更新日: 2026-09-01
+更新日: 2026-09-02
 状態: `FROZEN_PREREGISTERED_ACQUISITION_BLOCKED`
 
 最初に [PHASE9_OPERATIONS_GUIDE.md](./PHASE9_OPERATIONS_GUIDE.md) を読みます。全手順、仮説一覧、GitHub取得方法、サブエージェント分担、Gate、禁止事項、更新・引き継ぎ方法の運用正本です。
@@ -38,6 +38,15 @@ identity-only Gateを固定しました。Workflowは
 `.github/workflows/phase9-remote-libs-jnlp-observation.yml`で、完全一致の
 手動確認が別承認になります。資格情報、JForex接続、resource/JAR取得・実行、
 schedule、availability、価格、Count-only、Outcomeへの認可効果はありません。
+
+V1 workflow Run `33574659277`はoffline static verificationに混入した
+literal `+`で通信前に失敗し、DNS/TCP/HTTP requestは0回でした。Run
+`33575321670`はsingle-use条件でskippedです。V1認可は消費済みで再実行せず、
+`JFOREX_REMOTE_LIBS_JNLP_OBSERVATION_REAUTHORIZATION_V2.md`、
+`spec/remote_libs_jnlp_observation_gate_v2.frozen.json`、
+`.github/workflows/phase9-remote-libs-jnlp-observation-v2.yml`に新しい完全一致
+手動承認を必要とする修正版V2を固定しました。V2もprice、Count-only、Outcomeを
+一切扱いません。
 
 Local M1は`runner/jforex-metadata`、`spec/metadata_owned_method_allowlist.frozen.json`、uplinkなしの独立client/server namespace＋exact `/32` host route＋Landlock/seccomp、専用private custodyとして実装しました。専用moduleは既存price acquirerを物理的に含まず、凍結local synthetic API fixtureでowned bytecodeのDukascopy method referenceをexact-matchします。これは実JForex API 2.13.99 JAR/runtime互換性の証明ではなく、その検証は残Blockerです。初期remote JNLP identity観測はRun `33500446289`で完了・独立監査済みで、初期URLの再実行は禁止されています。次のlibs JNLP観測は別workflowの完全一致手動確認が必要です。価格・schedule inventory・Outcomeは引き続き0/未計算です。
 

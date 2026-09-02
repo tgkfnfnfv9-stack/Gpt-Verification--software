@@ -22,6 +22,9 @@ sys.modules[SPEC.name] = utility
 SPEC.loader.exec_module(utility)
 
 EXACT_CONFIRMATION = "OBSERVE_PHASE9_REMOTE_LIBS_JNLP_IDENTITY_ONLY_NO_CONNECT_NO_SECRETS"
+EXACT_CONFIRMATION_V2 = (
+    "OBSERVE_PHASE9_REMOTE_LIBS_JNLP_IDENTITY_ONLY_NO_CONNECT_NO_SECRETS_V2"
+)
 EXACT_URL = "https://platform.dukascopy.com/demo_3/libs_3.jnlp"
 EXACT_HOST = "platform.dukascopy.com"
 EXACT_PORT = 443
@@ -55,8 +58,8 @@ def git_blob_sha(value: bytes) -> str:
     return hashlib.sha1(f"blob {len(value)}\0".encode("ascii") + value).hexdigest()
 
 
-def configure_utility() -> None:
-    utility.EXACT_CONFIRMATION = EXACT_CONFIRMATION
+def configure_utility(confirmation: str = EXACT_CONFIRMATION) -> None:
+    utility.EXACT_CONFIRMATION = confirmation
     utility.EXACT_URL = EXACT_URL
     utility.EXACT_HOST = EXACT_HOST
     utility.EXACT_PORT = EXACT_PORT
@@ -105,10 +108,15 @@ def validate_source_evidence(gate: dict) -> None:
 def validate_gate(path: Path) -> tuple[dict, str]:
     raw = utility.require_regular_file(path, "gate").read_bytes()
     gate = json.loads(raw)
-    if gate.get("schema_version") != "phase9-remote-libs-jnlp-observation-gate-v1.0":
+    schema = gate.get("schema_version")
+    if schema not in {
+        "phase9-remote-libs-jnlp-observation-gate-v1.0",
+        "phase9-remote-libs-jnlp-observation-gate-v2.0",
+    }:
         raise ObservationError("unexpected gate schema")
     approval = gate.get("single_use_authorization", {})
-    if approval != {
+    expected_confirmation = EXACT_CONFIRMATION
+    expected_approval = {
         "user_approved": True,
         "approval_is_effective_only_after_exact_manual_confirmation": True,
         "workflow_dispatch_authorized_once": True,
@@ -117,7 +125,20 @@ def validate_gate(path: Path) -> tuple[dict, str]:
         "required_github_run_attempt": 1,
         "retry_authorized": False,
         "replay_authorized": False,
-    }:
+    }
+    if schema == "phase9-remote-libs-jnlp-observation-gate-v2.0":
+        expected_confirmation = EXACT_CONFIRMATION_V2
+        expected_approval = {
+            "repository_preapproval": False,
+            "exact_manual_dispatch_is_approval": True,
+            "workflow_dispatch_authorized_once": True,
+            "authorization_consumed_on": "FIRST_WORKFLOW_DISPATCH_REGARDLESS_OF_RESULT",
+            "required_github_run_number": 1,
+            "required_github_run_attempt": 1,
+            "retry_authorized": False,
+            "replay_authorized": False,
+        }
+    if approval != expected_approval:
         raise ObservationError("single-use authorization mismatch")
     scope = gate.get("exact_scope", {})
     expected_scope = {
@@ -140,7 +161,7 @@ def validate_gate(path: Path) -> tuple[dict, str]:
             parsed.fragment, parsed.username, parsed.password) != (
                 "https", EXACT_HOST, None, EXACT_PATH, "", "", None, None):
         raise ObservationError("exact URL decomposition mismatch")
-    if gate.get("approval_context", {}).get("exact_confirmation") != EXACT_CONFIRMATION:
+    if gate.get("approval_context", {}).get("exact_confirmation") != expected_confirmation:
         raise ObservationError("approval confirmation mismatch")
     if any(value is not False for value in gate.get("adjacent_authorizations", {}).values()):
         raise ObservationError("adjacent authorization enabled")
@@ -169,12 +190,16 @@ def validate_gate(path: Path) -> tuple[dict, str]:
     }:
         raise ObservationError("scientific state mismatch")
     validate_source_evidence(gate)
-    configure_utility()
+    configure_utility(expected_confirmation)
     return gate, sha256_bytes(raw)
 
 
-def observe(args: argparse.Namespace, gate_sha256: str) -> dict:
-    configure_utility()
+def observe(
+    args: argparse.Namespace,
+    gate_sha256: str,
+    expected_confirmation: str = EXACT_CONFIRMATION,
+) -> dict:
+    configure_utility(expected_confirmation)
     audit = utility.observe(args, gate_sha256)
     audit["schema_version"] = "phase9-remote-libs-jnlp-observation-audit-v1.0"
     audit["status"] = STATUS_MAP.get(audit["status"], audit["status"])
@@ -187,8 +212,9 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
 
 def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv)
-    _gate, gate_sha256 = validate_gate(args.gate)
-    audit = observe(args, gate_sha256)
+    gate, gate_sha256 = validate_gate(args.gate)
+    expected_confirmation = gate["approval_context"]["exact_confirmation"]
+    audit = observe(args, gate_sha256, expected_confirmation)
     utility.write_new_json(args.output, audit)
     print(json.dumps({
         "status": audit["status"],
