@@ -44,7 +44,9 @@ Actual Full-QC実装基準: `9eb7ce667bea8e76a7f9bb1f2d378eebd8957206`
   新しい独立価格MTF仮説305〜308を別batchとして結果未閲覧で事前登録した。
   Count-only Run `33585508306`はsuccess。305だけが441 episodesでPASS、306〜308は
   件数Gate未達で不採用。初回Return workflowは二重dispatchによりRun #1がcheckout中cancel、
-  Run #2がskip。取得・Return・Outcomeは未開始。次の単一作業は専用recovery manual Run #1。
+  Run #2がskip。取得・Return・Outcome未開始を監査後、専用recovery Run `33587536789`を
+  実行。305はIS mean R -0.1629、OOS -0.3254、OOS PF 0.7471で不採用。
+  Outcome検定済み302/304/305は全件不採用。次は新しい独立mechanism batchを事前登録する。
 
 ## 1. この引継ぎの結論
 
@@ -52,7 +54,8 @@ Phase 9では、実価格データを受け入れて検査するActual Full-QC�
 Exploratory FXCMではRun `33508634314`でdirect m1/H1取得、M15/H4/D1生成、
 FX8 × 4時間足 × BID/ASKの64系列QCまで完了した。既存7候補のCount-onlyは
 Return Gate通過0件で、Return/Outcomeは未計算。現在は、Count-onlyを通過した305だけの
-Return/OOS Gateを実行する段階である。Formal provider
+Return/OOSまで完了し、305も不採用となった。次は302/304/305を救済せず、新しい独立
+mechanism batchを結果閲覧前に事前登録する段階である。Formal provider
 scheduleと金銀・Energyのblockerは別trackに残し、探索を遅らせない。
 
 ```text
@@ -81,7 +84,9 @@ Exploratory FX8 MTF 64系列
 新しい独立MTF仮説batch
   ↓ Count完了：305 PASS、306〜308 REJECT（救済なし）
 305 Return-OOS
-  ↓ NEXT: 累積3候補Bonferroni補正済みmanual Run #1
+  ↓ REJECT、edge PASS 0件、救済なし
+新しい独立mechanism batch
+  ↓ NEXT: preregister before Count
 Provider schedule source readiness
   ↓ P0 BLOCKED（公式version付き完全履歴source未固定）
 Metadata-only JForex amendment / static Gate
@@ -157,6 +162,7 @@ Provider schedule inventory / allowlist
 56. `.github/workflows/phase9-exploratory-fxcm-blind-mtf-batch2-return-oos.yml`
 57. `research/phase9-exploratory-fxcm-20260901/results/run-33587087527/BATCH2_RETURN_PREOUTCOME_CANCELLATION_AUDIT.json`
 58. `.github/workflows/phase9-exploratory-fxcm-blind-mtf-batch2-return-oos-recovery.yml`
+59. `research/phase9-exploratory-fxcm-20260901/results/run-33587536789/BLIND_MTF_BATCH2_RETURN_OOS_INDEPENDENT_AUDIT.json`
 
 凍結仕様の優先順位は、candidate registry、data requirements、preregistered policy。Markdown要約で凍結仕様を変更しない。
 
@@ -176,7 +182,7 @@ Provider schedule inventory / allowlist
 | MTF最終必要系列 | FX8 × M15/H1/H4/D1 × BID/ASK = 64系列 |
 | Actual Full-QC | 契約実装済み、実データでは未実行 |
 | Count-only | 302/304と305が通過。301/303/306/307/308は不採用 |
-| Return検証・バックテスト | 302/304完了・両方不採用。305は実行待ち |
+| Return検証・バックテスト | 302/304/305完了、全件不採用 |
 | 確認済みPhase 9優位性 | 0件 |
 | MT5 EA | 実装禁止 |
 | `acquisition_authorized` | `false` |

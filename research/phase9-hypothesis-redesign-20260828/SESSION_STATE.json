@@ -1,7 +1,7 @@
 {
   "project": "auto-trading-research",
   "updated_at": "2026-09-02",
-  "phase": "PHASE9_EXPLORATORY_BLIND_MTF_BATCH2_RETURN_OOS_GATE_IMPLEMENTED_PENDING_MANUAL_RUN",
+  "phase": "PHASE9_EXPLORATORY_BLIND_MTF_BATCH2_RETURN_OOS_COMPLETE_NO_EDGE_NEXT_INDEPENDENT_MECHANISM_BATCH",
   "phase8": {
     "formal_hypotheses_including_pa002": 16,
     "decision": "ALL_REJECT_FOR_DEVELOPMENT",
@@ -195,7 +195,7 @@
     "future_return_gate_must_include_prior_two_outcome_candidates_in_multiplicity_correction": true
   },
   "exploratory_blind_mtf_batch2_return_oos_gate": {
-    "status": "ORIGINAL_RUN1_CANCELLED_PREOUTCOME_RUN2_SKIPPED_RECOVERY_GATE_PENDING",
+    "status": "RECOVERY_RUN_33587536789_SUCCESS_INDEPENDENT_AUDIT_PASS_NO_EDGE_CANDIDATE",
     "formal_phase9_authorization_effect": false,
     "workflow": ".github/workflows/phase9-exploratory-fxcm-blind-mtf-batch2-return-oos.yml",
     "contract": "../phase9-exploratory-fxcm-20260901/spec/fxcm_blind_mtf_batch2_return_oos_v1.frozen.json",
@@ -210,8 +210,8 @@
     "prior_outcome_tested_candidate_count": 2,
     "cumulative_outcome_tested_candidate_count": 3,
     "bonferroni_one_sided_alpha_each": 0.016666666666666666,
-    "return_calculated": false,
-    "research_outcomes_calculated": false,
+    "return_calculated": true,
+    "research_outcomes_calculated": true,
     "cancelled_run_id": 33587087527,
     "skipped_duplicate_run_id": 33587087557,
     "cancelled_before_acquisition": true,
@@ -220,7 +220,22 @@
     "recovery_workflow": ".github/workflows/phase9-exploratory-fxcm-blind-mtf-batch2-return-oos-recovery.yml",
     "recovery_confirmation": "RUN_EXPLORATORY_FXCM_BLIND_MTF_BATCH2_RETURN_OOS_RECOVERY_PREOUTCOME_CANCEL_2017_2018_V1",
     "recovery_single_use_run_number": 1,
-    "recovery_single_use_run_attempt": 1
+    "recovery_single_use_run_attempt": 1,
+    "completed_recovery_run_id": 33587536789,
+    "completed_recovery_job_id": 100114702808,
+    "completed_artifact_id": 9830865694,
+    "artifact_zip_sha256": "f5d3e7234ed7c438ace9d83c414701aff7c5b92cae57957d316946d70f4d359c",
+    "results": {
+      "EXP-P9-MTF-305": {
+        "is_mean_r": -0.1628590969,
+        "oos_mean_r": -0.3253655373,
+        "oos_profit_factor": 0.7470933829,
+        "oos_bootstrap_lower_mean_r": -0.7277185378,
+        "pass": false
+      }
+    },
+    "exploratory_edge_pass_candidates": [],
+    "next_gate": "NEW_INDEPENDENT_MECHANISM_BATCH_NO_RESCUE_OF_302_304_OR_305"
   },
   "provider_acquisition": {
     "status": "ACTUAL_FULL_QC_CONTRACT_FROZEN_PROVIDER_SCHEDULE_SOURCE_P0_BLOCKED",

@@ -196,3 +196,17 @@ H1 mid ATR14正規化、2017 IS / 2018 OOS。date-cluster bootstrapは20,000回�
 Run `33587087557` #2はsingle-use guardでskip。両Runとも取得、signal rebuild、Return、
 Outcome、artifact生成は未開始であることを独立監査した。統計・signal・exit仕様は変更せず、
 pending Run #1をduplicateが置換しない専用recovery workflowへ移行する。
+
+### Batch 2 Return/OOS Recovery Run 33587536789
+
+Run #1 / attempt #1は全step success。Artifact `9830865694`（ZIP SHA-256
+`f5d3e7234ed7c438ace9d83c414701aff7c5b92cae57957d316946d70f4d359c`）を
+独立検証し、exact 2 files、manifest一致、価格・trade row・timestamp保存0を確認した。
+
+| Candidate | 2017 mean R | 2018 OOS mean R | OOS PF | Bootstrap lower | Decision |
+|---|---:|---:|---:|---:|---|
+| EXP-P9-MTF-305 | -0.1629 | -0.3254 | 0.7471 | -0.7277 | REJECT |
+
+305はIS/OOSとも負で、OOSの全四半期平均も負。累積3候補補正後のbootstrap下限も負。
+threshold、direction、symbol、exit horizonを変更せず不採用とする。現在の探索的
+Outcome検定済み候補302/304/305は全件不採用、確認済みedge候補は0件。
