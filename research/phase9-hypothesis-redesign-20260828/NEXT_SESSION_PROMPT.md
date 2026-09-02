@@ -31,8 +31,10 @@ GitHub Repository `tgkfnfnfv9-stack/Gpt-Verification--software` のPhase 9自動
 22. `research/phase9-exploratory-fxcm-20260901/runner/fxcm_blind_mtf_count_only_v5.py`
 23. `research/phase9-exploratory-fxcm-20260901/results/run-33607154053/BLIND_MTF_BATCH5_COUNT_ONLY_INDEPENDENT_AUDIT.json`
 24. `research/phase9-exploratory-fxcm-20260901/spec/fxcm_blind_mtf_batch5_return_oos_v1.frozen.json`
-25. `research/phase9-exploratory-fxcm-20260901/runner/fxcm_blind_mtf_batch5_return_oos.py`
-26. `.github/workflows/phase9-exploratory-fxcm-blind-mtf-batch5-return-oos.yml`
+25. `research/phase9-exploratory-fxcm-20260901/results/run-33610462879/BLIND_MTF_BATCH5_RETURN_OOS_INDEPENDENT_AUDIT.json`
+26. `research/phase9-exploratory-fxcm-20260901/spec/fxcm_blind_mtf_candidates_v6.frozen.json`
+27. `research/phase9-exploratory-fxcm-20260901/runner/fxcm_blind_mtf_count_only_v6.py`
+28. `.github/workflows/phase9-exploratory-fxcm-blind-mtf-batch6-count-only.yml`
 
 必ず最新remote `main`を再確認し、workflowが公開済みのcommitと一致することを確認してください。
 
@@ -74,9 +76,10 @@ GPT側で複数銘柄・複数時間足の実データを使い、結果後の�
 - 316: Count 1018、Return/OOS REJECT
 - 317: Count 759、REJECT
 - 318: Count 148、REJECT
-- 319: Count 948、Return/OOS未実行
+- 319: Count 948、Return/OOS REJECT
 - 320: Count 664、REJECT
-- Outcome検定済み302/304/305/311/312/316は全件不採用
+- 321〜324: Batch 6事前登録済み、Count未実行
+- Outcome検定済み302/304/305/311/312/316/319は全件不採用
 - 確認済みExploratory edgeは0件
 
 ## Batch 3 Count-only完了
@@ -150,7 +153,7 @@ exact 2 files、manifest、価格0、Return/Outcome未計算を独立監査済�
 - 316: completed 951/1018、IS mean R -0.0729、OOS mean R +0.0260、PF 1.0305、bootstrap lower -0.1522、REJECT
 - edge PASS 0件。316は救済しない
 
-## Batch 5 Count-only完了・Return/OOS事前登録済み
+## Batch 5 Count-only・Return/OOS完了
 
 - 317: Asia-session range → London breakout persistence
 - 318: expanded D1 bar extreme-close persistence
@@ -169,24 +172,38 @@ exact 2 files、manifest、価格0、Return/Outcome未計算を独立監査済�
 - splitは2017 IS / 2018 OOS、spread込み12時間固定return
 - 過去6候補を含む累積7候補Bonferroni、片側alpha `0.05 / 7`
 - minimum OOS outcomesは220。全Gate通過時だけ新期間・頑健性へ進む
+- Return/OOS Run `33610462879`は全step success、Artifact `9839175222`
+- ZIP SHA-256 `ad314ba122d297c213ef96c09905ff3c9e3388dc4ef4712d8b3c7d8a586fe3d1`
+- 319: completed 879/948、IS mean R -0.0750、OOS mean R -0.1259、PF 0.8780、bootstrap lower -0.4417、REJECT
+- 追加Run `33610463307`（#2）はskip、Artifact 0
+- 319は救済しない。確認済みedgeは0件
+
+## Batch 6事前登録済み
+
+- 321: H1 directional path-efficiency continuation
+- 322: H1 same-sign return-run exhaustion reversal
+- 323: turn-of-month prior-month momentum
+- 324: Friday weekly-stretch position-squaring reversal
+- 301〜320とは独立したmechanismとしてBatch 6 Count前に固定済み
+- Count-onlyではReturn、勝敗、PF、P値、Outcomeを計算・表示しない
 
 ## 次の単一作業
 
-公開済みの`.github/workflows/phase9-exploratory-fxcm-blind-mtf-batch5-return-oos.yml`を
+公開済みの`.github/workflows/phase9-exploratory-fxcm-blind-mtf-batch6-count-only.yml`を
 Run #1 / attempt #1として1回だけ手動実行してください。
 
 実行リンク:
-`https://github.com/tgkfnfnfv9-stack/Gpt-Verification--software/actions/workflows/phase9-exploratory-fxcm-blind-mtf-batch5-return-oos.yml`
+`https://github.com/tgkfnfnfv9-stack/Gpt-Verification--software/actions/workflows/phase9-exploratory-fxcm-blind-mtf-batch6-count-only.yml`
 
 入力値:
 
 confirmation:
-`RUN_EXPLORATORY_FXCM_BLIND_MTF_BATCH5_RETURN_OOS_2017_2018_V1`
+`RUN_EXPLORATORY_FXCM_BLIND_MTF_BATCH6_COUNT_ONLY_2017_2018_V1`
 
 usage_confirmation:
 `I_CONFIRM_PERSONAL_NONCOMMERCIAL_USE_AND_ACCEPT_FXCM_EULA`
 
-Run完了後はArtifactを独立監査し、319が全固定条件を通過した場合だけ新期間・頑健性Gateを別途凍結してください。不通過なら救済せず不採用としてください。
+Run完了後はArtifactを独立監査し、Count通過候補だけを過去7候補を含む累積多重検定補正Return/OOS Gateへ進めてください。不通過候補は救済しないでください。
 
 ## 厳守事項
 

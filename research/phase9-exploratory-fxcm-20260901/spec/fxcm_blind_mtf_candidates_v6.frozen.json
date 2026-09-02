@@ -1,0 +1,105 @@
+{
+  "schema_version": "phase9-exploratory-fxcm-blind-mtf-candidates-v6.0.0",
+  "status": "FROZEN_AFTER_BATCH5_REJECTION_BEFORE_FIRST_BATCH6_SIGNAL_COUNT",
+  "recorded_at_utc": "2026-09-02T09:03:00Z",
+  "purpose": "Preregister a sixth independent FX8 mechanism batch before any Batch 6 Count, Return, win/loss, PF, p-value or Outcome is calculated or viewed.",
+  "selection_integrity": {
+    "prior_candidates_301_through_320_rescued": false,
+    "prior_threshold_direction_symbol_timeframe_or_exit_rescue_allowed": false,
+    "prior_outcomes_used_to_choose_batch6_rules_or_thresholds": false,
+    "batch6_count_or_outcome_viewed_before_freeze": false,
+    "frequency_thresholds_selected_from_opportunity_geometry_before_batch6_count": true,
+    "future_return_familywise_correction_must_include_prior_seven_outcome_candidates": true
+  },
+  "anchors": {
+    "base_count_utility_sha256": "2991575f471c19de35d04ae21d276cc25d52d9fb705587a8259f70d43639cdad",
+    "mtf_qc_runner_sha256": "09da37be5955dcf142752d70dc21542f21e5ea71835c7f1073e68f52585971cd",
+    "canonical_mtf_report_sha256": "4d7f77caa5333e017742e01606aa869f3845aa4c4f206563e2fd59e02b1e1063",
+    "batch1_candidate_contract_sha256": "8d832dbf779098d00c731d87547b30ed6944ee2c227d505e540ea95a7efaa1e3",
+    "batch2_candidate_contract_sha256": "4fac27599445d7dc28b7cffc99c8c6fdd19c640e2fb0fca1a90b9d5f799bc615",
+    "batch3_candidate_contract_sha256": "54b73dcf66ced89abc9a33cc68689af7d3180ee7ed4c0db329ab49f24d7faa7e",
+    "batch4_candidate_contract_sha256": "cc2c6ef49b8e8119f48406311d0cd8ba06803c063b92593425681dff7c7c63e9",
+    "batch5_candidate_contract_sha256": "88cffdcc16e058c09c6309f618d7eab1bb4558b6210469786c6bc40bc3bc0265",
+    "latest_outcome_audit_sha256": "319c543cb1630622e46d4f759b856e080a4a1c5b26763475eeb575afc08d5545"
+  },
+  "dataset": {
+    "provider": "FXCM_CANDLEDATA_PERSONAL_NONCOMMERCIAL",
+    "symbols": ["AUDJPY", "AUDUSD", "EURGBP", "EURJPY", "EURUSD", "GBPJPY", "GBPUSD", "USDJPY"],
+    "start_inclusive": "2017-01-01T00:00:00Z",
+    "end_exclusive": "2018-12-31T00:00:00Z",
+    "available_timeframes": ["M15", "H1", "H4", "D1"],
+    "available_sides": ["BID", "ASK"],
+    "count_price_basis": "MID_FROM_QC_PASSED_BID_ASK",
+    "forward_fill_or_interpolation": false,
+    "persistent_prices": false
+  },
+  "common_rules": {
+    "closed_bars_only": true,
+    "entry_exists_at_next_observed_h1_bar": true,
+    "overlap_collapse_hours": 12,
+    "primary_episode_definition": "EARLIEST_SIGNAL_PER_OVERLAP_COMPONENT",
+    "atr_period": 14,
+    "forward_outcome_access": false,
+    "candidate_ranking": false
+  },
+  "candidates": {
+    "EXP-P9-MTF-321": {
+      "name": "H1 Directional Path-Efficiency Continuation",
+      "mechanism": "A 24-observation H1 path with a large net displacement and little backtracking represents persistent order flow; continue in the net direction.",
+      "mechanism_family": "DIRECTIONAL_PATH_EFFICIENCY",
+      "signal_timeframe": "H1",
+      "return_observations": 24,
+      "path_efficiency_ratio_min": 0.65,
+      "minimum_net_atr_normalized_move": 1.0,
+      "frequency_gate": {"episodes_min": 400, "active_dates_min": 240, "instruments_min_30": 6, "max_instrument_share": 0.22, "each_year_share_min": 0.30}
+    },
+    "EXP-P9-MTF-322": {
+      "name": "H1 Same-Sign Run Exhaustion Reversal",
+      "mechanism": "The first completion of six consecutive same-sign H1 close changes with a large cumulative move marks short-horizon directional exhaustion; reverse once at the run boundary.",
+      "mechanism_family": "RETURN_SIGN_RUN_EXHAUSTION",
+      "signal_timeframe": "H1",
+      "consecutive_same_sign_changes": 6,
+      "minimum_run_atr_normalized_move": 1.25,
+      "first_completion_of_run_only": true,
+      "zero_change_breaks_run": true,
+      "frequency_gate": {"episodes_min": 180, "active_dates_min": 150, "instruments_min_15": 6, "max_instrument_share": 0.22, "each_year_share_min": 0.30}
+    },
+    "EXP-P9-MTF-323": {
+      "name": "Turn-of-Month Prior-Month Momentum",
+      "mechanism": "At 08:00 UTC on the first observed trading date of each month, continue the direction of the preceding 20 completed D1 closes when displacement is material relative to pre-decision D1 ATR.",
+      "mechanism_family": "TURN_OF_MONTH_MOMENTUM",
+      "signal_timeframe": "D1_TO_H1",
+      "fixed_entry_decision_hour_utc": 8,
+      "completed_d1_lookback": 20,
+      "minimum_prior_month_atr_normalized_move": 1.0,
+      "first_observed_trading_date_of_month_only": true,
+      "frequency_gate": {"episodes_min": 120, "active_dates_min": 18, "instruments_min_12": 6, "max_instrument_share": 0.20, "each_year_share_min": 0.30}
+    },
+    "EXP-P9-MTF-324": {
+      "name": "Friday Weekly Stretch Position-Squaring Reversal",
+      "mechanism": "At the fixed Friday 16:00 UTC H1 bar, a four-day displacement is reversed only when that bar retraces a fixed fraction of the stretch, representing weekly position reduction.",
+      "mechanism_family": "FRIDAY_POSITION_SQUARING_REVERSAL",
+      "signal_timeframe": "H1",
+      "fixed_confirmation_weekday_utc": 4,
+      "fixed_confirmation_bar_open_hour_utc": 16,
+      "displacement_lookback_hours": 96,
+      "minimum_displacement_atr_normalized_move": 1.25,
+      "same_bar_retrace_fraction_min": 0.15,
+      "frequency_gate": {"episodes_min": 160, "active_dates_min": 80, "instruments_min_15": 6, "max_instrument_share": 0.22, "each_year_share_min": 0.30}
+    }
+  },
+  "mechanism_independence": {
+    "EXP-P9-MTF-321": {"independent_of_301_320": "Uses net displacement divided by total absolute H1 path length. It does not use boundaries, EMA alignment, semivariance, calendar timing or cross-sectional ranks."},
+    "EXP-P9-MTF-322": {"independent_of_301_320": "Uses the exact run length of return signs and triggers only at first run completion. No prior candidate defines an event from consecutive close-change signs."},
+    "EXP-P9-MTF-323": {"independent_of_301_320": "Uses the first trading date of each month and prior 20 completed D1 momentum. Unlike 314 it is month-start continuation rather than last-date 16:00 reversal; unlike 315 it is not cross-sectional or Monday-only."},
+    "EXP-P9-MTF-324": {"independent_of_301_320": "Uses a fixed Friday 16:00 weekly position-squaring reversal after a four-day displacement. It is not month-end fixing, weekend opening-gap reversion or a daily fixed-hour impulse."}
+  },
+  "next_gate": {
+    "count_only_first": true,
+    "return_gate_only_for_frequency_passers": true,
+    "future_cumulative_outcome_tested_candidate_count": "7_PLUS_NUMBER_OF_BATCH6_FREQUENCY_PASSERS",
+    "familywise_alpha": 0.05,
+    "return_and_oos_in_count_run": false,
+    "outcome_fields": []
+  }
+}

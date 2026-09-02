@@ -100,7 +100,13 @@ Batch 5 Count-only Run `33607154053`はsuccessです。317=759、318=148、319=9
 320=664 episodesで、319だけが固定frequency Gateを通過しました。このRunではReturn、
 勝敗、PF、P値、Outcomeを計算・表示せず、価格も保存していません。317/318/320は救済せず、
 319専用の2017 IS / 2018 OOS、spread込み12時間固定return、累積7候補Bonferroni契約を
-Return閲覧前に凍結しました。次はそのsingle-use manual workflowを1回だけ実行します。
+Return閲覧前に凍結し、そのsingle-use manual workflowを実行しました。
+
+Batch 5 Return/OOS Run `33610462879`では319も不採用となりました。2017 IS mean R
+-0.0750、2018 OOS mean R -0.1259、OOS PF 0.8780、補正後bootstrap下限-0.4417で、
+固定GateのOOS最低件数以外を通過していません。追加Run #2はskipされ、研究効果0です。
+Outcome検定済み7候補は全件不採用、確認済みedgeは0件です。319を救済せず、独立mechanism
+321〜324をBatch 6 Count閲覧前に事前登録し、Count-only Gateを実装しました。
 
 Local M1は`runner/jforex-metadata`、`spec/metadata_owned_method_allowlist.frozen.json`、uplinkなしの独立client/server namespace＋exact `/32` host route＋Landlock/seccomp、専用private custodyとして実装しました。専用moduleは既存price acquirerを物理的に含まず、凍結local synthetic API fixtureでowned bytecodeのDukascopy method referenceをexact-matchします。これは実JForex API 2.13.99 JAR/runtime互換性の証明ではなく、その検証は残Blockerです。初期remote JNLP identity観測はRun `33500446289`、libs JNLP identity観測はRun `33577505327`で完了・独立監査済みで、両URLの再実行は禁止されています。Formal価格・schedule inventory・Outcomeは引き続き0/未計算です。
 

@@ -1,0 +1,138 @@
+{
+  "bonferroni_one_sided_alpha_each": 0.0071428571428571435,
+  "canonical_mtf_report_sha256": "4d7f77caa5333e017742e01606aa869f3845aa4c4f206563e2fd59e02b1e1063",
+  "contract_sha256": "0a3d483929d890e1391e2b382a4bca4fa9bc6cc4968243df2c7fa16f6e27e972",
+  "count_result_sha256": "f94a3c953fed409f0dc14bd40865770979223001fc4ceeb084cb672e39b9a1d3",
+  "cumulative_outcome_tested_candidate_count": 7,
+  "current_mtf_report_sha256": "56547414c7d8ae0b447749b0979bddfd82bafc4305515870486a63e00126e60a",
+  "exploratory_edge_pass_candidates": [],
+  "formal_phase9_authorization_effect": false,
+  "multiplicity_method": "BONFERRONI_ACROSS_ALL_OUTCOME_TESTED_EXPLORATORY_CANDIDATES",
+  "next_gate": "NO_CANDIDATE_FOR_ROBUSTNESS_GATE",
+  "nonpasser_rescue_performed": false,
+  "outcome_fields": [
+    "spread_inclusive_atr_normalized_return",
+    "mean_r",
+    "median_r",
+    "sum_r",
+    "win_rate",
+    "profit_factor",
+    "max_chronological_drawdown_r",
+    "date_cluster_bootstrap_lower_mean_r"
+  ],
+  "persistent_price_files_after_cleanup": 0,
+  "price_values_in_artifact": false,
+  "prior_outcome_tested_candidates": [
+    "EXP-P9-MTF-302",
+    "EXP-P9-MTF-304",
+    "EXP-P9-MTF-305",
+    "EXP-P9-MTF-311",
+    "EXP-P9-MTF-312",
+    "EXP-P9-MTF-316"
+  ],
+  "research_outcomes_calculated": true,
+  "result_dependent_rule_change": false,
+  "return_calculated": true,
+  "run_identity": {
+    "head_sha": "226d32156114e2e104ee2ad47fead4ddf98330ef",
+    "run_attempt": "1",
+    "run_id": "33610462879"
+  },
+  "schema_version": "phase9-exploratory-fxcm-blind-mtf-batch5-return-oos-result-v1.0.0",
+  "selected_candidates": [
+    "EXP-P9-MTF-319"
+  ],
+  "signal_or_entry_timestamps_in_artifact": false,
+  "status": "BLIND_MTF_BATCH5_RETURN_OOS_COMPLETE",
+  "strategy_results": [
+    {
+      "completed_outcome_count": 879,
+      "exploratory_edge_pass": false,
+      "formal_phase9_effect": false,
+      "gate_conditions": {
+        "in_sample_mean_r_strictly_positive": false,
+        "minimum_oos_outcomes": true,
+        "minimum_oos_profit_factor": false,
+        "minimum_outcome_completion_rate": false,
+        "minimum_positive_oos_calendar_quarters": false,
+        "minimum_positive_oos_instruments": false,
+        "oos_date_cluster_bootstrap_lower_bound_strictly_positive": false,
+        "oos_mean_r_strictly_positive": false
+      },
+      "in_sample_2017": {
+        "max_chronological_drawdown_r": 64.3681836101,
+        "mean_r": -0.0750324154,
+        "means_by_calendar_quarter": {
+          "2017-Q1": 0.1304925503,
+          "2017-Q2": -0.1289459323,
+          "2017-Q3": -0.3519014858,
+          "2017-Q4": 0.0524162709
+        },
+        "means_by_direction": {
+          "LONG": -0.1164003083,
+          "SHORT": -0.0334822852
+        },
+        "means_by_instrument": {
+          "AUDJPY": 0.0810398097,
+          "AUDUSD": -0.4252853609,
+          "EURGBP": -0.0514078475,
+          "EURJPY": -0.5313469526,
+          "EURUSD": 0.6657352604,
+          "GBPJPY": -0.2097839368,
+          "GBPUSD": 0.3319806704,
+          "USDJPY": -0.3287256889
+        },
+        "median_r": 0.0633770937,
+        "outcome_count": 455,
+        "positive_calendar_quarter_count": 2,
+        "positive_instrument_count": 3,
+        "profit_factor": 0.9204341937,
+        "sum_r": -34.1397490199,
+        "win_rate": 0.5142857143
+      },
+      "locked_primary_episode_count": 948,
+      "missing_exact_exit_or_atr_count": 69,
+      "oos_date_cluster_bootstrap": {
+        "lower_mean_r": -0.4417478024,
+        "one_sided_alpha": 0.0071428571428571435,
+        "resamples": 20000,
+        "seed": 9319
+      },
+      "out_of_sample_2018": {
+        "max_chronological_drawdown_r": 80.0393383739,
+        "mean_r": -0.1258546823,
+        "means_by_calendar_quarter": {
+          "2018-Q1": -0.0766881702,
+          "2018-Q2": -0.3060242726,
+          "2018-Q3": -0.0932599336,
+          "2018-Q4": -0.0458945906
+        },
+        "means_by_direction": {
+          "LONG": -0.4194225473,
+          "SHORT": 0.1704958164
+        },
+        "means_by_instrument": {
+          "AUDJPY": -0.1647178567,
+          "AUDUSD": 0.1127112521,
+          "EURGBP": -0.0382169703,
+          "EURJPY": 0.2526641373,
+          "EURUSD": -0.2771528144,
+          "GBPJPY": -0.0862326583,
+          "GBPUSD": -0.5316602922,
+          "USDJPY": -0.1810871408
+        },
+        "median_r": -0.040594459,
+        "outcome_count": 424,
+        "positive_calendar_quarter_count": 0,
+        "positive_instrument_count": 2,
+        "profit_factor": 0.877963721,
+        "sum_r": -53.3623853118,
+        "win_rate": 0.4882075472
+      },
+      "outcome_completion_rate": 0.9272151899,
+      "outcome_identity_sha256": "9573871e7fee80197ef6b044e3fc8e2d8547f5d6d3574659b017b12ae3110129",
+      "strategy_id": "EXP-P9-MTF-319"
+    }
+  ],
+  "trade_rows_in_artifact": false
+}

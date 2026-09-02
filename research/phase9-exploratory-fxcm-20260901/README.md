@@ -319,6 +319,35 @@ OOS PF 1.05以上、正のOOS銘柄5以上、正のOOS四半期3以上をすべ�
 timestampを含まないsummary 2ファイルだけとする。通過時もMT5へ直行せず、
 別の新期間・頑健性Gateを必須とする。
 
+### Batch 5 Return/OOS Run 33610462879
+
+Run #1 / attempt #1は全step success。Artifact `9839175222`（ZIP SHA-256
+`ad314ba122d297c213ef96c09905ff3c9e3388dc4ef4712d8b3c7d8a586fe3d1`）を
+独立検証し、exact 2 files、manifest一致、価格・trade row・timestamp保存0を確認した。
+追加dispatch Run `33610463307`（#2）はsingle-use guardでskip、Artifact 0である。
+
+| Candidate | Completed | 2017 mean R | 2018 OOS mean R | OOS PF | Bootstrap lower | Decision |
+|---|---:|---:|---:|---:|---:|---|
+| EXP-P9-MTF-319 | 879/948 | -0.0750 | -0.1259 | 0.8780 | -0.4417 | REJECT |
+
+319はOOS最低件数だけを通過し、completion、IS/OOS平均、補正後bootstrap下限、PF、
+銘柄breadth、四半期breadthを通過しなかった。条件変更をせず不採用とする。
+Outcome検定済み7候補は全件不採用で、確認済みedgeは0件である。
+
+## Blind MTF Batch 6 Count-only Preregistration
+
+301〜320を救済せず、次の独立mechanismを最初のBatch 6 Count閲覧前に
+`spec/fxcm_blind_mtf_candidates_v6.frozen.json`へ固定した。
+
+- `EXP-P9-MTF-321`: H1 directional path-efficiency continuation
+- `EXP-P9-MTF-322`: H1 same-sign return-run exhaustion reversal
+- `EXP-P9-MTF-323`: turn-of-month prior-month momentum
+- `EXP-P9-MTF-324`: Friday weekly-stretch position-squaring reversal
+
+専用workflowは件数・coverage・identityだけを計算する。Return、勝敗、PF、P値、信頼区間、
+順位、Outcomeは計算・表示・保存しない。通過候補がある場合だけ、既にOutcomeを検定した
+7候補を含む累積多重検定補正Return/OOS Gateを別途凍結する。
+
 ### Batch 3 Return/OOS Run 33593743345
 
 Run #1 / attempt #1は全step success。Artifact `9832993158`（ZIP SHA-256

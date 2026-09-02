@@ -1,0 +1,92 @@
+{
+  "schema_version": "phase9-exploratory-fxcm-blind-mtf-batch5-return-oos-independent-audit-v1.0.0",
+  "status": "INDEPENDENT_AUDIT_PASS_NO_EDGE_CANDIDATE",
+  "audited_at_utc": "2026-09-02T09:00:49Z",
+  "workflow_run": {
+    "run_id": 33610462879,
+    "run_number": 1,
+    "run_attempt": 1,
+    "job_id": 100184117251,
+    "head_sha": "226d32156114e2e104ee2ad47fead4ddf98330ef",
+    "conclusion": "success",
+    "all_steps_success": true
+  },
+  "duplicate_dispatch": {
+    "run_id": 33610463307,
+    "run_number": 2,
+    "job_id": 100184120537,
+    "conclusion": "skipped",
+    "artifact_count": 0,
+    "research_effect": false
+  },
+  "artifact": {
+    "artifact_id": 9839175222,
+    "name": "phase9-exploratory-fxcm-blind-mtf-batch5-return-oos-226d32156114e2e104ee2ad47fead4ddf98330ef-33610462879-1",
+    "github_size_in_bytes": 2299,
+    "zip_sha256": "ad314ba122d297c213ef96c09905ff3c9e3388dc4ef4712d8b3c7d8a586fe3d1",
+    "github_digest_match": true,
+    "zip_integrity_pass": true,
+    "exact_member_count": 2,
+    "unexpected_member_count": 0,
+    "manifest_verification_pass": true,
+    "members": {
+      "EXPLORATORY_FXCM_BLIND_MTF_BATCH5_RETURN_OOS.json": "35ef730b94c0928e235f966353a76e9d06928b9e79654126090dc2674a345f95",
+      "artifact_manifest_sha256.txt": "f8dae0cb5de88a71a1234652bd4f7a561ccd9ccb74923891a7fd0869a8603c77"
+    }
+  },
+  "identity_and_method_checks": {
+    "selected_candidates_exact": true,
+    "excluded_count_failures_not_evaluated": true,
+    "contract_sha256": "0a3d483929d890e1391e2b382a4bca4fa9bc6cc4968243df2c7fa16f6e27e972",
+    "count_result_sha256": "f94a3c953fed409f0dc14bd40865770979223001fc4ceeb084cb672e39b9a1d3",
+    "canonical_mtf_report_sha256": "4d7f77caa5333e017742e01606aa869f3845aa4c4f206563e2fd59e02b1e1063",
+    "current_mtf_report_sha256": "56547414c7d8ae0b447749b0979bddfd82bafc4305515870486a63e00126e60a",
+    "prior_outcome_tested_candidate_count": 6,
+    "cumulative_outcome_tested_candidate_count": 7,
+    "bonferroni_one_sided_alpha_each": 0.0071428571428571435,
+    "fixed_horizon_hours": 12,
+    "spread_inclusive_bid_ask_execution": true,
+    "split": {"in_sample": "2017", "out_of_sample": "2018"},
+    "count_and_completion_arithmetic_pass": true,
+    "gate_conditions_independently_reproduced": true,
+    "result_dependent_rule_change": false,
+    "nonpasser_rescue_performed": false
+  },
+  "candidate_decisions": {
+    "EXP-P9-MTF-319": {
+      "locked_primary_episode_count": 948,
+      "completed_outcome_count": 879,
+      "outcome_completion_rate": 0.9272151899,
+      "is_2017_mean_r": -0.0750324154,
+      "oos_2018_outcome_count": 424,
+      "oos_2018_mean_r": -0.1258546823,
+      "oos_2018_profit_factor": 0.877963721,
+      "oos_bootstrap_99_2857_percent_lower_mean_r": -0.4417478024,
+      "positive_oos_instrument_count": 2,
+      "positive_oos_calendar_quarter_count": 0,
+      "outcome_identity_sha256": "9573871e7fee80197ef6b044e3fc8e2d8547f5d6d3574659b017b12ae3110129",
+      "failed_conditions": [
+        "minimum_outcome_completion_rate",
+        "in_sample_mean_r_strictly_positive",
+        "oos_mean_r_strictly_positive",
+        "oos_date_cluster_bootstrap_lower_bound_strictly_positive",
+        "minimum_oos_profit_factor",
+        "minimum_positive_oos_instruments",
+        "minimum_positive_oos_calendar_quarters"
+      ],
+      "exploratory_edge_pass": false,
+      "decision": "REJECT_NO_THRESHOLD_DIRECTION_SYMBOL_TIMEFRAME_OR_EXIT_RESCUE"
+    }
+  },
+  "custody_boundary": {
+    "persistent_price_files_after_cleanup": 0,
+    "trade_rows_in_artifact": false,
+    "price_values_in_artifact": false,
+    "signal_or_entry_timestamps_in_artifact": false,
+    "formal_phase9_authorization_effect": false
+  },
+  "outcome_tested_exploratory_candidate_count": 7,
+  "exploratory_edge_pass_candidates": [],
+  "confirmed_exploratory_edge_candidate_count": 0,
+  "next_action": "PREREGISTER_NEW_INDEPENDENT_MECHANISM_BATCH_BEFORE_COUNT_NO_RESCUE_OF_301_THROUGH_320"
+}
