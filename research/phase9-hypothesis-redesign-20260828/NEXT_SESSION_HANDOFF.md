@@ -54,7 +54,12 @@ Actual Full-QC実装基準: `9eb7ce667bea8e76a7f9bb1f2d378eebd8957206`
   保存も計算もされていないことを確認した。309/310は救済しない。
 - 311/312だけのReturn/OOS契約をReturn閲覧前に凍結した。302/304/305を含む累積5候補
   Bonferroni（片側alpha 0.01）、2017 IS / 2018 OOS、spread込み12時間固定returnである。
-  専用single-use manual workflowとTestsは公開準備済みで、Return/Outcomeは未実行・未閲覧。
+  Run `33593743345`は全step success。311はOOS mean R -0.1859、PF 0.7819、
+  bootstrap lower -0.6039、312はOOS mean R -0.0021、PF 0.9980、bootstrap lower
+  -0.2578で、両方REJECT。独立監査済みでedge PASSは0件、301〜312を救済しない。
+- Batch 4として313〜316をCount閲覧前に事前登録した。weekend gap reversion、month-end
+  fixing reversal、weekly cross-sectional momentum、triangular parity dislocationの4 mechanism。
+  Count-only runner、single-use manual workflow、Testsを実装済み。Count/Return/Outcomeは未閲覧。
 
 ## 1. この引継ぎの結論
 
@@ -62,9 +67,10 @@ Phase 9では、実価格データを受け入れて検査するActual Full-QC�
 Exploratory FXCMではRun `33508634314`でdirect m1/H1取得、M15/H4/D1生成、
 FX8 × 4時間足 × BID/ASKの64系列QCまで完了した。既存7候補のCount-onlyは
 Return Gate通過0件で、Return/Outcomeは未計算。現在は、Count-onlyを通過した305だけの
-Return/OOSまで完了し、305も不採用となった。独立mechanismのBatch 3 Countも完了し、
-309/310を不採用、311/312だけをReturn/OOS対象として結果閲覧前に固定した。
-次はBatch 3 Return/OOS single-use workflowを1回だけ実行する段階である。Formal provider
+Return/OOSまで完了し、305も不採用となった。Batch 3も309/310をCount不通過、311/312を
+Return/OOS不通過として全件不採用にした。確認済みedgeは0件。301〜312を救済せず、
+独立mechanismのBatch 4（313〜316）をCount前に固定した。次はBatch 4 Count-only
+single-use workflowを1回だけ実行する段階である。Formal provider
 scheduleと金銀・Energyのblockerは別trackに残し、探索を遅らせない。
 
 ```text
@@ -99,7 +105,11 @@ Exploratory FX8 MTF 64系列
 Batch 3 Count-only
   ↓ 完了：311 / 312 PASS、309 / 310 REJECT（救済なし）
 311 / 312 Return-OOS
-  ↓ NEXT: one manual single-use run（累積5候補alpha 0.01）
+  ↓ REJECT 2件、edge PASS 0件、救済なし
+新しい独立mechanism Batch 4
+  ↓ 313〜316 preregistered / Count workflow ready
+Batch 4 Count-only
+  ↓ NEXT: one manual single-use run（Return/Outcomeなし）
 Provider schedule source readiness
   ↓ P0 BLOCKED（公式version付き完全履歴source未固定）
 Metadata-only JForex amendment / static Gate
@@ -362,25 +372,25 @@ Provider schedule inventory / allowlist
 
 ## 7. 次に行う単一作業
 
-FX8 MTF取得/QC、Batch 1/2のCount-only、302/304/305のReturn/OOS、Batch 3
-Count-onlyまで完了し、確認済みedgeは0件である。Batch 3は309/310をCount不通過で
-不採用、311/312だけを次段対象として固定した。Batch 3のReturnはまだ一度も閲覧していない。
+FX8 MTF取得/QC、Batch 1〜3のCount-only、302/304/305/311/312のReturn/OOSは完了し、
+Outcome検定済み5候補は全件不採用、確認済みedgeは0件である。301〜312を救済せず、
+Batch 4の313〜316をCount閲覧前に事前登録し、専用Count-only workflowとTestsを実装した。
 
-次は`.github/workflows/phase9-exploratory-fxcm-blind-mtf-batch3-return-oos.yml`を
+次は`.github/workflows/phase9-exploratory-fxcm-blind-mtf-batch4-count-only.yml`を
 Run #1 / attempt #1として1回だけ手動実行する。入力は次の完全一致文字列を使う。
 
 ```text
 confirmation:
-RUN_EXPLORATORY_FXCM_BLIND_MTF_BATCH3_RETURN_OOS_2017_2018_V1
+RUN_EXPLORATORY_FXCM_BLIND_MTF_BATCH4_COUNT_ONLY_2017_2018_V1
 
 usage_confirmation:
 I_CONFIRM_PERSONAL_NONCOMMERCIAL_USE_AND_ACCEPT_FXCM_EULA
 ```
 
-このRunでは凍結済みの311/312だけを評価する。2017 IS / 2018 OOS、12時間固定、
-spread込みBID/ASK execution、累積5候補Bonferroni片側alpha 0.01を変更しない。
-summary Artifactだけを独立監査し、通過候補がある場合だけ別の新期間・頑健性Gateへ送る。
-309/310や過去不採用候補の条件変更・方向反転・銘柄限定・exit変更による救済は禁止する。
+このRunでは件数・coverageだけを確認する。Return、Return符号、MFE、MAE、勝敗、PF、
+P値、信頼区間、順位、Outcomeを計算・表示しない。Count通過候補だけを別Return/OOS
+Gateへ送り、過去にOutcome検定した5候補も含む累積候補数で多重検定補正する。
+不通過候補と301〜312は条件変更、方向反転、銘柄限定、exit変更で救済しない。
 
 Formal trackではV1 Run `33574659277`とV2 Run `33577505327`の単一使用認可は消費済みで、
 rerun/replayしない。remote resource/JAR request、JForex接続、正式価格取得も別承認前に行わない。

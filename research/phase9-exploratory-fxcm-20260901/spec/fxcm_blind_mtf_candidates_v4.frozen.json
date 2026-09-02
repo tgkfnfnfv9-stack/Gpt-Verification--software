@@ -1,0 +1,128 @@
+{
+  "schema_version": "phase9-exploratory-fxcm-blind-mtf-candidates-v4.0.0",
+  "status": "FROZEN_AFTER_BATCH3_REJECTION_BEFORE_FIRST_BATCH4_SIGNAL_COUNT",
+  "recorded_at_utc": "2026-09-02T05:29:17Z",
+  "track": "EXPLORATORY_FX8_BLIND_MTF_PRICE_ONLY_BATCH4_NOT_FORMAL_PHASE9",
+  "purpose": "Screen four mechanisms independent of candidates 301 through 312, without rescuing any rejected candidate and without calculating or viewing any Batch 4 outcome.",
+  "selection_integrity": {
+    "rejected_candidates_acknowledged": [
+      "EXP-P9-MTF-301", "EXP-P9-MTF-302", "EXP-P9-MTF-303", "EXP-P9-MTF-304",
+      "EXP-P9-MTF-305", "EXP-P9-MTF-306", "EXP-P9-MTF-307", "EXP-P9-MTF-308",
+      "EXP-P9-MTF-309", "EXP-P9-MTF-310", "EXP-P9-MTF-311", "EXP-P9-MTF-312"
+    ],
+    "outcome_tested_rejections_acknowledged": [
+      "EXP-P9-MTF-302", "EXP-P9-MTF-304", "EXP-P9-MTF-305",
+      "EXP-P9-MTF-311", "EXP-P9-MTF-312"
+    ],
+    "prior_threshold_direction_symbol_timeframe_or_exit_rescue_allowed": false,
+    "prior_outcomes_used_to_choose_batch4_thresholds": false,
+    "batch4_count_or_outcome_viewed_before_freeze": false,
+    "all_eight_fx_pairs_required": true,
+    "threshold_change_after_count": false,
+    "future_return_familywise_correction_must_include_prior_five_outcome_candidates": true,
+    "formal_authorization_effect": false
+  },
+  "mechanism_independence": {
+    "EXP-P9-MTF-313": {
+      "mechanism_family": "WEEKEND_GAP_REVERSION",
+      "independent_of_301_312": "Uses only the discontinuity between the last pre-weekend H1 close and first post-weekend H1 open plus same-bar retracement confirmation; no prior candidate is conditioned on a market-closure gap."
+    },
+    "EXP-P9-MTF-314": {
+      "mechanism_family": "MONTH_END_FIXING_REVERSAL",
+      "independent_of_301_312": "Uses the last observed trading date of each UTC month and a fixed 16:00 UTC reversal confirmation after a four-hour fixing-window displacement; it is not the daily 13:00 UTC impulse tested by 311."
+    },
+    "EXP-P9-MTF-315": {
+      "mechanism_family": "WEEKLY_CROSS_SECTIONAL_RELATIVE_MOMENTUM",
+      "independent_of_301_312": "Ranks all eight pairs by five-completed-D1 ATR-normalized return at a fixed Monday decision time and trades only the top and bottom ranks; it does not use currency votes or a target-pair impulse."
+    },
+    "EXP-P9-MTF-316": {
+      "mechanism_family": "TRIANGULAR_PARITY_DISLOCATION_REVERSION",
+      "independent_of_301_312": "Uses synchronized H1 log-price residuals between direct and synthetic cross rates and assigns a parity-restoring three-leg direction; no prior candidate measures triangular price consistency."
+    }
+  },
+  "anchors": {
+    "base_count_utility_sha256": "2991575f471c19de35d04ae21d276cc25d52d9fb705587a8259f70d43639cdad",
+    "mtf_qc_runner_sha256": "09da37be5955dcf142752d70dc21542f21e5ea71835c7f1073e68f52585971cd",
+    "canonical_mtf_report_sha256": "4d7f77caa5333e017742e01606aa869f3845aa4c4f206563e2fd59e02b1e1063",
+    "batch1_candidate_contract_sha256": "8d832dbf779098d00c731d87547b30ed6944ee2c227d505e540ea95a7efaa1e3",
+    "batch2_candidate_contract_sha256": "4fac27599445d7dc28b7cffc99c8c6fdd19c640e2fb0fca1a90b9d5f799bc615",
+    "batch3_candidate_contract_sha256": "54b73dcf66ced89abc9a33cc68689af7d3180ee7ed4c0db329ab49f24d7faa7e",
+    "latest_outcome_audit_sha256": "633f30c3bb621ce000605a0c985e3aa8698f08c4f8d5f912802c22d883766295"
+  },
+  "dataset": {
+    "symbols": ["AUDJPY", "AUDUSD", "EURGBP", "EURJPY", "EURUSD", "GBPJPY", "GBPUSD", "USDJPY"],
+    "start_inclusive": "2017-01-01T00:00:00Z",
+    "end_exclusive": "2018-12-31T00:00:00Z",
+    "available_timeframes": ["M15", "H1", "H4", "D1"],
+    "feature_price": "FIELDWISE_ARITHMETIC_MID_OF_SYNCHRONIZED_BID_AND_ASK_OHLC",
+    "volume_used": false,
+    "forward_fill_or_interpolation": false,
+    "persistent_prices": false
+  },
+  "common_rules": {
+    "timestamps": "UTC_BAR_OPEN",
+    "higher_timeframe_available_only_after_bucket_end": true,
+    "atr14": "MEAN_TRUE_RANGE_OF_14_BARS_ENDING_IMMEDIATELY_BEFORE_EVENT_BAR",
+    "entry": "NEXT_OBSERVED_H1_BAR_OPEN_NO_LATER_THAN_TWO_HOURS_AFTER_CONFIRMATION_CLOSE",
+    "overlap": "SAME_CANDIDATE_INSTRUMENT_DIRECTION_KEEP_EARLIEST_THEN_DROP_ENTRIES_WITHIN_12_REAL_HOURS",
+    "episode": "CANDIDATE_PLUS_UTC_SIGNAL_DATE_PLUS_DIRECTION_KEEP_EARLIEST",
+    "signal_timestamp_or_price_in_artifact": false,
+    "forward_outcome_access": false
+  },
+  "candidates": {
+    "EXP-P9-MTF-313": {
+      "name": "Weekend Gap Same-Bar Reversion",
+      "mechanism": "The first H1 bar after a market closure of at least 48 hours is eligible when its opening gap exceeds a fixed ATR fraction and the bar closes back toward the prior close by a fixed fraction of that gap.",
+      "signal_timeframe": "H1",
+      "minimum_market_closure_hours": 48,
+      "opening_gap_atr_min": 0.25,
+      "same_bar_gap_retrace_fraction_min": 0.25,
+      "frequency_gate": {"episodes_min": 120, "active_dates_min": 80, "instruments_min_10": 6, "max_instrument_share": 0.25, "each_year_share_min": 0.30}
+    },
+    "EXP-P9-MTF-314": {
+      "name": "Month-End Fixing Stretch Reversal",
+      "mechanism": "On the last observed UTC trading date of each month, a four-hour displacement into 16:00 UTC is followed only when the 16:00 H1 bar reverses and retraces a fixed fraction of that displacement.",
+      "signal_timeframe": "H1",
+      "fixed_confirmation_bar_open_hour_utc": 16,
+      "displacement_lookback_hours": 4,
+      "displacement_atr_min": 0.75,
+      "confirmation_retrace_fraction_min": 0.20,
+      "frequency_gate": {"episodes_min": 80, "active_dates_min": 18, "instruments_min_8": 6, "max_instrument_share": 0.25, "each_year_share_min": 0.30}
+    },
+    "EXP-P9-MTF-315": {
+      "name": "Monday Five-Day Cross-Sectional Relative Momentum",
+      "mechanism": "At 08:00 UTC each Monday, the eight pairs are ranked by return over five completed D1 bars divided by current pre-decision D1 ATR14; the two highest ranks are LONG and the two lowest ranks are SHORT.",
+      "signal_timeframe": "H1",
+      "fixed_decision_weekday_utc": 0,
+      "fixed_decision_bar_open_hour_utc": 8,
+      "completed_d1_lookback": 5,
+      "long_rank_count": 2,
+      "short_rank_count": 2,
+      "ties": "BREAK_BY_ASCENDING_SYMBOL_NAME_AFTER_SCORE",
+      "frequency_gate": {"episodes_min": 250, "active_dates_min": 80, "instruments_min_20": 6, "max_instrument_share": 0.25, "each_year_share_min": 0.30}
+    },
+    "EXP-P9-MTF-316": {
+      "name": "Synchronized H1 Triangular Parity Dislocation Reversion",
+      "mechanism": "A direct cross and its two-leg synthetic cross are compared in log-price space; an absolute rolling residual z-score of at least two creates parity-restoring directions in all three legs.",
+      "signal_timeframe": "H1",
+      "rolling_residual_observations": 120,
+      "absolute_residual_zscore_min": 2.0,
+      "minimum_residual_standard_deviation": 1e-09,
+      "triangles": [
+        {"direct": "AUDJPY", "leg1": "AUDUSD", "leg2": "USDJPY"},
+        {"direct": "EURJPY", "leg1": "EURUSD", "leg2": "USDJPY"},
+        {"direct": "GBPJPY", "leg1": "GBPUSD", "leg2": "USDJPY"},
+        {"direct": "EURUSD", "leg1": "EURGBP", "leg2": "GBPUSD"}
+      ],
+      "frequency_gate": {"episodes_min": 240, "active_dates_min": 120, "instruments_min_15": 6, "max_instrument_share": 0.25, "each_year_share_min": 0.30}
+    }
+  },
+  "next_gate": {
+    "count_only_first": true,
+    "return_gate_only_for_frequency_passers": true,
+    "future_cumulative_outcome_tested_candidate_count": "5_PLUS_NUMBER_OF_BATCH4_FREQUENCY_PASSERS",
+    "familywise_alpha": 0.05,
+    "return_and_oos_in_count_run": false,
+    "outcome_fields": []
+  }
+}

@@ -259,3 +259,34 @@ OOS PF 1.05以上、正のOOS銘柄5以上、正のOOS四半期3以上をすべ�
 専用manual workflowはRun #1 / attempt #1のみ許可し、Artifactは価格・trade row・
 timestampを含まないsummary 2ファイルだけとする。結果通過時もMT5へ直行せず、
 別の新期間・頑健性Gateを必須とする。
+
+### Batch 3 Return/OOS Run 33593743345
+
+Run #1 / attempt #1は全step success。Artifact `9832993158`（ZIP SHA-256
+`c5f8c23b2a75b73d76b1584e20d489c08a977634e06c48fc60e42548404df453`）を
+独立検証し、exact 2 files、manifest一致、価格・trade row・timestamp保存0を確認した。
+
+| Candidate | Completed | 2017 mean R | 2018 OOS mean R | OOS PF | 99% bootstrap lower | Decision |
+|---|---:|---:|---:|---:|---:|---|
+| EXP-P9-MTF-311 | 234/280 | 0.2268 | -0.1859 | 0.7819 | -0.6039 | REJECT |
+| EXP-P9-MTF-312 | 994/1028 | -0.0616 | -0.0021 | 0.9980 | -0.2578 | REJECT |
+
+311はIS平均だけが正だが、completion、OOS平均、PF、bootstrap、銘柄・四半期breadthを
+通らない。312はOOS平均がほぼゼロでも負で、IS平均、PF、bootstrap、銘柄breadthも
+通らない。累積5候補補正後のedge PASSは0件。条件変更、方向反転、銘柄限定、exit変更を
+行わず、両候補を不採用とする。
+
+## Blind MTF Batch 4 Count-only Preregistration
+
+301〜312を救済せず、次の独立mechanism 4件を最初のBatch 4 Count閲覧前に
+`spec/fxcm_blind_mtf_candidates_v4.frozen.json`へ固定した。
+
+- `EXP-P9-MTF-313`: weekend opening gap same-bar reversion
+- `EXP-P9-MTF-314`: month-end fixing-window stretch reversal
+- `EXP-P9-MTF-315`: Monday five-day cross-sectional relative momentum
+- `EXP-P9-MTF-316`: synchronized triangular-parity dislocation reversion
+
+専用workflowは件数、active dates、銘柄・方向・年coverage、identity SHAだけを計算する。
+Return、勝敗、PF、P値、信頼区間、順位、Outcomeは計算・表示・保存しない。Count通過候補が
+ある場合だけ別Return/OOS Gateを凍結し、既にOutcomeを検定した302/304/305/311/312を
+含む累積候補数で多重検定補正する。

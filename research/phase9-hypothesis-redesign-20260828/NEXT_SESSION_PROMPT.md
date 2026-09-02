@@ -22,8 +22,10 @@ GitHub Repository `tgkfnfnfv9-stack/Gpt-Verification--software` のPhase 9自動
 13. `research/phase9-exploratory-fxcm-20260901/spec/fxcm_blind_mtf_candidates_v3.frozen.json`
 14. `research/phase9-exploratory-fxcm-20260901/results/run-33591731464/BLIND_MTF_BATCH3_COUNT_ONLY_INDEPENDENT_AUDIT.json`
 15. `research/phase9-exploratory-fxcm-20260901/spec/fxcm_blind_mtf_batch3_return_oos_v1.frozen.json`
-16. `research/phase9-exploratory-fxcm-20260901/runner/fxcm_blind_mtf_batch3_return_oos.py`
-17. `.github/workflows/phase9-exploratory-fxcm-blind-mtf-batch3-return-oos.yml`
+16. `research/phase9-exploratory-fxcm-20260901/results/run-33593743345/BLIND_MTF_BATCH3_RETURN_OOS_INDEPENDENT_AUDIT.json`
+17. `research/phase9-exploratory-fxcm-20260901/spec/fxcm_blind_mtf_candidates_v4.frozen.json`
+18. `research/phase9-exploratory-fxcm-20260901/runner/fxcm_blind_mtf_count_only_v4.py`
+19. `.github/workflows/phase9-exploratory-fxcm-blind-mtf-batch4-count-only.yml`
 
 必ず最新remote `main`を再確認し、workflowが公開済みのcommitと一致することを確認してください。
 
@@ -55,7 +57,11 @@ GPT側で複数銘柄・複数時間足の実データを使い、結果後の�
 - 306: Count 51、REJECT
 - 307: Count 52、REJECT
 - 308: Count 260、REJECT
-- Outcome検定済み302/304/305は全件不採用
+- 309: Count 22、REJECT
+- 310: Count 157、REJECT
+- 311: Count 280、Return/OOS REJECT
+- 312: Count 1028、Return/OOS REJECT
+- Outcome検定済み302/304/305/311/312は全件不採用
 - 確認済みExploratory edgeは0件
 
 ## Batch 3 Count-only完了
@@ -69,9 +75,9 @@ exact 2 files、manifest、価格0、Return/Outcome未計算を独立監査済�
 - 311: primary 280、active dates 237、Count PASS
 - 312: primary 1028、active dates 516、Count PASS
 
-309/310は救済しません。311/312だけを次のReturn/OOS Gateへ進めます。
+309/310は救済しません。311/312だけをReturn/OOS Gateへ進めました。
 
-## Return閲覧前に凍結済みのBatch 3 Gate
+## Batch 3 Return/OOS完了
 
 - 対象: 311、312だけ
 - Return/Outcome閲覧前の凍結: true
@@ -87,25 +93,37 @@ exact 2 files、manifest、価格0、Return/Outcome未計算を独立監査済�
 - minimum OOS outcomes: 120（Countだけを見てReturn前に固定）
 - passはcompletion、IS/OOS平均、bootstrap下限、PF、銘柄breadth、四半期breadthの全条件必須
 - Artifactはsummaryのみ。価格、trade row、signal/entry timestampを保存しない
-- passしても次は別の新期間・頑健性Gate。MT5へ自動移行しない
+- Run `33593743345`は全step success、Artifact `9832993158`
+- 311: IS mean R 0.2268、OOS mean R -0.1859、OOS PF 0.7819、bootstrap lower -0.6039、REJECT
+- 312: IS mean R -0.0616、OOS mean R -0.0021、OOS PF 0.9980、bootstrap lower -0.2578、REJECT
+- edge PASS 0件。条件変更や方向反転による救済は行わない
+
+## Batch 4事前登録済み
+
+- 313: weekend opening gap same-bar reversion
+- 314: month-end fixing-window stretch reversal
+- 315: Monday five-day cross-sectional relative momentum
+- 316: synchronized triangular-parity dislocation reversion
+- 301〜312とは独立したmechanismで、Batch 4 Count/Return/Outcome閲覧前に固定済み
+- Count-onlyでは件数・coverage・identityだけを計算し、Return、勝敗、PF、P値、Outcomeは扱わない
 
 ## 次の単一作業
 
-公開済みの`.github/workflows/phase9-exploratory-fxcm-blind-mtf-batch3-return-oos.yml`を
+公開済みの`.github/workflows/phase9-exploratory-fxcm-blind-mtf-batch4-count-only.yml`を
 Run #1 / attempt #1として1回だけ手動実行してください。
 
 実行リンク:
-`https://github.com/tgkfnfnfv9-stack/Gpt-Verification--software/actions/workflows/phase9-exploratory-fxcm-blind-mtf-batch3-return-oos.yml`
+`https://github.com/tgkfnfnfv9-stack/Gpt-Verification--software/actions/workflows/phase9-exploratory-fxcm-blind-mtf-batch4-count-only.yml`
 
 入力値:
 
 confirmation:
-`RUN_EXPLORATORY_FXCM_BLIND_MTF_BATCH3_RETURN_OOS_2017_2018_V1`
+`RUN_EXPLORATORY_FXCM_BLIND_MTF_BATCH4_COUNT_ONLY_2017_2018_V1`
 
 usage_confirmation:
 `I_CONFIRM_PERSONAL_NONCOMMERCIAL_USE_AND_ACCEPT_FXCM_EULA`
 
-Run完了後はArtifactを独立監査し、凍結済みGateの全条件を候補別に再計算・照合してください。通過候補がある場合だけ新期間・頑健性確認へ進め、不通過候補は閾値、方向、銘柄、timeframe、exit horizonを変更して救済しないでください。
+Run完了後はArtifactを独立監査し、Count通過候補だけを別Return/OOS Gateへ進めてください。後続Gateは過去にOutcome検定した5候補を含む累積候補数で多重検定補正します。不通過候補は閾値、方向、銘柄、timeframe、exit horizonを変更して救済しないでください。
 
 ## 厳守事項
 

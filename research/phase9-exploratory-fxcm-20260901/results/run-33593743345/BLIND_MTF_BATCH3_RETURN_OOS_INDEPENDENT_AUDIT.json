@@ -1,0 +1,101 @@
+{
+  "schema_version": "phase9-exploratory-fxcm-blind-mtf-batch3-return-oos-independent-audit-v1.0.0",
+  "status": "INDEPENDENT_AUDIT_PASS_NO_EDGE_CANDIDATE",
+  "audited_at_utc": "2026-09-02T05:29:17Z",
+  "workflow_run": {
+    "run_id": 33593743345,
+    "run_number": 1,
+    "run_attempt": 1,
+    "job_id": 100132858944,
+    "head_sha": "3540cd04cf6af762bf52fc714bf4276860ced417",
+    "conclusion": "success",
+    "all_steps_success": true
+  },
+  "artifact": {
+    "artifact_id": 9832993158,
+    "name": "phase9-exploratory-fxcm-blind-mtf-batch3-return-oos-3540cd04cf6af762bf52fc714bf4276860ced417-33593743345-1",
+    "github_size_in_bytes": 2839,
+    "zip_sha256": "c5f8c23b2a75b73d76b1584e20d489c08a977634e06c48fc60e42548404df453",
+    "github_digest_match": true,
+    "exact_member_count": 2,
+    "members": {
+      "EXPLORATORY_FXCM_BLIND_MTF_BATCH3_RETURN_OOS.json": "026e446f62515a5fc76ea32bcf5a3ec2b6919510dc7f2fa88e5a1b25b6d9ed8c",
+      "artifact_manifest_sha256.txt": "ced2b6eabed811b71302a599b4f7c7138289ba444510f1de00ad2ab698320fb2"
+    },
+    "zip_integrity_pass": true,
+    "manifest_verification_pass": true,
+    "unexpected_member_count": 0
+  },
+  "identity_and_method_checks": {
+    "contract_sha256": "0ff3fdf9f05fb19787d4d630fc562ace6b8620937b7ff98ac6c7277f7fa04e06",
+    "count_result_sha256": "f6ed510f3e22f08f89d7a732fe6d898d3af082bb3320d3b430afc24787115523",
+    "canonical_mtf_report_sha256": "4d7f77caa5333e017742e01606aa869f3845aa4c4f206563e2fd59e02b1e1063",
+    "selected_candidates_exact": true,
+    "excluded_count_failures_not_evaluated": true,
+    "prior_outcome_tested_candidate_count": 3,
+    "cumulative_outcome_tested_candidate_count": 5,
+    "bonferroni_one_sided_alpha_each": 0.01,
+    "spread_inclusive_bid_ask_execution": true,
+    "fixed_horizon_hours": 12,
+    "split": {"in_sample": "2017", "out_of_sample": "2018"},
+    "gate_conditions_independently_reproduced": true,
+    "count_and_completion_arithmetic_pass": true,
+    "result_dependent_rule_change": false,
+    "nonpasser_rescue_performed": false
+  },
+  "candidate_decisions": {
+    "EXP-P9-MTF-311": {
+      "decision": "REJECT_NO_THRESHOLD_DIRECTION_SYMBOL_OR_EXIT_RESCUE",
+      "locked_primary_episode_count": 280,
+      "completed_outcome_count": 234,
+      "outcome_completion_rate": 0.8357142857,
+      "is_2017_mean_r": 0.2268415665,
+      "oos_2018_outcome_count": 120,
+      "oos_2018_mean_r": -0.1859076754,
+      "oos_2018_profit_factor": 0.7818918953,
+      "oos_bootstrap_99_percent_lower_mean_r": -0.6039104566,
+      "positive_oos_instrument_count": 4,
+      "positive_oos_calendar_quarter_count": 1,
+      "failed_conditions": [
+        "minimum_outcome_completion_rate",
+        "oos_mean_r_strictly_positive",
+        "oos_date_cluster_bootstrap_lower_bound_strictly_positive",
+        "minimum_oos_profit_factor",
+        "minimum_positive_oos_instruments",
+        "minimum_positive_oos_calendar_quarters"
+      ],
+      "exploratory_edge_pass": false
+    },
+    "EXP-P9-MTF-312": {
+      "decision": "REJECT_NO_THRESHOLD_DIRECTION_SYMBOL_OR_EXIT_RESCUE",
+      "locked_primary_episode_count": 1028,
+      "completed_outcome_count": 994,
+      "outcome_completion_rate": 0.96692607,
+      "is_2017_mean_r": -0.0615876086,
+      "oos_2018_outcome_count": 493,
+      "oos_2018_mean_r": -0.0021089222,
+      "oos_2018_profit_factor": 0.9980338109,
+      "oos_bootstrap_99_percent_lower_mean_r": -0.2577531828,
+      "positive_oos_instrument_count": 4,
+      "positive_oos_calendar_quarter_count": 3,
+      "failed_conditions": [
+        "in_sample_mean_r_strictly_positive",
+        "oos_mean_r_strictly_positive",
+        "oos_date_cluster_bootstrap_lower_bound_strictly_positive",
+        "minimum_oos_profit_factor",
+        "minimum_positive_oos_instruments"
+      ],
+      "exploratory_edge_pass": false
+    }
+  },
+  "exploratory_edge_pass_candidates": [],
+  "confirmed_exploratory_edge_candidate_count": 0,
+  "custody_boundary": {
+    "trade_rows_in_artifact": false,
+    "price_values_in_artifact": false,
+    "signal_or_entry_timestamps_in_artifact": false,
+    "persistent_price_files_after_cleanup": 0,
+    "formal_phase9_authorization_effect": false
+  },
+  "next_action": "PREREGISTER_NEW_INDEPENDENT_MECHANISM_BATCH_BEFORE_COUNT_NO_RESCUE_OF_301_THROUGH_312"
+}
