@@ -47,6 +47,10 @@ def write_source(path: Path, rows: list[list[str]]) -> dict:
 
 
 class VaultBridgeTests(unittest.TestCase):
+    def test_bridge_accepts_current_cache_bypass_recovery_version(self):
+        self.assertEqual(bridge.RECOVERY_VERSION, "simple-v1.2")
+        self.assertEqual(bridge.OPERATIONAL_VERSION, "v2.1+simple-v1.2-recovery")
+
     def test_expected_manifest_sha_list_is_exact(self):
         text = ",".join(f"{year}:{str(year)[-1] * 64}" for year in bridge.YEARS)
         self.assertEqual(set(bridge.parse_expected_manifest_sha256s(text)), set(bridge.YEARS))
