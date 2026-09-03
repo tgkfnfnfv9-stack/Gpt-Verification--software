@@ -1,0 +1,240 @@
+{
+  "schema_version": "phase9-exploratory-fxcm-blind-mtf-batch6-fast-track-design-independent-audit-v1.0.0",
+  "status": "BLOCK_FAST_TRACK_EXECUTION_P0_FINDINGS_DESIGN_AND_PRICE_FREE_PREAUDIT_ONLY",
+  "audited_at": "2026-09-03",
+  "repository": {
+    "full_name": "tgkfnfnfv9-stack/Gpt-Verification--software",
+    "branch": "main",
+    "reviewed_head_sha": "1c013f04a6217ff2db900519bd7963e5d745cc25",
+    "remote_head_matched_handoff": true,
+    "local_repository_worktree_available": false,
+    "existing_uncommitted_recovery_changes_touched": false
+  },
+  "scope": {
+    "candidate_ids": [
+      "EXP-P9-MTF-321",
+      "EXP-P9-MTF-322",
+      "EXP-P9-MTF-323",
+      "EXP-P9-MTF-324"
+    ],
+    "symbols": [
+      "AUDJPY",
+      "AUDUSD",
+      "EURGBP",
+      "EURJPY",
+      "EURUSD",
+      "GBPJPY",
+      "GBPUSD",
+      "USDJPY"
+    ],
+    "start_inclusive": "2017-01-01T00:00:00Z",
+    "end_exclusive": "2018-12-31T00:00:00Z",
+    "direct_periodicities": [
+      "m1",
+      "H1"
+    ],
+    "final_timeframes": [
+      "M15",
+      "H1",
+      "H4",
+      "D1"
+    ],
+    "route_a_archive_count": 32,
+    "route_a_year_manifest_count": 2,
+    "route_b_source_request_count": 1664,
+    "final_side_series_count": 64
+  },
+  "audited_files": {
+    "human_design": {
+      "path": "BATCH6_FAST_TRACK_DESIGN_PREAUDIT_V1.md",
+      "sha256": "22f404cde354a9a81335fa1b2ef63f4b9327ba2cf6144d823ec9cb0697a0437d"
+    },
+    "design_contract": {
+      "path": "spec/fxcm_blind_mtf_batch6_fast_track_design_v1.frozen.json",
+      "sha256": "83a03828db38889d142a18e377eec163d03f4ad7f911be62ab3cae72f9bbd688"
+    },
+    "offline_verifier": {
+      "path": "runner/verify_fxcm_blind_mtf_batch6_fast_track_design.py",
+      "sha256": "ef6a291fa6d8af5a96e2a23b79eded6bc7909d04392a5c81a823085e285cc554"
+    },
+    "tests": {
+      "path": "tests/test_fxcm_blind_mtf_batch6_fast_track_design.py",
+      "sha256": "d51de760bcc8301185b11cc7401d4060dbe8ea1874f1138a3910301b1b9129d2"
+    }
+  },
+  "verification": {
+    "offline_static_verifier": "PASS",
+    "dedicated_test_count": 10,
+    "dedicated_tests": "PASS",
+    "design_schema_parse": "PASS",
+    "candidate_scope_exact": true,
+    "end_exclusive_2018_12_31_exact": true,
+    "route_a_exact_archive_geometry": "2_YEARS_X_8_SYMBOLS_X_2_PERIODICITIES_EQUALS_32",
+    "route_a_exact_member_geometry": "32_ARCHIVES_X_54_REGULAR_MEMBERS_WITH_52_SOURCE_GZIP_EACH",
+    "route_a_source_member_identity_count": 1664,
+    "route_b_exact_source_geometry": "2_YEARS_X_8_SYMBOLS_X_2_PERIODICITIES_X_52_WEEK_INDICES_EQUALS_1664",
+    "final_series_geometry": "8_SYMBOLS_X_4_TIMEFRAMES_X_2_SIDES_EQUALS_64",
+    "all_authorization_flags_false_at_preaudit_time": true,
+    "candidate_rule_change_in_this_version": false,
+    "future_rule_change_requires_prospective_amended_preregistration": true,
+    "new_executable_consumer_present": false,
+    "new_executable_workflow_present": false,
+    "new_execution_contract_present": false,
+    "legacy_batch6_workflow_reenabled": false,
+    "price_or_drive_content_observed": false,
+    "return_or_outcome_observed": false
+  },
+  "p0_findings": [
+    {
+      "id": "P0-CANDIDATE-323-FUTURE-AVAILABILITY",
+      "status": "OPEN",
+      "closure_stage": "SCIENTIFIC_SPECIFICATION_BEFORE_IMPLEMENTATION",
+      "summary": "The legacy month-start detector depends on completion of the same UTC D1 bucket, including H1 availability after the 08:00 decision time. A 20-day return requires 21 closes, and an 08:00 H1 bar-open is not closed until 09:00; causal decision and entry semantics must be prospectively fixed or candidate 323 retired without replacement."
+    },
+    {
+      "id": "P0-EPISODE-SEMANTICS",
+      "status": "OPEN",
+      "closure_stage": "SCIENTIFIC_SPECIFICATION_BEFORE_IMPLEMENTATION",
+      "summary": "The implementation adds a UTC-date-plus-direction cross-instrument collapse and uses greedy overlap handling inconsistent with the frozen overlap-component wording."
+    },
+    {
+      "id": "P0-CANDIDATE-323-FREQUENCY-FEASIBILITY",
+      "status": "OPEN",
+      "closure_stage": "SCIENTIFIC_SPECIFICATION_BEFORE_IMPLEMENTATION",
+      "summary": "The legacy-collapse bound of normally at most 48 applies only with common month-start dates. Under corrected per-instrument geometry, 192 is merely a coarse opportunity upper bound before warm-up, missing observations, absent signals, and episode overlap; it is not a realizable Count bound, and feasibility of the frozen minimum 120 remains unproven."
+    },
+    {
+      "id": "P0-MECHANISM-INDEPENDENCE",
+      "status": "OPEN",
+      "closure_stage": "SCIENTIFIC_SPECIFICATION_BEFORE_IMPLEMENTATION",
+      "summary": "Candidate 321 is structurally close to rejected 319 and candidate 324 to rejected 314; without provenance evidence created before freeze, each affected candidate must be retired without replacement."
+    },
+    {
+      "id": "P0-LEGACY-MTF-QC",
+      "status": "OPEN",
+      "closure_stage": "SCIENTIFIC_SPECIFICATION_BEFORE_IMPLEMENTATION",
+      "summary": "The anchored MTF report is structurally blocked and the legacy identity validator does not require structural QC pass."
+    },
+    {
+      "id": "P0-COUNT-RUNTIME-ISOLATION",
+      "status": "OPEN",
+      "closure_stage": "CONTROL_IMPLEMENTATION_AND_STATIC_AUDIT_AFTER_SEPARATE_APPROVAL",
+      "summary": "The legacy runner has an incompletely pinned dynamic import chain, reads a prior outcome audit, and runs inside a full repository checkout."
+    },
+    {
+      "id": "P0-CLEANUP-AND-ATTESTATION",
+      "status": "OPEN",
+      "closure_stage": "CONTROL_IMPLEMENTATION_AND_STATIC_AUDIT_AFTER_SEPARATE_APPROVAL",
+      "summary": "The legacy workflow can skip cleanup after partial acquisition failure and records a cleanup claim before cleanup."
+    },
+    {
+      "id": "P0-INCOMPLETE-TRANSACTION-INPUT",
+      "status": "OPEN",
+      "closure_stage": "CONTROL_IMPLEMENTATION_AND_STATIC_AUDIT_AFTER_SEPARATE_APPROVAL",
+      "summary": "The 2017 and 2018 stages remain inside a noncanonical ACQUIRING transaction. Any future exception must verify 32 archives with exactly 54 regular members each, all 1664 source-member identities, safe paths, and rejection of duplicates and unknown members."
+    },
+    {
+      "id": "P0-VAULT-V2-DERIVED-COMPLETENESS",
+      "status": "OPEN",
+      "closure_stage": "CONTROL_IMPLEMENTATION_AND_STATIC_AUDIT_AFTER_SEPARATE_APPROVAL",
+      "summary": "Existing H4/D1 grouping can accept 3-of-4 or 23-of-24 H1 inputs; exact independently generated timestamp-set equality is required."
+    },
+    {
+      "id": "P0-CANDIDATE-324-COVERAGE-SEMANTICS",
+      "status": "OPEN",
+      "closure_stage": "SCIENTIFIC_SPECIFICATION_BEFORE_IMPLEMENTATION",
+      "summary": "Endpoint-only versus complete internal 96-hour H1 coverage is not frozen; any rule addition requires prospective amended preregistration, otherwise candidate 324 is retired without replacement."
+    }
+  ],
+  "p0_closure_model": {
+    "scientific_specification_p0_ids": [
+      "P0-CANDIDATE-323-FUTURE-AVAILABILITY",
+      "P0-EPISODE-SEMANTICS",
+      "P0-CANDIDATE-323-FREQUENCY-FEASIBILITY",
+      "P0-MECHANISM-INDEPENDENCE",
+      "P0-LEGACY-MTF-QC",
+      "P0-CANDIDATE-324-COVERAGE-SEMANTICS"
+    ],
+    "scientific_specification_required_before_implementation": true,
+    "control_implementation_p0_ids": [
+      "P0-COUNT-RUNTIME-ISOLATION",
+      "P0-CLEANUP-AND-ATTESTATION",
+      "P0-INCOMPLETE-TRANSACTION-INPUT",
+      "P0-VAULT-V2-DERIVED-COMPLETENESS"
+    ],
+    "control_implementation_requires_separate_approval": true,
+    "control_implementation_static_audit_required_before_external_access_or_count": true,
+    "implementation_authorized_by_this_design_version": false,
+    "runtime_data_identity_and_qc_gates_remain_required_after_control_closure": true
+  },
+  "legacy_mtf_qc_observation": {
+    "canonical_report_sha256": "4d7f77caa5333e017742e01606aa869f3845aa4c4f206563e2fd59e02b1e1063",
+    "structural_qc_passed": false,
+    "m1_derived_h1_vs_direct_h1_ohlc_mismatch_count": 4297,
+    "m1_derived_only_timestamp_count": 4,
+    "direct_h1_only_timestamp_count": 69108,
+    "provider_schedule_status": "UNPROVEN_NOT_EVALUATED",
+    "legacy_qc_may_be_relabelled_pass": false,
+    "direct_h1_is_count_canonical": true,
+    "m1_derived_h1_is_diagnostic_only": true,
+    "exact_comparison_required": true,
+    "exact_equality_required_for_count": false
+  },
+  "numeric_boundary": {
+    "decimal_scope": "SOURCE_PARSE_SOURCE_HASH_STRUCTURAL_QC_AND_TIMEFRAME_AGGREGATION_ONLY",
+    "count_midpoint_scope": "LEGACY_IEEE754_BINARY64_FIELDWISE_MIDPOINT_AFTER_DECIMAL_QC_BOUNDARY"
+  },
+  "route_decision": {
+    "preferred_after_p0_resolution": "ROUTE_A_EXISTING_DRIVE_2017_2018_CONDITIONAL",
+    "reason": "Avoid 1664 new provider requests and minimize external scope.",
+    "route_a_authorized_at_preaudit_time": false,
+    "route_b_authorized_at_preaudit_time": false,
+    "automatic_fallback_allowed": false,
+    "route_a_failure_action": "STOP_FOR_A_NEW_USER_DECISION"
+  },
+  "required_before_any_implementation": [
+    "Freeze causal candidate-323 timing semantics and tests.",
+    "Freeze corrected transitive overlap-component and episode-key semantics.",
+    "Complete a price-free frequency-feasibility proof for every candidate, especially 323; treat 192 only as a coarse opportunity upper bound, not a realizable Count bound.",
+    "Resolve the 321/319 and 324/314 mechanism-independence findings without using new outcomes.",
+    "Freeze the direct-H1 canonical lineage and a prospective cross-periodicity diagnostic amendment without claiming legacy structural QC passed.",
+    "Freeze candidate 324 endpoint-only versus full-96-hour coverage semantics through prospective amendment if it changes the rule.",
+    "Freeze whether observation-consecutive H1 bars may cross real-time gaps for candidates 321 and 322.",
+    "Classify all resulting evidence as exploratory because repeated 2017-2018 hypothesis generation is not program-level untouched OOS."
+  ],
+  "required_during_separately_approved_implementation_and_static_audit": [
+    "Implement a self-contained Count-only runtime with an exact closure and no repository, prior results, or outcome files.",
+    "Implement unconditional local cleanup followed by independent exact-schema sealing.",
+    "Implement the noncanonical transaction read-only control and exact 2-manifest plus 32-archive selection contract.",
+    "Enforce exact 54 regular members per archive, all 1664 source-member identities, and rejection of unsafe, duplicate, or unknown members.",
+    "Repair Vault V2 H4/D1 completeness with independently generated exact expected timestamp sets."
+  ],
+  "operations_performed_by_this_design_preaudit": {
+    "price_network_request": 0,
+    "oauth_token_exchange": 0,
+    "drive_metadata_get": 0,
+    "drive_file_content_get": 0,
+    "drive_mutation": 0,
+    "workflow_dispatch": 0,
+    "count_only_analysis": 0,
+    "return_or_outcome_analysis": 0,
+    "commit": 0,
+    "push": 0
+  },
+  "decision": {
+    "design_recorded": true,
+    "price_free_preaudit_completed": true,
+    "fast_track_execution_allowed": false,
+    "implementation_authorized_at_preaudit_time": false,
+    "workflow_creation_authorized_at_preaudit_time": false,
+    "workflow_dispatch_authorized_at_preaudit_time": false,
+    "drive_content_read_authorized_at_preaudit_time": false,
+    "fxcm_acquisition_authorized_at_preaudit_time": false,
+    "count_execution_authorized_at_preaudit_time": false,
+    "return_oos_authorized_at_preaudit_time": false,
+    "commit_authorized_at_preaudit_time": false,
+    "push_authorized_at_preaudit_time": false,
+    "action": "STOP_BEFORE_IMPLEMENTATION_OR_EXTERNAL_ACCESS",
+    "next_required_decision": "USER_APPROVAL_TO_PUBLISH_THIS_BLOCKED_DESIGN_ONLY; THEN_SEPARATE_SCIENTIFIC_PREREGISTRATION_DECISION"
+  }
+}

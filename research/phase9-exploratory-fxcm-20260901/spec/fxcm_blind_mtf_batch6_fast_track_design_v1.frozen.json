@@ -1,0 +1,424 @@
+{
+  "schema_version": "phase9-exploratory-fxcm-blind-mtf-batch6-fast-track-design-v1.0.0",
+  "status": "FROZEN_DESIGN_AND_PRICE_FREE_PREAUDIT_BLOCKED_P0_NO_IMPLEMENTATION_NO_EXECUTION",
+  "recorded_utc_date": "2026-09-03",
+  "purpose": "Design a bounded Fast Track for the preregistered Batch 6 Count-only screen without authorizing Drive content reads, FXCM acquisition, workflow dispatch, Count execution, Return/OOS execution, Drive mutation, cleanup, commit, or push.",
+  "goal_alignment": {
+    "research_goal": "DISCOVER_REPRODUCIBLE_TRADING_EDGE_WITH_GPT",
+    "included_markets": [
+      "FX",
+      "XAUUSD",
+      "XAGUSD",
+      "WTI",
+      "BRENT"
+    ],
+    "excluded_markets": [
+      "EQUITY_INDICES"
+    ],
+    "batch6_role": "BOUNDED_FX8_EXPLORATORY_COUNT_ONLY_STEP",
+    "phase1_role": "HUMAN_VIEWER_FOR_VALIDATED_EDGE_EVIDENCE_NOT_ORDER_APPROVAL",
+    "mt5_role": "FULL_AUTOMATION_ONLY_AFTER_ALL_RESEARCH_AND_SAFETY_GATES"
+  },
+  "repository_anchor": {
+    "repository": "tgkfnfnfv9-stack/Gpt-Verification--software",
+    "branch": "main",
+    "reviewed_head_sha": "1c013f04a6217ff2db900519bd7963e5d745cc25",
+    "remote_head_verified_at_design_time": true,
+    "local_dirty_recovery_worktree_available_to_this_preaudit": false,
+    "existing_uncommitted_recovery_work_must_remain_untouched": true
+  },
+  "frozen_research_anchors": {
+    "candidate_contract": {
+      "path": "research/phase9-exploratory-fxcm-20260901/spec/fxcm_blind_mtf_candidates_v6.frozen.json",
+      "git_blob_sha": "2b0070ec70a91e2b2480658bc315e725e5f7b4cc",
+      "sha256": "da49f0f061a5ed6edc90effa232114742900ef316b19a953fd74143113566460"
+    },
+    "legacy_count_runner_reference": {
+      "path": "research/phase9-exploratory-fxcm-20260901/runner/fxcm_blind_mtf_count_only_v6.py",
+      "git_blob_sha": "90e76fc115351424fc390295f2bab8d21c2fc0ed",
+      "sha256": "082071317dd9a6d555beda75a44abfcdeaea2c73b0f202fa8ad7b7d20de39685",
+      "required_state": "REFERENCE_ONLY_UNSAFE_FOR_FAST_TRACK_EXECUTION"
+    },
+    "mtf_requirements": {
+      "path": "research/phase9-exploratory-fxcm-20260901/spec/fxcm_multitimeframe_data_requirements.frozen.json",
+      "git_blob_sha": "66dd82822cedeefee01c2b30ad6b26febf8e8c66",
+      "sha256": "97f7dde21bde5027ce18aaf41f9af7d4d093586894b73d16ecbccf5af8697bfb"
+    },
+    "mtf_execution_contract": {
+      "path": "research/phase9-exploratory-fxcm-20260901/spec/fxcm_multitimeframe_execution_contract.frozen.json",
+      "git_blob_sha": "79c515d89ae2692430fdf1db62acc5b464e050ec"
+    },
+    "legacy_batch6_workflow": {
+      "path": ".github/workflows/phase9-exploratory-fxcm-blind-mtf-batch6-count-only.yml",
+      "git_blob_sha": "3a06f410b38177f0744bbda39989b9a10c826d60",
+      "required_state": "PERMANENTLY_FAIL_CLOSED_FALSE_AND_LEAVE_UNCHANGED"
+    },
+    "vault_acquisition_v2_sha256": "209a133895f4035fba9036fb4d05b4ebc8279011110069ad0021c5830e5b2e6a",
+    "vault_partitions_v2_sha256": "b8e588f7cf69b1cefe64271c3a426b1fa88b9182c9f75fdee0644d9049d2c42b",
+    "vault_manifest_schema_v2_sha256": "11417d92df817bccadeb826590cd40ea44d0aaff64c1a6203cc12d105d5e1037",
+    "vault_read_only_inventory_audit_sha256": "fa43cbedfd2588a179c8086188793231e637f2433b4164d28bcb154773c0c928",
+    "vault_year_stage_inventory_sha256": "4a0f0cfb78ead6d6730ca7b41b716de8e2fef984e7f36ded17828d9e7b40dc4d"
+  },
+  "immutable_batch6_scope": {
+    "candidate_ids": [
+      "EXP-P9-MTF-321",
+      "EXP-P9-MTF-322",
+      "EXP-P9-MTF-323",
+      "EXP-P9-MTF-324"
+    ],
+    "symbols": [
+      "AUDJPY",
+      "AUDUSD",
+      "EURGBP",
+      "EURJPY",
+      "EURUSD",
+      "GBPJPY",
+      "GBPUSD",
+      "USDJPY"
+    ],
+    "start_inclusive": "2017-01-01T00:00:00Z",
+    "end_exclusive": "2018-12-31T00:00:00Z",
+    "years": [
+      2017,
+      2018
+    ],
+    "direct_periodicities": [
+      "m1",
+      "H1"
+    ],
+    "available_sides": [
+      "BID",
+      "ASK"
+    ],
+    "final_timeframes": [
+      "M15",
+      "H1",
+      "H4",
+      "D1"
+    ],
+    "expected_archive_count_route_a": 32,
+    "expected_source_object_count_route_b": 1664,
+    "expected_final_side_series_count": 64,
+    "archive_name_template": "fxcm-v2-{symbol}-{year}-{periodicity}.tar.zst",
+    "candidate_rule_change_allowed": false,
+    "candidate_rule_change_in_this_version": false,
+    "future_candidate_rule_change_requires_prospective_amended_preregistration": true,
+    "threshold_change_allowed": false,
+    "direction_flip_allowed": false,
+    "symbol_or_timeframe_selection_allowed": false,
+    "prior_candidate_rescue_allowed": false
+  },
+  "price_free_preaudit_decision": {
+    "verdict": "BLOCK_FAST_TRACK_EXECUTION_PENDING_P0_RESOLUTION",
+    "old_workflow_or_runner_reuse_allowed": false,
+    "p0_findings": [
+      {
+        "id": "P0-CANDIDATE-323-FUTURE-AVAILABILITY",
+        "closure_stage": "SCIENTIFIC_SPECIFICATION_BEFORE_IMPLEMENTATION",
+        "finding": "The legacy scanner selects the month decision date from the presence of a completed same-day D1 bucket. At 08:00 UTC, that membership depends on H1 availability later in the same day. A 20-day return requires 21 closes, not 20. If 08:00 denotes the H1 bar open, its close is not available until 09:00, so the information cutoff and entry meaning are unresolved.",
+        "required_resolution": "Before Count, prospectively freeze and test the first observed trading date, 20-return using exactly 21 prior completed closes, ATR inputs, the 08:00 information cutoff, the 09:00 close-availability boundary, and entry timing. Use only information available by the decision. If a causal rule cannot be fixed without outcome knowledge, retire candidate 323 without replacement."
+      },
+      {
+        "id": "P0-EPISODE-SEMANTICS",
+        "closure_stage": "SCIENTIFIC_SPECIFICATION_BEFORE_IMPLEMENTATION",
+        "finding": "The frozen EARLIEST_SIGNAL_PER_OVERLAP_COMPONENT rule conflicts with the legacy extra UTC-date-plus-direction cross-instrument collapse and the greedy non-transitive overlap implementation.",
+        "required_resolution": "Freeze one candidate-plus-instrument-plus-direction overlap-component definition, deterministic tie handling, and transitive component behavior before Count."
+      },
+      {
+        "id": "P0-CANDIDATE-323-FREQUENCY-FEASIBILITY",
+        "closure_stage": "SCIENTIFIC_SPECIFICATION_BEFORE_IMPLEMENTATION",
+        "finding": "Only under common month-start dates and the legacy cross-instrument date-plus-direction collapse is the bound two primary episodes per month, normally at most 48 across 24 months before warm-up. Missing dates or symbol-specific dates change that bound. Under the corrected candidate-plus-instrument-plus-direction geometry, 8 instruments times 24 months equals 192 is only a coarse opportunity upper bound that ignores warm-up, missing observations, absent signals, and episode overlap; it is not a realizable Count bound, and feasibility of the frozen minimum 120 remains unproven.",
+        "required_resolution": "Run a price-free opportunity-geometry proof against the prospectively corrected episode definition, including warm-up, missing-observation rules, signal opportunity rules, and episode overlap. Do not represent either 48 as an unconditional bound or 192 as a realizable Count bound, and do not lower the frozen threshold after Count."
+      },
+      {
+        "id": "P0-MECHANISM-INDEPENDENCE",
+        "closure_stage": "SCIENTIFIC_SPECIFICATION_BEFORE_IMPLEMENTATION",
+        "finding": "Candidate 321 shares a 24-change and net-move structure with rejected 319, and candidate 324 is close to rejected fixed-16:00 stretch-reversal candidate 314. The recorded no-rescue declaration requires a documented independent-mechanism review.",
+        "required_resolution": "Complete a pre-Count lineage decision using only provenance evidence demonstrably created before candidate freeze. If independence cannot be defended from that evidence without outcome knowledge, retire candidate 321 and/or 324 without replacement in this batch."
+      },
+      {
+        "id": "P0-LEGACY-MTF-QC",
+        "closure_stage": "SCIENTIFIC_SPECIFICATION_BEFORE_IMPLEMENTATION",
+        "finding": "The anchored MTF report is structurally blocked: 4297 m1-derived-H1 versus direct-H1 OHLC mismatches, 4 m1-only timestamps, 69108 direct-H1-only timestamps, and an unproven provider schedule. The legacy Count identity check does not require structural QC pass.",
+        "required_resolution": "Freeze a prospective execution amendment that keeps direct H1 canonical, treats cross-periodicity equality as a diagnostic only with explicit justification, requires exact final 64-series identity, and never calls the old report a structural QC pass."
+      },
+      {
+        "id": "P0-COUNT-RUNTIME-ISOLATION",
+        "closure_stage": "CONTROL_IMPLEMENTATION_AND_STATIC_AUDIT_AFTER_SEPARATE_APPROVAL",
+        "finding": "The legacy v6 runner dynamically imports an incompletely hash-locked chain and reads a prior Return/OOS audit inside the Count process. The full checkout exposes Return code, prior results, Git metadata, and network-capable runtime surfaces.",
+        "required_resolution": "Create a self-contained Count-only runner after separate approval, freeze its complete closure, mount no repository or prior results, disable network, and seal an exact-schema result after cleanup."
+      },
+      {
+        "id": "P0-CLEANUP-AND-ATTESTATION",
+        "closure_stage": "CONTROL_IMPLEMENTATION_AND_STATIC_AUDIT_AFTER_SEPARATE_APPROVAL",
+        "finding": "The legacy workflow skips cleanup after partial acquisition failure and the runner self-reports zero persistent prices before cleanup occurs.",
+        "required_resolution": "Use unconditional local cleanup for all terminal paths and produce the cleanup attestation only afterward with a trusted sealer."
+      },
+      {
+        "id": "P0-INCOMPLETE-TRANSACTION-INPUT",
+        "closure_stage": "CONTROL_IMPLEMENTATION_AND_STATIC_AUDIT_AFTER_SEPARATE_APPROVAL",
+        "finding": "Metadata completeness of 2017 and 2018 does not make the ACQUIRING transaction canonical or authorize research use.",
+        "required_resolution": "Freeze and separately approve the exact two-manifest and 32-archive read-only exception, including pre/post metadata identity and content SHA verification. Each archive must contain exactly 54 regular members: one payload manifest, one canonical CSV, and 52 source gzip members. Verify all 1664 source-member identities; reject unsafe paths, non-regular members, duplicate names, and unknown members."
+      },
+      {
+        "id": "P0-VAULT-V2-DERIVED-COMPLETENESS",
+        "closure_stage": "CONTROL_IMPLEMENTATION_AND_STATIC_AUDIT_AFTER_SEPARATE_APPROVAL",
+        "finding": "The existing Vault V2 H4 and D1 completeness logic groups timestamps that are present and can therefore accept a 3-of-4 H4 bucket or a 23-of-24 D1 bucket as complete.",
+        "required_resolution": "Independently generate the exact expected H1 timestamp set for every H4 and D1 bucket, require exact set equality, and drop plus count every incomplete bucket before Count."
+      },
+      {
+        "id": "P0-CANDIDATE-324-COVERAGE-SEMANTICS",
+        "closure_stage": "SCIENTIFIC_SPECIFICATION_BEFORE_IMPLEMENTATION",
+        "finding": "Candidate 324 does not pre-fix whether its 96-hour window requires only endpoints or complete internal H1 coverage; those rules produce different signal universes.",
+        "required_resolution": "Before Count, freeze endpoint-only or full-96-hour coverage with explicit missing-bar behavior. If this adds or changes the frozen candidate rule, permit it only through a prospective amended preregistration; otherwise retire candidate 324 without replacement."
+      }
+    ],
+    "p0_closure_model": {
+      "scientific_specification_p0_ids": [
+        "P0-CANDIDATE-323-FUTURE-AVAILABILITY",
+        "P0-EPISODE-SEMANTICS",
+        "P0-CANDIDATE-323-FREQUENCY-FEASIBILITY",
+        "P0-MECHANISM-INDEPENDENCE",
+        "P0-LEGACY-MTF-QC",
+        "P0-CANDIDATE-324-COVERAGE-SEMANTICS"
+      ],
+      "scientific_specification_closure_requirement": "CLOSE_BY_PROSPECTIVE_PRICE_FREE_SPECIFICATION_AND_REAUDIT_BEFORE_ANY_IMPLEMENTATION",
+      "control_implementation_p0_ids": [
+        "P0-COUNT-RUNTIME-ISOLATION",
+        "P0-CLEANUP-AND-ATTESTATION",
+        "P0-INCOMPLETE-TRANSACTION-INPUT",
+        "P0-VAULT-V2-DERIVED-COMPLETENESS"
+      ],
+      "control_implementation_closure_requirement": "CLOSE_DURING_SEPARATELY_APPROVED_IMPLEMENTATION_AND_PRICE_FREE_STATIC_AUDIT_BEFORE_EXTERNAL_ACCESS_OR_COUNT",
+      "implementation_authorized_by_this_design_version": false,
+      "runtime_data_identity_and_qc_gates_remain_required_after_control_closure": true
+    },
+    "p1_constraints": [
+      "Preserve exact end-exclusive 2018-12-31T00:00:00Z and reject every component or entry outside the interval.",
+      "Treat provider schedule completeness as UNPROVEN_NOT_EVALUATED and do not relabel nominal gaps as provider missingness.",
+      "Use the legacy IEEE-754 binary64 midpoint semantics unless a prospective pre-Count numeric amendment is separately frozen.",
+      "Define whether observation-consecutive H1 bars may cross real-time gaps for candidates 321 and 322.",
+      "Keep all results exploratory because repeated 2017-2018 hypothesis generation is not program-level untouched OOS."
+    ],
+    "next_required_decision": "USER_APPROVAL_TO_PUBLISH_THE_BLOCKED_DESIGN_ONLY; THEN_CLOSE_SCIENTIFIC_SPECIFICATION_P0; THEN_REQUEST_SEPARATE_CONTROL_IMPLEMENTATION_APPROVAL"
+  },
+  "source_route_decision": {
+    "preferred_route": "ROUTE_A_EXISTING_DRIVE_2017_2018_CONDITIONAL",
+    "decision_basis": "MINIMUM_NEW_EXTERNAL_ACQUISITION_AND_MINIMUM_SCOPE",
+    "route_a_current_state": "PREFERRED_FOR_LATER_IMPLEMENTATION_ONLY_IF_ALL_MANIFEST_AND_CONTENT_IDENTITY_GATES_PASS",
+    "route_b_current_state": "ALTERNATIVE_REQUIRING_A_NEW_DESIGN_AND_SEPARATE_APPROVAL",
+    "automatic_fallback_from_a_to_b": false,
+    "automatic_route_selection_at_runtime": false,
+    "incomplete_transaction_may_be_called_canonical_or_committed": false,
+    "route_a_failure_action": "STOP_AND_REQUEST_A_NEW_DECISION_DO_NOT_ACQUIRE_FROM_FXCM",
+    "may_proceed_before_all_p0_findings_are_resolved": false
+  },
+  "route_a_existing_drive_design": {
+    "source_acquisition_run": {
+      "run_id": 33705800232,
+      "run_attempt": 1,
+      "head_sha": "be864557a8e16d253e6aecf1519f85ad6162c1a3",
+      "transaction_state": "ACQUIRING",
+      "canonical_v2_folder_count": 0
+    },
+    "price_free_inventory_evidence": {
+      "run_id": 33732233208,
+      "run_attempt": 1,
+      "head_sha": "800c16257098bc8c2f152fa9d45804ffec81ebad",
+      "complete_years": [
+        2012,
+        2013,
+        2014,
+        2015,
+        2016,
+        2017,
+        2018,
+        2019,
+        2020,
+        2021
+      ],
+      "valid_archive_count": 500,
+      "valid_year_manifest_count": 10,
+      "price_content_bytes_read": 0
+    },
+    "gate_a1_manifest_selection": {
+      "purpose": "Resolve and validate only the two year manifests and the exact 32 archive identities before any archive content read.",
+      "current_state": "DESIGN_ONLY_NOT_IMPLEMENTED_NOT_AUTHORIZED",
+      "future_separate_user_approval_required": true,
+      "allowed_after_future_approval_only": [
+        "OAUTH_TOKEN_EXCHANGE",
+        "DRIVE_METADATA_GET_WITHIN_THE_SINGLE_EXISTING_TRANSACTION",
+        "EXACT_TWO_YEAR_MANIFEST_CONTENT_GET_FOR_2017_AND_2018"
+      ],
+      "year_manifest_content_get_max": 2,
+      "archive_content_get": 0,
+      "price_bytes_allowed": false,
+      "drive_mutation_allowed": false,
+      "cleanup_allowed": false,
+      "selection_rules": [
+        "EXACT_TRANSACTION_RUN_ATTEMPT_HEAD_AND_ACQUIRING_STATE",
+        "EXACT_YEAR_SET_2017_2018",
+        "EXACT_SYMBOL_SET_FX8",
+        "EXACT_PERIODICITY_SET_M1_H1",
+        "EXACT_ARCHIVE_NAME_SET_GENERATED_FROM_THE_FROZEN_TEMPLATE",
+        "EXACT_32_UNIQUE_ARCHIVES",
+        "YEAR_MANIFEST_QC_STATUS_AND_ARCHIVE_SHA256_PRESENT",
+        "NO_UNKNOWN_EXTRA_SELECTED_OBJECT",
+        "NO_DRIVE_OBJECT_ID_IN_PUBLIC_OUTPUT"
+      ],
+      "output": "PRICE_FREE_EXACT_SELECTION_MANIFEST_WITH_PUBLIC_HASHES_AND_COUNTS_ONLY"
+    },
+    "gate_a2_archive_qc_and_count": {
+      "purpose": "Read only the A1-selected archives, reconstruct the frozen 64-series MTF input in temporary storage, complete structural QC, and run Batch 6 Count-only.",
+      "current_state": "DESIGN_ONLY_NOT_IMPLEMENTED_NOT_AUTHORIZED",
+      "future_separate_user_approval_required": true,
+      "precondition": "GATE_A1_PASS_AND_SELECTION_MANIFEST_FROZEN_IN_A_SEPARATE_COMMIT",
+      "archive_content_get_exact": 32,
+      "regular_members_per_archive_exact": 54,
+      "member_layout_per_archive": {
+        "payload_manifest": 1,
+        "canonical_csv": 1,
+        "source_gzip": 52
+      },
+      "source_member_identity_count_exact": 1664,
+      "archive_extraction_policy": "SAFE_RELATIVE_PATHS_AND_REGULAR_FILES_ONLY_REJECT_ABSOLUTE_PARENT_TRAVERSAL_SYMLINK_HARDLINK_DEVICE_FIFO_DUPLICATE_AND_UNKNOWN_MEMBER",
+      "drive_metadata_scope_expansion_allowed": false,
+      "drive_mutation_allowed": false,
+      "cleanup_of_remote_transaction_allowed": false,
+      "local_price_retention": "RUNNER_TEMP_ONLY_DESTROY_BEFORE_ANY_ARTIFACT_UPLOAD_ON_SUCCESS_FAILURE_OR_CANCEL",
+      "automatic_return_oos_continuation_allowed": false,
+      "workflow_dispatch_authorized_at_preaudit_time": false,
+      "count_execution_authorized_at_preaudit_time": false
+    }
+  },
+  "route_b_fxcm_reacquisition_design_boundary": {
+    "current_state": "NOT_SELECTED_NOT_IMPLEMENTED_NOT_AUTHORIZED",
+    "future_new_versioned_design_required": true,
+    "future_separate_user_approval_required": true,
+    "exact_source_request_count": 1664,
+    "scope": "FX8_X_2017_2018_X_M1_H1_X_PROVIDER_WEEK_INDEX_1_THROUGH_52",
+    "redirects_allowed": false,
+    "runtime_fallback_from_route_a_allowed": false,
+    "drive_access_allowed": false,
+    "persistent_price_storage_allowed": false,
+    "current_provider_terms_and_source_identity_review_required_before_authorization": true,
+    "reuse_of_route_a_approval_allowed": false
+  },
+  "mtf_reconstruction_and_qc": {
+    "M15": "DERIVE_FROM_DIRECT_M1_IN_EXACT_UTC_15_MINUTE_BUCKETS",
+    "H1": "USE_DIRECT_H1_ONLY_M1_DERIVED_H1_IS_QC_REFERENCE_ONLY",
+    "H4": "DERIVE_FROM_DIRECT_H1_IN_UTC_BUCKETS_00_04_08_12_16_20",
+    "D1": "DERIVE_FROM_DIRECT_H1_IN_UTC_DAY_BUCKETS_AT_00_00",
+    "bid_and_ask_aggregated_separately": true,
+    "decimal_scope": "SOURCE_PARSE_SOURCE_HASH_STRUCTURAL_QC_AND_TIMEFRAME_AGGREGATION_ONLY",
+    "count_midpoint_scope": "LEGACY_IEEE754_BINARY64_FIELDWISE_MIDPOINT_AFTER_DECIMAL_QC_BOUNDARY",
+    "strictly_increasing_timestamps_required": true,
+    "duplicate_timestamps_allowed": false,
+    "positive_finite_ohlc_and_geometry_required": true,
+    "bid_ask_timestamp_exact_match_required": true,
+    "crossed_open_quotes": "QUARANTINE_BOTH_SIDES_AND_PROPAGATE_INCOMPLETE_BUCKET_DROPS",
+    "direct_h1_canonical_for_count": true,
+    "m1_derived_h1_vs_direct_h1_exact_comparison_required": true,
+    "m1_derived_h1_vs_direct_h1_exact_equality_required_for_count": false,
+    "m1_derived_h1_vs_direct_h1_role": "DIAGNOSTIC_ONLY_AFTER_A_PROSPECTIVE_PRE_COUNT_AMENDMENT; NEVER_CANONICAL; NEVER_FILL_OR_SUBSTITUTE_DIRECT_H1",
+    "legacy_structural_qc_pass_may_be_claimed": false,
+    "final_64_series_identity_must_match_legacy_canonical_projection": true,
+    "count_price_basis_numeric_semantics": "LEGACY_IEEE754_BINARY64_FIELDWISE_MIDPOINT_FROM_PARSED_DECIMAL_INPUT",
+    "gap_inventory_required": true,
+    "source_archive_sha256_required": true,
+    "canonical_csv_and_timestamp_sha256_required": true,
+    "incomplete_bucket_action": "DROP_AND_COUNT",
+    "h4_d1_completeness_rule": "INDEPENDENTLY_GENERATE_EXPECTED_H1_TIMESTAMP_SET_AND_REQUIRE_EXACT_SET_EQUALITY_FOR_EACH_BUCKET",
+    "forward_fill_allowed": false,
+    "interpolation_allowed": false,
+    "structural_qc_failure_action": "STOP_BEFORE_COUNT"
+  },
+  "count_only_boundary": {
+    "count_first": true,
+    "allowed_calculations": [
+      "ENTRY_TIME_FEATURES",
+      "SIGNAL_FLAGS",
+      "EPISODE_IDS",
+      "ENTRY_AVAILABILITY",
+      "INSTRUMENT_COUNTS",
+      "YEAR_COUNTS",
+      "ACTIVE_UTC_DATE_COUNTS",
+      "FROZEN_FREQUENCY_AND_BREADTH_GATE_RESULTS"
+    ],
+    "forbidden_calculations": [
+      "FORWARD_RETURN",
+      "RETURN_SIGN_AFTER_ENTRY",
+      "MFE",
+      "MAE",
+      "WIN_LOSS",
+      "WIN_RATE",
+      "PROFIT_FACTOR",
+      "EDGE",
+      "P_VALUE",
+      "CONFIDENCE_INTERVAL",
+      "DRAWDOWN",
+      "CUMULATIVE_R",
+      "OUTCOME_RANKING",
+      "OUTCOME_CHART"
+    ],
+    "prior_outcome_tested_candidate_count": 7,
+    "return_gate_only_for_frequency_passers": true,
+    "count_failure_action": "REJECT_WITHOUT_THRESHOLD_DIRECTION_SYMBOL_TIMEFRAME_OR_MECHANISM_RESCUE",
+    "return_oos_requires_new_preregistration_and_separate_approval": true
+  },
+  "future_artifact_policy": {
+    "gate_a1_exact_files": [
+      "BATCH6_FAST_TRACK_INPUT_SELECTION.json",
+      "artifact_manifest_sha256.txt"
+    ],
+    "gate_a2_exact_files": [
+      "EXPLORATORY_FXCM_BLIND_MTF_BATCH6_FAST_TRACK_COUNT_ONLY.json",
+      "artifact_manifest_sha256.txt"
+    ],
+    "raw_or_derived_price_allowed": false,
+    "event_timestamp_allowed": false,
+    "full_timestamp_sequence_allowed": false,
+    "drive_file_or_folder_id_allowed": false,
+    "secret_or_oauth_value_allowed": false,
+    "return_or_outcome_field_allowed": false,
+    "unbounded_remote_name_allowed": false,
+    "maximum_total_bytes": 1048576
+  },
+  "implementation_boundary": {
+    "new_standalone_count_runner_path": "research/phase9-exploratory-fxcm-20260901/runner/fxcm_blind_mtf_batch6_fast_track_standalone_count_v1.py",
+    "new_workflow_path": ".github/workflows/phase9-exploratory-fxcm-blind-mtf-batch6-fast-track-count-only-v1.yml",
+    "new_execution_contract_path": "research/phase9-exploratory-fxcm-20260901/spec/fxcm_blind_mtf_batch6_fast_track_execution_v1.frozen.json",
+    "all_three_must_be_absent_at_this_design_gate": true,
+    "legacy_batch6_workflow_may_be_modified_or_reenabled": false,
+    "shared_recovery_runner_may_be_modified": false
+  },
+  "authorization_at_preaudit_time": {
+    "implementation": false,
+    "workflow_creation": false,
+    "workflow_dispatch": false,
+    "oauth_token_exchange": false,
+    "drive_metadata_get": false,
+    "drive_manifest_content_read": false,
+    "drive_archive_content_read": false,
+    "drive_mutation": false,
+    "drive_cleanup": false,
+    "fxcm_price_acquisition": false,
+    "count_execution": false,
+    "return_oos_execution": false,
+    "commit": false,
+    "push": false
+  },
+  "operations_performed_by_this_design_preaudit": {
+    "network_price_request": 0,
+    "oauth_token_exchange": 0,
+    "drive_metadata_get": 0,
+    "drive_file_content_get": 0,
+    "drive_mutation": 0,
+    "workflow_dispatch": 0,
+    "count_only_analysis": 0,
+    "return_or_outcome_analysis": 0,
+    "commit": 0,
+    "push": 0
+  },
+  "stop_condition": "STOP_AFTER_LOCAL_BLOCKED_DESIGN_AND_PRICE_FREE_PREAUDIT; REQUEST_SEPARATE_APPROVAL BEFORE PUBLICATION; DO_NOT_IMPLEMENT_UNTIL_ALL_SCIENTIFIC_SPECIFICATION_P0_ARE_CLOSED_AND_CONTROL_IMPLEMENTATION_IS_SEPARATELY_APPROVED; DO_NOT_USE_EXTERNAL_DATA_OR_RUN_COUNT_UNTIL_CONTROL_IMPLEMENTATION_P0_PASS_PRICE_FREE_STATIC_AUDIT"
+}
