@@ -71,6 +71,26 @@
     "path": "research/data-vault-2022-2025-20260903/results/recovery-simple-v1-run-33757903542/FXCM_RECOVERY_SIMPLE_V1_FAILURE_AUDIT.json",
     "sha256": "b9d28a6bcb294c8026f2feb8cf7e7e4e94c463307775ee96f0cbe3381b52f416"
   },
+  "skipped_dispatches": [
+    {
+      "run_id": "33769234229",
+      "run_number": 2,
+      "head_sha": "4d3a40056d586a4e0d2c5bb2c6c929edeb2ba68c",
+      "conclusion": "skipped",
+      "job_execution_count": 0,
+      "price_access": 0,
+      "drive_write": 0
+    },
+    {
+      "run_id": "33798493607",
+      "run_number": 3,
+      "head_sha": "4d3a40056d586a4e0d2c5bb2c6c929edeb2ba68c",
+      "conclusion": "skipped",
+      "job_execution_count": 0,
+      "price_access": 0,
+      "drive_write": 0
+    }
+  ],
   "existing_transaction": {
     "root_folder_id": "1lZ0CkTn3tBxStf5H3V7W38ZcOsZ5Rw_v",
     "root_folder_name": "Phase9 FXCM Data Vault",
@@ -118,7 +138,7 @@
   "workflow": {
     "file": ".github/workflows/phase9-exploratory-fxcm-drive-vault-run1-recovery-simple-v1.yml",
     "manual_dispatch_only": true,
-    "required_run_number": 2,
+    "required_run_number": 4,
     "run_attempt": 1,
     "acquisition_qc_upload_redownload_same_job": true,
     "artifact_handoff": false,

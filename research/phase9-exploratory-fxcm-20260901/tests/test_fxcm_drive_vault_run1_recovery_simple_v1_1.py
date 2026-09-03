@@ -132,7 +132,7 @@ class CorrectiveRecoveryV11Test(unittest.TestCase):
 
     def test_contract_and_executed_v1_anchors(self):
         contract = simple.load_simple_contract_v1_1(SPEC)
-        self.assertEqual(contract["workflow"]["required_run_number"], 2)
+        self.assertEqual(contract["workflow"]["required_run_number"], 4)
         self.assertEqual(
             contract["source_policy"]["content_integrity_delays_seconds"],
             [0, 5, 15, 30, 60, 120],

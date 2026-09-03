@@ -100,7 +100,7 @@ def load_simple_contract_v1_1(path: Path) -> dict[str, Any]:
         ) != base.PRESERVED_INVENTORY_SHA256
         or source_policy.get("content_integrity_delays_seconds") != list(INTEGRITY_DELAYS_SECONDS)
         or source_policy.get("header_only_never_accepted_as_zero_rows") is not True
-        or workflow.get("required_run_number") != 2
+        or workflow.get("required_run_number") != 4
         or workflow.get("run_attempt") != 1
         or contract.get("provenance", {}).get("drive_app_properties") != {
             "operational_version": OPERATIONAL_VERSION,

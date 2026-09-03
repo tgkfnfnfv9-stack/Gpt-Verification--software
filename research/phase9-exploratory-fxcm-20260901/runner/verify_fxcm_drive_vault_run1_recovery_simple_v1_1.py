@@ -92,7 +92,7 @@ def verify(contract_path: Path, runner_path: Path, workflow_path: Path) -> dict[
     workflow = workflow_path.read_text(encoding="utf-8")
     for required in (
         "workflow_dispatch:",
-        "github.run_number == 2",
+        "github.run_number == 4",
         "RUN_FXCM_2022_2025_RECOVERY_QC_PRIVATE_UPLOAD_CORRECTIVE_ONCE",
         "fxcm_drive_vault_run1_recovery_simple_v1_1.py",
         "fxcm_drive_vault_run1_recovery_simple_v1_1.frozen.json",

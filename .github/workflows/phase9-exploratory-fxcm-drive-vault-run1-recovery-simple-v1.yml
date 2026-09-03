@@ -32,7 +32,7 @@ jobs:
     if: >-
       github.repository == 'tgkfnfnfv9-stack/Gpt-Verification--software' &&
       github.ref == 'refs/heads/main' &&
-      github.run_number == 2 &&
+      github.run_number == 4 &&
       github.run_attempt == 1 &&
       inputs.confirmation == 'RUN_FXCM_2022_2025_RECOVERY_QC_PRIVATE_UPLOAD_CORRECTIVE_ONCE' &&
       inputs.scope_confirmation == 'I_ACCEPT_10084_PRESENT_316_KNOWN_MISSING_AND_STAGE_UNSEALED_2022_2025' &&
