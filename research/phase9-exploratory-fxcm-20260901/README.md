@@ -1,6 +1,6 @@
 # Phase 9 Exploratory FXCM Fast Track
 
-Status: `DRIVE_VAULT_V2_1_RUN1_FAILED_CLOSED; CANONICAL_V2_NOT_PUBLISHED; READ_ONLY_TRANSACTION_INVENTORY_FROZEN_NOT_EXECUTED; LEGACY_FX8_BATCH6_BLOCKED`
+Status: `DRIVE_VAULT_V2_1_RUN1_FAILED_CLOSED; CANONICAL_V2_NOT_PUBLISHED; READ_ONLY_TRANSACTION_INVENTORY_INDEPENDENTLY_AUDITED; LEGACY_FX8_BATCH6_BLOCKED`
 
 ## Current canonical next step: reusable Google Drive Vault
 
@@ -12,12 +12,17 @@ Status: `DRIVE_VAULT_V2_1_RUN1_FAILED_CLOSED; CANONICAL_V2_NOT_PUBLISHED; READ_O
 always cleanupは全実行jobで成功した。証跡正本は
 `../phase9-hypothesis-redesign-20260828/POLICY_INCIDENT_20260903.md`。
 
-次の単一Gateは、失敗transaction `v2-txn-run-33705800232`をGoogle Drive metadata `GET`だけで
-棚卸しする別workflowである。契約
-`spec/fxcm_drive_vault_run1_read_only_inventory_v2_1.frozen.json`、専用read-only client、runner、
-price-free verifier、manual single-use workflowを実装したが、dispatchは未承認・未実行である。
-Drive file content、FXCM source、Drive mutation、finalize、cleanup、Count、Batch 6、Returnは一切
-含まない。実行には公開main SHAの確認後、別のユーザー明示承認が必要である。V2.1は再実行しない。
+別承認されたread-only inventory Run `33732233208`（Run #1 / Attempt #1、head
+`800c16257098bc8c2f152fa9d45804ffec81ebad`）を実行し、price-free Artifactを独立監査した。
+root直下はexact transaction 1件だけで、canonical `v2`は0件。2012～2021年の10 stageは各50
+archive＋year manifestがmetadata上完全で、合計500 archive・2,548,863,404 bytes。2022～2025年の
+4 stageは空で、合計200 archiveと4 year manifestが欠けている。Drive APIはmetadata `GET`だけ、
+file content 0 byte、Drive mutation 0、FXCM request 0、price 0 byteである。正本監査は
+`results/run-33732233208/FXCM_DRIVE_VAULT_RUN1_READ_ONLY_INDEPENDENT_AUDIT.json`。
+
+次は停止したまま、未完了transactionを削除するcleanupか、2022～2025年を補うversioned recovery
+のどちらを設計するかを別判断する。いずれも版付き契約と、その後の別の明示実行承認が必要である。
+V2.1は再実行せず、Count、Batch 6、Returnへ自動で進まない。
 
 2026-09-02、ユーザーはAvailability Run `33627420903`で確認できたFXCM範囲を使う
 Option 1を選択した。V2は2012～2025年、25通貨ペア、direct m1/H1の700 shardとする。
@@ -37,7 +42,8 @@ Option 1を選択した。V2は2012～2025年、25通貨ペア、direct m1/H1の
 - OAuth client、refresh token、同一client作成root: 設定済み（secret値はGitに保存しない）
 - GitHub Environment、required reviewer、OAuth 3 secrets: 設定済み（値はチャット・Git・Artifactへ非公開）
 - V2.1価格取得Run #1: 実行済み・failure（2012～2021成功、2022～2025失敗、finalizer skipped）
-- read-only transaction inventory、Count、Batch 6: 未実行
+- read-only transaction inventory: Run `33732233208`を実行・独立監査済み
+- Count、Batch 6: 未実行
 - V1 acquisition workflow: fail-closedで恒久停止
 - 旧V2 acquisition workflowと旧Batch 6 workflow: fail-closedで恒久停止
 - V2.1 acquisition専用23 tests、read-only inventory専用6 tests、探索track全192 tests: 成功
@@ -53,9 +59,9 @@ canonical `v2`を作らず、未完了transactionを隔離する。PATCH境界�
 cleanupは別承認なしに行わない。
 Batch 6 compatibilityは独立64系列consumer Gateが完成するまで常にfalseである。
 
-V2.1 Run #1は単一使用認可を消費済みであり、再実行・replayしない。まず別承認後のread-only
-transaction inventoryでprivate Driveの未完了状態を確定する。cleanupやrecovery取得はその結果を
-独立監査してから、さらに別の版付き契約と明示承認を必要とする。自動でCountへ進まない。
+V2.1 Run #1とread-only inventory Run #1は単一使用認可を消費済みであり、再実行・replayしない。
+private Driveの未完了状態は独立監査で確定した。cleanupやrecovery取得は、さらに別の版付き契約と
+明示承認を必要とする。自動でCountへ進まない。
 
 ## Historical V1 availability result
 

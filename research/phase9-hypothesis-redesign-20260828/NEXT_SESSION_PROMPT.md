@@ -26,6 +26,7 @@ GitHub Repository `tgkfnfnfv9-stack/Gpt-Verification--software` のPhase 9研究
 14. `research/phase9-exploratory-fxcm-20260901/spec/fxcm_drive_vault_operational_hardening_v2_1.frozen.json`
 14a. `research/phase9-hypothesis-redesign-20260828/POLICY_INCIDENT_20260903.md`
 14b. `research/phase9-exploratory-fxcm-20260901/spec/fxcm_drive_vault_run1_read_only_inventory_v2_1.frozen.json`
+14c. `research/phase9-exploratory-fxcm-20260901/results/run-33732233208/FXCM_DRIVE_VAULT_RUN1_READ_ONLY_INDEPENDENT_AUDIT.json`
 15. `research/phase9-exploratory-fxcm-20260901/runner/fxcm_drive_vault_common.py`
 16. `research/phase9-exploratory-fxcm-20260901/runner/fxcm_drive_vault_v2_common.py`
 17. `research/phase9-exploratory-fxcm-20260901/runner/fxcm_google_drive_private.py`
@@ -64,7 +65,7 @@ Count-only、Return/OOS、新期間、頑健性テストで再利用し、本物
 - 321～324: 事前登録済み、Count未実行
 - 既存Batch 6 workflow: 実行禁止
 - V2 Drive folder ID: `1lZ0CkTn3tBxStf5H3V7W38ZcOsZ5Rw_v`
-- V2 Drive folder: V2.1 Run #1の未完了transactionが残っている可能性あり。exact inventory未確認
+- V2 Drive folder: 未完了transaction 1件だけが存在し、canonical `v2`は0件（exact inventory監査済み）
 - V2 target: 2012～2025年、25通貨ペア
 - V2 direct: m1/H1 BID/ASK OHLC、提供時だけVolume
 - canonical: M1由来M5/M15/M30/H1/H4/D1/W1
@@ -84,7 +85,9 @@ Count-only、Return/OOS、新期間、頑健性テストで再利用し、本物
 - V2.1 successful years: 2012～2021
 - V2.1 failed years: 2022/2023 empty、2024 not gzip、2025 too small
 - V2.1 finalizer: skipped。GitHub Artifact 0、canonical `v2`未公開
-- read-only transaction inventory: 契約・GET-only client・workflow・Tests実装済み、dispatch未承認・未実行
+- read-only transaction inventory: Run `33732233208`（Run #1 / Attempt #1）を実行・独立監査済み。再実行禁止
+- inventory result: 2012～2021年は500 archive＋10 manifestがmetadata上完全、2022～2025年は空stage
+- inventory boundary: Drive metadata GETのみ、file content 0 byte、mutation 0、FXCM request 0、price 0 byte
 - V2.1 operational amendment: ユーザー承認済み、ただし価格取得認可効果なし
 - V2.1 transaction: owner-only exact-empty root確認後に作成し、全検証後の単一PATCHだけで`v2`/`COMMITTED`へ公開
 - 未完了transaction: 自動削除禁止、cleanupは別承認
@@ -110,11 +113,11 @@ Batch 6のCount範囲は凍結済みの
 
 ## 次に行う作業
 
-1. 最新remote main、Run #1事故正本、read-only inventory契約・client・workflow・Testsを確認する。
-2. 現在は停止し、V2.1をrerun/replayしない。Drive objectを変更・削除しない。secret値を取得・表示・再入力させない。
-3. ユーザーが新しい公開main SHAを確認し、別の明示承認を与えた場合だけread-only inventory Run #1 / Attempt #1を実行する。
-4. metadata-only Artifactを独立監査し、transactionとyear stageのexact状態を確定する。
-5. cleanupまたはversioned recoveryは、それぞれ別契約・別承認なしに行わない。
+1. 最新remote main、Run #1事故正本、read-only inventory正本監査を確認する。
+2. 現在は停止し、V2.1とinventoryをrerun/replayしない。Drive objectを変更・削除しない。secret値を取得・表示・再入力させない。
+3. cleanupかversioned recoveryのどちらを設計するかユーザー判断を得る。
+4. 選択された経路だけを別の版付き契約として、price/Drive content/mutationなしで設計・監査する。
+5. 新しい公開main SHAに対するさらに別の明示承認なしにcleanupまたはrecoveryを実行しない。
 6. canonical vault完成と旧64系列互換性を確認するまでBatch 6へ進まない。321～324の条件とfrequency Gateを変更しない。
 7. Count通過候補だけをReturn/OOS→新期間→頑健性へ進める。
 

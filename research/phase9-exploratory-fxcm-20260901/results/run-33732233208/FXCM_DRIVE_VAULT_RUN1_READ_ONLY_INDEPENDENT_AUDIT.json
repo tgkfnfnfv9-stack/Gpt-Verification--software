@@ -1,0 +1,123 @@
+{
+  "schema_version": "phase9-exploratory-fxcm-drive-vault-run1-read-only-independent-audit-v1.0.0",
+  "status": "COMPLETE_2012_2021_STAGED_2022_2025_EMPTY_NO_CANONICAL_V2",
+  "audited_at": "2026-09-03",
+  "workflow_run": {
+    "run_id": 33732233208,
+    "run_number": 1,
+    "run_attempt": 1,
+    "head_sha": "800c16257098bc8c2f152fa9d45804ffec81ebad",
+    "workflow": ".github/workflows/phase9-exploratory-fxcm-drive-vault-run1-read-only-inventory.yml",
+    "run_url": "https://github.com/tgkfnfnfv9-stack/Gpt-Verification--software/actions/runs/33732233208",
+    "conclusion": "success",
+    "jobs": {
+      "total": 1,
+      "success": 1,
+      "failure": 0
+    }
+  },
+  "source_acquisition_run": {
+    "run_id": 33705800232,
+    "run_number": 1,
+    "run_attempt": 1,
+    "head_sha": "be864557a8e16d253e6aecf1519f85ad6162c1a3",
+    "conclusion": "failure",
+    "canonical_v2_committed": false,
+    "public_artifact_count": 0,
+    "rerun_authorized": false
+  },
+  "source_artifact": {
+    "artifact_id": 9884394737,
+    "artifact_name": "phase9-fxcm-vault-run1-read-only-inventory-800c16257098bc8c2f152fa9d45804ffec81ebad-33732233208",
+    "size_in_bytes": 2386,
+    "expires_at": "2026-09-17T08:16:57Z",
+    "zip_sha256": "3d54ffb49ed7db6d90b44430ccc634f5b90bb5a304ac79368aeb84ac78b53a99",
+    "report_sha256": "2688058497c8395c012db5d1ae5ddd917f4f88ac0642406c201d4fcab541159e",
+    "exact_files": [
+      "VAULT_RUN1_READ_ONLY_INVENTORY.json",
+      "artifact_manifest_sha256.txt"
+    ]
+  },
+  "independent_validation": {
+    "github_artifact_digest_matches_download": true,
+    "exact_two_file_allowlist_passed": true,
+    "artifact_manifest_sha256_passed": true,
+    "canonical_json_serialization_passed": true,
+    "price_free_verifier_passed": true,
+    "expected_inventory_run_identity_passed": true,
+    "expected_source_acquisition_identity_passed": true,
+    "credential_or_secret_value_observed": false,
+    "drive_object_id_observed": false,
+    "arbitrary_remote_name_observed": false
+  },
+  "inventory_result": {
+    "root_owner_only_verified": true,
+    "root_child_object_count": 1,
+    "transaction_name_match_count": 1,
+    "transaction_metadata_valid": true,
+    "unexpected_root_child_object_count": 0,
+    "unexpected_transaction_child_object_count": 0,
+    "canonical_v2_name_match_count": 0,
+    "year_stage_count": 14,
+    "complete_year_stage_count": 10,
+    "complete_years": [
+      2012,
+      2013,
+      2014,
+      2015,
+      2016,
+      2017,
+      2018,
+      2019,
+      2020,
+      2021
+    ],
+    "empty_incomplete_years": [
+      2022,
+      2023,
+      2024,
+      2025
+    ],
+    "valid_archive_metadata_count": 500,
+    "missing_archive_count": 200,
+    "valid_year_manifest_count": 10,
+    "valid_archive_total_bytes": 2548863404,
+    "year_stage_inventory_sha256": "4a0f0cfb78ead6d6730ca7b41b716de8e2fef984e7f36ded17828d9e7b40dc4d"
+  },
+  "year_summary": [
+    {"year": 2012, "stage": "COMPLETE", "valid_archives": 50, "missing_archives": 0, "valid_year_manifest": true, "valid_archive_total_bytes": 248526856},
+    {"year": 2013, "stage": "COMPLETE", "valid_archives": 50, "missing_archives": 0, "valid_year_manifest": true, "valid_archive_total_bytes": 250697861},
+    {"year": 2014, "stage": "COMPLETE", "valid_archives": 50, "missing_archives": 0, "valid_year_manifest": true, "valid_archive_total_bytes": 242164532},
+    {"year": 2015, "stage": "COMPLETE", "valid_archives": 50, "missing_archives": 0, "valid_year_manifest": true, "valid_archive_total_bytes": 271388223},
+    {"year": 2016, "stage": "COMPLETE", "valid_archives": 50, "missing_archives": 0, "valid_year_manifest": true, "valid_archive_total_bytes": 274416912},
+    {"year": 2017, "stage": "COMPLETE", "valid_archives": 50, "missing_archives": 0, "valid_year_manifest": true, "valid_archive_total_bytes": 259799164},
+    {"year": 2018, "stage": "COMPLETE", "valid_archives": 50, "missing_archives": 0, "valid_year_manifest": true, "valid_archive_total_bytes": 257462808},
+    {"year": 2019, "stage": "COMPLETE", "valid_archives": 50, "missing_archives": 0, "valid_year_manifest": true, "valid_archive_total_bytes": 244249900},
+    {"year": 2020, "stage": "COMPLETE", "valid_archives": 50, "missing_archives": 0, "valid_year_manifest": true, "valid_archive_total_bytes": 256708652},
+    {"year": 2021, "stage": "COMPLETE", "valid_archives": 50, "missing_archives": 0, "valid_year_manifest": true, "valid_archive_total_bytes": 243448496},
+    {"year": 2022, "stage": "EMPTY_INCOMPLETE", "valid_archives": 0, "missing_archives": 50, "valid_year_manifest": false, "valid_archive_total_bytes": 0},
+    {"year": 2023, "stage": "EMPTY_INCOMPLETE", "valid_archives": 0, "missing_archives": 50, "valid_year_manifest": false, "valid_archive_total_bytes": 0},
+    {"year": 2024, "stage": "EMPTY_INCOMPLETE", "valid_archives": 0, "missing_archives": 50, "valid_year_manifest": false, "valid_archive_total_bytes": 0},
+    {"year": 2025, "stage": "EMPTY_INCOMPLETE", "valid_archives": 0, "missing_archives": 50, "valid_year_manifest": false, "valid_archive_total_bytes": 0}
+  ],
+  "read_only_boundary": {
+    "drive_api_methods": [
+      "GET"
+    ],
+    "drive_mutation_count": 0,
+    "drive_file_content_bytes_read": 0,
+    "fxcm_source_request_count": 0,
+    "price_bytes_read": 0,
+    "research_statistics_calculated": false,
+    "formal_phase9_authorization_effect": false
+  },
+  "decision": {
+    "canonical_vault_usable": false,
+    "cleanup_authorized": false,
+    "recovery_acquisition_authorized": false,
+    "count_only_authorized": false,
+    "batch6_authorized": false,
+    "action": "STOP_BEFORE_CLEANUP_OR_RECOVERY",
+    "next_required_decision": "USER_SELECTS_A_SEPARATELY_VERSIONED_CLEANUP_OR_RECOVERY_DESIGN_AND_LATER_EXPLICIT_EXECUTION_APPROVAL"
+  }
+}

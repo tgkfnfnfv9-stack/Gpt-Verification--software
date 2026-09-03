@@ -10,7 +10,7 @@ Actual Full-QC実装基準: `9eb7ce667bea8e76a7f9bb1f2d378eebd8957206`
 
 ## Latest delta
 
-### 2026-09-03 V2.1 Run #1 failure and read-only inventory delta
+### 2026-09-03 V2.1 Run #1 failure and read-only inventory closure
 
 - V2.1取得Run `33705800232`（Run #1 / Attempt #1、head
   `be864557a8e16d253e6aecf1519f85ad6162c1a3`）は`failure`で終了した。17 jobsの内訳は
@@ -18,18 +18,21 @@ Actual Full-QC実装基準: `9eb7ce667bea8e76a7f9bb1f2d378eebd8957206`
 - 2012～2021年jobは成功した。2022/2023年は`empty frozen source object`、2024年は
   `source object is not gzip`、2025年は`source object too small`でfail-closedとなった。
   `finalize-vault`はskippedで、canonical `v2` / `COMMITTED` publicationは成立していない。
-- 全実行year jobのlocal workspace always-cleanupは成功した。一方、private Driveには
-  `v2-txn-run-33705800232`とyear stageが残っている可能性があり、exact remote inventoryは未確認。
-  自動cleanupは禁止され、cleanup認可はfalseのままである。
+- 全実行year jobのlocal workspace always-cleanupは成功した。一方、private Driveには未完了
+  transactionが残った。別承認されたread-only inventory Run `33732233208`（Run #1 / Attempt #1、
+  head `800c16257098bc8c2f152fa9d45804ffec81ebad`）でexact remote inventoryを確定し、独立監査した。
+- root childはvalidなtransaction 1件だけ、canonical `v2`は0件。2012～2021年の10 stageは
+  各50 archive＋1 year manifestがmetadata上完全で、合計500 archive・2,548,863,404 bytes。
+  2022～2025年の4 stageは空で、200 archive＋4 manifestが欠けている。
 - 事故正本は`POLICY_INCIDENT_20260903.md`。Formal Phase 9への認可効果はfalse。Exploratory
   price accessは実行済みだが、このworkflowはCount、candidate signal、Return、Outcome、MT5を
   計算していない。V2.1の単一使用認可は消費済みであり、rerun/replayしない。
-- 次の単一Gateとして
-  `spec/fxcm_drive_vault_run1_read_only_inventory_v2_1.frozen.json`を凍結し、Drive metadata
-  `GET`だけを持つ専用client、sanitized report runner/verifier、manual Run #1/Attempt #1 workflow、
-  専用6 Testsを実装し、探索track全192 Testsに成功した。Drive file content、FXCM source request、Drive mutation、finalize、cleanupは
-  code surfaceに含めない。公開してもdispatch認可にはならず、実行は別の明示承認と公開main SHA
-  の確認まで停止する。
+- inventory ArtifactのGitHub digest、exact 2-file allowlist、manifest、canonical JSON、run identity、
+  price-free verifierはすべて独立検証PASS。正本は
+  `../phase9-exploratory-fxcm-20260901/results/run-33732233208/FXCM_DRIVE_VAULT_RUN1_READ_ONLY_INDEPENDENT_AUDIT.json`。
+  Drive metadata `GET`だけ、file content 0 byte、Drive mutation 0、FXCM request 0、price 0 byteである。
+- V2.1とinventoryの単一使用認可は消費済みで、rerun/replayしない。次はcleanupかversioned recovery
+  の別設計を選ぶ。どちらも別の版付き契約と、さらに別の明示実行承認まで実行しない。
 
 ### 2026-09-03 V2.1 operational hardening delta
 
@@ -66,8 +69,8 @@ Actual Full-QC実装基準: `9eb7ce667bea8e76a7f9bb1f2d378eebd8957206`
   workflow testで実ファイルSHAとの一致を固定した。
 - V1 acquisition workflowは恒久fail-closed化した。OAuth clientとrefresh tokenを作成し、
   同一clientで空のV2 root `1lZ0CkTn3tBxStf5H3V7W38ZcOsZ5Rw_v`を作成した。
-  GitHub Environment、required reviewer、OAuth 3 secretsを設定した。V2価格取得workflow、
-  Count、既存Batch 6は未実行であり、別の明示承認まで実行しない。
+  GitHub Environment、required reviewer、OAuth 3 secretsを設定した。この時点ではV2価格取得workflow、
+  Count、既存Batch 6は未実行であり、V2価格取得は後続の別承認まで停止した。
 - V2 partitionはDevelopment 2012～2019、Strict OOS 2020～2021、Robustness 2022～2023、
   Final holdout 2024～2025。Batch 6 Count区間と321～324の事前登録条件は変更していない。
 
@@ -495,14 +498,13 @@ Provider schedule inventory / allowlist
 
 ## 7. 次に行う単一作業
 
-V2.1 Run `33705800232`の失敗証跡と、未完了transactionのread-only inventory実装をremote
-mainへ公開する。公開後は停止し、新しい公開main SHAをユーザーが確認した後の別の明示承認まで
-inventory workflowを実行しない。inventoryはDrive metadata `GET`だけであり、file content、
-FXCM source、mutation、cleanup、recovery、Count、Returnへ進まない。
+read-only inventoryの独立監査結果をremote mainへ公開した後に停止し、未完了transactionの
+cleanupか、2022～2025年を補うversioned recoveryのどちらを設計するかユーザー判断を待つ。
+設計作業はprice/Drive contentを参照せず、Drive mutationも行わない。cleanupとrecoveryは別の
+版付き契約に分離し、実行はそれぞれさらに別の明示承認を必要とする。
 
-inventoryの独立監査後に、cleanupとrecoveryのどちらを行う場合も、別の版付き契約とさらに別の
-明示承認を必要とする。V2.1をrerun/replayしない。canonical vaultが完成・監査されるまでは
-Batch 6のdata inputを変更せず、既存Batch 6 workflowも実行しない。
+V2.1 Run `33705800232`とinventory Run `33732233208`をrerun/replayしない。canonical vaultが
+完成・独立監査されるまではBatch 6のdata inputを変更せず、既存Batch 6 workflowも実行しない。
 
 Formal trackではV1 Run `33574659277`とV2 Run `33577505327`の単一使用認可は消費済みで、
 rerun/replayしない。remote resource/JAR request、JForex接続、正式価格取得も別承認前に行わない。
@@ -522,11 +524,11 @@ rerun/replayしない。remote resource/JAR request、JForex接続、正式価�
 
 ## 8. 残りの順序
 
-1. Run `33705800232`の失敗証跡、0 Artifact、finalizer skipped、V2.1再実行禁止を確認する
-2. read-only inventory契約、専用GET-only client、workflow、Testsと公開main SHAを確認する
-3. 別の明示承認後だけread-only inventory Run #1 / Attempt #1を実行する
-4. sanitized metadata-only Artifactを独立監査し、transaction/year stageのexact状態を確定する
-5. cleanupまたはversioned recoveryを別々に設計し、それぞれ別の明示承認なしに実行しない
+1. Run `33705800232`の失敗証跡、0 Artifact、finalizer skipped、V2.1再実行禁止を維持する
+2. inventory Run `33732233208`の正本監査とexact Drive metadata状態を確認する
+3. cleanupかversioned recoveryのどちらを設計するかユーザー判断を得る
+4. 選択された経路だけを別の版付き契約として設計し、price/Drive content/mutationなしで監査する
+5. 新しい公開main SHAに対するさらに別の明示承認なしにcleanupまたはrecoveryを実行しない
 6. canonical vault完成・独立監査・旧64系列互換性確認後だけBatch 6入力変更を検討する
 7. Count通過候補だけをReturn/OOS→新期間→頑健性へ進め、最後にMT5を検討する
 8. Formal JForex/provider schedule/Energy trackは別のまま維持する

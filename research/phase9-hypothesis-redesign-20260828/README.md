@@ -32,9 +32,11 @@ Run #1のsource integrity failureは`POLICY_INCIDENT_20260903.md`を参照して
 
 Option 1 V2.1 Run `33705800232`は2012～2021年job成功後、2022～2025年のsource object
 integrity failureでfail-closedとなった。finalizerはskipped、Artifactは0件、canonical `v2`は
-未公開である。V2.1を再実行せず、未完了transactionを変更・削除しない。次は別承認後に
-Drive metadata `GET`だけのsingle-use read-only inventoryを行う。実装は凍結済みだが未実行で、
-cleanup、recovery取得、Count、Batch 6への認可効果はない。Exploratory price accessにより
+未公開である。Drive metadata `GET`だけのsingle-use read-only inventory Run `33732233208`を
+実行・独立監査し、2012～2021年は500 archive＋10 manifestがmetadata上完全、2022～2025年は
+空stage、canonical `v2`は0件と確定した。V2.1とinventoryを再実行せず、未完了transactionを
+変更・削除しない。次はcleanupかversioned recoveryの別設計を選ぶが、どちらも別の版付き契約と
+明示承認まで実行しない。Count、Batch 6への認可効果はない。Exploratory price accessにより
 2019年以降をFormal Phase 9の未見期間とは主張しない。詳細は
 `../phase9-exploratory-fxcm-20260901/README.md`と
 `../phase9-exploratory-fxcm-20260901/GOOGLE_DRIVE_DATA_VAULT_PLAN.md`を参照する。

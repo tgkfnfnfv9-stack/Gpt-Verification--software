@@ -1,7 +1,7 @@
 # Phase 9 operational incident record — 2026-09-03
 
 Incident ID: `PHASE9-INC-20260903-001`
-Status: `V2_1_ACQUISITION_FAILED_CLOSED_NO_CANONICAL_PUBLICATION_REMOTE_TRANSACTION_INVENTORY_PENDING`
+Status: `V2_1_ACQUISITION_FAILED_CLOSED_NO_CANONICAL_PUBLICATION_REMOTE_TRANSACTION_INVENTORY_AUDITED`
 
 ## Summary
 
@@ -49,9 +49,12 @@ change, forward fill, interpolation, or silent removal of a year, symbol, period
 
 - `prepare-vault` successfully created the uncommitted transaction named
   `v2-txn-run-33705800232` with initial state `ACQUIRING`.
-- The 2012–2021 jobs completed their year-level work, but the exact current Drive object inventory has
-  not yet been independently observed.
-- The failed 2022–2025 jobs may have left empty or partial year stage folders.
+- Read-only inventory Run `33732233208` independently established that the transaction is the root's
+  only child and its metadata is valid. There is no canonical `v2` name match.
+- The 2012–2021 year stages each contain 50 valid archive metadata records and one valid year
+  manifest: 500 archives and 10 manifests in total, with 2,548,863,404 aggregate archive bytes.
+- The failed 2022–2025 year stages exist but are empty: 200 expected archives and four year manifests
+  are absent. No partial archive object was observed in those stages.
 - `finalize-vault` was skipped, so no transaction-wide manifest or seal was verified and no canonical
   `v2` folder was intentionally published.
 - The V2.1 contract prohibits automatic remote cleanup. No Drive object was deleted, renamed, moved,
@@ -69,15 +72,24 @@ change, forward fill, interpolation, or silent removal of a year, symbol, period
   p-value, confidence interval, ranking, or MT5 logic was calculated by this workflow.
 - Confirmed Phase 9 edge count remains 0.
 
+## Read-only inventory closure
+
+The separately approved metadata-only inventory completed successfully as Run `33732233208`, Run #1,
+Attempt #1, at head `800c16257098bc8c2f152fa9d45804ffec81ebad`. The downloaded Artifact's
+GitHub digest, exact two-file allowlist, report manifest, canonical JSON, run identities, and price-free
+verifier all passed independent verification. The authoritative audit is
+`research/phase9-exploratory-fxcm-20260901/results/run-33732233208/FXCM_DRIVE_VAULT_RUN1_READ_ONLY_INDEPENDENT_AUDIT.json`.
+
+The run used Drive metadata `GET` only. Drive file content bytes, Drive mutations, FXCM requests, and
+price bytes were all zero. It calculated no research statistics and has no Formal authorization effect.
+
 ## Frozen next gate
 
-The only prepared next gate is a separate manual, single-use, metadata-only inventory of the failed
-transaction. Its contract is
-`research/phase9-exploratory-fxcm-20260901/spec/fxcm_drive_vault_run1_read_only_inventory_v2_1.frozen.json`.
-That inventory is limited to Google Drive metadata `GET` operations. It does not read Drive file
-content, contact the FXCM source, mutate Drive, finalize the transaction, or clean up any object.
-Publishing the implementation does not authorize dispatch; dispatch requires another explicit user
-approval and review of the then-current public `main` SHA.
+Stop before cleanup or recovery. A cleanup design and a versioned recovery-acquisition design are
+different actions and must not be conflated. Either path requires its own reviewed, versioned contract;
+execution then requires a later, separate explicit user approval against the then-current public
+`main` SHA. Until a complete canonical vault is independently audited, Count-only and Batch 6 remain
+blocked.
 
 ## Prohibited follow-up
 
@@ -87,5 +99,5 @@ approval and review of the then-current public `main` SHA.
 - Do not change the frozen availability mask in place.
 - Do not acquire replacement price objects without a new versioned contract and separate approval.
 - Do not run Count-only, Batch 6, Return/OOS, or MT5.
-- Do not treat completed year jobs as a committed vault before the read-only inventory and a later,
-  separately authorized recovery design.
+- Do not treat the ten complete year stages as a committed vault before a separately authorized
+  recovery completes the missing years and a canonical vault is independently audited.

@@ -1,6 +1,6 @@
 # Phase 9 FXCM Google Drive Data Vault Plan
 
-Status: `V2_1_OPERATIONAL_HARDENING_IMPLEMENTED_NOT_EXECUTED_NO_PRICE_ACQUISITION`
+Status: `V2_1_RUN1_FAILED_CLOSED_READ_ONLY_INVENTORY_INDEPENDENTLY_AUDITED_NO_CANONICAL_V2`
 
 Recorded: 2026-09-03
 
@@ -9,6 +9,30 @@ Recorded: 2026-09-03
 FXCM価格を候補Batchごとに再取得して破棄する運用を終了し、取得・QCと検証を分離する。
 一度だけ複数年データを取得してGoogle Driveの非公開研究フォルダへ保存し、以後の
 Count-only、Return/OOS、頑健性確認はSHA固定した同じデータを再利用する。
+
+## 2026-09-03 Run #1 failure transaction inventory closure
+
+V2.1 acquisition Run `33705800232`は2012～2021年job成功後、2022～2025年のsource integrity
+failureでfail-closedとなった。finalizerはskipped、公開Artifactは0件、canonical `v2`は未公開。
+同Runの単一使用認可は消費済みで、rerun/replayしない。
+
+別承認されたDrive metadata `GET`限定inventory Run `33732233208`を実行し、price-free Artifactを
+独立監査した。root childはvalidな未完了transaction 1件だけで、canonical `v2`は0件だった。
+2012～2021年の10 stageは各50 archive＋1 year manifestがmetadata上完全で、合計500 archive、
+10 manifest、2,548,863,404 bytes。2022～2025年の4 stageは空で、200 archiveと4 manifestが
+欠けている。
+
+監査正本は
+`results/run-33732233208/FXCM_DRIVE_VAULT_RUN1_READ_ONLY_INDEPENDENT_AUDIT.json`。
+Artifact ZIP SHA-256は
+`3d54ffb49ed7db6d90b44430ccc634f5b90bb5a304ac79368aeb84ac78b53a99`、report SHA-256は
+`2688058497c8395c012db5d1ae5ddd917f4f88ac0642406c201d4fcab541159e`。Drive file content 0 byte、
+Drive mutation 0、FXCM request 0、price 0 byte、研究統計0である。
+
+次は停止し、cleanupかversioned recoveryのどちらを設計するかを別判断する。両者を同じ契約へ
+混在させず、選択された経路だけを版付き契約として事前監査する。実行には、その時点の公開main
+SHAに対するさらに別の明示承認が必要である。canonical vault完成・独立監査まではCountとBatch 6を
+実行しない。
 
 ## 2026-09-03 V2.1 pre-execution operational hardening
 
@@ -34,8 +58,8 @@ sourceは`https://candledata.fxcorporate.com:443/{periodicity}/{instrument}/{yea
 へ完全固定し、redirect、query、fragment、userinfo、別portを拒否する。crossed-open行を除外
 したcanonical gapはusable row列で集計する。Batch 6 compatibilityは別の旧64系列照合Gateが
 完成するまでfalse固定であり、321～324のCount、Return、Outcomeは未認可のままである。
-V2.1専用23 tests、探索track全186 testsは成功した。価格response body、Secret値、Outcomeは
-一切参照していない。V2.1取得は、新しい公開main SHAの確認と別の明示承認まで実行しない。
+V2.1専用23 tests、探索track全186 testsは成功した。この安全強化時点では価格response body、
+Secret値、Outcomeを一切参照せず、V2.1取得は後続の公開main SHA確認と別の明示承認まで停止した。
 
 ## 2026-09-02 Option 1 / V2 frozen implementation
 
@@ -66,11 +90,10 @@ review済みmain SHA完全一致、4確認文字列完全一致を要求する�
 Drive ID・outcomeを含まないexact 2ファイルだけである。
 
 実装・Testsの公開後、専用Environment、required reviewer、OAuth 3 secretsを設定した。
-secret値はチャット、Git、ログ、Artifactへ出していない。この設定は価格取得の承認ではない。
-V2.1 workflow実行、Count、既存Batch 6は別の明示承認まで行わない。
-
-価格取得、Count、Return、Outcome計算はまだ開始していない。HEAD-only availability
-だけはRun `33627420903`で完了し、次の独立監査によりV1 target不成立を確認した。
+secret値はチャット、Git、ログ、Artifactへ出していない。この設定自体は価格取得の承認では
+なかった。その後V2.1 Run #1の別承認により価格取得は実行されたが、fail-closedとなり、Count、
+Return、Outcome、既存Batch 6は実行していない。HEAD-only availabilityはRun `33627420903`で
+完了し、次の独立監査によりV1 target不成立を確認した。
 
 ## 2026-09-02 Availability Run #1 independent audit
 
