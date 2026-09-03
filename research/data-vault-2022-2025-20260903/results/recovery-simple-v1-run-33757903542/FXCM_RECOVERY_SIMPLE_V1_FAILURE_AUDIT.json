@@ -1,0 +1,47 @@
+{
+  "schema_version": "phase9-fxcm-recovery-failure-audit-v1.0.0",
+  "recorded_utc_date": "2026-09-03",
+  "repository": "tgkfnfnfv9-stack/Gpt-Verification--software",
+  "workflow": ".github/workflows/phase9-exploratory-fxcm-drive-vault-run1-recovery-simple-v1.yml",
+  "run": {
+    "run_id": "33757903542",
+    "run_number": 1,
+    "run_attempt": 1,
+    "head_sha": "b00195915766e13429f0bc6d82a437e82c9f68f9",
+    "conclusion": "failure",
+    "preflight_job_id": "100656685027",
+    "preflight_conclusion": "success",
+    "recovery_job_id": "100656906181",
+    "recovery_conclusion": "failure"
+  },
+  "failure": {
+    "identity": "2022/AUDCAD/m1/01",
+    "identity_basis": "INFERRED_FROM_FROZEN_DETERMINISTIC_YEAR_SYMBOL_PERIODICITY_WEEK_LOOP_ORDER",
+    "runtime_observation": "VALID_GZIP_HEADER_WITH_NO_FIRST_DATA_ROW_AFTER_THREE_IMMEDIATE_CONTENT_INTEGRITY_ATTEMPTS",
+    "runtime_error": "frozen-present source failed bounded content-integrity retries",
+    "completed_archive_shards": 0,
+    "completed_year_manifests": 0
+  },
+  "independent_refetch": {
+    "purpose": "DIAGNOSE_TRANSIENT_RESPONSE_ONLY",
+    "url": "https://candledata.fxcorporate.com/m1/AUDCAD/2022/1.csv.gz",
+    "response_bytes": 100241,
+    "response_sha256": "59bf094dfd84dc4977a2205a0395067662ff657eea14670c6817831ce3db60e6",
+    "header_column_count": 9,
+    "data_row_count": 7118,
+    "raw_or_canonical_price_retained": false,
+    "conclusion": "TRANSIENT_HEADER_ONLY_SOURCE_RESPONSE"
+  },
+  "effects": {
+    "drive_metadata_access": true,
+    "drive_upload_count": 0,
+    "drive_mutation_count": 0,
+    "public_artifact_count": 0,
+    "price_artifact_count": 0,
+    "research_outcomes_calculated": false,
+    "local_workflow_price_cleanup": "PASS",
+    "local_diagnostic_price_cleanup": "PASS"
+  },
+  "corrective_action": "RETRY_FROZEN_PRESENT_HEADER_ONLY_RESPONSES_WITH_BOUNDED_DELAYED_BACKOFF_THEN_FAIL_WITHOUT_UPLOAD",
+  "preserve_executed_v1_files": true
+}

@@ -9,7 +9,7 @@ from pathlib import Path
 TRACK = Path(__file__).resolve().parents[1]
 RUNNER_DIR = TRACK / "runner"
 SPEC = TRACK / "spec" / "fxcm_drive_vault_run1_recovery_simple_v1.frozen.json"
-WORKFLOW = TRACK.parents[1] / ".github" / "workflows" / "phase9-exploratory-fxcm-drive-vault-run1-recovery-simple-v1.yml"
+WORKFLOW = TRACK / "audit" / "fxcm_drive_vault_run1_recovery_simple_v1.executed.yml"
 sys.path.insert(0, str(RUNNER_DIR))
 
 module_spec = importlib.util.spec_from_file_location(
