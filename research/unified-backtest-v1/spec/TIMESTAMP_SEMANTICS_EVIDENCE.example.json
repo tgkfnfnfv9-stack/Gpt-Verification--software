@@ -1,0 +1,22 @@
+{
+  "schema_version": "timestamp-semantics-evidence-v1.0.0",
+  "status": "VERIFIED",
+  "providers": [
+    {
+      "provider": "REPLACE_WITH_PROVIDER",
+      "dataset_or_endpoint": "REPLACE_WITH_EXACT_DATASET_OR_ENDPOINT_ID",
+      "timestamp_column": "timestamp_utc",
+      "timezone": "UTC",
+      "timeframes": ["M1", "H1"],
+      "semantics_by_timeframe": {
+        "M1": "INTERVAL_OPEN_INSTANT",
+        "H1": "INTERVAL_OPEN_INSTANT"
+      },
+      "primary_source_locator": "https://REPLACE_WITH_PROVIDER_PRIMARY_SOURCE",
+      "primary_source_artifact_path": "evidence/provider-timestamp-primary-source.txt",
+      "primary_source_artifact_sha256": "REPLACE_WITH_LOWERCASE_SHA256_OF_SAVED_PRIMARY_EVIDENCE",
+      "primary_source_artifact_bytes": 1,
+      "review_status": "APPROVED_FOR_BACKTEST"
+    }
+  ]
+}

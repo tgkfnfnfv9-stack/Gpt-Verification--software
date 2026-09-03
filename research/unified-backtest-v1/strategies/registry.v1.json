@@ -1,0 +1,44 @@
+{
+  "schema_version": "unified-strategy-registry-v1.0.0",
+  "status": "FROZEN_BEFORE_FIRST_UNIFIED_BACKTEST",
+  "strategies": [
+    {
+      "strategy_id": "EXP-P9-MTF-322-V1",
+      "enabled": true,
+      "plugin": "same_sign_exhaustion_v1.py",
+      "plugin_sha256": "3e639409aa3b5820e8edaadce1ab390c3b67412f60ab84bcfc667e42dc535054",
+      "name_ja": "H1同方向連続後の反転",
+      "hypothesis_ja": "H1終値が同方向へ6回連続し、ATR比で大きく動いた直後は短期的に反転しやすい",
+      "entry_logic_ja": ["H1終値変化が6回連続で同符号", "累積変化がATR(14)の1.25倍以上", "連続開始前は同符号でない", "次のH1始値で逆方向へEntry"],
+      "exit_logic_ja": ["1・3・6本後を比較", "4・12・24時間後を比較", "BID/ASK spread込み"],
+      "required_timeframes": ["H1"],
+      "execution_timeframe": "H1",
+      "signal_to_entry_hours": 0,
+      "episode_overlap_hours": 12,
+      "timestamp_geometry_gate": null,
+      "frequency_gate_split": "REUSED_2022_2023",
+      "minimum_primary_trades_per_split": 54,
+      "parameters": {"run_length": 6, "atr_period": 14, "minimum_move_atr": 1.25},
+      "frequency_gate": {"episodes_min": 180, "active_dates_min": 150, "instruments_with_minimum_count": 6, "minimum_count_per_instrument": 15, "maximum_instrument_share": 0.22, "minimum_each_year_share": 0.30}
+    },
+    {
+      "strategy_id": "EXP-P9-MTF-323-V1",
+      "enabled": true,
+      "plugin": "turn_of_month_momentum_v1.py",
+      "plugin_sha256": "a8934e05fd473c3bfa1aa84f5675100e146c03138f657cdb0713f660adadf0e3",
+      "name_ja": "月初の前月方向継続",
+      "hypothesis_ja": "月初の08:00 UTCまでに確定した日足20期間の変化が大きい場合、09:00 UTCから同方向へ継続しやすい",
+      "entry_logic_ja": ["各銘柄・各月で最初の08:00 UTC判定枠だけを使用", "判定時点までに完成した日足21本を使用", "20期間変化が日足ATR(14)以上", "正確な09:00 UTC H1始値でEntry"],
+      "exit_logic_ja": ["1・3・6本後を比較", "4・12・24時間後を比較", "BID/ASK spread込み"],
+      "required_timeframes": ["H1", "D1"],
+      "execution_timeframe": "H1",
+      "signal_to_entry_hours": 1,
+      "episode_overlap_hours": 12,
+      "timestamp_geometry_gate": {"kind": "MONTHLY_FIRST_ELIGIBLE_DATE", "decision_hour_utc": 8, "entry_hour_utc": 9, "completed_d1_count": 21, "slots_min": 120, "distinct_entry_utc_dates_min": 18, "each_evaluation_year_capacity_min": 36, "instruments_with_minimum_count": 6, "minimum_count_per_instrument": 12, "maximum_instrument_share": 0.20},
+      "frequency_gate_split": "REUSED_2022_2023",
+      "minimum_primary_trades_per_split": 36,
+      "parameters": {"decision_hour_utc": 8, "entry_hour_utc": 9, "completed_d1_count": 21, "atr_period": 14, "minimum_move_atr": 1.0},
+      "frequency_gate": {"episodes_min": 120, "active_dates_min": 18, "instruments_with_minimum_count": 6, "minimum_count_per_instrument": 12, "maximum_instrument_share": 0.20, "minimum_each_year_share": 0.30}
+    }
+  ]
+}

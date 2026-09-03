@@ -1,0 +1,52 @@
+{
+  "schema_version": "unified-market-dataset-v1.0.0",
+  "dataset_id": "REPLACE_WITH_DATASET_ID",
+  "timezone": "UTC",
+  "timestamp_semantics": "BAR_OPEN",
+  "source_timestamp_semantics": "BAR_OPEN_VERIFIED",
+  "timestamp_semantics_evidence": {
+    "path": "evidence/timestamp-semantics.json",
+    "sha256": "REPLACE_WITH_LOWERCASE_SHA256",
+    "bytes": 1
+  },
+  "aggregation_profile_id": "UTC_FIXED_V1",
+  "required_direct_timeframes": ["M1", "H1"],
+  "start_inclusive": "2022-01-01T00:00:00Z",
+  "end_exclusive": "2026-01-01T00:00:00Z",
+  "instruments": [
+    {
+      "instrument_id": "EURUSD",
+      "provider": "REPLACE_WITH_PROVIDER",
+      "provider_symbol": "EUR/USD",
+      "asset_class": "FX",
+      "series_type": "SPOT",
+      "quote_currency": "USD",
+      "price_domain": "STRICTLY_POSITIVE",
+      "tick_size": "0.00001",
+      "roll_policy_id": null,
+      "roll_policy_path": null,
+      "roll_policy_sha256": null,
+      "roll_policy_bytes": null
+    }
+  ],
+  "files": [
+    {
+      "instrument_id": "EURUSD",
+      "timeframe": "M1",
+      "source_role": "DIRECT_PROVIDER",
+      "path": "series/EURUSD/M1.csv",
+      "sha256": "REPLACE_WITH_LOWERCASE_SHA256",
+      "bytes": 1,
+      "row_count": 1
+    },
+    {
+      "instrument_id": "EURUSD",
+      "timeframe": "H1",
+      "source_role": "DIRECT_PROVIDER",
+      "path": "series/EURUSD/H1.csv",
+      "sha256": "REPLACE_WITH_LOWERCASE_SHA256",
+      "bytes": 1,
+      "row_count": 1
+    }
+  ]
+}

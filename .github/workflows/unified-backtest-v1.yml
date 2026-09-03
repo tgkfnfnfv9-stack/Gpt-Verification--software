@@ -1,0 +1,196 @@
+name: Unified Backtest V1
+
+on:
+  workflow_dispatch:
+    inputs:
+      drive_file_id:
+        description: "Owner-only Google Drive file ID of unified-market-dataset-v1.tar.gz"
+        required: true
+        type: string
+      drive_bundle_sha256:
+        description: "Approved SHA-256 of the Drive dataset bundle"
+        required: true
+        type: string
+      drive_bundle_bytes:
+        description: "Exact byte size of the Drive dataset bundle"
+        required: true
+        type: string
+      dataset_manifest_sha256:
+        description: "Approved SHA-256 of DATASET_MANIFEST.json"
+        required: true
+        type: string
+      expected_head_sha:
+        description: "Exact approved main commit containing the frozen engine and plugins"
+        required: true
+        type: string
+      strategy_id:
+        description: "Optional exact strategy ID; blank runs every enabled strategy"
+        required: false
+        type: string
+      confirmation:
+        description: "Type RUN_UNIFIED_BACKTEST"
+        required: true
+        type: string
+      phase1_upload_confirmation:
+        description: "Optional: type UPLOAD_PRICE_BEARING_PHASE1 for a 1-day protected artifact"
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: unified-backtest-v1-${{ github.run_id }}
+  cancel-in-progress: false
+
+jobs:
+  backtest:
+    if: ${{ github.repository == 'tgkfnfnfv9-stack/Gpt-Verification--software' && github.ref == 'refs/heads/main' && inputs.expected_head_sha == github.sha && inputs.confirmation == 'RUN_UNIFIED_BACKTEST' }}
+    environment: phase9-fxcm-vault-acquisition-v2
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    steps:
+      - name: Checkout frozen engine
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+          ref: ${{ github.sha }}
+
+      - name: Validate dispatch inputs
+        shell: bash
+        env:
+          DRIVE_FILE_ID: ${{ inputs.drive_file_id }}
+          DRIVE_BUNDLE_SHA256: ${{ inputs.drive_bundle_sha256 }}
+          DRIVE_BUNDLE_BYTES: ${{ inputs.drive_bundle_bytes }}
+          STRATEGY_ID: ${{ inputs.strategy_id }}
+          DATASET_MANIFEST_SHA256: ${{ inputs.dataset_manifest_sha256 }}
+          EXPECTED_HEAD_SHA: ${{ inputs.expected_head_sha }}
+          ACTUAL_HEAD_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          [[ "$DRIVE_FILE_ID" =~ ^[A-Za-z0-9_-]{10,200}$ ]]
+          [[ "$DRIVE_BUNDLE_SHA256" =~ ^[0-9a-f]{64}$ ]]
+          [[ "$DRIVE_BUNDLE_BYTES" =~ ^[0-9]+$ ]]
+          test "$DRIVE_BUNDLE_BYTES" -gt 0
+          test "$DRIVE_BUNDLE_BYTES" -le 20000000000
+          if [[ -n "$STRATEGY_ID" ]]; then
+            [[ "$STRATEGY_ID" =~ ^[A-Za-z0-9][A-Za-z0-9._-]{0,79}$ ]]
+          fi
+          [[ "$DATASET_MANIFEST_SHA256" =~ ^[0-9a-f]{64}$ ]]
+          [[ "$EXPECTED_HEAD_SHA" =~ ^[0-9a-f]{40}$ ]]
+          test "$EXPECTED_HEAD_SHA" = "$ACTUAL_HEAD_SHA"
+
+      - name: Run synthetic regression tests
+        shell: bash
+        env:
+          PYTHONDONTWRITEBYTECODE: "1"
+        run: |
+          set -euo pipefail
+          python -m unittest discover -s research/unified-backtest-v1/tests -p 'test_*.py' -v
+
+      - name: Download owner-only Google Drive dataset
+        shell: bash
+        env:
+          PHASE9_GDRIVE_OAUTH_CLIENT_ID: ${{ secrets.PHASE9_GDRIVE_OAUTH_CLIENT_ID }}
+          PHASE9_GDRIVE_OAUTH_CLIENT_SECRET: ${{ secrets.PHASE9_GDRIVE_OAUTH_CLIENT_SECRET }}
+          PHASE9_GDRIVE_OAUTH_REFRESH_TOKEN: ${{ secrets.PHASE9_GDRIVE_OAUTH_REFRESH_TOKEN }}
+          DRIVE_FILE_ID: ${{ inputs.drive_file_id }}
+          DRIVE_BUNDLE_SHA256: ${{ inputs.drive_bundle_sha256 }}
+          DRIVE_BUNDLE_BYTES: ${{ inputs.drive_bundle_bytes }}
+          PYTHONDONTWRITEBYTECODE: "1"
+        run: |
+          set -euo pipefail
+          umask 077
+          python research/unified-backtest-v1/runner/drive_bundle.py download \
+            --file-id "$DRIVE_FILE_ID" \
+            --expected-bytes "$DRIVE_BUNDLE_BYTES" \
+            --expected-sha256 "$DRIVE_BUNDLE_SHA256" \
+            --output "$RUNNER_TEMP/unified-market-dataset-v1.tar.gz"
+
+      - name: Materialize approved dataset bundle
+        shell: bash
+        env:
+          DATASET_MANIFEST_SHA256: ${{ inputs.dataset_manifest_sha256 }}
+          PYTHONDONTWRITEBYTECODE: "1"
+        run: |
+          set -euo pipefail
+          umask 077
+          python research/unified-backtest-v1/runner/drive_bundle.py materialize \
+            --bundle "$RUNNER_TEMP/unified-market-dataset-v1.tar.gz" \
+            --output-root "$RUNNER_TEMP/unified-data"
+          test -f "$RUNNER_TEMP/unified-data/DATASET_MANIFEST.json"
+          test "$(sha256sum "$RUNNER_TEMP/unified-data/DATASET_MANIFEST.json" | cut -d' ' -f1)" = "$DATASET_MANIFEST_SHA256"
+
+      - name: Execute unified backtest
+        shell: bash
+        env:
+          STRATEGY_ID: ${{ inputs.strategy_id }}
+          PYTHONDONTWRITEBYTECODE: "1"
+        run: |
+          set -euo pipefail
+          strategy_args=()
+          if [[ -n "$STRATEGY_ID" ]]; then
+            strategy_args=(--strategy-id "$STRATEGY_ID")
+          fi
+          python research/unified-backtest-v1/runner/unified_backtest.py \
+            --data-root "$RUNNER_TEMP/unified-data" \
+            --dataset-manifest "$RUNNER_TEMP/unified-data/DATASET_MANIFEST.json" \
+            --config research/unified-backtest-v1/spec/backtest_config.v1.json \
+            --strategy-registry research/unified-backtest-v1/strategies/registry.v1.json \
+            --output-root "$RUNNER_TEMP/unified-result" \
+            "${strategy_args[@]}"
+
+      - name: Remove price-bearing input before any upload
+        shell: bash
+        run: |
+          set -euo pipefail
+          find "$RUNNER_TEMP/unified-data" -type f -delete
+          find "$RUNNER_TEMP/unified-data" -depth -type d -empty -delete
+          test ! -e "$RUNNER_TEMP/unified-data"
+          test -f "$RUNNER_TEMP/unified-market-dataset-v1.tar.gz"
+          rm "$RUNNER_TEMP/unified-market-dataset-v1.tar.gz"
+          test ! -e "$RUNNER_TEMP/unified-market-dataset-v1.tar.gz"
+
+      - name: Verify and stage exact output allowlists
+        shell: bash
+        env:
+          PYTHONDONTWRITEBYTECODE: "1"
+        run: |
+          set -euo pipefail
+          python research/unified-backtest-v1/runner/verify_output.py --root "$RUNNER_TEMP/unified-result"
+          mkdir "$RUNNER_TEMP/summary-result"
+          cp "$RUNNER_TEMP/unified-result/BACKTEST_SUMMARY.json" "$RUNNER_TEMP/summary-result/BACKTEST_SUMMARY.json"
+          (cd "$RUNNER_TEMP/summary-result" && sha256sum BACKTEST_SUMMARY.json > artifact_manifest_sha256.txt)
+
+      - name: Upload summary-only result
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: unified-backtest-v1-summary-${{ github.run_id }}
+          path: ${{ runner.temp }}/summary-result
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Upload explicitly approved Phase 1 price artifact
+        if: ${{ inputs.phase1_upload_confirmation == 'UPLOAD_PRICE_BEARING_PHASE1' }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: unified-backtest-v1-price-bearing-phase1-${{ github.run_id }}
+          path: ${{ runner.temp }}/unified-result/phase1
+          if-no-files-found: warn
+          retention-days: 1
+
+      - name: Final cleanup and attestation
+        if: ${{ always() }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ -d "$RUNNER_TEMP/unified-data" ]]; then
+            find "$RUNNER_TEMP/unified-data" -type f -delete
+            find "$RUNNER_TEMP/unified-data" -depth -type d -empty -delete
+          fi
+          test ! -e "$RUNNER_TEMP/unified-data"
+          if [[ -f "$RUNNER_TEMP/unified-market-dataset-v1.tar.gz" ]]; then
+            rm "$RUNNER_TEMP/unified-market-dataset-v1.tar.gz"
+          fi
+          test ! -e "$RUNNER_TEMP/unified-market-dataset-v1.tar.gz"

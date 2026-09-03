@@ -1,0 +1,27 @@
+{
+  "schema_version": "continuous-roll-policy-v1.0.0",
+  "status": "VERIFIED_AND_APPLIED_TO_SERIES",
+  "roll_policy_id": "USOIL_PROVIDER_CONTINUOUS_V1",
+  "instrument_id": "USOIL",
+  "provider": "REPLACE_WITH_PROVIDER",
+  "provider_symbol": "REPLACE_WITH_PROVIDER_SYMBOL",
+  "series_type": "CFD_CONTINUOUS",
+  "adjustment_method": "BACK_ADJUSTED",
+  "coverage_start_inclusive": "2022-01-01T00:00:00Z",
+  "coverage_end_exclusive": "2026-01-01T00:00:00Z",
+  "source_evidence_path": "evidence/USOIL-roll-primary-source.txt",
+  "source_evidence_sha256": "REPLACE_WITH_LOWERCASE_SHA256",
+  "source_evidence_bytes": 1,
+  "applied_series_sha256": {
+    "M1": "REPLACE_WITH_M1_CSV_SHA256",
+    "H1": "REPLACE_WITH_H1_CSV_SHA256"
+  },
+  "events": [
+    {
+      "roll_at_utc": "2022-01-20T00:00:00Z",
+      "from_contract": "REPLACE_FROM_CONTRACT",
+      "to_contract": "REPLACE_TO_CONTRACT",
+      "adjustment_value": "0.0"
+    }
+  ]
+}
