@@ -27,6 +27,8 @@ GitHub Repository `tgkfnfnfv9-stack/Gpt-Verification--software` のPhase 9研究
 14a. `research/phase9-hypothesis-redesign-20260828/POLICY_INCIDENT_20260903.md`
 14b. `research/phase9-exploratory-fxcm-20260901/spec/fxcm_drive_vault_run1_read_only_inventory_v2_1.frozen.json`
 14c. `research/phase9-exploratory-fxcm-20260901/results/run-33732233208/FXCM_DRIVE_VAULT_RUN1_READ_ONLY_INDEPENDENT_AUDIT.json`
+14d. `research/phase9-exploratory-fxcm-20260901/spec/fxcm_drive_vault_run1_recovery_v2_2.frozen.json`
+14e. `research/phase9-exploratory-fxcm-20260901/results/recovery-v2-2-design/FXCM_DRIVE_VAULT_RUN1_RECOVERY_DESIGN_INDEPENDENT_AUDIT.json`
 15. `research/phase9-exploratory-fxcm-20260901/runner/fxcm_drive_vault_common.py`
 16. `research/phase9-exploratory-fxcm-20260901/runner/fxcm_drive_vault_v2_common.py`
 17. `research/phase9-exploratory-fxcm-20260901/runner/fxcm_google_drive_private.py`
@@ -38,10 +40,12 @@ GitHub Repository `tgkfnfnfv9-stack/Gpt-Verification--software` のPhase 9研究
 22a. `research/phase9-exploratory-fxcm-20260901/runner/fxcm_google_drive_read_only.py`
 22b. `research/phase9-exploratory-fxcm-20260901/runner/fxcm_drive_vault_run1_read_only_inventory.py`
 22c. `research/phase9-exploratory-fxcm-20260901/runner/verify_fxcm_drive_vault_run1_read_only_inventory.py`
+22d. `research/phase9-exploratory-fxcm-20260901/runner/verify_fxcm_drive_vault_run1_recovery_design.py`
 23. `research/phase9-exploratory-fxcm-20260901/tests/test_fxcm_drive_vault_v2_contract.py`
 24. `research/phase9-exploratory-fxcm-20260901/tests/test_fxcm_drive_vault_v2_qc.py`
 25. `research/phase9-exploratory-fxcm-20260901/tests/test_fxcm_drive_vault_v2_workflow.py`
 26. `research/phase9-exploratory-fxcm-20260901/tests/test_fxcm_drive_vault_v2_transaction.py`
+26a. `research/phase9-exploratory-fxcm-20260901/tests/test_fxcm_drive_vault_run1_recovery_design.py`
 27. `.github/workflows/phase9-exploratory-fxcm-drive-vault-acquisition-v1.yml`
 28. `.github/workflows/phase9-exploratory-fxcm-drive-vault-acquisition-v2.yml`
 29. `.github/workflows/phase9-exploratory-fxcm-drive-vault-acquisition-v2-1.yml`
@@ -88,6 +92,11 @@ Count-only、Return/OOS、新期間、頑健性テストで再利用し、本物
 - read-only transaction inventory: Run `33732233208`（Run #1 / Attempt #1）を実行・独立監査済み。再実行禁止
 - inventory result: 2012～2021年は500 archive＋10 manifestがmetadata上完全、2022～2025年は空stage
 - inventory boundary: Drive metadata GETのみ、file content 0 byte、mutation 0、FXCM request 0、price 0 byte
+- V2.2 recovery design: 2022～2025年だけ、200 archive＋4 manifestを補う設計を凍結・事前監査済み
+- recovery exact mask: base 10,400、frozen-present 10,084、known-missing 316
+- preserved invariant: 2012～2021年の500 archive＋10 manifest＋2,548,863,404 bytesを変更しない
+- recovery gate: R1 local-first取得、R2 metadata-only全体監査、R3 canonical公開を別承認へ分離
+- recovery implementation/workflow/finalizer: 未作成・未承認。OAuth/FXCM/Drive access/mutation/cleanupは0
 - V2.1 operational amendment: ユーザー承認済み、ただし価格取得認可効果なし
 - V2.1 transaction: owner-only exact-empty root確認後に作成し、全検証後の単一PATCHだけで`v2`/`COMMITTED`へ公開
 - 未完了transaction: 自動削除禁止、cleanupは別承認
@@ -115,11 +124,12 @@ Batch 6のCount範囲は凍結済みの
 
 1. 最新remote main、Run #1事故正本、read-only inventory正本監査を確認する。
 2. 現在は停止し、V2.1とinventoryをrerun/replayしない。Drive objectを変更・削除しない。secret値を取得・表示・再入力させない。
-3. cleanupかversioned recoveryのどちらを設計するかユーザー判断を得る。
-4. 選択された経路だけを別の版付き契約として、price/Drive content/mutationなしで設計・監査する。
-5. 新しい公開main SHAに対するさらに別の明示承認なしにcleanupまたはrecoveryを実行しない。
-6. canonical vault完成と旧64系列互換性を確認するまでBatch 6へ進まない。321～324の条件とfrequency Gateを変更しない。
-7. Count通過候補だけをReturn/OOS→新期間→頑健性へ進める。
+3. V2.2 recovery設計・事前監査の公開状況を確認する。未公開なら明示push承認なしにpushしない。
+4. R1 recovery runner/workflowは別の明示実装承認なしに作らない。実装承認とdispatch承認を分離する。
+5. R2 metadata-only監査とR3 canonical publicationも各々別の版・別承認とする。
+6. cleanupは行わず、2012～2021年の既存Drive objectを変更しない。
+7. canonical vault完成と旧64系列互換性を確認するまでBatch 6へ進まない。321～324の条件とfrequency Gateを変更しない。
+8. Count通過候補だけをReturn/OOS→新期間→頑健性へ進める。
 
 取得/QC → Count-only → Return/OOS → 新期間・頑健性 → MT5の順序を厳守してください。
 ```

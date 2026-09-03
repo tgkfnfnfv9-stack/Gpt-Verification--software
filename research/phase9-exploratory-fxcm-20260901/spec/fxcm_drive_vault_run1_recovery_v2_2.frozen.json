@@ -1,0 +1,242 @@
+{
+  "schema": "phase9-exploratory-fxcm-drive-vault-run1-recovery-v2.2.0",
+  "status": "FROZEN_DESIGN_AND_PREAUDIT_ONLY_NOT_AUTHORIZED_FOR_IMPLEMENTATION_OR_EXECUTION",
+  "recorded_utc_date": "2026-09-03",
+  "purpose": "Versioned recovery design for the four incomplete years in acquisition Run #1 without authorizing price acquisition, Drive access, Drive mutation, publication, or cleanup.",
+  "scope": {
+    "recovery_years": [
+      2022,
+      2023,
+      2024,
+      2025
+    ],
+    "preserved_years": [
+      2012,
+      2013,
+      2014,
+      2015,
+      2016,
+      2017,
+      2018,
+      2019,
+      2020,
+      2021
+    ],
+    "symbols": 25,
+    "direct_periodicities": [
+      "m1",
+      "H1"
+    ],
+    "derived_periodicities": [
+      "M5",
+      "M15",
+      "M30",
+      "H4",
+      "D1",
+      "W1"
+    ],
+    "recovery_archive_shards": 200,
+    "recovery_year_manifests": 4,
+    "base_weekly_source_identities": 10400,
+    "frozen_present_source_identities": 10084,
+    "frozen_known_missing_source_identities": 316
+  },
+  "frozen_anchors": {
+    "acquisition_v2_sha256": "209a133895f4035fba9036fb4d05b4ebc8279011110069ad0021c5830e5b2e6a",
+    "partitions_v2_sha256": "b8e588f7cf69b1cefe64271c3a426b1fa88b9182c9f75fdee0644d9049d2c42b",
+    "manifest_schema_v2_sha256": "11417d92df817bccadeb826590cd40ea44d0aaff64c1a6203cc12d105d5e1037",
+    "formal_boundary_v2_sha256": "f516904dfeace5c9bac87c7ba2d65a5970a1aced8c884817e6a1fd77ddd2a042",
+    "availability_mask_v2_sha256": "0dcda17adbe53c9572492425405c7feb4b972e0b0312dcbf6d04c0aa4e20f014",
+    "operational_hardening_v2_1_sha256": "03b8ecaa6a75a1df797f8c4de5fbdf5b59ce0a5655957a5f04c1ab595301434b",
+    "read_only_inventory_contract_v2_1_sha256": "baf02b5d423097f4ac0f4a4b06ebdf8801147c20fb30182ded05c19610bfa7cc",
+    "read_only_inventory_independent_audit_sha256": "fa43cbedfd2588a179c8086188793231e637f2433b4164d28bcb154773c0c928",
+    "read_only_inventory_year_digest_sha256": "4a0f0cfb78ead6d6730ca7b41b716de8e2fef984e7f36ded17828d9e7b40dc4d"
+  },
+  "source_transaction_anchor": {
+    "repository": "tgkfnfnfv9-stack/Gpt-Verification--software",
+    "workflow_run_id": 33705800232,
+    "workflow_run_attempt": 1,
+    "head_sha": "be864557a8e16d253e6aecf1519f85ad6162c1a3",
+    "transaction_state": "ACQUIRING",
+    "canonical_v2_folder_count": 0,
+    "valid_uncommitted_transaction_count": 1
+  },
+  "preaudit_observed_state": {
+    "inventory_run_id": 33732233208,
+    "inventory_run_attempt": 1,
+    "inventory_head_sha": "800c16257098bc8c2f152fa9d45804ffec81ebad",
+    "preserved_complete_years": {
+      "years": [
+        2012,
+        2013,
+        2014,
+        2015,
+        2016,
+        2017,
+        2018,
+        2019,
+        2020,
+        2021
+      ],
+      "archive_count": 500,
+      "manifest_count": 10,
+      "archive_bytes": 2548863404,
+      "required_invariant": "UNCHANGED_BY_ALL_RECOVERY_GATES"
+    },
+    "incomplete_empty_years": {
+      "years": [
+        2022,
+        2023,
+        2024,
+        2025
+      ],
+      "archive_count": 0,
+      "manifest_count": 0,
+      "missing_archive_count": 200,
+      "missing_manifest_count": 4
+    },
+    "failed_jobs": [
+      {
+        "year": 2022,
+        "job_id": 100495623867,
+        "failure": "empty frozen source object"
+      },
+      {
+        "year": 2023,
+        "job_id": 100495623829,
+        "failure": "empty frozen source object"
+      },
+      {
+        "year": 2024,
+        "job_id": 100495623865,
+        "failure": "source object is not gzip"
+      },
+      {
+        "year": 2025,
+        "job_id": 100495623790,
+        "failure": "source object too small"
+      }
+    ],
+    "inventory_access_counts": {
+      "drive_metadata_get": "READ_ONLY_INVENTORY_ALREADY_COMPLETED",
+      "drive_file_content_get": 0,
+      "drive_mutation": 0,
+      "fxcm_request": 0,
+      "price_content_bytes": 0
+    }
+  },
+  "versioned_recovery_design": {
+    "design_version": "v2.2",
+    "transaction_policy": "CONTINUE_THE_SINGLE_EXISTING_UNCOMMITTED_TRANSACTION_WITH_NEW_RECOVERY_PROVENANCE",
+    "provenance_policy": {
+      "preserved_2012_2021": "KEEP_ORIGINAL_RUN_33705800232_AND_HEAD_SHA_PROVENANCE_UNCHANGED",
+      "recovered_2022_2025": "RECORD_SEPARATE_RECOVERY_RUN_ID_ATTEMPT_AND_HEAD_SHA_IN_A_VERSIONED_RECOVERY_OVERLAY",
+      "forbidden": "DO_NOT_REWRITE_OLD_MANIFESTS_OR_FALSELY_ATTRIBUTE_RECOVERED_OBJECTS_TO_THE_ORIGINAL_RUN"
+    },
+    "gate_r1_recovery_acquisition": {
+      "authorization_required_later": "SEPARATE_EXPLICIT_USER_APPROVAL",
+      "current_state": "DESIGN_ONLY_NOT_IMPLEMENTED_NOT_AUTHORIZED",
+      "years": [
+        2022,
+        2023,
+        2024,
+        2025
+      ],
+      "source_policy": "REQUEST_ONLY_THE_10084_EXACT_FROZEN_PRESENT_IDENTITIES_AND_NEVER_REQUEST_THE_316_FROZEN_KNOWN_MISSING_IDENTITIES",
+      "local_first_policy": "ACQUIRE_PACKAGE_AND_QC_ALL_FOUR_YEARS_LOCALLY_BEFORE_ANY_OAUTH_TOKEN_EXCHANGE_OR_DRIVE_ACCESS",
+      "local_failure_policy": "STOP_BEFORE_OAUTH_AND_DRIVE_IF_ANY_SOURCE_OBJECT_OR_QC_CHECK_FAILS",
+      "planned_drive_policy_after_future_approval": "VERIFY_EXACT_EXISTING_TRANSACTION_METADATA_THEN_UPLOAD_EXACTLY_200_ARCHIVES_AND_4_NEW_MANIFESTS_ONLY_TO_THE_EXISTING_EMPTY_2022_2025_STAGE_FOLDERS",
+      "planned_verification": "RE-DOWNLOAD_AND_HASH_VERIFY_EACH_NEWLY_UPLOADED_OBJECT",
+      "forbidden_drive_operations": [
+        "CREATE_FOLDER",
+        "RENAME",
+        "MOVE",
+        "PATCH_EXISTING_OBJECT",
+        "DELETE",
+        "CANONICAL_PUBLICATION"
+      ],
+      "drive_failure_policy": "LEAVE_ANY_PARTIAL_NEW_UPLOADS_UNPUBLISHED_AND_REQUIRE_A_NEW_SEPARATELY_AUTHORIZED_RECONCILIATION_DESIGN",
+      "cleanup": "FORBIDDEN"
+    },
+    "gate_r2_full_transaction_read_only_audit": {
+      "authorization_required_later": "SEPARATE_EXPLICIT_USER_APPROVAL",
+      "current_state": "DESIGN_ONLY_NOT_IMPLEMENTED_NOT_AUTHORIZED",
+      "drive_access": "METADATA_GET_ONLY",
+      "expected_complete_state": {
+        "years": 14,
+        "archives": 700,
+        "year_manifests": 14,
+        "canonical_v2_folder_count": 0
+      },
+      "price_content_get": "FORBIDDEN",
+      "drive_mutation": "FORBIDDEN",
+      "cleanup": "FORBIDDEN"
+    },
+    "gate_r3_canonical_publication": {
+      "authorization_required_later": "SEPARATE_EXPLICIT_USER_APPROVAL_AFTER_R2_PASS",
+      "current_state": "DESIGN_BOUNDARY_ONLY_NOT_IMPLEMENTED_NOT_AUTHORIZED",
+      "fxcm_access": "FORBIDDEN",
+      "price_archive_content_get": "FORBIDDEN",
+      "manifest_content_get": "PLANNED_ONLY_FOR_EXACT_BOUNDED_MANIFEST_ALLOWLIST_AFTER_FUTURE_APPROVAL",
+      "drive_mutation": "PLANNED_BUT_NOT_AUTHORIZED",
+      "cleanup": "FORBIDDEN"
+    }
+  },
+  "current_authorization": {
+    "implementation": false,
+    "workflow_creation": false,
+    "workflow_dispatch": false,
+    "fxcm_price_acquisition": false,
+    "oauth_token_exchange": false,
+    "drive_access": false,
+    "drive_content_read": false,
+    "drive_mutation": false,
+    "recovery_upload": false,
+    "canonical_finalization": false,
+    "cleanup": false,
+    "recovery_data_analysis": false,
+    "count_only_analysis": false,
+    "batch6_analysis": false,
+    "outcome_analysis": false
+  },
+  "current_gate_outputs": {
+    "allowed": [
+      "FROZEN_DESIGN_CONTRACT",
+      "OFFLINE_STATIC_VERIFIER",
+      "OFFLINE_UNIT_TESTS",
+      "PRICE_NONREFERENCING_PREAUDIT_METADATA"
+    ],
+    "forbidden": [
+      "EXECUTABLE_RECOVERY_RUNNER",
+      "EXECUTABLE_RECOVERY_WORKFLOW",
+      "EXECUTABLE_FINALIZER",
+      "NETWORK_ACCESS",
+      "SECRET_ACCESS",
+      "DRIVE_OBJECT_ID",
+      "PRICE_CONTENT",
+      "DRIVE_ACCESS",
+      "DRIVE_MUTATION",
+      "CLEANUP"
+    ]
+  },
+  "public_report_policy": {
+    "allowlist": [
+      "DESIGN_VERSION",
+      "YEAR_LEVEL_COMPLETENESS",
+      "ARCHIVE_COUNTS",
+      "AGGREGATE_ARCHIVE_BYTES",
+      "PUBLIC_RUN_ID",
+      "PUBLIC_ARTIFACT_ID",
+      "PUBLIC_COMMIT_SHA",
+      "PUBLIC_SHA256_DIGEST"
+    ],
+    "denylist": [
+      "PRICE_CONTENT",
+      "SECRET",
+      "OAUTH_TOKEN",
+      "DRIVE_OBJECT_ID",
+      "UNBOUNDED_REMOTE_OBJECT_NAME"
+    ]
+  },
+  "stop_condition": "AFTER_OFFLINE_PREAUDIT_AND_LOCAL_COMMIT_STOP_WITHOUT_PUSH_OR_EXECUTION"
+}

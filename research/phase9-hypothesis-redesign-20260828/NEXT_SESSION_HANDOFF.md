@@ -10,6 +10,23 @@ Actual Full-QC実装基準: `9eb7ce667bea8e76a7f9bb1f2d378eebd8957206`
 
 ## Latest delta
 
+### 2026-09-03 V2.2 recovery design-only pre-audit
+
+- ユーザーはcleanupを選ばず、2022～2025年だけを補うversioned recoveryの設計・事前監査を
+  明示承認した。価格取得、Drive変更、cleanupは承認されていない。
+- 凍結契約は
+  `../phase9-exploratory-fxcm-20260901/spec/fxcm_drive_vault_run1_recovery_v2_2.frozen.json`。
+  回復対象は200 archive＋4 manifest、exact maskはbase 10,400、frozen-present 10,084、
+  known-missing 316である。
+- 2012～2021年の500 archive＋10 manifest＋2,548,863,404 bytesは全Gateの不変対象である。
+  既存manifest/provenanceを書き換えず、将来の回復分はversioned recovery overlayへ別の
+  recovery run/attempt/head SHAを記録する。
+- 将来経路をR1 local-first recovery、R2 full-transaction metadata-only audit、R3 canonical
+  publicationへ分離し、各Gateに別承認を要求した。cleanupは全Gateで禁止した。
+- 今回はoffline静的verifierとunit testsだけを実装し、実行可能な回復runner/workflow/finalizerは
+  作成していない。OAuth token exchange 0、FXCM request 0、Drive access/mutation 0、price bytes 0、
+  cleanup 0である。回復実装もworkflow dispatchも未承認である。
+
 ### 2026-09-03 V2.1 Run #1 failure and read-only inventory closure
 
 - V2.1取得Run `33705800232`（Run #1 / Attempt #1、head
@@ -498,10 +515,10 @@ Provider schedule inventory / allowlist
 
 ## 7. 次に行う単一作業
 
-read-only inventoryの独立監査結果をremote mainへ公開した後に停止し、未完了transactionの
-cleanupか、2022～2025年を補うversioned recoveryのどちらを設計するかユーザー判断を待つ。
-設計作業はprice/Drive contentを参照せず、Drive mutationも行わない。cleanupとrecoveryは別の
-版付き契約に分離し、実行はそれぞれさらに別の明示承認を必要とする。
+V2.2 recovery設計・事前監査をremote mainへ公開するかの明示承認を待つ。公開後も実装や実行へ
+自動で進まない。次の技術GateはR1 recovery runner/workflowの実装可否についての別判断であり、
+実装を承認しても、公開main SHAに対するworkflow dispatchはさらに別の明示承認を必要とする。
+R2 metadata-only監査とR3 canonical publicationも別承認のまま維持する。cleanupは行わない。
 
 V2.1 Run `33705800232`とinventory Run `33732233208`をrerun/replayしない。canonical vaultが
 完成・独立監査されるまではBatch 6のdata inputを変更せず、既存Batch 6 workflowも実行しない。
@@ -526,12 +543,13 @@ rerun/replayしない。remote resource/JAR request、JForex接続、正式価�
 
 1. Run `33705800232`の失敗証跡、0 Artifact、finalizer skipped、V2.1再実行禁止を維持する
 2. inventory Run `33732233208`の正本監査とexact Drive metadata状態を確認する
-3. cleanupかversioned recoveryのどちらを設計するかユーザー判断を得る
-4. 選択された経路だけを別の版付き契約として設計し、price/Drive content/mutationなしで監査する
-5. 新しい公開main SHAに対するさらに別の明示承認なしにcleanupまたはrecoveryを実行しない
-6. canonical vault完成・独立監査・旧64系列互換性確認後だけBatch 6入力変更を検討する
-7. Count通過候補だけをReturn/OOS→新期間→頑健性へ進め、最後にMT5を検討する
-8. Formal JForex/provider schedule/Energy trackは別のまま維持する
+3. V2.2 recovery設計・事前監査のremote main公開には別の明示承認を得る
+4. R1実装はさらに別の明示承認なしに作成せず、実装承認とdispatch承認を分離する
+5. R2 metadata-only監査とR3 canonical publicationを別Gate・別承認として維持する
+6. cleanupは全Gateで禁止し、既存2012～2021年を変更しない
+7. canonical vault完成・独立監査・旧64系列互換性確認後だけBatch 6入力変更を検討する
+8. Count通過候補だけをReturn/OOS→新期間→頑健性へ進め、最後にMT5を検討する
+9. Formal JForex/provider schedule/Energy trackは別のまま維持する
 
 ## 9. 絶対禁止
 

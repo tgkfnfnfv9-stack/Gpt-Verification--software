@@ -1,0 +1,97 @@
+{
+  "schema_version": "phase9-exploratory-fxcm-drive-vault-run1-recovery-design-independent-audit-v1.0.0",
+  "status": "PASS_DESIGN_AND_PREAUDIT_ONLY_NO_IMPLEMENTATION_NO_EXECUTION_NO_CLEANUP",
+  "audited_at": "2026-09-03",
+  "scope": {
+    "recovery_years": [
+      2022,
+      2023,
+      2024,
+      2025
+    ],
+    "preserved_years": [
+      2012,
+      2013,
+      2014,
+      2015,
+      2016,
+      2017,
+      2018,
+      2019,
+      2020,
+      2021
+    ],
+    "planned_recovery_archive_count": 200,
+    "planned_recovery_manifest_count": 4,
+    "base_source_identity_count": 10400,
+    "frozen_present_source_identity_count": 10084,
+    "frozen_known_missing_source_identity_count": 316
+  },
+  "preserved_state_anchor": {
+    "archive_count": 500,
+    "manifest_count": 10,
+    "archive_total_bytes": 2548863404,
+    "required_invariant": "UNCHANGED_BY_ALL_RECOVERY_GATES",
+    "source_inventory_run_id": 33732233208,
+    "source_inventory_sha256": "4a0f0cfb78ead6d6730ca7b41b716de8e2fef984e7f36ded17828d9e7b40dc4d"
+  },
+  "audited_files": {
+    "contract": {
+      "path": "spec/fxcm_drive_vault_run1_recovery_v2_2.frozen.json",
+      "sha256": "b28800eed38fc3fcf156d84edecf95700c3453b553ca494877c9a16de62a0a32"
+    },
+    "offline_verifier": {
+      "path": "runner/verify_fxcm_drive_vault_run1_recovery_design.py",
+      "sha256": "5a443762af39a1ce600caee63f797a0c1f9899a81b1c5fbb921a970383a0aa90"
+    },
+    "tests": {
+      "path": "tests/test_fxcm_drive_vault_run1_recovery_design.py",
+      "sha256": "3f031cf401f7bd4c408096971a18acb665e513a55955edf42d41c00d4f27d6a8"
+    }
+  },
+  "verification": {
+    "offline_static_verifier": "PASS",
+    "dedicated_test_count": 5,
+    "dedicated_tests": "PASS",
+    "exploratory_track_test_count": 197,
+    "exploratory_track_tests": "PASS",
+    "frozen_anchor_sha256_checks": "PASS",
+    "recovery_scope_exactly_2022_2025": true,
+    "preserved_scope_exactly_2012_2021": true,
+    "frozen_mask_arithmetic": "10400_EQUALS_10084_PLUS_316",
+    "mixed_provenance_separated": true,
+    "gate_r1_r2_r3_separated": true,
+    "all_current_authorization_flags_false": true,
+    "executable_recovery_runner_present": false,
+    "executable_recovery_workflow_present": false,
+    "executable_recovery_finalizer_present": false,
+    "credential_or_secret_value_observed": false,
+    "drive_object_id_added_to_public_audit": false,
+    "price_content_observed": false
+  },
+  "operations_performed_by_this_design_preaudit": {
+    "network_access": 0,
+    "oauth_token_exchange": 0,
+    "fxcm_request": 0,
+    "drive_metadata_get": 0,
+    "drive_file_content_get": 0,
+    "drive_mutation": 0,
+    "cleanup": 0,
+    "workflow_dispatch": 0,
+    "count_only_analysis": 0,
+    "return_or_outcome_analysis": 0
+  },
+  "decision": {
+    "design_frozen": true,
+    "implementation_authorized": false,
+    "workflow_creation_authorized": false,
+    "workflow_dispatch_authorized": false,
+    "price_acquisition_authorized": false,
+    "drive_access_authorized": false,
+    "drive_mutation_authorized": false,
+    "cleanup_authorized": false,
+    "canonical_publication_authorized": false,
+    "action": "STOP_AFTER_LOCAL_DESIGN_PREAUDIT",
+    "next_required_decision": "SEPARATE_USER_APPROVAL_TO_PUBLISH_THIS_DESIGN_COMMIT; LATER SEPARATE_APPROVAL_TO_IMPLEMENT_R1"
+  }
+}

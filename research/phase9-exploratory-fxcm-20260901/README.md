@@ -1,6 +1,6 @@
 # Phase 9 Exploratory FXCM Fast Track
 
-Status: `DRIVE_VAULT_V2_1_RUN1_FAILED_CLOSED; CANONICAL_V2_NOT_PUBLISHED; READ_ONLY_TRANSACTION_INVENTORY_INDEPENDENTLY_AUDITED; LEGACY_FX8_BATCH6_BLOCKED`
+Status: `DRIVE_VAULT_V2_2_RECOVERY_DESIGN_PREAUDIT_ONLY; NO_IMPLEMENTATION; NO_EXECUTION; NO_CLEANUP; LEGACY_FX8_BATCH6_BLOCKED`
 
 ## Current canonical next step: reusable Google Drive Vault
 
@@ -20,9 +20,13 @@ archive＋year manifestがmetadata上完全で、合計500 archive・2,548,863,4
 file content 0 byte、Drive mutation 0、FXCM request 0、price 0 byteである。正本監査は
 `results/run-33732233208/FXCM_DRIVE_VAULT_RUN1_READ_ONLY_INDEPENDENT_AUDIT.json`。
 
-次は停止したまま、未完了transactionを削除するcleanupか、2022～2025年を補うversioned recovery
-のどちらを設計するかを別判断する。いずれも版付き契約と、その後の別の明示実行承認が必要である。
-V2.1は再実行せず、Count、Batch 6、Returnへ自動で進まない。
+ユーザーはcleanupではなく、2022～2025年だけを補うversioned recoveryの設計・事前監査を選択した。
+V2.2設計契約は`spec/fxcm_drive_vault_run1_recovery_v2_2.frozen.json`。2012～2021年の既存500
+archive、10 manifest、2,548,863,404 bytesを全回復Gateで不変とし、不足200 archive＋4 manifest
+だけを対象にする。設計はR1回復取得、R2全transaction metadata-only監査、R3 canonical publicationを
+別承認へ分離した。今回追加したのは契約、offline静的verifier、tests、price非参照事前監査だけで、
+実行可能な回復runner/workflow/finalizerは存在しない。価格取得、OAuth、Drive access/mutation、cleanup、
+Count、Batch 6、Returnはいずれも未認可・未実行である。
 
 2026-09-02、ユーザーはAvailability Run `33627420903`で確認できたFXCM範囲を使う
 Option 1を選択した。V2は2012～2025年、25通貨ペア、direct m1/H1の700 shardとする。
@@ -46,7 +50,7 @@ Option 1を選択した。V2は2012～2025年、25通貨ペア、direct m1/H1の
 - Count、Batch 6: 未実行
 - V1 acquisition workflow: fail-closedで恒久停止
 - 旧V2 acquisition workflowと旧Batch 6 workflow: fail-closedで恒久停止
-- V2.1 acquisition専用23 tests、read-only inventory専用6 tests、探索track全192 tests: 成功
+- V2.1 acquisition専用23 tests、read-only inventory専用6 tests、V2.2 recovery設計専用5 tests、探索track全197 tests: 成功
 - V2.1 acquisition workflowのpreflightは、旧5契約、版付き追補、runner closureのSHA-256と同期済み
 
 2026-09-03の実行前監査で、旧V2にはDriveへの非原子的な昇格、owner-onlyかつ空のrootを

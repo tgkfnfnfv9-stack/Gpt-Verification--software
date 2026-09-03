@@ -1,6 +1,6 @@
 # Phase 9 FXCM Google Drive Data Vault Plan
 
-Status: `V2_1_RUN1_FAILED_CLOSED_READ_ONLY_INVENTORY_INDEPENDENTLY_AUDITED_NO_CANONICAL_V2`
+Status: `V2_2_RECOVERY_DESIGN_FROZEN_PREAUDIT_ONLY_NO_IMPLEMENTATION_NO_EXECUTION_NO_CLEANUP`
 
 Recorded: 2026-09-03
 
@@ -9,6 +9,29 @@ Recorded: 2026-09-03
 FXCM価格を候補Batchごとに再取得して破棄する運用を終了し、取得・QCと検証を分離する。
 一度だけ複数年データを取得してGoogle Driveの非公開研究フォルダへ保存し、以後の
 Count-only、Return/OOS、頑健性確認はSHA固定した同じデータを再利用する。
+
+## 2026-09-03 V2.2 versioned recovery design and pre-audit
+
+ユーザーは未完了transactionのcleanupではなく、2022～2025年だけを補うversioned recoveryを
+選択した。今回の承認は設計と価格非参照の事前監査だけであり、実装・実行承認ではない。凍結正本は
+`spec/fxcm_drive_vault_run1_recovery_v2_2.frozen.json`である。
+
+- 回復対象: 2022～2025年、25ペア、direct m1/H1、200 archive＋4 year manifest
+- exact source mask内訳: base 10,400、frozen-present 10,084、known-missing 316
+- 不変対象: 2012～2021年、500 archive＋10 manifest、2,548,863,404 archive bytes
+- provenance: 2012～2021年のRun #1 provenanceを変更せず、将来の回復分は別のversioned recovery
+  overlayへ回復run/attempt/head SHAを記録する。元Runへ虚偽帰属させない
+- R1: 将来の別承認後、4年すべてをlocal取得・package・QCしてから初めてOAuth/Driveへ進む。
+  frozen-presentだけを要求し、known-missingを要求しない。いずれかのsource/QC失敗時はOAuth前に停止
+- R2: R1後の別承認で、全14 stage、700 archive、14 manifest、canonical不在をDrive metadata GET
+  だけで監査する。price contentとDrive mutationは禁止
+- R3: R2 PASS後のさらに別承認でのみcanonical publicationを検討する。FXCM access、price archive
+  content GET、cleanupは禁止
+
+今回作成したのはoffline静的verifierとunit testsまでである。実行可能な回復runner、GitHub Actions
+workflow、finalizerは意図的に作成していない。OAuth token exchange 0、FXCM request 0、Drive access
+0、Drive mutation 0、price bytes 0、cleanup 0を維持した。次のGateはR1実装そのものについての別の
+明示判断であり、実装を承認してもworkflow dispatchはさらに別承認とする。
 
 ## 2026-09-03 Run #1 failure transaction inventory closure
 
@@ -270,17 +293,18 @@ source with exact manifest-locked Drive shards, then run Count-only.
 
 1. Verify latest remote `main` and read this document, `NEXT_SESSION_HANDOFF.md`,
    `NEXT_SESSION_PROMPT.md`, `SESSION_STATE.json`, `POLICY_INCIDENT_20260903.md` and the frozen
-   read-only inventory contract completely.
+   read-only inventory and V2.2 recovery-design contracts completely.
 2. Treat V2.1 Run `33705800232` as terminal failure. Do not rerun/replay it and do not dispatch
    Batch 6.
 3. Do not delete, rename, move, patch or manually reorganize `v2-txn-run-33705800232`.
-4. Verify the dedicated Drive metadata GET-only client, sanitized report verifier, manual
-   single-use workflow and tests. Publishing them does not authorize dispatch.
-5. Only after a separate explicit approval and reviewed public `main` SHA, run the read-only
-   inventory once and independently audit its price-free artifact.
-6. Design cleanup or versioned recovery only after the exact transaction state is known. Each
-   path requires a separate contract and a separate explicit approval.
-7. Do not change Batch 6 input until a canonical vault is complete, independently audited and
+4. Treat read-only inventory Run `33732233208` as completed and independently audited. Do not
+   rerun/replay it.
+5. Treat the frozen V2.2 recovery design as design-only. Do not create a recovery runner,
+   workflow or finalizer without a separate explicit implementation approval.
+6. Even after implementation approval, do not dispatch R1 without another explicit approval of
+   that exact public main SHA. R2 and R3 remain separate later approvals.
+7. Keep cleanup forbidden and preserve the 2012-2021 objects and provenance unchanged.
+8. Do not change Batch 6 input until a canonical vault is complete, independently audited and
    proven compatible with the frozen 64-series consumer.
 
 ## V2.1 Run #1 terminal update
@@ -291,8 +315,8 @@ Run `33705800232` (Run #1, Attempt #1) completed with failure at head
 failed on a source object below the minimum size. The finalizer was skipped and the run produced
 no public artifact. The transactional design therefore withheld canonical `v2` publication.
 
-The exact Drive contents left by the failed run have not been observed. The next gate is frozen in
-`spec/fxcm_drive_vault_run1_read_only_inventory_v2_1.frozen.json`. It permits OAuth token exchange
-and Drive metadata `GET` only; it has no Drive media-download, mutation, cleanup, transaction
-publication, FXCM request, Count, Return or MT5 surface. Its workflow remains undispatched until a
-separate explicit user approval.
+The exact Drive metadata left by the failed run was observed once by the separately approved
+read-only inventory Run `33732233208` and independently audited. Its single-use authorization is
+consumed and it must not be rerun. The next frozen boundary is the design-only V2.2 recovery
+contract. It authorizes no implementation, workflow, OAuth, FXCM request, Drive access, Drive
+mutation, cleanup, Count, Return or MT5 operation.
