@@ -1,0 +1,47 @@
+{
+  "schema_version": "phase9-fxcm-recovery-failure-audit-v1.1.0",
+  "recorded_utc_date": "2026-09-03",
+  "repository": "tgkfnfnfv9-stack/Gpt-Verification--software",
+  "workflow": ".github/workflows/phase9-exploratory-fxcm-drive-vault-run1-recovery-simple-v1.yml",
+  "run": {
+    "run_id": "33799360214",
+    "run_number": 4,
+    "run_attempt": 1,
+    "head_sha": "626f1a77b5dc51832ecac53f6df46ba968daff32",
+    "conclusion": "failure",
+    "preflight_job_id": "100794693919",
+    "preflight_conclusion": "success",
+    "recovery_job_id": "100794722641",
+    "recovery_conclusion": "failure"
+  },
+  "failure": {
+    "identity": "2022/AUDCAD/m1/01",
+    "identity_basis": "INFERRED_FROM_FROZEN_DETERMINISTIC_LOOP_ORDER_AND_NO_COMPLETED_SHARD_OUTPUT",
+    "runtime_observation": "HEADER_ONLY_GZIP_AFTER_SIX_CONTENT_ATTEMPTS_AND_230_SECONDS_TOTAL_DELAY",
+    "runtime_error": "frozen-present source failed bounded delayed content-integrity retries",
+    "completed_archive_shards": 0,
+    "completed_year_manifests": 0
+  },
+  "effects": {
+    "drive_metadata_access": true,
+    "drive_upload_count": 0,
+    "drive_mutation_count": 0,
+    "public_artifact_count": 0,
+    "price_artifact_count": 0,
+    "research_outcomes_calculated": false,
+    "workflow_cleanup": "PASS"
+  },
+  "independent_transport_diagnostics": {
+    "canonical_url": "https://candledata.fxcorporate.com/m1/AUDCAD/2022/1.csv.gz",
+    "canonical_response_bytes": 100241,
+    "canonical_response_sha256": "59bf094dfd84dc4977a2205a0395067662ff657eea14670c6817831ce3db60e6",
+    "canonical_data_rows": 7118,
+    "cache_bust_queries_tested": 2,
+    "cache_bust_response_sha256_all_equal_to_canonical": true,
+    "cache_bust_data_rows_each": 7118,
+    "local_raw_or_canonical_price_retained": false,
+    "local_cleanup": "PASS"
+  },
+  "corrective_action": "KEEP_CANONICAL_SOURCE_IDENTITY_IN_MANIFEST; ADD_DETERMINISTIC_NONSECRET_QUERY_ONLY_TO_TRANSPORT_REQUEST; REQUIRE_PAYLOAD_SHA_AND_FULL_GZIP_VALIDATION",
+  "preserve_executed_v1_1_files": true
+}

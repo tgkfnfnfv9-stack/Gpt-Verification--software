@@ -32,7 +32,7 @@ jobs:
     if: >-
       github.repository == 'tgkfnfnfv9-stack/Gpt-Verification--software' &&
       github.ref == 'refs/heads/main' &&
-      github.run_number == 5 &&
+      github.run_number == 4 &&
       github.run_attempt == 1 &&
       inputs.confirmation == 'RUN_FXCM_2022_2025_RECOVERY_QC_PRIVATE_UPLOAD_CORRECTIVE_ONCE' &&
       inputs.scope_confirmation == 'I_ACCEPT_10084_PRESENT_316_KNOWN_MISSING_AND_STAGE_UNSEALED_2022_2025' &&
@@ -53,12 +53,12 @@ jobs:
         run: |
           set -euo pipefail
           track='research/phase9-exploratory-fxcm-20260901'
-          PYTHONDONTWRITEBYTECODE=1 python3 "$track/runner/verify_fxcm_drive_vault_run1_recovery_simple_v1_2.py" \
-            --contract "$track/spec/fxcm_drive_vault_run1_recovery_simple_v1_2.frozen.json" \
-            --runner "$track/runner/fxcm_drive_vault_run1_recovery_simple_v1_2.py" \
+          PYTHONDONTWRITEBYTECODE=1 python3 "$track/runner/verify_fxcm_drive_vault_run1_recovery_simple_v1_1.py" \
+            --contract "$track/spec/fxcm_drive_vault_run1_recovery_simple_v1_1.frozen.json" \
+            --runner "$track/runner/fxcm_drive_vault_run1_recovery_simple_v1_1.py" \
             --workflow '.github/workflows/phase9-exploratory-fxcm-drive-vault-run1-recovery-simple-v1.yml'
           PYTHONDONTWRITEBYTECODE=1 python3 -m unittest \
-            "$track/tests/test_fxcm_drive_vault_run1_recovery_simple_v1_2.py"
+            "$track/tests/test_fxcm_drive_vault_run1_recovery_simple_v1_1.py"
           git diff --exit-code
 
   recover-four-years:
@@ -99,8 +99,8 @@ jobs:
             PHASE9_GDRIVE_OAUTH_CLIENT_ID='${{ secrets.PHASE9_GDRIVE_OAUTH_CLIENT_ID }}' \
             PHASE9_GDRIVE_OAUTH_CLIENT_SECRET='${{ secrets.PHASE9_GDRIVE_OAUTH_CLIENT_SECRET }}' \
             PHASE9_GDRIVE_OAUTH_REFRESH_TOKEN='${{ secrets.PHASE9_GDRIVE_OAUTH_REFRESH_TOKEN }}' \
-            python3 "$track/runner/fxcm_drive_vault_run1_recovery_simple_v1_2.py" \
-              --recovery-contract "$track/spec/fxcm_drive_vault_run1_recovery_simple_v1_2.frozen.json" \
+            python3 "$track/runner/fxcm_drive_vault_run1_recovery_simple_v1_1.py" \
+              --recovery-contract "$track/spec/fxcm_drive_vault_run1_recovery_simple_v1_1.frozen.json" \
               --recovery-manifest-schema "$track/spec/fxcm_drive_vault_recovery_manifest_simple_v1.schema.json" \
               --recovery-design "$track/spec/fxcm_drive_vault_run1_recovery_v2_2.frozen.json" \
               --acquisition-contract "$track/spec/fxcm_drive_vault_acquisition_v2.frozen.json" \
