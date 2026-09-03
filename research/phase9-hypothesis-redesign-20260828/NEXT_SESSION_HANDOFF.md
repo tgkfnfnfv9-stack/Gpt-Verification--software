@@ -10,6 +10,27 @@ Actual Full-QC実装基準: `9eb7ce667bea8e76a7f9bb1f2d378eebd8957206`
 
 ## Latest delta
 
+### 2026-09-03 V2.1 Run #1 failure and read-only inventory delta
+
+- V2.1取得Run `33705800232`（Run #1 / Attempt #1、head
+  `be864557a8e16d253e6aecf1519f85ad6162c1a3`）は`failure`で終了した。17 jobsの内訳は
+  12 success、4 failure、1 skipped。GitHub Artifactは0件である。
+- 2012～2021年jobは成功した。2022/2023年は`empty frozen source object`、2024年は
+  `source object is not gzip`、2025年は`source object too small`でfail-closedとなった。
+  `finalize-vault`はskippedで、canonical `v2` / `COMMITTED` publicationは成立していない。
+- 全実行year jobのlocal workspace always-cleanupは成功した。一方、private Driveには
+  `v2-txn-run-33705800232`とyear stageが残っている可能性があり、exact remote inventoryは未確認。
+  自動cleanupは禁止され、cleanup認可はfalseのままである。
+- 事故正本は`POLICY_INCIDENT_20260903.md`。Formal Phase 9への認可効果はfalse。Exploratory
+  price accessは実行済みだが、このworkflowはCount、candidate signal、Return、Outcome、MT5を
+  計算していない。V2.1の単一使用認可は消費済みであり、rerun/replayしない。
+- 次の単一Gateとして
+  `spec/fxcm_drive_vault_run1_read_only_inventory_v2_1.frozen.json`を凍結し、Drive metadata
+  `GET`だけを持つ専用client、sanitized report runner/verifier、manual Run #1/Attempt #1 workflow、
+  専用6 Testsを実装し、探索track全192 Testsに成功した。Drive file content、FXCM source request、Drive mutation、finalize、cleanupは
+  code surfaceに含めない。公開してもdispatch認可にはならず、実行は別の明示承認と公開main SHA
+  の確認まで停止する。
+
 ### 2026-09-03 V2.1 operational hardening delta
 
 - ユーザーは価格取得とは別に、実行前安全強化を明示承認した。価格、Secret値、Outcomeは
@@ -474,14 +495,14 @@ Provider schedule inventory / allowlist
 
 ## 7. 次に行う単一作業
 
-Option 1のV2.1 transactional hardening・runner・Testsをremote mainへ公開する。GitHub
-Environment `phase9-fxcm-vault-acquisition-v2`のrequired reviewerとpersonal My Drive用
-OAuth 3 secretsは設定済みである。公開後は停止し、別の明示承認を待つ。取得実行は、
-新しい公開main SHAをユーザーが確認した後の別の明示承認を必要とする。
+V2.1 Run `33705800232`の失敗証跡と、未完了transactionのread-only inventory実装をremote
+mainへ公開する。公開後は停止し、新しい公開main SHAをユーザーが確認した後の別の明示承認まで
+inventory workflowを実行しない。inventoryはDrive metadata `GET`だけであり、file content、
+FXCM source、mutation、cleanup、recovery、Count、Returnへ進まない。
 
-Vault取得後もCount/Returnを自動実行しない。Drive内700 shardとmanifest/sealを独立監査し、
-2017～2018年の旧64系列互換性が完全一致した場合だけ、321～324の条件を変えず、Batch 6の
-data inputをSHA固定Vault shardへ切り替える。既存Batch 6 workflowは引き続き実行しない。
+inventoryの独立監査後に、cleanupとrecoveryのどちらを行う場合も、別の版付き契約とさらに別の
+明示承認を必要とする。V2.1をrerun/replayしない。canonical vaultが完成・監査されるまでは
+Batch 6のdata inputを変更せず、既存Batch 6 workflowも実行しない。
 
 Formal trackではV1 Run `33574659277`とV2 Run `33577505327`の単一使用認可は消費済みで、
 rerun/replayしない。remote resource/JAR request、JForex接続、正式価格取得も別承認前に行わない。
@@ -501,13 +522,14 @@ rerun/replayしない。remote resource/JAR request、JForex接続、正式価�
 
 ## 8. 残りの順序
 
-1. Availability独立監査正本とV1・旧V2・旧Batch 6の停止を確認する
-2. Option 1 V2.1の公開main SHA、版付き追補、transaction Testsを確認する
-3. 専用GitHub EnvironmentとOAuth 3 secretsは設定済み。workflowは実行しない
-4. 別の明示承認後だけV2.1を一度取得し、private Driveの700 shardとmanifest/SHA/seal/COMMITTED publicationを独立監査する
-5. 旧64系列互換性を確認後、Batch 6の入力だけをVaultへ切り替えてCount-onlyを実行する
-6. Count通過候補だけをReturn/OOS→新期間→頑健性へ進め、最後にMT5を検討する
-7. Formal JForex/provider schedule/Energy trackは別のまま維持する
+1. Run `33705800232`の失敗証跡、0 Artifact、finalizer skipped、V2.1再実行禁止を確認する
+2. read-only inventory契約、専用GET-only client、workflow、Testsと公開main SHAを確認する
+3. 別の明示承認後だけread-only inventory Run #1 / Attempt #1を実行する
+4. sanitized metadata-only Artifactを独立監査し、transaction/year stageのexact状態を確定する
+5. cleanupまたはversioned recoveryを別々に設計し、それぞれ別の明示承認なしに実行しない
+6. canonical vault完成・独立監査・旧64系列互換性確認後だけBatch 6入力変更を検討する
+7. Count通過候補だけをReturn/OOS→新期間→頑健性へ進め、最後にMT5を検討する
+8. Formal JForex/provider schedule/Energy trackは別のまま維持する
 
 ## 9. 絶対禁止
 

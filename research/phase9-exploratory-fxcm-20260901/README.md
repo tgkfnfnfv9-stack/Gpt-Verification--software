@@ -1,8 +1,23 @@
 # Phase 9 Exploratory FXCM Fast Track
 
-Status: `DRIVE_VAULT_V2_1_TRANSACTIONALLY_HARDENED_NOT_EXECUTED; V1_AND_OLD_V2_PERMANENTLY_BLOCKED; LEGACY_FX8_BATCH6_BLOCKED`
+Status: `DRIVE_VAULT_V2_1_RUN1_FAILED_CLOSED; CANONICAL_V2_NOT_PUBLISHED; READ_ONLY_TRANSACTION_INVENTORY_FROZEN_NOT_EXECUTED; LEGACY_FX8_BATCH6_BLOCKED`
 
 ## Current canonical next step: reusable Google Drive Vault
+
+2026-09-03、V2.1取得Run `33705800232`（Run #1 / Attempt #1、head
+`be864557a8e16d253e6aecf1519f85ad6162c1a3`）は`failure`で終了した。2012～2021年jobは
+成功し、2022/2023年は`empty frozen source object`、2024年は`source object is not gzip`、
+2025年は`source object too small`でfail-closedとなった。`finalize-vault`はskipped、公開Artifactは
+0件であり、canonical `v2` / `COMMITTED`は公開されていない。ローカルprice workspaceの
+always cleanupは全実行jobで成功した。証跡正本は
+`../phase9-hypothesis-redesign-20260828/POLICY_INCIDENT_20260903.md`。
+
+次の単一Gateは、失敗transaction `v2-txn-run-33705800232`をGoogle Drive metadata `GET`だけで
+棚卸しする別workflowである。契約
+`spec/fxcm_drive_vault_run1_read_only_inventory_v2_1.frozen.json`、専用read-only client、runner、
+price-free verifier、manual single-use workflowを実装したが、dispatchは未承認・未実行である。
+Drive file content、FXCM source、Drive mutation、finalize、cleanup、Count、Batch 6、Returnは一切
+含まない。実行には公開main SHAの確認後、別のユーザー明示承認が必要である。V2.1は再実行しない。
 
 2026-09-02、ユーザーはAvailability Run `33627420903`で確認できたFXCM範囲を使う
 Option 1を選択した。V2は2012～2025年、25通貨ペア、direct m1/H1の700 shardとする。
@@ -21,10 +36,11 @@ Option 1を選択した。V2は2012～2025年、25通貨ペア、direct m1/H1の
 - partition: Development 2012～2019、Strict OOS 2020～2021、Robustness 2022～2023、Final holdout 2024～2025
 - OAuth client、refresh token、同一client作成root: 設定済み（secret値はGitに保存しない）
 - GitHub Environment、required reviewer、OAuth 3 secrets: 設定済み（値はチャット・Git・Artifactへ非公開）
-- 価格取得、V2.1 workflow、Count、Batch 6: 未実行
+- V2.1価格取得Run #1: 実行済み・failure（2012～2021成功、2022～2025失敗、finalizer skipped）
+- read-only transaction inventory、Count、Batch 6: 未実行
 - V1 acquisition workflow: fail-closedで恒久停止
 - 旧V2 acquisition workflowと旧Batch 6 workflow: fail-closedで恒久停止
-- V2.1専用23 tests、探索track全186 tests: 成功
+- V2.1 acquisition専用23 tests、read-only inventory専用6 tests、探索track全192 tests: 成功
 - V2.1 acquisition workflowのpreflightは、旧5契約、版付き追補、runner closureのSHA-256と同期済み
 
 2026-09-03の実行前監査で、旧V2にはDriveへの非原子的な昇格、owner-onlyかつ空のrootを
@@ -37,8 +53,9 @@ canonical `v2`を作らず、未完了transactionを隔離する。PATCH境界�
 cleanupは別承認なしに行わない。
 Batch 6 compatibilityは独立64系列consumer Gateが完成するまで常にfalseである。
 
-V2.1を公開しても実行許可にはならない。別のユーザー明示承認まではV2.1 workflowを実行しない。
-取得後も自動でCountへ進まず、private Drive custodyと旧64系列互換性を独立監査する。
+V2.1 Run #1は単一使用認可を消費済みであり、再実行・replayしない。まず別承認後のread-only
+transaction inventoryでprivate Driveの未完了状態を確定する。cleanupやrecovery取得はその結果を
+独立監査してから、さらに別の版付き契約と明示承認を必要とする。自動でCountへ進まない。
 
 ## Historical V1 availability result
 

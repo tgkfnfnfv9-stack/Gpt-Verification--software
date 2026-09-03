@@ -1,0 +1,96 @@
+name: phase9-exploratory-fxcm-private-drive-vault-run1-read-only-inventory
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirmation:
+        description: 'Type INVENTORY_PHASE9_FXCM_VAULT_RUN_33705800232_METADATA_ONLY_NO_MUTATION'
+        required: true
+        type: string
+      expected_head_sha:
+        description: 'Exact published main SHA reviewed by the user'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: phase9-exploratory-fxcm-private-drive-vault-run1-read-only-inventory
+  cancel-in-progress: false
+
+jobs:
+  inventory-failed-run-transaction:
+    if: >-
+      github.repository == 'tgkfnfnfv9-stack/Gpt-Verification--software' &&
+      github.ref == 'refs/heads/main' &&
+      github.run_number == 1 &&
+      github.run_attempt == 1 &&
+      inputs.confirmation == 'INVENTORY_PHASE9_FXCM_VAULT_RUN_33705800232_METADATA_ONLY_NO_MUTATION' &&
+      inputs.expected_head_sha == github.sha
+    environment: phase9-fxcm-vault-acquisition-v2
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Checkout exact reviewed main commit
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+          ref: ${{ github.sha }}
+
+      - name: Verify exact read-only inventory closure
+        shell: bash
+        run: |
+          set -euo pipefail
+          track='research/phase9-exploratory-fxcm-20260901'
+          test "$(sha256sum "$track/spec/fxcm_drive_vault_run1_read_only_inventory_v2_1.frozen.json" | cut -d' ' -f1)" = 'baf02b5d423097f4ac0f4a4b06ebdf8801147c20fb30182ded05c19610bfa7cc'
+          test "$(sha256sum "$track/spec/fxcm_drive_vault_operational_hardening_v2_1.frozen.json" | cut -d' ' -f1)" = '03b8ecaa6a75a1df797f8c4de5fbdf5b59ce0a5655957a5f04c1ab595301434b'
+          test "$(sha256sum "$track/runner/fxcm_google_drive_read_only.py" | cut -d' ' -f1)" = '61c38416bcbb0702003681d9d516c1c25776be61471667ea5ebd7bbd094ccbad'
+          test "$(sha256sum "$track/runner/fxcm_drive_vault_run1_read_only_inventory.py" | cut -d' ' -f1)" = 'ac5a59054685225a3aef73f7110ae9a7d4ce39d2e52c43f751138ea6a1696617'
+          test "$(sha256sum "$track/runner/verify_fxcm_drive_vault_run1_read_only_inventory.py" | cut -d' ' -f1)" = 'b6068f71583b3b398a42a645b57e3ee705d2c263fba8d85b1c103077355682f2'
+          PYTHONDONTWRITEBYTECODE=1 python3 -m unittest "$track/tests/test_fxcm_drive_vault_run1_read_only_inventory.py"
+          test -z "$(git grep -IlE 'ya29\.|1//[A-Za-z0-9_-]{20,}|GOCSPX-[A-Za-z0-9_-]{20,}' -- ':!*.md' || true)"
+          git diff --exit-code
+
+      - name: Inventory exact failed transaction with Drive metadata GET only
+        shell: bash
+        env:
+          PHASE9_GDRIVE_OAUTH_CLIENT_ID: ${{ secrets.PHASE9_GDRIVE_OAUTH_CLIENT_ID }}
+          PHASE9_GDRIVE_OAUTH_CLIENT_SECRET: ${{ secrets.PHASE9_GDRIVE_OAUTH_CLIENT_SECRET }}
+          PHASE9_GDRIVE_OAUTH_REFRESH_TOKEN: ${{ secrets.PHASE9_GDRIVE_OAUTH_REFRESH_TOKEN }}
+        run: |
+          set -euo pipefail
+          umask 077
+          track='research/phase9-exploratory-fxcm-20260901'
+          report="$RUNNER_TEMP/phase9-fxcm-vault-run1-read-only-inventory-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          echo "VAULT_RUN1_INVENTORY_REPORT=$report" >> "$GITHUB_ENV"
+          python3 "$track/runner/fxcm_drive_vault_run1_read_only_inventory.py" \
+            --inventory-contract "$track/spec/fxcm_drive_vault_run1_read_only_inventory_v2_1.frozen.json" \
+            --operational-amendment "$track/spec/fxcm_drive_vault_operational_hardening_v2_1.frozen.json" \
+            --inventory-run-id "$GITHUB_RUN_ID" \
+            --inventory-run-attempt "$GITHUB_RUN_ATTEMPT" \
+            --inventory-head-sha "$GITHUB_SHA" \
+            --output-dir "$report" \
+            --confirmation '${{ inputs.confirmation }}'
+
+      - name: Verify exact sanitized metadata-only report
+        shell: bash
+        run: |
+          set -euo pipefail
+          track='research/phase9-exploratory-fxcm-20260901'
+          python3 "$track/runner/verify_fxcm_drive_vault_run1_read_only_inventory.py" \
+            --report-dir "$VAULT_RUN1_INVENTORY_REPORT" \
+            --expected-head-sha "$GITHUB_SHA" \
+            --expected-run-id "$GITHUB_RUN_ID"
+          test -z "$(find "$VAULT_RUN1_INVENTORY_REPORT" -type f \( -iname '*.csv' -o -iname '*.gz' -o -iname '*.tar' -o -iname '*.zst' \) -print -quit)"
+          git diff --exit-code
+
+      - name: Upload exact sanitized read-only inventory only
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: phase9-fxcm-vault-run1-read-only-inventory-${{ github.sha }}-${{ github.run_id }}
+          path: ${{ env.VAULT_RUN1_INVENTORY_REPORT }}/
+          if-no-files-found: error
+          retention-days: 14
+          include-hidden-files: false

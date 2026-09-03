@@ -246,14 +246,30 @@ source with exact manifest-locked Drive shards, then run Count-only.
 ## Next-session task order
 
 1. Verify latest remote `main` and read this document, `NEXT_SESSION_HANDOFF.md`,
-   `NEXT_SESSION_PROMPT.md`, `SESSION_STATE.json` and the frozen Batch 6 contract completely.
-2. Do not acquire prices and do not dispatch Batch 6 at session start.
-3. Freeze a versioned vault acquisition/custody contract, temporal partition contract, exact
-   shard schema, QC rules and OAuth secret names before any source availability or price access.
-4. Implement metadata-only availability inventory separately from price acquisition.
-5. Implement the one-manual-run year-matrix acquisition, Full-QC, private Drive upload,
-   manifest sealing, local cleanup and independent tests. Do not dispatch it yet.
-6. Publish the implementation atomically to `main`, then present the single execution link,
-   exact inputs and one-time Google OAuth setup steps to the user.
-7. Only after explicit manual authorization, acquire once. Independently audit Drive objects and
-   manifest identities before any Batch 6 Count.
+   `NEXT_SESSION_PROMPT.md`, `SESSION_STATE.json`, `POLICY_INCIDENT_20260903.md` and the frozen
+   read-only inventory contract completely.
+2. Treat V2.1 Run `33705800232` as terminal failure. Do not rerun/replay it and do not dispatch
+   Batch 6.
+3. Do not delete, rename, move, patch or manually reorganize `v2-txn-run-33705800232`.
+4. Verify the dedicated Drive metadata GET-only client, sanitized report verifier, manual
+   single-use workflow and tests. Publishing them does not authorize dispatch.
+5. Only after a separate explicit approval and reviewed public `main` SHA, run the read-only
+   inventory once and independently audit its price-free artifact.
+6. Design cleanup or versioned recovery only after the exact transaction state is known. Each
+   path requires a separate contract and a separate explicit approval.
+7. Do not change Batch 6 input until a canonical vault is complete, independently audited and
+   proven compatible with the frozen 64-series consumer.
+
+## V2.1 Run #1 terminal update
+
+Run `33705800232` (Run #1, Attempt #1) completed with failure at head
+`be864557a8e16d253e6aecf1519f85ad6162c1a3`. Year jobs 2012–2021 succeeded. Years 2022 and
+2023 failed on empty frozen source objects, 2024 failed on a non-gzip source object and 2025
+failed on a source object below the minimum size. The finalizer was skipped and the run produced
+no public artifact. The transactional design therefore withheld canonical `v2` publication.
+
+The exact Drive contents left by the failed run have not been observed. The next gate is frozen in
+`spec/fxcm_drive_vault_run1_read_only_inventory_v2_1.frozen.json`. It permits OAuth token exchange
+and Drive metadata `GET` only; it has no Drive media-download, mutation, cleanup, transaction
+publication, FXCM request, Count, Return or MT5 surface. Its workflow remains undispatched until a
+separate explicit user approval.

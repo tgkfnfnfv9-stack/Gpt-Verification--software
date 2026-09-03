@@ -1,0 +1,92 @@
+{
+  "schema_version": "phase9-exploratory-fxcm-drive-vault-run1-read-only-inventory-v2.1.0",
+  "status": "FROZEN_USER_APPROVED_DESIGN_NOT_EXECUTED",
+  "frozen_date_utc": "2026-09-03",
+  "track": "EXPLORATORY_FXCM_DRIVE_VAULT_NOT_FORMAL_PHASE9",
+  "purpose": "INVENTORY_FAILED_V2_1_RUN_TRANSACTION_BEFORE_ANY_SEPARATELY_AUTHORIZED_RECOVERY_OR_CLEANUP",
+  "source_acquisition": {
+    "repository": "tgkfnfnfv9-stack/Gpt-Verification--software",
+    "workflow": "phase9-exploratory-fxcm-private-drive-vault-acquisition-v2-1",
+    "run_id": 33705800232,
+    "run_number": 1,
+    "run_attempt": 1,
+    "head_sha": "be864557a8e16d253e6aecf1519f85ad6162c1a3",
+    "conclusion": "failure",
+    "transaction_name": "v2-txn-run-33705800232",
+    "expected_transaction_state": "ACQUIRING",
+    "successful_years": [2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021],
+    "failed_years": [2022, 2023, 2024, 2025],
+    "finalizer_conclusion": "skipped",
+    "public_artifact_count": 0
+  },
+  "drive_scope": {
+    "root_folder_id": "1lZ0CkTn3tBxStf5H3V7W38ZcOsZ5Rw_v",
+    "root_folder_name": "Phase9 FXCM Data Vault",
+    "vault_version": "v2",
+    "operational_version": "v2.1",
+    "years": [2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025],
+    "symbols": [
+      "AUDCAD", "AUDCHF", "AUDJPY", "AUDNZD", "AUDUSD", "CADCHF", "CADJPY",
+      "EURAUD", "EURCHF", "EURGBP", "EURJPY", "EURNZD", "EURUSD", "GBPCAD",
+      "GBPCHF", "GBPJPY", "GBPNZD", "GBPUSD", "NZDCAD", "NZDCHF", "NZDJPY",
+      "NZDUSD", "USDCAD", "USDCHF", "USDJPY"
+    ],
+    "direct_periodicities": ["m1", "H1"],
+    "expected_archive_names_per_year": 50,
+    "expected_complete_stage_children_per_year": 51,
+    "year_manifest_name": "YEAR_MANIFEST.json"
+  },
+  "allowed_operations": {
+    "oauth_token_exchange": true,
+    "drive_api_methods": ["GET"],
+    "drive_metadata_list": true,
+    "drive_metadata_get": true,
+    "drive_file_content_download": false,
+    "fxcm_source_request": false,
+    "drive_create": false,
+    "drive_upload": false,
+    "drive_patch": false,
+    "drive_move": false,
+    "drive_rename": false,
+    "drive_delete": false,
+    "drive_permission_change": false,
+    "transaction_finalize": false,
+    "canonical_publish": false,
+    "automatic_remote_cleanup": false
+  },
+  "public_report": {
+    "exact_files": [
+      "VAULT_RUN1_READ_ONLY_INVENTORY.json",
+      "artifact_manifest_sha256.txt"
+    ],
+    "drive_object_ids_allowed": false,
+    "arbitrary_remote_names_allowed": false,
+    "price_bytes_allowed": false,
+    "credentials_allowed": false,
+    "research_statistics_allowed": false,
+    "expected_names_and_sanitized_counts_digests_only": true
+  },
+  "workflow": {
+    "filename": "phase9-exploratory-fxcm-drive-vault-run1-read-only-inventory.yml",
+    "manual_only": true,
+    "required_run_number": 1,
+    "required_run_attempt": 1,
+    "environment": "phase9-fxcm-vault-acquisition-v2",
+    "reviewed_head_sha_required": true,
+    "confirmation": "INVENTORY_PHASE9_FXCM_VAULT_RUN_33705800232_METADATA_ONLY_NO_MUTATION"
+  },
+  "authorization": {
+    "inventory_design_approved": true,
+    "workflow_dispatch_authorized": false,
+    "cleanup_authorized": false,
+    "recovery_acquisition_authorized": false,
+    "v2_1_rerun_authorized": false,
+    "count_only_authorized": false,
+    "batch6_authorized": false,
+    "returns_or_outcomes_authorized": false,
+    "formal_phase9_authorization_effect": false
+  },
+  "frozen_dependencies": {
+    "fxcm_drive_vault_operational_hardening_v2_1.frozen.json": "03b8ecaa6a75a1df797f8c4de5fbdf5b59ce0a5655957a5f04c1ab595301434b"
+  }
+}

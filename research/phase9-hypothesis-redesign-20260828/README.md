@@ -1,6 +1,6 @@
 # Phase 9 Hypothesis Redesign
 
-更新日: 2026-09-02
+更新日: 2026-09-03
 状態: `FROZEN_PREREGISTERED_ACQUISITION_BLOCKED`
 
 最初に [PHASE9_OPERATIONS_GUIDE.md](./PHASE9_OPERATIONS_GUIDE.md) を読みます。全手順、仮説一覧、GitHub取得方法、サブエージェント分担、Gate、禁止事項、更新・引き継ぎ方法の運用正本です。
@@ -24,14 +24,19 @@
 | Discovery | 未開始 |
 | MT5 EA | 禁止 |
 
-旧tmp workflowによる境界事故が確認されています。`POLICY_INCIDENT_20260829.md`を参照してください。2022〜2026年は後続splitとしての有効性再監査が必要です。
+旧tmp workflowによる境界事故は`POLICY_INCIDENT_20260829.md`、Exploratory Drive Vault V2.1
+Run #1のsource integrity failureは`POLICY_INCIDENT_20260903.md`を参照してください。
+2022〜2026年は後続splitとしての有効性再監査が必要です。
 
 ## Exploratory FXCM reusable vault（Formalとは別track）
 
-候補ごとの再取得を止めるため、G8全28ペア・2010～2025年を一度だけprivate Google Driveへ
-保存するVault V1の契約、runner、manual workflow、Testsを実装済みである。availabilityと
-価格取得は未実行で、既存Batch 6も停止中。Exploratory Vaultを実行した場合、2019年以降は
-Formal Phase 9の未見期間とは主張しない。詳細は
+Option 1 V2.1 Run `33705800232`は2012～2021年job成功後、2022～2025年のsource object
+integrity failureでfail-closedとなった。finalizerはskipped、Artifactは0件、canonical `v2`は
+未公開である。V2.1を再実行せず、未完了transactionを変更・削除しない。次は別承認後に
+Drive metadata `GET`だけのsingle-use read-only inventoryを行う。実装は凍結済みだが未実行で、
+cleanup、recovery取得、Count、Batch 6への認可効果はない。Exploratory price accessにより
+2019年以降をFormal Phase 9の未見期間とは主張しない。詳細は
+`../phase9-exploratory-fxcm-20260901/README.md`と
 `../phase9-exploratory-fxcm-20260901/GOOGLE_DRIVE_DATA_VAULT_PLAN.md`を参照する。
 
 公開endpoint取得は`PROVIDER_ACQUISITION_BLOCKER.md`の3件のP0により廃止しました。代わりに`JFOREX_SOURCE_CHANNEL_AMENDMENT.md`で、公式認証JForex Tester API、4つの固定取得run、H1の一律2019年8月除外を結果未閲覧で凍結しています。Java class-origin guard preflight Run `33336895081`は19/19 tests、online 1回＋offline 2回のJAR SHA一致、930-file inventory一致、外部probeのexit 86拒否でSuccessです。実証範囲はpre-connect non-bootstrap self/adversarial testだけで、実際のJForex接続、JNI/native、child process、OS-level egress、full QCは未検証です。これは監査証跡であり取得許可ではありません。市場price fileはまだ0件です。

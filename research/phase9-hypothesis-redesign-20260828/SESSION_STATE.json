@@ -463,7 +463,7 @@
     "next_gate": "DRIVE_VAULT_ACQUISITION_AND_INDEPENDENT_AUDIT_BEFORE_BATCH6_COUNT"
   },
   "exploratory_fxcm_google_drive_data_vault": {
-    "status": "V2_1_OPERATIONAL_HARDENING_FROZEN_IMPLEMENTED_NOT_EXECUTED_OLD_WORKFLOWS_BLOCKED",
+    "status": "V2_1_RUN_33705800232_FAILED_CLOSED_NO_CANONICAL_PUBLICATION_READ_ONLY_TRANSACTION_INVENTORY_FROZEN_NOT_EXECUTED",
     "plan": "../phase9-exploratory-fxcm-20260901/GOOGLE_DRIVE_DATA_VAULT_PLAN.md",
     "folder_name": "Phase9 FXCM Data Vault",
     "folder_id": "1lZ0CkTn3tBxStf5H3V7W38ZcOsZ5Rw_v",
@@ -522,6 +522,33 @@
     "legacy_v2_acquisition_workflow": ".github/workflows/phase9-exploratory-fxcm-drive-vault-acquisition-v2.yml",
     "legacy_v2_acquisition_workflow_permanently_blocked": true,
     "acquisition_workflow": ".github/workflows/phase9-exploratory-fxcm-drive-vault-acquisition-v2-1.yml",
+    "acquisition_run_id": 33705800232,
+    "acquisition_run_number": 1,
+    "acquisition_run_attempt": 1,
+    "acquisition_run_head_sha": "be864557a8e16d253e6aecf1519f85ad6162c1a3",
+    "acquisition_run_conclusion": "failure",
+    "acquisition_run_job_summary": {"total": 17, "success": 12, "failure": 4, "skipped": 1},
+    "acquisition_successful_years": [2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021],
+    "acquisition_failed_years": {
+      "2022": "empty frozen source object",
+      "2023": "empty frozen source object",
+      "2024": "source object is not gzip",
+      "2025": "source object too small"
+    },
+    "acquisition_finalizer_conclusion": "skipped",
+    "acquisition_public_artifact_count": 0,
+    "canonical_v2_committed": false,
+    "uncommitted_transaction_name": "v2-txn-run-33705800232",
+    "uncommitted_transaction_exact_remote_inventory_verified": false,
+    "read_only_inventory_contract": "../phase9-exploratory-fxcm-20260901/spec/fxcm_drive_vault_run1_read_only_inventory_v2_1.frozen.json",
+    "read_only_inventory_workflow": ".github/workflows/phase9-exploratory-fxcm-drive-vault-run1-read-only-inventory.yml",
+    "read_only_inventory_design_approved": true,
+    "read_only_inventory_dispatch_authorized": false,
+    "read_only_inventory_executed": false,
+    "read_only_inventory_test_count": 6,
+    "remote_cleanup_authorized": false,
+    "recovery_acquisition_authorized": false,
+    "v2_1_rerun_authorized": false,
     "legacy_batch6_workflow_permanently_blocked": true,
     "availability_independent_audit": "../phase9-exploratory-fxcm-20260901/results/run-33627420903/FXCM_DRIVE_VAULT_AVAILABILITY_INDEPENDENT_AUDIT.json",
     "availability_run_id": 33627420903,
@@ -546,7 +573,7 @@
     "canonical_strategy_source": "M1_DERIVED_M5_M15_M30_H1_H4_D1_W1",
     "direct_h1_role": "QC_REFERENCE_ONLY_NO_FILL_NO_SUBSTITUTION",
     "direct_d1_role": "NOT_IN_V2_SOURCE_SCOPE",
-    "formal_2019_plus_unseen_claim_after_execution": "RETIRED_IF_EXPLORATORY_VAULT_EXECUTES",
+    "formal_2019_plus_unseen_claim_after_execution": "RETIRED_BY_EXPLORATORY_V2_1_RUN_33705800232",
     "oauth_secret_names": [
       "PHASE9_GDRIVE_OAUTH_CLIENT_ID",
       "PHASE9_GDRIVE_OAUTH_CLIENT_SECRET",
@@ -557,14 +584,14 @@
     "oauth_app_created_root_access_required": true,
     "oauth_inaccessible_root_action": "FAIL_WITHOUT_SCOPE_EXPANSION_OR_PRICE_ACCESS",
     "v2_dedicated_test_count": 23,
-    "all_exploratory_test_count": 186,
+    "all_exploratory_test_count": 192,
     "tests_passed": true,
     "availability_inventory_executed": true,
     "availability_inventory_independently_audited": true,
-    "price_acquisition_executed": false,
+    "price_acquisition_executed": true,
     "acquisition_workflow_authorized": false,
     "batch6_dispatch_allowed_before_vault_audit": false,
-    "next_gate": "STOP_AWAIT_EXPLICIT_V2_1_ACQUISITION_AUTHORIZATION_AND_REVIEWED_PUBLIC_MAIN_SHA"
+    "next_gate": "PUBLISH_READ_ONLY_TRANSACTION_INVENTORY_IMPLEMENTATION_THEN_STOP_AWAIT_SEPARATE_DISPATCH_APPROVAL_AND_REVIEWED_PUBLIC_MAIN_SHA"
   },
   "provider_acquisition": {
     "status": "ACTUAL_FULL_QC_CONTRACT_FROZEN_PROVIDER_SCHEDULE_SOURCE_P0_BLOCKED",
@@ -1099,6 +1126,29 @@
     "phase8_workflows": "REFERENCE_ONLY_NOT_PHASE9_EXECUTION"
   },
   "policy_incidents": [
+    {
+      "incident_id": "PHASE9-INC-20260903-001",
+      "cause": "Four frozen-present FXCM source objects failed acquisition-time integrity checks during the one authorized V2.1 acquisition run.",
+      "triggering_commit": "be864557a8e16d253e6aecf1519f85ad6162c1a3",
+      "action_runs": [33705800232],
+      "observed_metadata": [
+        "17 jobs: 12 success, 4 failure, 1 skipped",
+        "2012 through 2021 year jobs succeeded",
+        "2022 and 2023 failed on empty frozen source object",
+        "2024 failed because the source object was not gzip",
+        "2025 failed because the source object was too small",
+        "finalize-vault skipped and GitHub artifact count was zero",
+        "all executed local price workspace cleanup steps succeeded"
+      ],
+      "exploratory_price_access": true,
+      "formal_phase9_authorization_effect": false,
+      "research_statistics_calculated_by_workflow": false,
+      "canonical_v2_committed": false,
+      "remote_transaction_inventory_verified": false,
+      "remote_cleanup_authorized": false,
+      "scientific_status": "EXPLORATORY_SOURCE_INTEGRITY_FAILURE_FAIL_CLOSED; NO CANONICAL PUBLICATION; NO COUNT OR RESEARCH STATISTICS",
+      "incident_log": "POLICY_INCIDENT_20260903.md"
+    },
     {
       "incident_id": "PHASE9-INC-20260830-001",
       "cause": "GitHub rejected runner.temp expressions in job-level env during workflow schema validation.",
