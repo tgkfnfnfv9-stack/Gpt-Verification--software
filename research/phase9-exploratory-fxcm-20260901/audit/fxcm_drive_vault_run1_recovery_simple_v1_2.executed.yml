@@ -68,20 +68,18 @@ jobs:
         run: |
           set -euo pipefail
           track='research/phase9-exploratory-fxcm-20260901'
-          PYTHONDONTWRITEBYTECODE=1 python3 "$track/runner/verify_fxcm_drive_vault_run1_recovery_simple_v1_3.py" \
-            --contract "$track/spec/fxcm_drive_vault_run1_recovery_simple_v1_3.frozen.json" \
-            --runner "$track/runner/fxcm_drive_vault_run1_recovery_simple_v1_3.py" \
+          PYTHONDONTWRITEBYTECODE=1 python3 "$track/runner/verify_fxcm_drive_vault_run1_recovery_simple_v1_2.py" \
+            --contract "$track/spec/fxcm_drive_vault_run1_recovery_simple_v1_2.frozen.json" \
+            --runner "$track/runner/fxcm_drive_vault_run1_recovery_simple_v1_2.py" \
             --workflow '.github/workflows/phase9-exploratory-fxcm-drive-vault-run1-recovery-simple-v1.yml'
           PYTHONDONTWRITEBYTECODE=1 python3 -m unittest \
             "$track/tests/test_fxcm_drive_vault_run1_recovery_simple_v1_2.py"
-          PYTHONDONTWRITEBYTECODE=1 python3 -m unittest \
-            "$track/tests/test_fxcm_drive_vault_run1_recovery_simple_v1_3.py"
           git diff --exit-code
 
   recover-four-years:
     needs: preflight
     environment: phase9-fxcm-vault-acquisition-v2
-    runs-on: macos-15
+    runs-on: ubuntu-24.04
     timeout-minutes: 360
     steps:
       - name: Checkout exact reviewed main commit
@@ -91,28 +89,8 @@ jobs:
           fetch-depth: 1
           ref: ${{ github.sha }}
 
-      - name: Verify macOS recovery runtime without price access
-        shell: bash
-        run: |
-          set -euo pipefail
-          test "$RUNNER_OS" = 'macOS'
-          python3 --version
-          zstd --version
-          track='research/phase9-exploratory-fxcm-20260901'
-          PYTHONDONTWRITEBYTECODE=1 python3 "$track/runner/verify_fxcm_drive_vault_run1_recovery_simple_v1_3.py" \
-            --contract "$track/spec/fxcm_drive_vault_run1_recovery_simple_v1_3.frozen.json" \
-            --runner "$track/runner/fxcm_drive_vault_run1_recovery_simple_v1_3.py" \
-            --workflow '.github/workflows/phase9-exploratory-fxcm-drive-vault-run1-recovery-simple-v1.yml'
-          PYTHONDONTWRITEBYTECODE=1 python3 -m unittest \
-            "$track/tests/test_fxcm_drive_vault_run1_recovery_simple_v1_3.py"
-          git diff --exit-code
-
       - name: Acquire QC private-upload and re-download four years sequentially
         shell: bash
-        env:
-          PHASE9_GDRIVE_OAUTH_CLIENT_ID: ${{ secrets.PHASE9_GDRIVE_OAUTH_CLIENT_ID }}
-          PHASE9_GDRIVE_OAUTH_CLIENT_SECRET: ${{ secrets.PHASE9_GDRIVE_OAUTH_CLIENT_SECRET }}
-          PHASE9_GDRIVE_OAUTH_REFRESH_TOKEN: ${{ secrets.PHASE9_GDRIVE_OAUTH_REFRESH_TOKEN }}
         run: |
           set -euo pipefail
           umask 077
@@ -133,8 +111,11 @@ jobs:
           trap cleanup_current EXIT INT TERM HUP
           for year in 2022 2023 2024 2025; do
             work="$RUNNER_TEMP/fxcm-recovery-simple-v1-${year}-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
-            python3 "$track/runner/fxcm_drive_vault_run1_recovery_simple_v1_3.py" \
-              --recovery-contract "$track/spec/fxcm_drive_vault_run1_recovery_simple_v1_3.frozen.json" \
+            PHASE9_GDRIVE_OAUTH_CLIENT_ID='${{ secrets.PHASE9_GDRIVE_OAUTH_CLIENT_ID }}' \
+            PHASE9_GDRIVE_OAUTH_CLIENT_SECRET='${{ secrets.PHASE9_GDRIVE_OAUTH_CLIENT_SECRET }}' \
+            PHASE9_GDRIVE_OAUTH_REFRESH_TOKEN='${{ secrets.PHASE9_GDRIVE_OAUTH_REFRESH_TOKEN }}' \
+            python3 "$track/runner/fxcm_drive_vault_run1_recovery_simple_v1_2.py" \
+              --recovery-contract "$track/spec/fxcm_drive_vault_run1_recovery_simple_v1_2.frozen.json" \
               --recovery-manifest-schema "$track/spec/fxcm_drive_vault_recovery_manifest_simple_v1.schema.json" \
               --recovery-design "$track/spec/fxcm_drive_vault_run1_recovery_v2_2.frozen.json" \
               --acquisition-contract "$track/spec/fxcm_drive_vault_acquisition_v2.frozen.json" \

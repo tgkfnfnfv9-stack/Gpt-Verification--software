@@ -1,0 +1,63 @@
+{
+  "schema_version": "phase9-exploratory-fxcm-drive-vault-recovery-simple-v1.2-failure-audit-v1.0.0",
+  "status": "RUN_FAILED_NO_DRIVE_WRITE_LOCAL_PRICE_CLEANUP_PASS",
+  "run": {
+    "run_id": "33805536160",
+    "run_number": 8,
+    "run_attempt": 1,
+    "head_sha": "466519962b553461281a506139f3710f0129fc55",
+    "event": "workflow_dispatch",
+    "conclusion": "failure",
+    "preflight_job_id": "100814989671",
+    "preflight_conclusion": "success",
+    "recovery_job_id": "100815041380",
+    "recovery_conclusion": "failure"
+  },
+  "failure": {
+    "inferred_frozen_present_identity": {
+      "year": 2022,
+      "symbol": "AUDCAD",
+      "periodicity": "m1",
+      "week": 1
+    },
+    "canonical_url": "https://candledata.fxcorporate.com/m1/AUDCAD/2022/1.csv.gz",
+    "error": "frozen-present source failed cache-isolated integrity retries",
+    "successful_header_only_payload_count": 6,
+    "possible_total_http_get_count": {
+      "minimum": 6,
+      "maximum": 24
+    },
+    "content_integrity_delays_seconds": [
+      0,
+      5,
+      15,
+      30,
+      60,
+      120
+    ],
+    "content_integrity_delay_total_seconds": 230,
+    "price_rows_obtained": 0
+  },
+  "effects": {
+    "source_identities_reached": 1,
+    "canonical_csv_created": 0,
+    "archives_created": 0,
+    "year_manifests_created": 0,
+    "drive_upload_count": 0,
+    "drive_write_count": 0,
+    "drive_stage_mutation_count": 0,
+    "public_artifact_count": 0,
+    "local_price_cleanup": "PASS"
+  },
+  "next_transport": {
+    "recovery_version": "simple-v1.3",
+    "source_identity_unchanged": true,
+    "provider_unchanged": "FXCM",
+    "direct_periodicities_unchanged": [
+      "m1",
+      "H1"
+    ],
+    "runner_label": "macos-15",
+    "reason": "Linux and Windows standard GitHub runners use Azure networking; use the distinct standard macOS runner network after the same canonical object succeeds outside the Azure runner."
+  }
+}
