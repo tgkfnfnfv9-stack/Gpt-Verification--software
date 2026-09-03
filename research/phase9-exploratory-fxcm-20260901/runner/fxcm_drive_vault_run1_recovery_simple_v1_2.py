@@ -208,7 +208,12 @@ def load_simple_contract_v1_2(path: Path) -> dict[str, Any]:
         or source_policy.get("transport_cache_bust", {}).get(
             "canonical_identity_stored_without_query"
         ) is not True
-        or workflow.get("required_run_number") != 5
+        or "required_run_number" in workflow
+        or workflow.get("run_number_policy")
+        != "NOT_AN_AUTHORIZATION_OR_EXECUTION_GATE"
+        or workflow.get("preflight_mismatch_action") != "EXPLICIT_FAILURE"
+        or workflow.get("single_use_semantics")
+        != "AT_MOST_ONE_DRIVE_WRITING_RECOVERY_LINEAGE"
         or workflow.get("run_attempt") != 1
         or contract.get("provenance", {}).get("drive_app_properties") != {
             "operational_version": OPERATIONAL_VERSION,

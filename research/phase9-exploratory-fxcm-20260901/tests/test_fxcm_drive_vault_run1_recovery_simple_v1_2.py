@@ -122,15 +122,31 @@ class CacheIsolatedRecoveryV12Test(unittest.TestCase):
         self.assertIn("integrity_attempt=1", opener.urls[0])
         self.assertIn("integrity_attempt=2", opener.urls[1])
 
-    def test_contract_anchors_failed_v1_1_and_run5(self):
+    def test_contract_anchors_failed_v1_1_without_run_number_lock(self):
         contract = simple.load_simple_contract_v1_2(SPEC)
-        self.assertEqual(contract["workflow"]["required_run_number"], 5)
+        self.assertEqual(
+            contract["workflow"]["run_number_policy"],
+            "NOT_AN_AUTHORIZATION_OR_EXECUTION_GATE",
+        )
+        self.assertNotIn("required_run_number", contract["workflow"])
+        self.assertEqual(
+            contract["workflow"]["preflight_mismatch_action"],
+            "EXPLICIT_FAILURE",
+        )
+        self.assertEqual(
+            contract["workflow"]["single_use_semantics"],
+            "AT_MOST_ONE_DRIVE_WRITING_RECOVERY_LINEAGE",
+        )
         self.assertEqual(contract["executed_v1_1_anchors"]["run_id"], "33799360214")
         self.assertEqual(contract["executed_v1_1_anchors"]["drive_upload_count"], 0)
         self.assertTrue(
             contract["source_policy"]["transport_cache_bust"][
                 "canonical_identity_stored_without_query"
             ]
+        )
+        self.assertEqual(
+            [row["run_number"] for row in contract["skipped_dispatches"][-2:]],
+            [5, 6],
         )
 
     def test_v1_2_drive_metadata_globals_are_active(self):

@@ -143,6 +143,24 @@
       "job_execution_count": 0,
       "price_access": 0,
       "drive_write": 0
+    },
+    {
+      "run_id": "33803555470",
+      "run_number": 5,
+      "head_sha": "eff3c6e5465ce0748420d0266b4d508f8e51f2a0",
+      "conclusion": "skipped",
+      "job_execution_count": 0,
+      "price_access": 0,
+      "drive_write": 0
+    },
+    {
+      "run_id": "33803668411",
+      "run_number": 6,
+      "head_sha": "eff3c6e5465ce0748420d0266b4d508f8e51f2a0",
+      "conclusion": "skipped",
+      "job_execution_count": 0,
+      "price_access": 0,
+      "drive_write": 0
     }
   ],
   "existing_transaction": {
@@ -221,7 +239,9 @@
   "workflow": {
     "file": ".github/workflows/phase9-exploratory-fxcm-drive-vault-run1-recovery-simple-v1.yml",
     "manual_dispatch_only": true,
-    "required_run_number": 5,
+    "run_number_policy": "NOT_AN_AUTHORIZATION_OR_EXECUTION_GATE",
+    "preflight_mismatch_action": "EXPLICIT_FAILURE",
+    "single_use_semantics": "AT_MOST_ONE_DRIVE_WRITING_RECOVERY_LINEAGE",
     "run_attempt": 1,
     "acquisition_qc_upload_redownload_same_job": true,
     "artifact_handoff": false,

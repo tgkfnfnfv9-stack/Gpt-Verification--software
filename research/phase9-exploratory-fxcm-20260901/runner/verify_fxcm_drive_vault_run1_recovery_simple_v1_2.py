@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 from pathlib import Path
 
 from fxcm_drive_vault_common import VaultError, sha256_file
@@ -24,7 +25,13 @@ def verify(contract_path: Path, runner_path: Path, workflow_path: Path) -> dict[
         or contract.get("counts", {}).get("frozen_present_source_identities") != 10084
         or contract.get("counts", {}).get("frozen_known_missing_source_identities") != 316
         or contract.get("counts", {}).get("archive_shards") != 200
-        or contract.get("workflow", {}).get("required_run_number") != 5
+        or "required_run_number" in contract.get("workflow", {})
+        or contract.get("workflow", {}).get("run_number_policy")
+        != "NOT_AN_AUTHORIZATION_OR_EXECUTION_GATE"
+        or contract.get("workflow", {}).get("preflight_mismatch_action")
+        != "EXPLICIT_FAILURE"
+        or contract.get("workflow", {}).get("single_use_semantics")
+        != "AT_MOST_ONE_DRIVE_WRITING_RECOVERY_LINEAGE"
     ):
         raise VaultError("simple-v1.2 scope or execution identity mismatch")
     cache = contract.get("source_policy", {}).get("transport_cache_bust", {})
@@ -89,7 +96,13 @@ def verify(contract_path: Path, runner_path: Path, workflow_path: Path) -> dict[
 
     workflow = workflow_path.read_text(encoding="utf-8")
     for required in (
-        "github.run_number == 5",
+        "Validate exact execution inputs",
+        "require_equal \"$GITHUB_REPOSITORY\"",
+        "require_equal \"$GITHUB_REF\"",
+        "require_equal \"$GITHUB_EVENT_NAME\" 'workflow_dispatch'",
+        "require_equal \"$GITHUB_RUN_ATTEMPT\" '1'",
+        "require_equal \"$INPUT_EXPECTED_HEAD_SHA\" \"$GITHUB_SHA\"",
+        "::error title=Invalid dispatch::",
         "fxcm_drive_vault_run1_recovery_simple_v1_2.py",
         "fxcm_drive_vault_run1_recovery_simple_v1_2.frozen.json",
         "verify_fxcm_drive_vault_run1_recovery_simple_v1_2.py",
@@ -98,12 +111,24 @@ def verify(contract_path: Path, runner_path: Path, workflow_path: Path) -> dict[
         "trap cleanup_current EXIT INT TERM HUP",
         "if: ${{ always() }}",
         "No artifact handoff",
+        "needs: preflight",
     ):
         if required not in workflow:
             raise VaultError(f"workflow missing v1.2 control: {required}")
-    for forbidden in ("actions/upload-artifact", "actions/download-artifact", "pull_request:", "push:"):
+    for forbidden in (
+        "github.run_number ==",
+        "actions/upload-artifact",
+        "actions/download-artifact",
+        "pull_request:",
+        "push:",
+    ):
         if forbidden in workflow:
             raise VaultError(f"workflow contains forbidden trigger or artifact: {forbidden}")
+    preflight = workflow.split("  preflight:\n", 1)[-1].split(
+        "  recover-four-years:\n", 1
+    )[0]
+    if re.search(r"^    if:", preflight, flags=re.MULTILINE):
+        raise VaultError("preflight must not use a job-level if gate")
 
     for name in (
         "workflow_dispatch",
