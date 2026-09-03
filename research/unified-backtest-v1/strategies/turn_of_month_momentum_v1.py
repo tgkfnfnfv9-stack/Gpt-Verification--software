@@ -37,6 +37,16 @@ def generate_signals(api, strategy):
             window = completed[-completed_count:]
             if len(window) < atr_period + 1:
                 continue
+            # A missing market week must not be silently bridged by taking the last
+            # 21 available rows. Weekend gaps are allowed; longer gaps are not.
+            # The last complete UTC D1 can be Thursday when month-start is Monday.
+            if api.add_time(window[-1].timestamp, days=5) < decision_time:
+                continue
+            if any(
+                api.add_time(window[index - 1].timestamp, days=4) < window[index].timestamp
+                for index in range(1, len(window))
+            ):
+                continue
             atr_rows = window[-(atr_period + 1):]
             ranges = []
             for index in range(1, len(atr_rows)):

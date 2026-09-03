@@ -1,6 +1,8 @@
 # Google Driveデータ受渡し契約
 
-データ取得セッションは、取得済みのGoogle Drive Vaultデータを次の形へ自動変換し、owner-only Google Driveへ1 bundleとして保存します。既存Vaultのunsealed stageや年別archiveをそのまま研究利用せず、取得・QC・利用承認が完了したcanonical M1/H1だけをbundle化します。バックテスト基盤側で価格を再取得しません。
+汎用経路では、データ取得セッションが取得済みデータを次の形へ自動変換し、owner-only Google Driveへ1 bundleとして保存します。バックテスト基盤側で価格を再取得しません。
+
+FXCM 2022～2025 Vaultには専用の`Unified Backtest from FXCM Vault V1` workflowがあります。こちらは年別archiveを一時領域へ順次取得し、統一入力へ変換して同じjob内でbacktestを実行するため、中間bundleの再uploadもCSVの手作業も不要です。元VaultへのDrive書込みは行いません。
 
 ## Bundle内部
 
@@ -36,6 +38,26 @@ DATASET_MANIFEST_SHA256=<64桁lowercase SHA-256>
 この4値と一緒に、manifestへ入れたexact銘柄一覧（instrument ID、provider symbol、asset class）も人間向け報告へ明記します。実行者はその一覧を確認してからmanifest SHAを承認します。Google Drive objectは本人所有・owner-only・非共有とします。連続CFD・先物はroll policy・一次証拠・適用済みM1/H1 SHAをbundleへ含め、manifestで固定します。
 
 ## 次の操作
+
+### FXCM Vault専用経路
+
+別のデータ取得セッションから、successful corrective acquisitionのrun ID、取得commit SHA、4年分のyear manifest SHAを受け取ります。`Unified Backtest from FXCM Vault V1`へ次を入力します。
+
+```text
+recovery_run_id=<successful acquisition workflow run ID>
+recovery_head_sha=<exact acquisition commit SHA>
+expected_year_manifest_sha256s=2022:<sha>,2023:<sha>,2024:<sha>,2025:<sha>
+expected_head_sha=<実行を承認した現在のmain SHA>
+confirmation=RUN_UNIFIED_BACKTEST_FROM_COMPLETED_FXCM_VAULT_2022_2025
+timestamp_assumption_acknowledgement=I_ACCEPT_FXCM_BAR_OPEN_IS_EMPIRICALLY_ALIGNED_NOT_PROVIDER_EXPLICIT
+usage_confirmation=I_APPROVE_RESEARCH_INPUT_FROM_2022_2025_FXCM_VAULT
+strategy_id=                         # 空欄なら全enabled仮説
+phase1_upload_confirmation=          # 通常は空欄
+```
+
+adapterは各H1について完全な60本のM1と同一timestampであることを要求します。H1 OHLCはdirect provider値を正本として保持し、M1集約との差は診断件数とhashへ記録します。欠損とcrossed open/closeは補完せず除外します。月次coverage不足は将来情報によるsignal選別に使わずwarningとして件数とhashをsummaryへ残し、backtestは完走させますが昇格不可にします。
+
+### 汎用bundle経路
 
 GitHub Actionsの`Unified Backtest V1`を開き、上記4値と次を入力します。
 

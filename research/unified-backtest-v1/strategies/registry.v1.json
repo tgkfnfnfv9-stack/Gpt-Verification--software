@@ -25,7 +25,7 @@
       "strategy_id": "EXP-P9-MTF-323-V1",
       "enabled": true,
       "plugin": "turn_of_month_momentum_v1.py",
-      "plugin_sha256": "a8934e05fd473c3bfa1aa84f5675100e146c03138f657cdb0713f660adadf0e3",
+      "plugin_sha256": "f3870ebe3f813340d7620e2d73bc7103928551a5bedebfc3a8f88b4b7414629c",
       "name_ja": "月初の前月方向継続",
       "hypothesis_ja": "月初の08:00 UTCまでに確定した日足20期間の変化が大きい場合、09:00 UTCから同方向へ継続しやすい",
       "entry_logic_ja": ["各銘柄・各月で最初の08:00 UTC判定枠だけを使用", "判定時点までに完成した日足21本を使用", "20期間変化が日足ATR(14)以上", "正確な09:00 UTC H1始値でEntry"],

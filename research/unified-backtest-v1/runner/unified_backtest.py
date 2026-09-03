@@ -196,10 +196,24 @@ def validate_ohlc(bar: Bar, label: str) -> None:
         raise BacktestError(f"OHLC geometry mismatch: {label}")
 
 
-def validate_timestamp_evidence(path: Path, root: Path, provider_names: set[str]) -> list[str]:
+def validate_timestamp_evidence(
+    path: Path, root: Path, provider_names: set[str], source_timestamp_semantics: str,
+) -> list[str]:
     value = strict_json(path)
     exact_keys(value, TIMESTAMP_EVIDENCE_KEYS, "timestamp evidence")
-    if value["schema_version"] != "timestamp-semantics-evidence-v1.0.0" or value["status"] != "VERIFIED":
+    profiles = {
+        "BAR_OPEN_VERIFIED": ("VERIFIED", "APPROVED_FOR_BACKTEST"),
+        "BAR_OPEN_EMPIRICALLY_ALIGNED_PROVIDER_NOT_EXPLICIT": (
+            "EMPIRICALLY_ALIGNED_ASSUMPTION",
+            "APPROVED_FOR_EXPLORATORY_BACKTEST_ONLY",
+        ),
+    }
+    expected = profiles.get(source_timestamp_semantics)
+    if (
+        expected is None
+        or value["schema_version"] != "timestamp-semantics-evidence-v1.0.0"
+        or value["status"] != expected[0]
+    ):
         raise BacktestError("timestamp evidence version/status mismatch")
     rows = value["providers"]
     if not isinstance(rows, list) or not rows:
@@ -224,7 +238,7 @@ def validate_timestamp_evidence(path: Path, root: Path, provider_names: set[str]
             or not isinstance(row["primary_source_artifact_path"], str) or not row["primary_source_artifact_path"]
             or not isinstance(row["primary_source_artifact_sha256"], str) or not HEX64.fullmatch(row["primary_source_artifact_sha256"])
             or type(row["primary_source_artifact_bytes"]) is not int or row["primary_source_artifact_bytes"] <= 0
-            or row["review_status"] != "APPROVED_FOR_BACKTEST"
+            or row["review_status"] != expected[1]
         ):
             raise BacktestError("timestamp provider evidence content mismatch")
         source = safe_child(root, row["primary_source_artifact_path"])
@@ -296,7 +310,10 @@ def validate_manifest(manifest: dict) -> tuple[datetime, datetime, dict[str, dic
     if (
         manifest["timezone"] != "UTC"
         or manifest["timestamp_semantics"] != "BAR_OPEN"
-        or manifest["source_timestamp_semantics"] != "BAR_OPEN_VERIFIED"
+        or manifest["source_timestamp_semantics"] not in (
+            "BAR_OPEN_VERIFIED",
+            "BAR_OPEN_EMPIRICALLY_ALIGNED_PROVIDER_NOT_EXPLICIT",
+        )
         or manifest["aggregation_profile_id"] != "UTC_FIXED_V1"
         or manifest["required_direct_timeframes"] != ["M1", "H1"]
     ):
@@ -468,6 +485,51 @@ def aggregate_quotes(source: Sequence[QuoteBar], source_timeframe: str, target_t
     }
 
 
+def monthly_h1_coverage(
+    h1_store: dict[tuple[str, str], list[QuoteBar]],
+    instrument_ids: Iterable[str],
+    evaluation_start: datetime,
+    evaluation_end: datetime,
+) -> tuple[list[dict], set[tuple[str, str]]]:
+    rows = []
+    month = datetime(evaluation_start.year, evaluation_start.month, 1, tzinfo=UTC)
+    while month < evaluation_end:
+        next_month = datetime(
+            month.year + (1 if month.month == 12 else 0),
+            1 if month.month == 12 else month.month + 1,
+            1,
+            tzinfo=UTC,
+        )
+        window_start = max(month, evaluation_start)
+        window_end = min(next_month, evaluation_end)
+        duration_hours = max(1, int((window_end - window_start).total_seconds() // 3600))
+        required_h1 = min(240, max(1, math.ceil(duration_hours * 0.5)))
+        required_dates = min(15, max(1, math.ceil((window_end - window_start).total_seconds() / 86400 * 0.5)))
+        for symbol in sorted(instrument_ids):
+            timestamps = [
+                row.timestamp for row in h1_store[(symbol, "H1")]
+                if window_start <= row.timestamp < window_end
+            ]
+            active_dates = len({stamp.date() for stamp in timestamps})
+            passed = len(timestamps) >= required_h1 and active_dates >= required_dates
+            rows.append({
+                "instrument_id": symbol,
+                "month_utc": month.strftime("%Y-%m"),
+                "h1_count": len(timestamps),
+                "active_utc_date_count": active_dates,
+                "minimum_h1_count": required_h1,
+                "minimum_active_utc_date_count": required_dates,
+                "status": "PASS" if passed else "FAIL",
+            })
+        month = next_month
+    failed_symbol_months = {
+        (row["instrument_id"], row["month_utc"])
+        for row in rows
+        if row["status"] == "FAIL"
+    }
+    return rows, failed_symbol_months
+
+
 def load_dataset(
     data_root: Path,
     manifest_path: Path,
@@ -475,10 +537,16 @@ def load_dataset(
     retained_timeframes: Sequence[str],
     evaluation_start: datetime,
     evaluation_end: datetime,
+    allow_empirical_timestamp_assumption: bool = False,
 ):
     require_regular_single_link(manifest_path)
     manifest = strict_json(manifest_path)
     start, end, instruments, file_rows = validate_manifest(manifest)
+    if (
+        manifest["source_timestamp_semantics"] == "BAR_OPEN_EMPIRICALLY_ALIGNED_PROVIDER_NOT_EXPLICIT"
+        and not allow_empirical_timestamp_assumption
+    ):
+        raise BacktestError("empirical timestamp assumption requires explicit execution acknowledgement")
     if start > evaluation_start or end < evaluation_end:
         raise BacktestError("dataset does not cover the complete configured evaluation interval")
     root = data_root.resolve()
@@ -492,7 +560,10 @@ def load_dataset(
     if evidence_path.stat().st_size != evidence["bytes"] or sha256_file(evidence_path) != evidence["sha256"]:
         raise BacktestError("timestamp semantics evidence byte/hash mismatch")
     timestamp_source_paths = validate_timestamp_evidence(
-        evidence_path, root, {row["provider"] for row in instruments.values()}
+        evidence_path,
+        root,
+        {row["provider"] for row in instruments.values()},
+        manifest["source_timestamp_semantics"],
     )
     evidence_relative = PurePosixPath(evidence["path"]).as_posix()
     if evidence_relative in expected_files:
@@ -568,39 +639,9 @@ def load_dataset(
     for symbol in sorted(instruments):
         store[(symbol, "H1")] = read_direct((symbol, "H1"))
 
-    monthly_coverage = []
-    month = datetime(evaluation_start.year, evaluation_start.month, 1, tzinfo=UTC)
-    while month < evaluation_end:
-        next_month = datetime(
-            month.year + (1 if month.month == 12 else 0),
-            1 if month.month == 12 else month.month + 1,
-            1,
-            tzinfo=UTC,
-        )
-        window_start = max(month, evaluation_start)
-        window_end = min(next_month, evaluation_end)
-        duration_hours = max(1, int((window_end - window_start).total_seconds() // 3600))
-        required_h1 = min(240, max(1, math.ceil(duration_hours * 0.5)))
-        required_dates = min(15, max(1, math.ceil((window_end - window_start).total_seconds() / 86400 * 0.5)))
-        for symbol in sorted(instruments):
-            timestamps = [
-                row.timestamp for row in store[(symbol, "H1")]
-                if window_start <= row.timestamp < window_end
-            ]
-            active_dates = len({stamp.date() for stamp in timestamps})
-            passed = len(timestamps) >= required_h1 and active_dates >= required_dates
-            monthly_coverage.append({
-                "instrument_id": symbol,
-                "month_utc": month.strftime("%Y-%m"),
-                "h1_count": len(timestamps),
-                "active_utc_date_count": active_dates,
-                "minimum_h1_count": required_h1,
-                "minimum_active_utc_date_count": required_dates,
-                "status": "PASS" if passed else "FAIL",
-            })
-            if not passed:
-                raise BacktestError(f"monthly H1 coverage gate failed: {symbol}:{month.strftime('%Y-%m')}")
-        month = next_month
+    monthly_coverage, failed_symbol_months = monthly_h1_coverage(
+        store, instruments, evaluation_start, evaluation_end
+    )
 
     # Hold only one instrument's M1 rows at a time unless an enabled strategy truly requires M1.
     for symbol in sorted(instruments):
@@ -666,7 +707,12 @@ def load_dataset(
     if missing_required:
         raise BacktestError(f"required direct/derived series unavailable: {missing_required}")
     return manifest, instruments, store, {
-        "status": "PASS",
+        "status": "PASS_WITH_COVERAGE_WARNINGS" if failed_symbol_months else "PASS",
+        "source_timestamp_semantics": manifest["source_timestamp_semantics"],
+        "coverage_warning_symbol_month_count": len(failed_symbol_months),
+        "coverage_warning_symbol_month_identity_sha256": hashlib.sha256("".join(
+            f"{symbol}\0{month}\n" for symbol, month in sorted(failed_symbol_months)
+        ).encode("utf-8")).hexdigest(),
         "direct": direct_qc,
         "monthly_h1_coverage": monthly_coverage,
         "derived": derived_qc,
@@ -1349,6 +1395,7 @@ def run(args) -> dict:
         sorted(required_timeframes),
         evaluation_start,
         evaluation_end,
+        args.allow_empirical_timestamp_assumption,
     )
     summary_strategies = []
     phase1_values = {}
@@ -1428,6 +1475,16 @@ def run(args) -> dict:
         promotion = promotion_result(strategy, split_summaries, config, primary) if frequency["status"] == "PASS" else {
             "status": "NOT_PROMOTED", "reason": "frequency gate failed"
         }
+        if data_qc["coverage_warning_symbol_month_count"]:
+            promotion = {
+                "status": "NOT_PROMOTED",
+                "reason": "dataset monthly coverage warnings require data review",
+            }
+        if data_qc["source_timestamp_semantics"] == "BAR_OPEN_EMPIRICALLY_ALIGNED_PROVIDER_NOT_EXPLICIT":
+            promotion = {
+                "status": "NOT_PROMOTED",
+                "reason": "provider does not explicitly document bar-open timestamp semantics",
+            }
         status = "REUSED_DATA_RETURN_EVALUATED" if frequency["status"] == "PASS" else "FREQUENCY_REJECTED"
         summary_strategies.append({
             "strategy_id": strategy["strategy_id"],
@@ -1501,6 +1558,7 @@ def parse_args(argv: Sequence[str] | None = None):
     parser.add_argument("--strategy-registry", required=True)
     parser.add_argument("--output-root", required=True)
     parser.add_argument("--strategy-id", action="append")
+    parser.add_argument("--allow-empirical-timestamp-assumption", action="store_true")
     return parser.parse_args(argv)
 
 

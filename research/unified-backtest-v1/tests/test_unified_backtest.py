@@ -164,6 +164,21 @@ class DataTests(unittest.TestCase):
             with self.assertRaises(engine.BacktestError):
                 engine.strict_json(path)
 
+    def test_monthly_coverage_reports_only_failed_symbol_month(self):
+        january = [quote(datetime(2022, 1, 1, tzinfo=UTC) + timedelta(hours=value), 100) for value in range(10)]
+        february = [
+            quote(datetime(2022, 2, 1, tzinfo=UTC) + timedelta(hours=value), 100)
+            for value in range(24 * 15)
+        ]
+        rows, excluded = engine.monthly_h1_coverage(
+            {("X", "H1"): january + february},
+            ["X"],
+            datetime(2022, 1, 1, tzinfo=UTC),
+            datetime(2022, 3, 1, tzinfo=UTC),
+        )
+        self.assertEqual(excluded, {("X", "2022-01")})
+        self.assertEqual([row["status"] for row in rows], ["FAIL", "PASS"])
+
     def test_drive_bundle_materializes_safe_members_and_rejects_traversal(self):
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp)
@@ -247,6 +262,44 @@ class PluginTests(unittest.TestCase):
         api = engine.StrategyAPI(strategy, {("X", "H1"): h1, ("X", "D1"): d1})
         rows = self.load("turn_of_month_momentum_v1.py")(api, strategy)
         self.assertFalse(any(row.entry_time.year == 2022 and row.entry_time.month == 2 for row in rows))
+
+    def test_turn_of_month_allows_normal_thursday_to_monday_d1_gap(self):
+        h1_start = datetime(2022, 3, 1, tzinfo=UTC)
+        h1 = [quote(h1_start + timedelta(hours=value), 150 + value * 0.01) for value in range(10)]
+        dates = []
+        current = datetime(2022, 2, 28, tzinfo=UTC)
+        while len(dates) < 21:
+            if current.weekday() in (0, 1, 2, 3):
+                dates.append(current)
+            current -= timedelta(days=1)
+        dates.reverse()
+        d1 = [quote(stamp, 100 + index * 2.0) for index, stamp in enumerate(dates)]
+        strategy = {
+            "strategy_id": "S", "required_timeframes": ["H1", "D1"], "execution_timeframe": "H1",
+            "parameters": {"decision_hour_utc": 8, "entry_hour_utc": 9, "completed_d1_count": 21, "atr_period": 14, "minimum_move_atr": 1.0},
+        }
+        api = engine.StrategyAPI(strategy, {("X", "H1"): h1, ("X", "D1"): d1})
+        rows = self.load("turn_of_month_momentum_v1.py")(api, strategy)
+        self.assertTrue(any(row.entry_time == datetime(2022, 3, 1, 9, tzinfo=UTC) for row in rows))
+
+    def test_turn_of_month_allows_monday_month_start_after_thursday_d1(self):
+        h1_start = datetime(2024, 4, 1, tzinfo=UTC)
+        h1 = [quote(h1_start + timedelta(hours=value), 150 + value * 0.01) for value in range(10)]
+        dates = []
+        current = datetime(2024, 3, 28, tzinfo=UTC)
+        while len(dates) < 21:
+            if current.weekday() in (0, 1, 2, 3):
+                dates.append(current)
+            current -= timedelta(days=1)
+        dates.reverse()
+        d1 = [quote(stamp, 100 + index * 2.0) for index, stamp in enumerate(dates)]
+        strategy = {
+            "strategy_id": "S", "required_timeframes": ["H1", "D1"], "execution_timeframe": "H1",
+            "parameters": {"decision_hour_utc": 8, "entry_hour_utc": 9, "completed_d1_count": 21, "atr_period": 14, "minimum_move_atr": 1.0},
+        }
+        api = engine.StrategyAPI(strategy, {("X", "H1"): h1, ("X", "D1"): d1})
+        rows = self.load("turn_of_month_momentum_v1.py")(api, strategy)
+        self.assertTrue(any(row.entry_time == datetime(2024, 4, 1, 9, tzinfo=UTC) for row in rows))
 
     def test_restricted_plugin_rejects_file_access(self):
         with tempfile.TemporaryDirectory() as temp:
@@ -395,6 +448,36 @@ class EndToEndTests(unittest.TestCase):
                 self.assertNotIn(forbidden, text)
             phase = json.loads((output / "phase1" / "FIXTURE-V1.json").read_text(encoding="utf-8"))
             self.assertTrue(all(candle["time"] < "2023-01-01T00:00:00Z" for chart in phase["charts"] for candle in chart["candles"]))
+
+    def test_empirical_timestamp_profile_requires_ack_and_blocks_promotion(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            data_root, manifest_path, config, registry = self.create_fixture(root)
+            evidence_path = data_root / "timestamp-semantics.json"
+            evidence = json.loads(evidence_path.read_text(encoding="utf-8"))
+            evidence["status"] = "EMPIRICALLY_ALIGNED_ASSUMPTION"
+            evidence["providers"][0]["review_status"] = "APPROVED_FOR_EXPLORATORY_BACKTEST_ONLY"
+            json_write(evidence_path, evidence)
+            manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+            manifest["source_timestamp_semantics"] = "BAR_OPEN_EMPIRICALLY_ALIGNED_PROVIDER_NOT_EXPLICIT"
+            manifest["timestamp_semantics_evidence"].update({
+                "sha256": sha(evidence_path), "bytes": evidence_path.stat().st_size,
+            })
+            json_write(manifest_path, manifest)
+            base = [
+                "--data-root", str(data_root), "--dataset-manifest", str(manifest_path),
+                "--config", str(config), "--strategy-registry", str(registry),
+            ]
+            with self.assertRaises(engine.BacktestError):
+                engine.run(engine.parse_args(base + ["--output-root", str(root / "rejected")]))
+            summary = engine.run(engine.parse_args(base + [
+                "--output-root", str(root / "accepted"),
+                "--allow-empirical-timestamp-assumption",
+            ]))
+            self.assertEqual(
+                summary["strategies"][0]["promotion"]["reason"],
+                "provider does not explicitly document bar-open timestamp semantics",
+            )
 
     def test_split_episode_identity_is_future_invariant(self):
         strategy = {"episode_overlap_hours": 12}

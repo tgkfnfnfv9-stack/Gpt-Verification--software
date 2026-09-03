@@ -11,7 +11,7 @@
 5. 年・銘柄・時間足・BUY/SELL別の集計
 6. Phase 1ビューア用JSONの生成
 
-データ取得はこの基盤の責務ではありません。別セッションが作るデータを、下記の入力契約へ合わせて渡します。
+データ取得はこの基盤の責務ではありません。別セッションがGoogle Drive Vaultへ保存したデータは、`Unified Backtest from FXCM Vault V1`が自動変換してそのまま実行できます。CSVの手動配置は不要です。汎用bundleを使う既存経路も残しています。
 
 ## 入力
 
@@ -22,9 +22,11 @@ timestamp_utc,bid_open,bid_high,bid_low,bid_close,ask_open,ask_high,ask_low,ask_
 2022-01-03T00:00:00Z,1.1000,1.1010,1.0990,1.1005,1.1002,1.1012,1.0992,1.1007
 ```
 
-時刻は検証済みUTC bar openです。入力は全銘柄についてdirect providerの`M1`と`H1`を必須にします。`M5,M15,M30,H4,D1`は基盤内で生成し、持込み済み派生足は受理しません。H1はdirect H1を正本とし、M1由来H1とはtimestamp・BID/ASK OHLCの診断比較だけを行い、自動置換しません。
+時刻はmanifestで宣言したUTC bar openです。FXCM専用経路はprovider明記済みとは扱わず、M1/H1のtimestamp整合に基づく探索用の経験的仮定として区別します。入力は全銘柄についてdirect providerの`M1`と`H1`を必須にします。`M5,M15,M30,H4,D1`は基盤内で生成し、持込み済み派生足は受理しません。H1はdirect H1を正本とし、M1由来H1とはtimestamp・BID/ASK OHLCの診断比較だけを行い、自動置換しません。
 
-manifestはtimestamp意味論の一次証拠ファイルまでSHA固定します。連続CFD・先物を使う場合は、銘柄ごとにroll policy・一次証拠・適用済みM1/H1 SHAも必須です。全銘柄×M1/H1の1系列でも欠ける場合、各direct H1に対応する60本のM1が揃わない場合、または評価月のH1が最低240本・15活動日（短い部分月は比例縮小）に届かない場合は実行しません。
+manifestはtimestamp意味論の一次証拠ファイルまでSHA固定します。連続CFD・先物を使う場合は、銘柄ごとにroll policy・一次証拠・適用済みM1/H1 SHAも必須です。全銘柄×M1/H1の1系列でも欠ける場合、または各direct H1に対応する60本のM1が揃わない場合は実行しません。評価月のH1が最低240本・15活動日（短い部分月は比例縮小）に届かない場合は、将来の月全体の可用性で過去signalを選別せず、coverage warningとして件数とidentity hashをsummaryへ記録します。このwarningが1件でもあればbacktestは完走しますが昇格不可です。
+
+FXCM Vault経路では、provider資料がUTCを示す一方でbar-openを明記していないため、`BAR_OPEN_VERIFIED`とは表現しません。direct H1と完全な60本のM1が同一timestampに揃う行だけを採用し、`BAR_OPEN_EMPIRICALLY_ALIGNED_PROVIDER_NOT_EXPLICIT`として探索バックテストに限定します。H1はdirect provider値を正本として保持し、M1集約とのOHLC差は診断記録にします。欠損と追加crossed quoteは補完せず除外し、全件数とtimestamp identity hashをlineageへ残します。
 
 manifestの最小例は[`spec/DATASET_MANIFEST.example.json`](spec/DATASET_MANIFEST.example.json)です。各`path`はデータrootからの相対pathで、`sha256`と`bytes`を必須にします。
 
@@ -76,7 +78,20 @@ Phase 1 JSONは`meta,strategy,charts,trades,notes`の直接root形式です。Co
 
 データが存在する区分だけ集計します。過去に閲覧済みの期間は厳密な未使用holdoutとは呼ばず、最終的な採用にはMT5 demo forwardを必須とします。
 
-## データ取得セッションへの引継ぎ
+## Google Drive Vaultから直接実行
+
+データ取得セッションが2022～2025年の取得を完了したら、返された次の値を`Unified Backtest from FXCM Vault V1`へ入力します。
+
+- corrective acquisitionのworkflow run ID
+- その取得runのexact commit SHA
+- `2022:<sha>,2023:<sha>,2024:<sha>,2025:<sha>`形式の4つの`YEAR_MANIFEST.json` SHA-256
+- 実行を承認する現在の`main` commit SHA
+
+workflowはowner-only Vaultの204 objectを照合し、200 archiveを1個ずつ検証・変換します。M1/H1の50系列を一時領域へ作り、同じjobで既存engineを実行してから価格を全削除します。Driveへの書込みや元Vaultの変更は行いません。
+
+この専用経路の対象は凍結済みFX25銘柄です。商品データは統一engine自体では対応済みですが、別の取得処理から汎用bundle契約（商品ごとのseries type、必要ならroll policyを含む）で渡します。
+
+## データ取得セッションへの汎用引継ぎ
 
 データ取得担当は次だけを返せば、この基盤を変更せず実行できます。
 
@@ -85,7 +100,7 @@ Phase 1 JSONは`meta,strategy,charts,trades,notes`の直接root形式です。Co
 3. FXと商品を同じschema・UTCで保存
 4. rawデータをGitへcommitしない
 
-Handoff後の次操作は、上記コマンドまたは`Unified Backtest V1` workflowの実行だけです。データ取得側は、取得・QC・利用承認済みのGoogle Drive VaultデータからmanifestとCSVを`unified-market-dataset-v1.tar.gz`へまとめてowner-onlyのGoogle Driveへ保存し、Drive file ID・bundle bytes・bundle SHA-256・manifest SHA-256を返します。workflowには、実行を承認した`main`のexact commit SHAも入力します。workflowはDriveから一時領域へだけ展開し、実行後にbundleとCSVを削除します。生データはGitへcommitしません。
+汎用bundle経路のHandoff後は、上記コマンドまたは`Unified Backtest V1` workflowを実行します。取得側はmanifestとCSVを`unified-market-dataset-v1.tar.gz`へまとめてowner-onlyのGoogle Driveへ保存し、Drive file ID・bundle bytes・bundle SHA-256・manifest SHA-256を返します。FXCM 2022～2025 Vaultについては前節の直接workflowを使うため、中間bundleの作成・再uploadは不要です。どちらも生データをGitへcommitしません。
 
 workflowが通常uploadするのは価格を含まないsummaryだけです。Phase 1 JSONにはmidpoint candleと個別約定値が入るため、明示的に`UPLOAD_PRICE_BEARING_PHASE1`を指定した場合だけ、1日保存の別artifactとしてuploadします。
 

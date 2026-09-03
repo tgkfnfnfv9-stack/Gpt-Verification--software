@@ -1,0 +1,236 @@
+name: Unified Backtest from FXCM Vault V1
+
+on:
+  workflow_dispatch:
+    inputs:
+      recovery_run_id:
+        description: "Successful corrective acquisition workflow run ID"
+        required: true
+        type: string
+      recovery_head_sha:
+        description: "Exact commit SHA used by the successful acquisition run"
+        required: true
+        type: string
+      expected_year_manifest_sha256s:
+        description: "2022:<sha>,2023:<sha>,2024:<sha>,2025:<sha> returned by acquisition"
+        required: true
+        type: string
+      expected_head_sha:
+        description: "Exact approved main commit containing this adapter and engine"
+        required: true
+        type: string
+      strategy_id:
+        description: "Optional exact strategy ID; blank runs every enabled strategy"
+        required: false
+        type: string
+      confirmation:
+        description: "Type RUN_UNIFIED_BACKTEST_FROM_COMPLETED_FXCM_VAULT_2022_2025"
+        required: true
+        type: string
+      timestamp_assumption_acknowledgement:
+        description: "Type I_ACCEPT_FXCM_BAR_OPEN_IS_EMPIRICALLY_ALIGNED_NOT_PROVIDER_EXPLICIT"
+        required: true
+        type: string
+      usage_confirmation:
+        description: "Type I_APPROVE_RESEARCH_INPUT_FROM_2022_2025_FXCM_VAULT"
+        required: true
+        type: string
+      phase1_upload_confirmation:
+        description: "Optional: type UPLOAD_PRICE_BEARING_PHASE1 for a 1-day protected artifact"
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: unified-backtest-fxcm-vault-v1-${{ github.run_id }}
+  cancel-in-progress: false
+
+jobs:
+  preflight:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Validate exact dispatch inputs
+        shell: bash
+        env:
+          REPOSITORY: ${{ github.repository }}
+          REF_NAME: ${{ github.ref }}
+          RECOVERY_RUN_ID: ${{ inputs.recovery_run_id }}
+          RECOVERY_HEAD_SHA: ${{ inputs.recovery_head_sha }}
+          YEAR_MANIFEST_SHA256S: ${{ inputs.expected_year_manifest_sha256s }}
+          EXPECTED_HEAD_SHA: ${{ inputs.expected_head_sha }}
+          ACTUAL_HEAD_SHA: ${{ github.sha }}
+          STRATEGY_ID: ${{ inputs.strategy_id }}
+          CONFIRMATION_VALUE: ${{ inputs.confirmation }}
+          TIMESTAMP_ACK: ${{ inputs.timestamp_assumption_acknowledgement }}
+          USAGE_CONFIRMATION: ${{ inputs.usage_confirmation }}
+        run: |
+          set -euo pipefail
+          test "$REPOSITORY" = 'tgkfnfnfv9-stack/Gpt-Verification--software'
+          test "$REF_NAME" = 'refs/heads/main'
+          [[ "$RECOVERY_RUN_ID" =~ ^[0-9]{10,20}$ ]]
+          [[ "$RECOVERY_HEAD_SHA" =~ ^[0-9a-f]{40}$ ]]
+          [[ "$YEAR_MANIFEST_SHA256S" =~ ^2022:[0-9a-f]{64},2023:[0-9a-f]{64},2024:[0-9a-f]{64},2025:[0-9a-f]{64}$ ]]
+          [[ "$EXPECTED_HEAD_SHA" =~ ^[0-9a-f]{40}$ ]]
+          test "$EXPECTED_HEAD_SHA" = "$ACTUAL_HEAD_SHA"
+          test "$CONFIRMATION_VALUE" = 'RUN_UNIFIED_BACKTEST_FROM_COMPLETED_FXCM_VAULT_2022_2025'
+          test "$TIMESTAMP_ACK" = 'I_ACCEPT_FXCM_BAR_OPEN_IS_EMPIRICALLY_ALIGNED_NOT_PROVIDER_EXPLICIT'
+          test "$USAGE_CONFIRMATION" = 'I_APPROVE_RESEARCH_INPUT_FROM_2022_2025_FXCM_VAULT'
+          if [[ -n "$STRATEGY_ID" ]]; then
+            [[ "$STRATEGY_ID" =~ ^[A-Za-z0-9][A-Za-z0-9._-]{0,79}$ ]]
+          fi
+
+  backtest:
+    needs: preflight
+    environment: phase9-fxcm-vault-acquisition-v2
+    runs-on: ubuntu-24.04
+    timeout-minutes: 360
+    steps:
+      - name: Checkout frozen adapter and engine
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+          ref: ${{ github.sha }}
+
+      - name: Verify runtime dependency
+        shell: bash
+        run: |
+          set -euo pipefail
+          command -v zstd
+
+      - name: Run synthetic regression tests
+        shell: bash
+        env:
+          PYTHONDONTWRITEBYTECODE: "1"
+        run: |
+          set -euo pipefail
+          python -m unittest discover -s research/unified-backtest-v1/tests -p 'test_*.py' -v
+
+      - name: Convert completed private Vault to ephemeral unified input
+        shell: bash
+        env:
+          PHASE9_GDRIVE_OAUTH_CLIENT_ID: ${{ secrets.PHASE9_GDRIVE_OAUTH_CLIENT_ID }}
+          PHASE9_GDRIVE_OAUTH_CLIENT_SECRET: ${{ secrets.PHASE9_GDRIVE_OAUTH_CLIENT_SECRET }}
+          PHASE9_GDRIVE_OAUTH_REFRESH_TOKEN: ${{ secrets.PHASE9_GDRIVE_OAUTH_REFRESH_TOKEN }}
+          RECOVERY_RUN_ID: ${{ inputs.recovery_run_id }}
+          RECOVERY_HEAD_SHA: ${{ inputs.recovery_head_sha }}
+          YEAR_MANIFEST_SHA256S: ${{ inputs.expected_year_manifest_sha256s }}
+          USAGE_CONFIRMATION: ${{ inputs.usage_confirmation }}
+          STRATEGY_ID: ${{ inputs.strategy_id }}
+          PYTHONDONTWRITEBYTECODE: "1"
+        run: |
+          set -euo pipefail
+          umask 077
+          price_root="$RUNNER_TEMP/unified-fxcm-vault-v1"
+          cleanup_price_input() {
+            test "$price_root" = "$RUNNER_TEMP/unified-fxcm-vault-v1"
+            test ! -L "$price_root"
+            if [[ -d "$price_root" ]]; then
+              find "$price_root" -type f -delete
+              find "$price_root" -depth -type d -empty -delete
+            fi
+            test ! -e "$price_root"
+          }
+          cleanup_sensitive_results() {
+            for result_dir in "$RUNNER_TEMP/unified-result" "$RUNNER_TEMP/summary-result"; do
+              if [[ -d "$result_dir" ]]; then
+                test ! -L "$result_dir"
+                find "$result_dir" -type f -delete
+                find "$result_dir" -depth -type d -empty -delete
+              fi
+              test ! -e "$result_dir"
+            done
+          }
+          cleanup_on_failure() {
+            status=$?
+            trap - EXIT HUP INT TERM
+            cleanup_price_input
+            if (( status != 0 )); then
+              cleanup_sensitive_results
+            fi
+            exit "$status"
+          }
+          trap cleanup_on_failure EXIT
+          trap 'exit 129' HUP
+          trap 'exit 130' INT
+          trap 'exit 143' TERM
+          python research/unified-backtest-v1/runner/vault_to_bundle.py \
+            --recovery-run-id "$RECOVERY_RUN_ID" \
+            --recovery-head-sha "$RECOVERY_HEAD_SHA" \
+            --expected-year-manifest-sha256s "$YEAR_MANIFEST_SHA256S" \
+            --work-dir "$RUNNER_TEMP/unified-fxcm-vault-v1" \
+            --confirmation RUN_UNIFIED_BACKTEST_FROM_COMPLETED_FXCM_VAULT_2022_2025 \
+            --usage-confirmation "$USAGE_CONFIRMATION" \
+            > "$RUNNER_TEMP/unified-fxcm-vault-v1-result.json"
+          unset PHASE9_GDRIVE_OAUTH_CLIENT_ID PHASE9_GDRIVE_OAUTH_CLIENT_SECRET PHASE9_GDRIVE_OAUTH_REFRESH_TOKEN
+          test -z "${PHASE9_GDRIVE_OAUTH_CLIENT_ID+x}"
+          test -z "${PHASE9_GDRIVE_OAUTH_CLIENT_SECRET+x}"
+          test -z "${PHASE9_GDRIVE_OAUTH_REFRESH_TOKEN+x}"
+          strategy_args=()
+          if [[ -n "$STRATEGY_ID" ]]; then
+            strategy_args=(--strategy-id "$STRATEGY_ID")
+          fi
+          python research/unified-backtest-v1/runner/unified_backtest.py \
+            --data-root "$RUNNER_TEMP/unified-fxcm-vault-v1/dataset" \
+            --dataset-manifest "$RUNNER_TEMP/unified-fxcm-vault-v1/dataset/DATASET_MANIFEST.json" \
+            --config research/unified-backtest-v1/spec/backtest_config.v1.json \
+            --strategy-registry research/unified-backtest-v1/strategies/registry.v1.json \
+            --output-root "$RUNNER_TEMP/unified-result" \
+            --allow-empirical-timestamp-assumption \
+            "${strategy_args[@]}"
+          cleanup_price_input
+          trap - EXIT HUP INT TERM
+
+      - name: Verify and stage exact output allowlists
+        shell: bash
+        env:
+          PYTHONDONTWRITEBYTECODE: "1"
+        run: |
+          set -euo pipefail
+          python research/unified-backtest-v1/runner/verify_output.py --root "$RUNNER_TEMP/unified-result"
+          mkdir "$RUNNER_TEMP/summary-result"
+          cp "$RUNNER_TEMP/unified-result/BACKTEST_SUMMARY.json" "$RUNNER_TEMP/summary-result/BACKTEST_SUMMARY.json"
+          (cd "$RUNNER_TEMP/summary-result" && sha256sum BACKTEST_SUMMARY.json > artifact_manifest_sha256.txt)
+
+      - name: Upload summary-only result
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: unified-backtest-fxcm-vault-v1-summary-${{ github.run_id }}
+          path: ${{ runner.temp }}/summary-result
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Upload explicitly approved Phase 1 price artifact
+        if: ${{ inputs.phase1_upload_confirmation == 'UPLOAD_PRICE_BEARING_PHASE1' }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: unified-backtest-fxcm-vault-v1-price-bearing-phase1-${{ github.run_id }}
+          path: ${{ runner.temp }}/unified-result/phase1
+          if-no-files-found: warn
+          retention-days: 1
+
+      - name: Final cleanup
+        if: ${{ always() }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ -d "$RUNNER_TEMP/unified-fxcm-vault-v1" ]]; then
+            test ! -L "$RUNNER_TEMP/unified-fxcm-vault-v1"
+            find "$RUNNER_TEMP/unified-fxcm-vault-v1" -type f -delete
+            find "$RUNNER_TEMP/unified-fxcm-vault-v1" -depth -type d -empty -delete
+          fi
+          test ! -e "$RUNNER_TEMP/unified-fxcm-vault-v1"
+          if [[ -f "$RUNNER_TEMP/unified-fxcm-vault-v1-result.json" ]]; then
+            rm "$RUNNER_TEMP/unified-fxcm-vault-v1-result.json"
+          fi
+          for result_dir in "$RUNNER_TEMP/unified-result" "$RUNNER_TEMP/summary-result"; do
+            if [[ -d "$result_dir" ]]; then
+              test ! -L "$result_dir"
+              find "$result_dir" -type f -delete
+              find "$result_dir" -depth -type d -empty -delete
+            fi
+            test ! -e "$result_dir"
+          done
