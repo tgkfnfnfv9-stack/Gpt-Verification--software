@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import os
 import shutil
@@ -26,36 +27,36 @@ from fxcm_drive_vault_finalize import upload_and_verify_json
 from fxcm_drive_vault_v2_common import (
     DIRECT_PERIODICITIES_V2,
     KNOWN_MISSING_SOURCE_OBJECT_COUNT_V2,
+    OPERATIONAL_VERSION_V2_1,
     PRESENT_SOURCE_OBJECT_COUNT_V2,
     ROOT_FOLDER_ID_V2,
     SYMBOLS_V2,
     YEARS_V2,
     expected_year_source_count,
     known_missing_weeks,
+    load_v2_1_operational_amendment,
     load_v2_contracts,
     partition_for_year_v2,
     present_weeks,
-    require_v2_confirmations,
+    require_v2_1_confirmations,
 )
 from fxcm_google_drive_private import FOLDER_MIME, GoogleDrivePrivate
 
 
-def create_tree_v2(drive: GoogleDrivePrivate, run_id: str) -> dict[str, Any]:
-    version = {"vault_version": "v2", "run_id": run_id}
-    root = drive.create_folder_new(
-        ROOT_FOLDER_ID_V2, "v2", {**version, "state": "PROMOTING"}
-    )
+def create_tree_v2(
+    drive: GoogleDrivePrivate, transaction: dict[str, Any], run_id: str
+) -> dict[str, Any]:
     manifest = drive.create_folder_new(
-        root["id"], "manifest", {"vault_version": "v2", "role": "MANIFEST"}
+        transaction["id"], "manifest", {"vault_version": "v2", "role": "MANIFEST"}
     )
     years_manifest = drive.create_folder_new(
         manifest["id"], "years", {"vault_version": "v2", "role": "YEAR_MANIFESTS"}
     )
     prices = drive.create_folder_new(
-        root["id"], "prices", {"vault_version": "v2", "partition": "DEVELOPMENT"}
+        transaction["id"], "prices", {"vault_version": "v2", "partition": "DEVELOPMENT"}
     )
     sealed = drive.create_folder_new(
-        root["id"], "sealed", {"vault_version": "v2", "role": "SEALED"}
+        transaction["id"], "sealed", {"vault_version": "v2", "role": "SEALED"}
     )
     oos = drive.create_folder_new(
         sealed["id"], "oos", {"vault_version": "v2", "partition": "STRICT_OOS"}
@@ -67,18 +68,41 @@ def create_tree_v2(drive: GoogleDrivePrivate, run_id: str) -> dict[str, Any]:
         sealed["id"], "final_holdout", {"vault_version": "v2", "partition": "FINAL_HOLDOUT"}
     )
     staging = drive.create_folder_new(
-        root["id"], "staging", {"vault_version": "v2", "role": "COMPLETED_EMPTY_STAGES"}
+        transaction["id"], "staging", {"vault_version": "v2", "role": "COMPLETED_EMPTY_STAGES"}
     )
     return {
-        "v2": root,
+        "v2": transaction,
         "manifest": manifest,
         "years_manifest": years_manifest,
         "prices": prices,
+        "sealed": sealed,
         "STRICT_OOS": oos,
         "ROBUSTNESS": robustness,
         "FINAL_HOLDOUT": final_holdout,
         "staging": staging,
     }
+
+
+def verify_exact_private_tree(
+    drive: GoogleDrivePrivate,
+    expected_children: dict[str, dict[str, dict[str, Any]]],
+) -> None:
+    """Re-list every container and reject missing, extra, moved, or mutated objects."""
+    for parent_id, expected_by_id in expected_children.items():
+        observed = drive.list_children(parent_id)
+        observed_by_id = {row.get("id"): row for row in observed}
+        if set(observed_by_id) != set(expected_by_id):
+            raise VaultError("V2.1 final private tree inventory mismatch")
+        for file_id, expected in expected_by_id.items():
+            row = observed_by_id[file_id]
+            identity_matches = all(
+                int(row.get(key, -1)) == value
+                if key == "size"
+                else row.get(key) == value
+                for key, value in expected.items()
+            )
+            if row.get("parents") != [parent_id] or not identity_matches:
+                raise VaultError("V2.1 final private tree identity mismatch")
 
 
 def read_year_manifest_v2(
@@ -104,6 +128,17 @@ def read_year_manifest_v2(
     metadata = manifests[0]
     props = metadata.get("appProperties") or {}
     expected_sha = props.get("sha256", "")
+    assert_hex64(expected_sha, f"V2 year {year} manifest")
+    if props != {
+        "vault_version": "v2",
+        "operational_version": OPERATIONAL_VERSION_V2_1,
+        "run_id": run_id,
+        "head_sha": head_sha,
+        "year": str(year),
+        "sha256": expected_sha,
+        "state": "YEAR_COMPLETE_UNSEALED",
+    }:
+        raise VaultError("V2 year manifest Drive properties mismatch")
     expected_size = int(metadata.get("size", -1))
     destination = temp_dir / f"v2-year-{year}-manifest.json"
     drive.download_verify(metadata["id"], destination, expected_size, expected_sha)
@@ -232,6 +267,26 @@ def read_year_manifest_v2(
         assert_hex64(shard["canonical_timestamp_sha256"], "V2 canonical timestamps")
         assert_hex64(shard["canonical_csv_sha256"], "V2 canonical CSV")
         assert_hex64(shard["crossed_quote_event_sha256"], "V2 crossed quote events")
+        empty_digest = hashlib.sha256(b"").hexdigest()
+        if (
+            shard["observed_row_count"] != shard["usable_row_count"] + shard["crossed_quote_count"]
+            or sum(source["row_count"] for source in shard["source_objects"]) != shard["observed_row_count"]
+            or not isinstance(shard["gap_segment_count"], int)
+            or isinstance(shard["gap_segment_count"], bool)
+            or shard["gap_segment_count"] < 0
+            or not isinstance(shard["missing_nominal_slot_count"], int)
+            or isinstance(shard["missing_nominal_slot_count"], bool)
+            or shard["missing_nominal_slot_count"] < 0
+            or (
+                shard["crossed_quote_count"] == 0
+                and shard["crossed_quote_event_sha256"] != empty_digest
+            )
+            or (
+                shard["crossed_quote_count"] > 0
+                and shard["crossed_quote_event_sha256"] == empty_digest
+            )
+        ):
+            raise VaultError("V2 crossed-row or canonical gap accounting mismatch")
         if (
             shard["base_week_count"] != 52
             or shard["present_week_indices"] != expected_present
@@ -253,12 +308,23 @@ def read_year_manifest_v2(
         if drive_row is None:
             raise VaultError("V2 Drive shard ID missing")
         drive_props = drive_row.get("appProperties") or {}
+        expected_drive_props = {
+            "vault_version": "v2",
+            "operational_version": OPERATIONAL_VERSION_V2_1,
+            "run_id": run_id,
+            "head_sha": head_sha,
+            "year": str(year),
+            "symbol": symbol,
+            "periodicity": periodicity,
+            "sha256": shard["archive_sha256"],
+            "partition": expected_partition["id"],
+            "state": "UNSEALED",
+        }
         if (
             drive_row.get("name") != shard.get("archive_name")
             or drive_row.get("parents") != [stage["id"]]
             or int(drive_row.get("size", -1)) != shard.get("archive_bytes")
-            or drive_props.get("sha256") != shard.get("archive_sha256")
-            or drive_props.get("state") != "UNSEALED"
+            or drive_props != expected_drive_props
             or shard.get("drive_upload_redownload_sha256_verified") is not True
         ):
             raise VaultError("V2 Drive staged shard metadata mismatch")
@@ -268,15 +334,19 @@ def read_year_manifest_v2(
 
 
 def finalize_v2(args: argparse.Namespace) -> dict[str, Any]:
-    contract, partitions, manifest_schema, formal, mask = load_v2_contracts(
+    frozen_paths = (
         args.acquisition_contract,
         args.partitions_contract,
         args.manifest_schema,
         args.formal_boundary,
         args.availability_mask,
     )
-    require_v2_confirmations(
-        contract,
+    contract, partitions, manifest_schema, formal, mask = load_v2_contracts(*frozen_paths)
+    amendment = load_v2_1_operational_amendment(
+        args.operational_amendment, frozen_paths
+    )
+    require_v2_1_confirmations(
+        amendment,
         args.confirmation,
         args.scope_confirmation,
         args.usage_confirmation,
@@ -294,22 +364,52 @@ def finalize_v2(args: argparse.Namespace) -> dict[str, Any]:
     args.work_dir.mkdir(parents=True)
     args.public_report_dir.mkdir(parents=True)
     drive = GoogleDrivePrivate()
-    drive.verify_root(
+    drive.verify_private_root(
         contract["drive_custody"]["root_folder_name"],
         contract["drive_custody"]["root_folder_id"],
     )
-    root_children = drive.list_children(ROOT_FOLDER_ID_V2)
-    expected_names = {
-        f"v2-staging-run-{args.run_id}-year-{year}" for year in YEARS_V2
+    amendment_sha = sha256_file(args.operational_amendment)
+    transaction_name = amendment["transactional_publication"]["transaction_name_template"].format(
+        run_id=args.run_id
+    )
+    transaction_properties = {
+        "vault_version": "v2",
+        "operational_version": OPERATIONAL_VERSION_V2_1,
+        "run_id": str(args.run_id),
+        "head_sha": args.head_sha,
+        "state": amendment["transactional_publication"]["transaction_initial_state"],
+        "amendment_sha256": amendment_sha,
     }
+    root_children = drive.list_children(ROOT_FOLDER_ID_V2)
     if (
-        {row.get("name") for row in root_children} != expected_names
-        or len(root_children) != len(YEARS_V2)
+        len(root_children) != 1
+        or root_children[0].get("name") != transaction_name
+        or root_children[0].get("mimeType") != FOLDER_MIME
+        or root_children[0].get("appProperties") != transaction_properties
     ):
-        raise VaultError("Drive root must contain exactly 14 current V2 staging folders")
-    stages = {int(row["name"].rsplit("-", 1)[1]): row for row in root_children}
+        raise VaultError("Drive root must contain exactly one current V2.1 transaction")
+    transaction = root_children[0]
+    transaction_children = drive.list_children(transaction["id"])
+    expected_names = {f"v2-staging-run-{args.run_id}-year-{year}" for year in YEARS_V2}
+    if (
+        {row.get("name") for row in transaction_children} != expected_names
+        or len(transaction_children) != len(YEARS_V2)
+    ):
+        raise VaultError("V2.1 transaction must contain exactly 14 year staging folders")
+    stages = {
+        int(row["name"].rsplit("-", 1)[1]): row for row in transaction_children
+    }
     if set(stages) != set(YEARS_V2) or any(
-        row.get("mimeType") != FOLDER_MIME for row in stages.values()
+        row.get("mimeType") != FOLDER_MIME
+        or row.get("appProperties") != {
+            "vault_version": "v2",
+            "operational_version": OPERATIONAL_VERSION_V2_1,
+            "run_id": str(args.run_id),
+            "head_sha": args.head_sha,
+            "year": str(year),
+            "state": "UNSEALED",
+        }
+        for year, row in stages.items()
     ):
         raise VaultError("V2 year staging folder set mismatch")
     expected_contract_hashes = contract_sha_bundle((
@@ -318,6 +418,7 @@ def finalize_v2(args: argparse.Namespace) -> dict[str, Any]:
         args.manifest_schema,
         args.formal_boundary,
         args.availability_mask,
+        args.operational_amendment,
     ))
     mask_sha = expected_contract_hashes[args.availability_mask.name]
     year_data = {
@@ -337,9 +438,10 @@ def finalize_v2(args: argparse.Namespace) -> dict[str, Any]:
         )
         for year in YEARS_V2
     }
-    tree = create_tree_v2(drive, args.run_id)
-    destination_symbol_folders: dict[tuple[int, str], str] = {}
-    year_manifest_folders: dict[int, str] = {}
+    tree = create_tree_v2(drive, transaction, args.run_id)
+    destination_year_folders: dict[int, dict[str, Any]] = {}
+    destination_symbol_folders: dict[tuple[int, str], dict[str, Any]] = {}
+    year_manifest_folders: dict[int, dict[str, Any]] = {}
     for year in YEARS_V2:
         partition = partition_for_year_v2(partitions, year)
         parent = tree["prices"] if partition["id"] == "DEVELOPMENT" else tree[partition["id"]]
@@ -348,6 +450,7 @@ def finalize_v2(args: argparse.Namespace) -> dict[str, Any]:
             str(year),
             {"vault_version": "v2", "year": str(year), "partition": partition["id"]},
         )
+        destination_year_folders[year] = year_folder
         for symbol in SYMBOLS_V2:
             symbol_folder = drive.create_folder_new(
                 year_folder["id"],
@@ -359,27 +462,29 @@ def finalize_v2(args: argparse.Namespace) -> dict[str, Any]:
                     "partition": partition["id"],
                 },
             )
-            destination_symbol_folders[(year, symbol)] = symbol_folder["id"]
+            destination_symbol_folders[(year, symbol)] = symbol_folder
         year_manifest_folder = drive.create_folder_new(
             tree["years_manifest"]["id"],
             str(year),
             {"vault_version": "v2", "year": str(year), "role": "YEAR_MANIFEST"},
         )
-        year_manifest_folders[year] = year_manifest_folder["id"]
+        year_manifest_folders[year] = year_manifest_folder
     all_shards: list[dict[str, Any]] = []
     year_summaries: list[dict[str, Any]] = []
     for year in YEARS_V2:
         manifest, manifest_metadata = year_data[year]
         partition = partition_for_year_v2(partitions, year)
         for shard in manifest["shards"]:
-            destination_id = destination_symbol_folders[(year, shard["symbol"])]
+            destination_id = destination_symbol_folders[(year, shard["symbol"])]["id"]
             drive.move_file(
                 shard["drive_file_id"],
                 stages[year]["id"],
                 destination_id,
                 {
                     "vault_version": "v2",
+                    "operational_version": OPERATIONAL_VERSION_V2_1,
                     "run_id": args.run_id,
+                    "head_sha": args.head_sha,
                     "year": str(year),
                     "symbol": shard["symbol"],
                     "periodicity": shard["periodicity"],
@@ -395,21 +500,26 @@ def finalize_v2(args: argparse.Namespace) -> dict[str, Any]:
         drive.move_file(
             manifest_metadata["id"],
             stages[year]["id"],
-            year_manifest_folders[year],
+            year_manifest_folders[year]["id"],
             {
                 "vault_version": "v2",
+                "operational_version": OPERATIONAL_VERSION_V2_1,
                 "run_id": args.run_id,
+                "head_sha": args.head_sha,
                 "year": str(year),
+                "sha256": manifest_metadata["appProperties"]["sha256"],
                 "state": "SEALED_YEAR_MANIFEST",
             },
         )
         drive.move_file(
             stages[year]["id"],
-            ROOT_FOLDER_ID_V2,
+            transaction["id"],
             tree["staging"]["id"],
             {
                 "vault_version": "v2",
+                "operational_version": OPERATIONAL_VERSION_V2_1,
                 "run_id": args.run_id,
+                "head_sha": args.head_sha,
                 "year": str(year),
                 "state": "EMPTY_COMPLETED_STAGE",
             },
@@ -428,6 +538,8 @@ def finalize_v2(args: argparse.Namespace) -> dict[str, Any]:
         raise VaultError("V2 final vault shard count mismatch")
     if sum(row["source_object_count"] for row in all_shards) != PRESENT_SOURCE_OBJECT_COUNT_V2:
         raise VaultError("V2 final source count mismatch")
+    if any(row["batch6_compatibility_passed"] is not False for row in year_summaries):
+        raise VaultError("V2.1 Batch 6 compatibility must remain fail-closed")
     vault_manifest = {
         "schema_version": "phase9-exploratory-fxcm-drive-vault-manifest-v2.0.0",
         "status": "SEALED_PRIVATE_DRIVE_CUSTODY",
@@ -498,11 +610,7 @@ def finalize_v2(args: argparse.Namespace) -> dict[str, Any]:
         "all_uploads_redownload_sha256_verified": all(
             row["drive_upload_redownload_sha256_verified"] for row in all_shards
         ),
-        "batch6_compatibility_passed": all(
-            row["batch6_compatibility_passed"]
-            for row in year_summaries
-            if row["year"] in (2017, 2018)
-        ),
+        "batch6_compatibility_passed": False,
         "full_provider_schedule_qc_claimed": False,
         "vault_custody_qc_passed": True,
     }
@@ -518,20 +626,23 @@ def finalize_v2(args: argparse.Namespace) -> dict[str, Any]:
         "source_inventory_sha256": canonical_sha256(source_inventory),
         "qc_summary_sha256": canonical_sha256(qc_summary),
         "seal_written_last": True,
+        "operational_version": OPERATIONAL_VERSION_V2_1,
+        "operational_amendment_sha256": amendment_sha,
+        "transactional_publication": True,
     }
-    _, source_sha = upload_and_verify_json(
+    source_upload, source_sha = upload_and_verify_json(
         drive, tree["manifest"]["id"], args.work_dir, "source_inventory.json",
         source_inventory, {"role": "SOURCE_INVENTORY", "vault_version": "v2"},
     )
-    _, qc_sha = upload_and_verify_json(
+    qc_upload, qc_sha = upload_and_verify_json(
         drive, tree["manifest"]["id"], args.work_dir, "qc_summary.json",
         qc_summary, {"role": "QC_SUMMARY", "vault_version": "v2"},
     )
-    _, vault_sha = upload_and_verify_json(
+    vault_upload, vault_sha = upload_and_verify_json(
         drive, tree["manifest"]["id"], args.work_dir, "vault_manifest.json",
         vault_manifest, {"role": "VAULT_MANIFEST", "vault_version": "v2"},
     )
-    _, custody_sha = upload_and_verify_json(
+    custody_upload, custody_sha = upload_and_verify_json(
         drive, tree["manifest"]["id"], args.work_dir, "drive_custody_manifest.json",
         custody, {"role": "CUSTODY_MANIFEST", "vault_version": "v2"},
     )
@@ -558,9 +669,11 @@ def finalize_v2(args: argparse.Namespace) -> dict[str, Any]:
     )
     verified_digest.unlink()
     seal = {
-        "schema_version": "phase9-exploratory-fxcm-drive-vault-seal-v2.0.0",
-        "status": "SEALED_LAST_PRIVATE_DRIVE_OBJECT",
+        "schema_version": "phase9-exploratory-fxcm-drive-vault-seal-v2.1.0",
+        "status": "SEALED_UNCOMMITTED_TRANSACTION_LAST_PRIVATE_DRIVE_OBJECT",
         "vault_version": "v2",
+        "operational_version": OPERATIONAL_VERSION_V2_1,
+        "operational_amendment_sha256": amendment_sha,
         "run_id": args.run_id,
         "run_attempt": args.run_attempt,
         "head_sha": args.head_sha,
@@ -580,7 +693,7 @@ def finalize_v2(args: argparse.Namespace) -> dict[str, Any]:
         "research_outcomes_calculated": False,
         "outcome_fields": [],
     }
-    _, seal_sha = upload_and_verify_json(
+    seal_upload, seal_sha = upload_and_verify_json(
         drive,
         tree["manifest"]["id"],
         args.work_dir,
@@ -588,10 +701,122 @@ def finalize_v2(args: argparse.Namespace) -> dict[str, Any]:
         seal,
         {"role": "VAULT_SEAL_LAST", "vault_version": "v2"},
     )
+    expected_children: dict[str, dict[str, dict[str, Any]]] = {}
+
+    def remember(parent_id: str, row: dict[str, Any]) -> None:
+        file_id = row.get("id")
+        if not isinstance(file_id, str) or not file_id:
+            raise VaultError("V2.1 expected inventory ID invalid")
+        expected = {
+            "name": row.get("name"),
+            "mimeType": row.get("mimeType"),
+            "appProperties": row.get("appProperties"),
+        }
+        if row.get("size") is not None:
+            expected["size"] = int(row["size"])
+        expected_children.setdefault(parent_id, {})[file_id] = expected
+
+    def empty_folder(row: dict[str, Any]) -> None:
+        expected_children.setdefault(row["id"], {})
+
+    for row in (tree["manifest"], tree["prices"], tree["sealed"], tree["staging"]):
+        remember(transaction["id"], row)
+    remember(tree["manifest"]["id"], tree["years_manifest"])
+    for row in (
+        source_upload,
+        qc_upload,
+        vault_upload,
+        custody_upload,
+        digest_upload,
+        seal_upload,
+    ):
+        remember(tree["manifest"]["id"], row)
+    for row in (tree["STRICT_OOS"], tree["ROBUSTNESS"], tree["FINAL_HOLDOUT"]):
+        remember(tree["sealed"]["id"], row)
+    for year in YEARS_V2:
+        partition = partition_for_year_v2(partitions, year)
+        partition_parent = (
+            tree["prices"] if partition["id"] == "DEVELOPMENT" else tree[partition["id"]]
+        )
+        year_folder = destination_year_folders[year]
+        remember(partition_parent["id"], year_folder)
+        year_manifest_folder = year_manifest_folders[year]
+        remember(tree["years_manifest"]["id"], year_manifest_folder)
+        manifest_metadata = year_data[year][1]
+        remember(
+            year_manifest_folder["id"],
+            {
+                **manifest_metadata,
+                "parents": [year_manifest_folder["id"]],
+                "appProperties": {
+                    "vault_version": "v2",
+                    "operational_version": OPERATIONAL_VERSION_V2_1,
+                    "run_id": args.run_id,
+                    "head_sha": args.head_sha,
+                    "year": str(year),
+                    "sha256": manifest_metadata["appProperties"]["sha256"],
+                    "state": "SEALED_YEAR_MANIFEST",
+                },
+            },
+        )
+        for symbol in SYMBOLS_V2:
+            symbol_folder = destination_symbol_folders[(year, symbol)]
+            remember(year_folder["id"], symbol_folder)
+            empty_folder(symbol_folder)
+        stage = stages[year]
+        remember(
+            tree["staging"]["id"],
+            {
+                **stage,
+                "parents": [tree["staging"]["id"]],
+                "appProperties": {
+                    "vault_version": "v2",
+                    "operational_version": OPERATIONAL_VERSION_V2_1,
+                    "run_id": args.run_id,
+                    "head_sha": args.head_sha,
+                    "year": str(year),
+                    "state": "EMPTY_COMPLETED_STAGE",
+                },
+            },
+        )
+        empty_folder(stage)
+    for shard in all_shards:
+        destination_id = destination_symbol_folders[(shard["year"], shard["symbol"])]["id"]
+        remember(
+            destination_id,
+            {
+                "id": shard["drive_file_id"],
+                "name": shard["archive_name"],
+                "mimeType": "application/zstd",
+                "size": shard["archive_bytes"],
+                "parents": [destination_id],
+                "appProperties": {
+                    "vault_version": "v2",
+                    "operational_version": OPERATIONAL_VERSION_V2_1,
+                    "run_id": args.run_id,
+                    "head_sha": args.head_sha,
+                    "year": str(shard["year"]),
+                    "symbol": shard["symbol"],
+                    "periodicity": shard["periodicity"],
+                    "sha256": shard["archive_sha256"],
+                    "partition": shard["partition_id"],
+                    "state": "SEALED",
+                },
+            },
+        )
+    empty_folder(tree["prices"])
+    empty_folder(tree["STRICT_OOS"])
+    empty_folder(tree["ROBUSTNESS"])
+    empty_folder(tree["FINAL_HOLDOUT"])
+    empty_folder(tree["years_manifest"])
+    empty_folder(tree["staging"])
+    verify_exact_private_tree(drive, expected_children)
+
     public_audit = {
-        "schema_version": "phase9-exploratory-fxcm-drive-vault-price-free-audit-v2.0.0",
-        "status": "PRIVATE_VAULT_SEALED_PRICE_FREE_PUBLIC_AUDIT",
+        "schema_version": "phase9-exploratory-fxcm-drive-vault-price-free-audit-v2.1.0",
+        "status": "PRIVATE_VAULT_TRANSACTIONALLY_COMMITTED_PRICE_FREE_PUBLIC_AUDIT",
         "vault_version": "v2",
+        "operational_version": OPERATIONAL_VERSION_V2_1,
         "run_id": args.run_id,
         "run_attempt": args.run_attempt,
         "head_sha": args.head_sha,
@@ -603,8 +828,10 @@ def finalize_v2(args: argparse.Namespace) -> dict[str, Any]:
         "source_object_count": PRESENT_SOURCE_OBJECT_COUNT_V2,
         "known_missing_source_object_count": KNOWN_MISSING_SOURCE_OBJECT_COUNT_V2,
         "availability_mask_sha256": mask_sha,
+        "operational_amendment_sha256": amendment_sha,
         "vault_manifest_sha256": vault_sha,
         "vault_seal_sha256": seal_sha,
+        "transactional_publication_committed": True,
         "all_uploads_redownload_sha256_verified": True,
         "batch6_compatibility_passed": qc_summary["batch6_compatibility_passed"],
         "full_provider_schedule_qc_claimed": False,
@@ -623,6 +850,49 @@ def finalize_v2(args: argparse.Namespace) -> dict[str, Any]:
         f"{sha256_file(audit_path)}  {audit_path.name}\n", encoding="ascii"
     )
     validate_public_report_tree(args.public_report_dir)
+
+    drive.verify_private_root(
+        contract["drive_custody"]["root_folder_name"], ROOT_FOLDER_ID_V2
+    )
+    before_publish = drive.list_children(ROOT_FOLDER_ID_V2)
+    if (
+        len(before_publish) != 1
+        or before_publish[0].get("id") != transaction.get("id")
+        or before_publish[0].get("name") != transaction_name
+        or before_publish[0].get("appProperties") != transaction_properties
+    ):
+        raise VaultError("V2.1 publication precondition mismatch")
+    committed_properties = {
+        "vault_version": "v2",
+        "operational_version": OPERATIONAL_VERSION_V2_1,
+        "run_id": str(args.run_id),
+        "head_sha": args.head_sha,
+        "state": amendment["transactional_publication"]["canonical_state"],
+        "amendment_sha256": amendment_sha,
+        "vault_manifest_sha256": vault_sha,
+        "vault_seal_sha256": seal_sha,
+    }
+    published = drive.publish_folder_reconciled(
+        transaction["id"],
+        transaction_name,
+        amendment["transactional_publication"]["canonical_name"],
+        ROOT_FOLDER_ID_V2,
+        transaction_properties,
+        committed_properties,
+    )
+    if published.get("parents") != [ROOT_FOLDER_ID_V2]:
+        raise VaultError("V2.1 committed folder parent mismatch")
+    drive.verify_private_root(
+        contract["drive_custody"]["root_folder_name"], ROOT_FOLDER_ID_V2
+    )
+    after_publish = drive.list_children(ROOT_FOLDER_ID_V2)
+    if (
+        len(after_publish) != 1
+        or after_publish[0].get("id") != transaction.get("id")
+        or after_publish[0].get("name") != "v2"
+        or after_publish[0].get("appProperties") != committed_properties
+    ):
+        raise VaultError("V2.1 committed publication reconciliation failed")
     return public_audit
 
 
@@ -633,6 +903,7 @@ def main() -> int:
     parser.add_argument("--manifest-schema", type=Path, required=True)
     parser.add_argument("--formal-boundary", type=Path, required=True)
     parser.add_argument("--availability-mask", type=Path, required=True)
+    parser.add_argument("--operational-amendment", type=Path, required=True)
     parser.add_argument("--run-id", required=True)
     parser.add_argument("--run-attempt", type=int, required=True)
     parser.add_argument("--head-sha", required=True)

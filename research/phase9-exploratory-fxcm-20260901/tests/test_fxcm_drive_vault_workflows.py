@@ -40,9 +40,10 @@ class VaultWorkflowTests(unittest.TestCase):
         self.assertIn("Upload exact price-free vault audit only", text)
         self.assertNotRegex(text, r"(?m)^\s*path:\s+.*(?:csv|gz|tar|zst)")
 
-    def test_existing_batch6_workflow_is_not_modified_or_called(self):
+    def test_existing_batch6_workflow_is_fail_closed_and_not_called(self):
         batch6 = ROOT / ".github/workflows/phase9-exploratory-fxcm-blind-mtf-batch6-count-only.yml"
         self.assertTrue(batch6.exists())
+        self.assertIn("${{ false &&", batch6.read_text())
         availability_text = AVAILABILITY.read_text()
         acquisition_text = ACQUISITION.read_text()
         self.assertNotIn(batch6.name, availability_text)

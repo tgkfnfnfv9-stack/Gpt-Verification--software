@@ -40,6 +40,7 @@ from fxcm_drive_vault_common import (
     sha256_file,
     source_url,
     validate_safe_member,
+    validate_source_url,
     write_canonical_json,
 )
 from fxcm_google_drive_private import GoogleDrivePrivate
@@ -122,6 +123,7 @@ def valid_ohlc(values: tuple[Decimal, Decimal, Decimal, Decimal]) -> bool:
 
 
 def download_source(opener, url: str, destination: Path) -> tuple[int, str]:
+    validate_source_url(url)
     if destination.exists() or destination.is_symlink():
         raise VaultError("source destination must be new")
     for attempt in range(1, 5):
@@ -130,6 +132,8 @@ def download_source(opener, url: str, destination: Path) -> tuple[int, str]:
             with opener.open(request, timeout=90) as response, destination.open("xb") as handle:
                 if response.status != 200:
                     raise VaultError("source status is not 200")
+                if response.geturl() != url:
+                    raise VaultError("source final URL mismatch")
                 total = 0
                 digest = hashlib.sha256()
                 while True:
@@ -200,7 +204,8 @@ def process_direct_shard(
     observed = usable = crossed = clipped = duplicate = 0
     crossed_digest = hashlib.sha256()
     timestamp_digest = hashlib.sha256()
-    previous: datetime | None = None
+    previous_observed: datetime | None = None
+    previous_usable: datetime | None = None
     first: datetime | None = None
     last: datetime | None = None
     gap_segments = missing_slots = 0
@@ -243,17 +248,13 @@ def process_direct_shard(
                         raise VaultError("H1 timestamp misalignment")
                     if periodicity == "D1" and (timestamp.hour or timestamp.minute):
                         raise VaultError("D1 timestamp misalignment")
-                    if previous is not None:
-                        if timestamp == previous:
+                    if previous_observed is not None:
+                        if timestamp == previous_observed:
                             duplicate += 1
                             raise VaultError("duplicate direct timestamp")
-                        if timestamp < previous:
+                        if timestamp < previous_observed:
                             raise VaultError("out-of-order direct timestamp")
-                        slots = int((timestamp - previous) / step)
-                        if slots > 1:
-                            gap_segments += 1
-                            missing_slots += slots - 1
-                    previous = timestamp
+                    previous_observed = timestamp
                     observed += 1
                     bid = tuple(decimal_value(raw[f"Bid{name}"], f"Bid{name}") for name in ("Open", "High", "Low", "Close"))
                     ask = tuple(decimal_value(raw[f"Ask{name}"], f"Ask{name}") for name in ("Open", "High", "Low", "Close"))
@@ -266,6 +267,12 @@ def process_direct_shard(
                             symbol, periodicity, year, source_entry["week_index"], source_entry["sha256"], row_ordinal
                         ))
                         continue
+                    if previous_usable is not None:
+                        slots = int((timestamp - previous_usable) / step)
+                        if slots > 1:
+                            gap_segments += 1
+                            missing_slots += slots - 1
+                    previous_usable = timestamp
                     stamp = iso_utc(timestamp)
                     timestamp_digest.update((stamp + "\n").encode("ascii"))
                     writer.writerow([

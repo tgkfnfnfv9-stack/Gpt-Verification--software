@@ -34,17 +34,19 @@ from fxcm_drive_vault_common import (
 )
 from fxcm_drive_vault_v2_common import (
     DIRECT_PERIODICITIES_V2,
+    OPERATIONAL_VERSION_V2_1,
     SYMBOLS_V2,
     WEEKS_V2,
     YEARS_V2,
     expected_year_source_count,
     known_missing_weeks,
+    load_v2_1_operational_amendment,
     load_v2_contracts,
     partition_for_year_v2,
     present_weeks,
-    require_v2_confirmations,
+    require_v2_1_confirmations,
 )
-from fxcm_google_drive_private import GoogleDrivePrivate
+from fxcm_google_drive_private import FOLDER_MIME, GoogleDrivePrivate
 
 
 UTC = timezone.utc
@@ -195,24 +197,26 @@ def derive_qc_v2(m1_path: Path, h1_path: Path, year: int) -> dict[str, Any]:
     result["provider_schedule_claimed"] = False
     result["forward_fill_count"] = 0
     result["interpolation_count"] = 0
-    result["batch6_compatibility_passed"] = (
-        result["H1"]["derived_timestamp_missing_for_reference_count"] == 0
-        and result["H1"]["direct_reference_missing_for_derived_count"] == 0
-        and result["H1"]["reference_ohlc_mismatch_count"] == 0
-    )
+    # This only compares current M1-derived H1 with current direct H1.  It is
+    # not the separately preregistered 64-series Batch 6 compatibility gate.
+    result["batch6_compatibility_passed"] = False
     return result
 
 
 def acquire_year_v2(args: argparse.Namespace) -> dict[str, Any]:
-    contract, partitions, _, _, mask = load_v2_contracts(
+    frozen_paths = (
         args.acquisition_contract,
         args.partitions_contract,
         args.manifest_schema,
         args.formal_boundary,
         args.availability_mask,
     )
-    require_v2_confirmations(
-        contract,
+    contract, partitions, _, _, mask = load_v2_contracts(*frozen_paths)
+    amendment = load_v2_1_operational_amendment(
+        args.operational_amendment, frozen_paths
+    )
+    require_v2_1_confirmations(
+        amendment,
         args.confirmation,
         args.scope_confirmation,
         args.usage_confirmation,
@@ -226,16 +230,44 @@ def acquire_year_v2(args: argparse.Namespace) -> dict[str, Any]:
         raise VaultError("V2 work directory must not exist")
     args.work_dir.mkdir(parents=True)
     drive = GoogleDrivePrivate()
-    drive.verify_root(
+    drive.verify_private_root(
         contract["drive_custody"]["root_folder_name"],
         contract["drive_custody"]["root_folder_id"],
     )
+    amendment_sha = sha256_file(args.operational_amendment)
+    transaction_name = amendment["transactional_publication"]["transaction_name_template"].format(
+        run_id=args.run_id
+    )
+    transaction_properties = {
+        "vault_version": "v2",
+        "operational_version": OPERATIONAL_VERSION_V2_1,
+        "run_id": str(args.run_id),
+        "head_sha": args.head_sha,
+        "state": amendment["transactional_publication"]["transaction_initial_state"],
+        "amendment_sha256": amendment_sha,
+    }
+    root_children = drive.list_children(contract["drive_custody"]["root_folder_id"])
+    if (
+        len(root_children) != 1
+        or root_children[0].get("name") != transaction_name
+        or root_children[0].get("mimeType") != FOLDER_MIME
+        or root_children[0].get("appProperties") != transaction_properties
+    ):
+        raise VaultError("V2.1 transaction identity mismatch before price access")
+    transaction = root_children[0]
     partition = partition_for_year_v2(partitions, args.year)
     stage_name = f"v2-staging-run-{args.run_id}-year-{args.year}"
     stage = drive.create_folder_new(
-        contract["drive_custody"]["root_folder_id"],
+        transaction["id"],
         stage_name,
-        {"vault_version": "v2", "run_id": str(args.run_id), "year": str(args.year), "state": "UNSEALED"},
+        {
+            "vault_version": "v2",
+            "operational_version": OPERATIONAL_VERSION_V2_1,
+            "run_id": str(args.run_id),
+            "head_sha": args.head_sha,
+            "year": str(args.year),
+            "state": "UNSEALED",
+        },
     )
     opener = urllib.request.build_opener(RejectRedirects())
     contract_hashes = contract_sha_bundle((
@@ -244,6 +276,7 @@ def acquire_year_v2(args: argparse.Namespace) -> dict[str, Any]:
         args.manifest_schema,
         args.formal_boundary,
         args.availability_mask,
+        args.operational_amendment,
     ))
     mask_sha = contract_hashes[args.availability_mask.name]
     shard_records: list[dict[str, Any]] = []
@@ -287,7 +320,9 @@ def acquire_year_v2(args: argparse.Namespace) -> dict[str, Any]:
             archive_bytes = archive_path.stat().st_size
             app_properties = {
                 "vault_version": "v2",
+                "operational_version": OPERATIONAL_VERSION_V2_1,
                 "run_id": str(args.run_id),
+                "head_sha": args.head_sha,
                 "year": str(args.year),
                 "symbol": symbol,
                 "periodicity": periodicity,
@@ -389,7 +424,9 @@ def acquire_year_v2(args: argparse.Namespace) -> dict[str, Any]:
         "application/json",
         {
             "vault_version": "v2",
+            "operational_version": OPERATIONAL_VERSION_V2_1,
             "run_id": str(args.run_id),
+            "head_sha": args.head_sha,
             "year": str(args.year),
             "sha256": year_sha,
             "state": "YEAR_COMPLETE_UNSEALED",
@@ -420,6 +457,7 @@ def main() -> int:
     parser.add_argument("--manifest-schema", type=Path, required=True)
     parser.add_argument("--formal-boundary", type=Path, required=True)
     parser.add_argument("--availability-mask", type=Path, required=True)
+    parser.add_argument("--operational-amendment", type=Path, required=True)
     parser.add_argument("--year", type=int, required=True)
     parser.add_argument("--run-id", required=True)
     parser.add_argument("--run-attempt", type=int, required=True)

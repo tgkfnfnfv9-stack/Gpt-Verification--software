@@ -18,7 +18,8 @@ permissions:
 jobs:
   count-only:
     if: >-
-      ${{ github.repository == 'tgkfnfnfv9-stack/Gpt-Verification--software' &&
+      ${{ false &&
+          github.repository == 'tgkfnfnfv9-stack/Gpt-Verification--software' &&
           github.event_name == 'workflow_dispatch' &&
           github.ref == 'refs/heads/main' &&
           inputs.confirmation == 'RUN_EXPLORATORY_FXCM_BLIND_MTF_BATCH6_COUNT_ONLY_2017_2018_V1' &&

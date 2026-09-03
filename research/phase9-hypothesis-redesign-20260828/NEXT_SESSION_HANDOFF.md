@@ -1,6 +1,6 @@
 # Phase 9 自動売買研究｜次セッション引継ぎ
 
-更新日: 2026-09-02
+更新日: 2026-09-03
 
 Repository: `tgkfnfnfv9-stack/Gpt-Verification--software`
 
@@ -8,7 +8,29 @@ Actual Full-QC実装基準: `9eb7ce667bea8e76a7f9bb1f2d378eebd8957206`
 
 現在のremote mainは、この実装基準より後の引継ぎ文書Commitを含む。次セッション開始時に必ずremote mainを再確認する。
 
-## 2026-09-02 latest delta
+## Latest delta
+
+### 2026-09-03 V2.1 operational hardening delta
+
+- ユーザーは価格取得とは別に、実行前安全強化を明示承認した。価格、Secret値、Outcomeは
+  参照していない。GitHub Actionsの旧V2取得runは0件のまま確認済みである。
+- 既存V2凍結5契約は変更せず、版付き追補
+  `spec/fxcm_drive_vault_operational_hardening_v2_1.frozen.json`を追加した。
+- 旧V2取得workflowと旧Batch 6 workflowを恒久fail-closed化した。新しい取得入口は
+  `.github/workflows/phase9-exploratory-fxcm-drive-vault-acquisition-v2-1.yml`であり、
+  これも新しい公開main SHAの確認と別の明示的な価格取得承認まで実行しない。
+- V2.1はowner-only・exact-empty rootを価格接続前に検証し、全データを
+  `v2-txn-run-{run_id}`内で完成させる。700 shard、manifest、sealの全検査後にfolder 1件を
+  metadata PATCHしてname `v2`、state `COMMITTED`へ公開する。応答喪失時は既知IDをGETして
+  照合する。PATCH前の途中失敗・強制取消ではcanonical `v2`は存在しない。PATCH境界では
+  完全な`v2`/`COMMITTED`が成立済みの場合があり、exact original / exact committed以外、または
+  照合不能は`UNKNOWN_COMMIT_OUTCOME`として自動cleanupせず停止する。
+- 未完了transactionは自動削除しない。remote cleanupは別の明示承認が必要である。
+- FXCM GETはexact HTTPS host/port/pathへpinし、redirect/query/fragment/userinfoを拒否した。
+  crossed-open隔離後のgapはusable canonical列で集計し、public SHA/type検証を厳格化した。
+- Batch 6 compatibilityは別の旧64系列consumer Gateが完成するまでfalse固定である。
+  321～324、期間、frequency Gateは変更しておらず、Countも未実行である。
+- V2.1専用23 tests、探索track全186 testsは成功した。
 
 - ユーザーはFXCM availability実測範囲を使うOption 1を選択した。別source探索は停止し、
   V2を2012～2025年、25通貨ペア、direct m1/H1、700 shardへ固定した。
@@ -452,10 +474,10 @@ Provider schedule inventory / allowlist
 
 ## 7. 次に行う単一作業
 
-Option 1のV2 root amendment・runner・Testsをremote mainへ公開し、GitHub Environment
-`phase9-fxcm-vault-acquisition-v2`のrequired reviewerとpersonal My Drive用OAuth 3 secretsを
-安全に設定した。次の単一作業はここで停止し、別の明示承認を待つことである。取得実行は、
-公開main SHAをユーザーが確認した後の別の明示承認を必要とする。
+Option 1のV2.1 transactional hardening・runner・Testsをremote mainへ公開する。GitHub
+Environment `phase9-fxcm-vault-acquisition-v2`のrequired reviewerとpersonal My Drive用
+OAuth 3 secretsは設定済みである。公開後は停止し、別の明示承認を待つ。取得実行は、
+新しい公開main SHAをユーザーが確認した後の別の明示承認を必要とする。
 
 Vault取得後もCount/Returnを自動実行しない。Drive内700 shardとmanifest/sealを独立監査し、
 2017～2018年の旧64系列互換性が完全一致した場合だけ、321～324の条件を変えず、Batch 6の
@@ -479,10 +501,10 @@ rerun/replayしない。remote resource/JAR request、JForex接続、正式価�
 
 ## 8. 残りの順序
 
-1. Availability独立監査正本とV1取得停止を確認する
-2. Option 1 V2の公開main SHAとTestsを確認する
-3. 専用GitHub EnvironmentとOAuth 3 secretsを設定するがworkflowは実行しない（完了）
-4. 別の明示承認後だけV2を一度取得し、private Driveの700 shardとmanifest/SHA/sealを独立監査する
+1. Availability独立監査正本とV1・旧V2・旧Batch 6の停止を確認する
+2. Option 1 V2.1の公開main SHA、版付き追補、transaction Testsを確認する
+3. 専用GitHub EnvironmentとOAuth 3 secretsは設定済み。workflowは実行しない
+4. 別の明示承認後だけV2.1を一度取得し、private Driveの700 shardとmanifest/SHA/seal/COMMITTED publicationを独立監査する
 5. 旧64系列互換性を確認後、Batch 6の入力だけをVaultへ切り替えてCount-onlyを実行する
 6. Count通過候補だけをReturn/OOS→新期間→頑健性へ進め、最後にMT5を検討する
 7. Formal JForex/provider schedule/Energy trackは別のまま維持する

@@ -1,14 +1,41 @@
 # Phase 9 FXCM Google Drive Data Vault Plan
 
-Status: `V2_OPTION1_ENVIRONMENT_CONFIGURED_NOT_EXECUTED_NO_PRICE_ACQUISITION`
+Status: `V2_1_OPERATIONAL_HARDENING_IMPLEMENTED_NOT_EXECUTED_NO_PRICE_ACQUISITION`
 
-Recorded: 2026-09-02
+Recorded: 2026-09-03
 
 ## Decision
 
 FXCM価格を候補Batchごとに再取得して破棄する運用を終了し、取得・QCと検証を分離する。
 一度だけ複数年データを取得してGoogle Driveの非公開研究フォルダへ保存し、以後の
 Count-only、Return/OOS、頑健性確認はSHA固定した同じデータを再利用する。
+
+## 2026-09-03 V2.1 pre-execution operational hardening
+
+実行前のread-only監査で、旧V2の途中失敗時にroot直下へ部分stageまたは半昇格したcanonical
+`v2`が残り、Run #1 / attempt #1を消費した後に安全に再開できないことを確認した。加えて、
+owner-only・空rootの実行時検証、source URLのrunner内pin、crossed-open隔離後のgap集計、
+public sealの型・SHA検証、旧Batch 6の停止に不足があった。
+
+ユーザーは価格取得とは別に、この運用安全強化を承認した。既存V2凍結5契約は変更せず、
+`spec/fxcm_drive_vault_operational_hardening_v2_1.frozen.json`を追加した。旧V2 workflowと
+旧Batch 6 workflowは恒久fail-closedとし、新しいmanual single-use workflowを
+`.github/workflows/phase9-exploratory-fxcm-drive-vault-acquisition-v2-1.yml`へ分離した。
+
+V2.1は価格接続前に固定rootがowner-only、非Shared Drive、非shortcut、children 0件である
+ことを確認し、唯一の`v2-txn-run-{run_id}`を作る。14年stage、700 shard、manifest、sealは
+すべてそのtransaction内で完成させる。全検証後、transaction folder 1件へのmetadata PATCH
+だけでname `v2`、state `COMMITTED`へ公開し、応答喪失時は既知IDをGETして照合する。
+PATCH前の失敗・取消ではcanonical `v2`は存在しない。PATCH境界では完全な`v2`/`COMMITTED`
+が成立済みの場合があるため、exact original / exact committed以外、または照合不能は
+`UNKNOWN_COMMIT_OUTCOME`として自動cleanupせず停止する。cleanupには別の明示承認を要求する。
+
+sourceは`https://candledata.fxcorporate.com:443/{periodicity}/{instrument}/{year}/{week}.csv.gz`
+へ完全固定し、redirect、query、fragment、userinfo、別portを拒否する。crossed-open行を除外
+したcanonical gapはusable row列で集計する。Batch 6 compatibilityは別の旧64系列照合Gateが
+完成するまでfalse固定であり、321～324のCount、Return、Outcomeは未認可のままである。
+V2.1専用23 tests、探索track全186 testsは成功した。価格response body、Secret値、Outcomeは
+一切参照していない。V2.1取得は、新しい公開main SHAの確認と別の明示承認まで実行しない。
 
 ## 2026-09-02 Option 1 / V2 frozen implementation
 
@@ -23,7 +50,8 @@ Count-only、Return/OOS、頑健性確認はSHA固定した同じデータを再
 - 既知欠損週: 要求せず、barを生成せず、補完・補間しない
 - frozen-presentの取得失敗: workflow失敗、root sealなし
 - V1 acquisition: workflow preflightを恒久fail-closed化
-- V2 workflow: `.github/workflows/phase9-exploratory-fxcm-drive-vault-acquisition-v2.yml`
+- 旧V2 workflow: `.github/workflows/phase9-exploratory-fxcm-drive-vault-acquisition-v2.yml`（恒久停止）
+- V2.1 workflow: `.github/workflows/phase9-exploratory-fxcm-drive-vault-acquisition-v2-1.yml`
 
 | Partition | Interval | Drive namespace |
 |---|---|---|
@@ -39,7 +67,7 @@ Drive ID・outcomeを含まないexact 2ファイルだけである。
 
 実装・Testsの公開後、専用Environment、required reviewer、OAuth 3 secretsを設定した。
 secret値はチャット、Git、ログ、Artifactへ出していない。この設定は価格取得の承認ではない。
-V2 workflow実行、Count、既存Batch 6は別の明示承認まで行わない。
+V2.1 workflow実行、Count、既存Batch 6は別の明示承認まで行わない。
 
 価格取得、Count、Return、Outcome計算はまだ開始していない。HEAD-only availability
 だけはRun `33627420903`で完了し、次の独立監査によりV1 target不成立を確認した。

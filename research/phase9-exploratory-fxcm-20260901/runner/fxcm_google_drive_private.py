@@ -21,6 +21,10 @@ DRIVE_API_HOST = "www.googleapis.com"
 DRIVE_UPLOAD_HOSTS = {"www.googleapis.com", "content.googleapis.com"}
 TOKEN_HOST = "oauth2.googleapis.com"
 FOLDER_MIME = "application/vnd.google-apps.folder"
+IDENTITY_FIELDS = (
+    "id,name,mimeType,size,parents,appProperties,ownedByMe,trashed,driveId,shortcutDetails,"
+    "permissionIds,permissions(id,type,role,allowFileDiscovery,deleted,pendingOwner)"
+)
 
 
 class RejectRedirects(urllib.request.HTTPRedirectHandler):
@@ -71,7 +75,18 @@ class GoogleDrivePrivate:
 
     def _json_request(self, method: str, url: str, payload: dict | None = None) -> dict:
         parsed = urllib.parse.urlsplit(url)
-        if parsed.scheme != "https" or parsed.hostname != DRIVE_API_HOST:
+        try:
+            port = parsed.port
+        except ValueError:
+            raise VaultError("Drive API port mismatch") from None
+        if (
+            parsed.scheme != "https"
+            or parsed.hostname != DRIVE_API_HOST
+            or port not in (None, 443)
+            or parsed.username is not None
+            or parsed.password is not None
+            or parsed.fragment
+        ):
             raise VaultError("Drive API host mismatch")
         data = canonical_json_bytes(payload) if payload is not None else None
         headers = {"Authorization": f"Bearer {self._token()}", "User-Agent": "phase9-fxcm-vault/1.0"}
@@ -106,9 +121,91 @@ class GoogleDrivePrivate:
             raise VaultError("shared-drive or shortcut root prohibited")
         return value
 
+    def verify_private_root(
+        self, expected_name: str, root_folder_id: str = ROOT_FOLDER_ID, *, require_empty: bool = False
+    ) -> dict:
+        fields = urllib.parse.quote(
+            "id,name,mimeType,ownedByMe,trashed,driveId,shortcutDetails,parents,permissionIds,"
+            "permissions(id,type,role,allowFileDiscovery,deleted,pendingOwner)",
+            safe="(),",
+        )
+        value = self._json_request(
+            "GET",
+            f"https://{DRIVE_API_HOST}/drive/v3/files/{root_folder_id}?fields={fields}&supportsAllDrives=false",
+        )
+        if value.get("id") != root_folder_id or value.get("name") != expected_name:
+            raise VaultError("Drive root identity mismatch")
+        if (
+            value.get("mimeType") != FOLDER_MIME
+            or value.get("ownedByMe") is not True
+            or value.get("trashed") is not False
+            or value.get("driveId") is not None
+            or value.get("shortcutDetails") is not None
+        ):
+            raise VaultError("Drive root custody mismatch")
+        permissions = value.get("permissions")
+        permission_ids = value.get("permissionIds")
+        if not isinstance(permissions, list) or len(permissions) != 1:
+            raise VaultError("Drive root must have exactly one owner-only permission")
+        permission = permissions[0]
+        if (
+            not isinstance(permission, dict)
+            or permission.get("type") != "user"
+            or permission.get("role") != "owner"
+            or permission.get("deleted") not in (None, False)
+            or permission.get("pendingOwner") not in (None, False)
+            or permission.get("allowFileDiscovery") not in (None, False)
+            or not isinstance(permission.get("id"), str)
+            or not permission.get("id")
+            or permission_ids != [permission["id"]]
+        ):
+            raise VaultError("Drive root is shared or permission metadata is ambiguous")
+        self._private_owner_permission_id = permission["id"]
+        if require_empty and self.list_children(root_folder_id):
+            raise VaultError("Drive root is not empty before price access")
+        return value
+
+    @staticmethod
+    def _verify_owned_object(value: dict, *, expected_id: str | None = None) -> None:
+        if (
+            (expected_id is not None and value.get("id") != expected_id)
+            or value.get("ownedByMe") is not True
+            or value.get("trashed") is not False
+            or value.get("driveId") is not None
+            or value.get("shortcutDetails") is not None
+        ):
+            raise VaultError("Drive object custody mismatch")
+
+    def _verify_private_owned_object(self, value: dict, *, expected_id: str | None = None) -> None:
+        self._verify_owned_object(value, expected_id=expected_id)
+        owner_permission_id = getattr(self, "_private_owner_permission_id", None)
+        if owner_permission_id is not None:
+            permissions = value.get("permissions")
+            if (
+                value.get("permissionIds") != [owner_permission_id]
+                or not isinstance(permissions, list)
+                or len(permissions) != 1
+                or not isinstance(permissions[0], dict)
+                or permissions[0].get("id") != owner_permission_id
+                or permissions[0].get("type") != "user"
+                or permissions[0].get("role") != "owner"
+                or permissions[0].get("deleted") not in (None, False)
+                or permissions[0].get("pendingOwner") not in (None, False)
+                or permissions[0].get("allowFileDiscovery") not in (None, False)
+            ):
+                raise VaultError("Drive object is directly shared or permission inheritance is ambiguous")
+
+    def get_file(self, file_id: str) -> dict:
+        fields = urllib.parse.quote(IDENTITY_FIELDS, safe="(),")
+        value = self._json_request(
+            "GET", f"https://{DRIVE_API_HOST}/drive/v3/files/{file_id}?fields={fields}&supportsAllDrives=false"
+        )
+        self._verify_private_owned_object(value, expected_id=file_id)
+        return value
+
     def list_children(self, parent_id: str) -> list[dict]:
         query = urllib.parse.quote(f"'{parent_id}' in parents and trashed = false", safe="")
-        fields = urllib.parse.quote("nextPageToken,files(id,name,mimeType,size,md5Checksum,parents,appProperties,trashed,shortcutDetails)", safe="(),")
+        fields = urllib.parse.quote(f"nextPageToken,files({IDENTITY_FIELDS})", safe="(),")
         page_token = ""
         rows: list[dict] = []
         while True:
@@ -126,6 +223,10 @@ class GoogleDrivePrivate:
         ids = [row.get("id") for row in rows]
         if any(not isinstance(item, str) for item in ids) or len(ids) != len(set(ids)):
             raise VaultError("Drive listing contains invalid duplicate IDs")
+        for row in rows:
+            self._verify_private_owned_object(row)
+            if row.get("parents") != [parent_id]:
+                raise VaultError("Drive child parent mismatch")
         return rows
 
     def create_folder_new(self, parent_id: str, name: str, app_properties: dict[str, str]) -> dict:
@@ -134,14 +235,20 @@ class GoogleDrivePrivate:
         if any(row.get("name") == name for row in self.list_children(parent_id)):
             raise VaultError("Drive destination name already exists")
         payload = {"name": name, "mimeType": FOLDER_MIME, "parents": [parent_id], "appProperties": app_properties}
-        fields = "id,name,mimeType,parents,appProperties"
+        fields = IDENTITY_FIELDS
         value = self._json_request("POST", f"https://{DRIVE_API_HOST}/drive/v3/files?fields={fields}&supportsAllDrives=false", payload)
-        if value.get("name") != name or value.get("mimeType") != FOLDER_MIME or value.get("parents") != [parent_id]:
+        self._verify_private_owned_object(value)
+        if (
+            value.get("name") != name
+            or value.get("mimeType") != FOLDER_MIME
+            or value.get("parents") != [parent_id]
+            or value.get("appProperties") != app_properties
+        ):
             raise VaultError("created Drive folder identity mismatch")
         return value
 
     def _start_resumable(self, parent_id: str, name: str, size: int, mime_type: str, app_properties: dict[str, str]) -> str:
-        query = "uploadType=resumable&fields=id,name,size,parents,appProperties"
+        query = "uploadType=resumable&fields=" + urllib.parse.quote(IDENTITY_FIELDS, safe="(),")
         url = f"https://{DRIVE_API_HOST}/upload/drive/v3/files?{query}"
         parsed = urllib.parse.urlsplit(url)
         payload = canonical_json_bytes({"name": name, "parents": [parent_id], "appProperties": app_properties})
@@ -165,7 +272,18 @@ class GoogleDrivePrivate:
         if not location:
             raise VaultError("Drive resumable URL missing")
         location_parts = urllib.parse.urlsplit(location)
-        if location_parts.scheme != "https" or location_parts.hostname not in DRIVE_UPLOAD_HOSTS:
+        try:
+            location_port = location_parts.port
+        except ValueError:
+            raise VaultError("Drive resumable port mismatch") from None
+        if (
+            location_parts.scheme != "https"
+            or location_parts.hostname not in DRIVE_UPLOAD_HOSTS
+            or location_port not in (None, 443)
+            or location_parts.username is not None
+            or location_parts.password is not None
+            or location_parts.fragment
+        ):
             raise VaultError("Drive resumable host mismatch")
         return location
 
@@ -179,6 +297,19 @@ class GoogleDrivePrivate:
         size = path.stat().st_size
         location = self._start_resumable(parent_id, remote_name, size, mime_type, app_properties)
         parsed = urllib.parse.urlsplit(location)
+        try:
+            upload_port = parsed.port
+        except ValueError:
+            raise VaultError("Drive resumable port mismatch") from None
+        if (
+            parsed.scheme != "https"
+            or parsed.hostname not in DRIVE_UPLOAD_HOSTS
+            or upload_port not in (None, 443)
+            or parsed.username is not None
+            or parsed.password is not None
+            or parsed.fragment
+        ):
+            raise VaultError("Drive resumable host mismatch")
         headers = {
             "Authorization": f"Bearer {self._token()}",
             "Content-Type": mime_type,
@@ -204,7 +335,13 @@ class GoogleDrivePrivate:
             value = json.loads(body)
         except json.JSONDecodeError:
             raise VaultError("Drive upload response invalid") from None
-        if value.get("name") != remote_name or value.get("parents") != [parent_id] or int(value.get("size", -1)) != size:
+        self._verify_private_owned_object(value)
+        if (
+            value.get("name") != remote_name
+            or value.get("parents") != [parent_id]
+            or int(value.get("size", -1)) != size
+            or value.get("appProperties") != app_properties
+        ):
             raise VaultError("Drive upload identity mismatch")
         return value
 
@@ -243,11 +380,46 @@ class GoogleDrivePrivate:
         query = urllib.parse.urlencode({
             "addParents": new_parent_id,
             "removeParents": old_parent_id,
-            "fields": "id,name,size,parents,appProperties",
+            "fields": IDENTITY_FIELDS,
             "supportsAllDrives": "false",
         })
         payload = {"appProperties": app_properties} if app_properties is not None else {}
         value = self._json_request("PATCH", f"https://{DRIVE_API_HOST}/drive/v3/files/{file_id}?{query}", payload)
-        if value.get("parents") != [new_parent_id]:
+        self._verify_private_owned_object(value, expected_id=file_id)
+        if value.get("parents") != [new_parent_id] or (
+            app_properties is not None and value.get("appProperties") != app_properties
+        ):
             raise VaultError("Drive move parent mismatch")
+        return value
+
+    def publish_folder_reconciled(
+        self,
+        file_id: str,
+        transaction_name: str,
+        committed_name: str,
+        expected_parent_id: str,
+        original_properties: dict[str, str],
+        committed_properties: dict[str, str],
+    ) -> dict:
+        query = urllib.parse.urlencode({"fields": IDENTITY_FIELDS, "supportsAllDrives": "false"})
+        payload = {"name": committed_name, "appProperties": committed_properties}
+        try:
+            value = self._json_request(
+                "PATCH", f"https://{DRIVE_API_HOST}/drive/v3/files/{file_id}?{query}", payload
+            )
+        except VaultError:
+            try:
+                value = self.get_file(file_id)
+            except VaultError as exc:
+                raise VaultError("UNKNOWN_COMMIT_OUTCOME") from exc
+            if value.get("name") == transaction_name and value.get("appProperties") == original_properties:
+                raise VaultError("Drive publication was not committed") from None
+        self._verify_private_owned_object(value, expected_id=file_id)
+        if (
+            value.get("name") != committed_name
+            or value.get("mimeType") != FOLDER_MIME
+            or value.get("parents") != [expected_parent_id]
+            or value.get("appProperties") != committed_properties
+        ):
+            raise VaultError("UNKNOWN_COMMIT_OUTCOME")
         return value

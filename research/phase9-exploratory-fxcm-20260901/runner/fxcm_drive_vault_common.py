@@ -7,6 +7,7 @@ import hashlib
 import json
 import os
 import re
+import urllib.parse
 from datetime import datetime, timezone
 from pathlib import Path, PurePosixPath
 from typing import Any, Iterable
@@ -14,6 +15,7 @@ from typing import Any, Iterable
 
 UTC = timezone.utc
 HEX64 = re.compile(r"^[0-9a-f]{64}$")
+FXCM_SOURCE_PATH = re.compile(r"^/(m1|H1|D1)/([A-Z]{6})/(20[0-9]{2})/([1-9]|[1-4][0-9]|5[0-2])\.csv\.gz$")
 ROOT_FOLDER_ID = "1cGQrkdpSNY9RcfpniVTYNb6zE0t9nTKu"
 YEARS = tuple(range(2010, 2026))
 SYMBOLS = (
@@ -87,10 +89,37 @@ def iso_utc(value: datetime) -> str:
     return value.strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
+def validate_source_url(value: str) -> str:
+    parsed = urllib.parse.urlsplit(value)
+    match = FXCM_SOURCE_PATH.fullmatch(parsed.path)
+    try:
+        port = parsed.port
+    except ValueError:
+        raise VaultError("FXCM source URL has an invalid port") from None
+    if (
+        parsed.scheme != "https"
+        or parsed.hostname != "candledata.fxcorporate.com"
+        or port not in (None, 443)
+        or parsed.username is not None
+        or parsed.password is not None
+        or parsed.query
+        or parsed.fragment
+        or match is None
+        or match.group(2) not in SYMBOLS
+        or int(match.group(3)) not in YEARS
+    ):
+        raise VaultError("FXCM source URL is outside the exact pinned endpoint")
+    return value
+
+
 def source_url(contract: dict[str, Any], year: int, symbol: str, periodicity: str, week: int) -> str:
-    return contract["provider"]["base_url_template"].format(
+    value = contract["provider"]["base_url_template"].format(
         periodicity=periodicity, instrument=symbol, year=year, week=week
     )
+    expected = f"https://candledata.fxcorporate.com/{periodicity}/{symbol}/{year}/{week}.csv.gz"
+    if value != expected:
+        raise VaultError("FXCM source URL template mismatch")
+    return validate_source_url(value)
 
 
 def iter_source_identities(contract: dict[str, Any]) -> Iterable[tuple[int, str, str, int, str]]:
@@ -260,6 +289,6 @@ def contract_sha_bundle(paths: Iterable[Path]) -> dict[str, str]:
     return {path.name: sha256_file(path) for path in paths}
 
 
-def assert_hex64(value: str, label: str) -> None:
-    if not HEX64.fullmatch(value):
+def assert_hex64(value: object, label: str) -> None:
+    if not isinstance(value, str) or not HEX64.fullmatch(value):
         raise VaultError(f"invalid SHA-256: {label}")

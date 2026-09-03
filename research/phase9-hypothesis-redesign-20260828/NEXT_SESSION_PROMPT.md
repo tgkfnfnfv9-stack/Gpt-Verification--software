@@ -23,22 +23,26 @@ GitHub Repository `tgkfnfnfv9-stack/Gpt-Verification--software` のPhase 9研究
 11. `research/phase9-exploratory-fxcm-20260901/spec/fxcm_drive_vault_partitions_v2.frozen.json`
 12. `research/phase9-exploratory-fxcm-20260901/spec/fxcm_drive_vault_manifest_schema_v2.frozen.json`
 13. `research/phase9-exploratory-fxcm-20260901/spec/fxcm_drive_vault_formal_boundary_amendment_v2.frozen.json`
-14. `research/phase9-exploratory-fxcm-20260901/runner/fxcm_drive_vault_common.py`
-15. `research/phase9-exploratory-fxcm-20260901/runner/fxcm_drive_vault_v2_common.py`
-16. `research/phase9-exploratory-fxcm-20260901/runner/fxcm_google_drive_private.py`
-17. `research/phase9-exploratory-fxcm-20260901/runner/fxcm_drive_vault_acquire_year.py`
-18. `research/phase9-exploratory-fxcm-20260901/runner/fxcm_drive_vault_acquire_year_v2.py`
-19. `research/phase9-exploratory-fxcm-20260901/runner/fxcm_drive_vault_finalize_v2.py`
-20. `research/phase9-exploratory-fxcm-20260901/runner/verify_fxcm_drive_vault_v2.py`
-21. `research/phase9-exploratory-fxcm-20260901/tests/test_fxcm_drive_vault_v2_contract.py`
-22. `research/phase9-exploratory-fxcm-20260901/tests/test_fxcm_drive_vault_v2_qc.py`
-23. `research/phase9-exploratory-fxcm-20260901/tests/test_fxcm_drive_vault_v2_workflow.py`
-24. `.github/workflows/phase9-exploratory-fxcm-drive-vault-acquisition-v1.yml`
-25. `.github/workflows/phase9-exploratory-fxcm-drive-vault-acquisition-v2.yml`
-26. `research/phase9-exploratory-fxcm-20260901/spec/fxcm_blind_mtf_candidates_v6.frozen.json`
-27. `research/phase9-exploratory-fxcm-20260901/runner/fxcm_blind_mtf_count_only_v6.py`
-28. `research/phase9-exploratory-fxcm-20260901/tests/test_fxcm_blind_mtf_count_only_v6.py`
-29. `.github/workflows/phase9-exploratory-fxcm-blind-mtf-batch6-count-only.yml`
+14. `research/phase9-exploratory-fxcm-20260901/spec/fxcm_drive_vault_operational_hardening_v2_1.frozen.json`
+15. `research/phase9-exploratory-fxcm-20260901/runner/fxcm_drive_vault_common.py`
+16. `research/phase9-exploratory-fxcm-20260901/runner/fxcm_drive_vault_v2_common.py`
+17. `research/phase9-exploratory-fxcm-20260901/runner/fxcm_google_drive_private.py`
+18. `research/phase9-exploratory-fxcm-20260901/runner/fxcm_drive_vault_acquire_year.py`
+19. `research/phase9-exploratory-fxcm-20260901/runner/fxcm_drive_vault_prepare_v2_1.py`
+20. `research/phase9-exploratory-fxcm-20260901/runner/fxcm_drive_vault_acquire_year_v2.py`
+21. `research/phase9-exploratory-fxcm-20260901/runner/fxcm_drive_vault_finalize_v2.py`
+22. `research/phase9-exploratory-fxcm-20260901/runner/verify_fxcm_drive_vault_v2.py`
+23. `research/phase9-exploratory-fxcm-20260901/tests/test_fxcm_drive_vault_v2_contract.py`
+24. `research/phase9-exploratory-fxcm-20260901/tests/test_fxcm_drive_vault_v2_qc.py`
+25. `research/phase9-exploratory-fxcm-20260901/tests/test_fxcm_drive_vault_v2_workflow.py`
+26. `research/phase9-exploratory-fxcm-20260901/tests/test_fxcm_drive_vault_v2_transaction.py`
+27. `.github/workflows/phase9-exploratory-fxcm-drive-vault-acquisition-v1.yml`
+28. `.github/workflows/phase9-exploratory-fxcm-drive-vault-acquisition-v2.yml`
+29. `.github/workflows/phase9-exploratory-fxcm-drive-vault-acquisition-v2-1.yml`
+30. `research/phase9-exploratory-fxcm-20260901/spec/fxcm_blind_mtf_candidates_v6.frozen.json`
+31. `research/phase9-exploratory-fxcm-20260901/runner/fxcm_blind_mtf_count_only_v6.py`
+32. `research/phase9-exploratory-fxcm-20260901/tests/test_fxcm_blind_mtf_count_only_v6.py`
+33. `.github/workflows/phase9-exploratory-fxcm-blind-mtf-batch6-count-only.yml`
 
 ## 目的
 
@@ -69,7 +73,11 @@ Count-only、Return/OOS、新期間、頑健性テストで再利用し、本物
 - public Run ArtifactへDrive file IDを保存しない
 - Availability Run `33627420903`: 実行・独立監査済み、response body 0 byte
 - V1 acquisition workflow: 恒久fail-closed、実行しない
-- V2 acquisition workflow: 実装済み、未実行
+- 旧V2 acquisition workflow: 恒久fail-closed、run 0件
+- V2.1 acquisition workflow: transactional publication実装済み、未実行
+- V2.1 operational amendment: ユーザー承認済み、ただし価格取得認可効果なし
+- V2.1 transaction: owner-only exact-empty root確認後に作成し、全検証後の単一PATCHだけで`v2`/`COMMITTED`へ公開
+- 未完了transaction: 自動削除禁止、cleanupは別承認
 - Vault価格取得: 未開始
 - Google OAuth client、refresh token、同一client作成root: 設定済み
 - GitHub Environment `phase9-fxcm-vault-acquisition-v2`: 作成済み
@@ -92,10 +100,10 @@ Batch 6のCount範囲は凍結済みの
 
 ## 次に行う作業
 
-1. 最新remote main、V2凍結契約、Tests、workflow、Environment設定完了状態を確認する。
-2. 現在は停止し、V2 workflowを実行しない。secret値を取得・表示・再入力させない。
-3. ユーザーが公開main SHAを確認し、別の明示承認を与えた場合だけV2 Run #1 attempt #1を一度実行する。
-4. 取得後はprivate Driveの700 shard、manifest、SHA-256、mask、sealを独立監査する。
+1. 最新remote main、旧5契約とV2.1追補、Tests、旧workflow停止、新workflow、Environment設定を確認する。
+2. 現在は停止し、V2.1 workflowを実行しない。secret値を取得・表示・再入力させない。
+3. ユーザーが新しい公開main SHAを確認し、別の明示承認を与えた場合だけV2.1 Run #1 attempt #1を一度実行する。
+4. 取得後はprivate Driveの700 shard、manifest、SHA-256、mask、seal、COMMITTED publicationを独立監査する。
 5. 旧64系列互換性を確認するまでBatch 6へ進まない。321～324の条件とfrequency Gateを変更しない。
 6. Count通過候補だけをReturn/OOS→新期間→頑健性へ進める。
 

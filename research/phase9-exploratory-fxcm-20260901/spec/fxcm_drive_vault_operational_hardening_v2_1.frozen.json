@@ -1,0 +1,92 @@
+{
+  "schema_version": "phase9-exploratory-fxcm-drive-vault-operational-hardening-v2.1.0",
+  "status": "FROZEN_USER_APPROVED_NOT_EXECUTED",
+  "approved_date_utc": "2026-09-03",
+  "base_main_commit": "a1780ebdfc1dee058e8ecae0e1bc1033756c6592",
+  "vault_version": "v2",
+  "operational_version": "v2.1",
+  "track": "EXPLORATORY_FXCM_DRIVE_VAULT_NOT_FORMAL_PHASE9",
+  "frozen_v2_contract_sha256": {
+    "fxcm_drive_vault_acquisition_v2.frozen.json": "209a133895f4035fba9036fb4d05b4ebc8279011110069ad0021c5830e5b2e6a",
+    "fxcm_drive_vault_partitions_v2.frozen.json": "b8e588f7cf69b1cefe64271c3a426b1fa88b9182c9f75fdee0644d9049d2c42b",
+    "fxcm_drive_vault_manifest_schema_v2.frozen.json": "11417d92df817bccadeb826590cd40ea44d0aaff64c1a6203cc12d105d5e1037",
+    "fxcm_drive_vault_formal_boundary_amendment_v2.frozen.json": "f516904dfeace5c9bac87c7ba2d65a5970a1aced8c884817e6a1fd77ddd2a042",
+    "fxcm_drive_vault_availability_mask_v2.frozen.json": "0dcda17adbe53c9572492425405c7feb4b972e0b0312dcbf6d04c0aa4e20f014"
+  },
+  "change_reason": "Pre-execution audit found non-atomic Drive publication, missing runtime root privacy and emptiness proof, insufficient endpoint pinning, crossed-row canonical gap undercounting, permissive public seal verification, and an executable legacy Batch 6 workflow.",
+  "scope_effect": "FAIL_CLOSED_OPERATIONAL_NARROWING_ONLY",
+  "scientific_scope_changes": [],
+  "frozen_scope_unchanged": {
+    "years": [2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025],
+    "symbol_count": 25,
+    "direct_periodicities": ["m1", "H1"],
+    "expected_shard_count": 700,
+    "base_source_object_count": 36400,
+    "present_source_object_count": 36000,
+    "known_missing_source_object_count": 400,
+    "known_missing_requests_allowed": false,
+    "interpolation_allowed": false,
+    "forward_fill_allowed": false
+  },
+  "transactional_publication": {
+    "transaction_name_template": "v2-txn-run-{run_id}",
+    "transaction_initial_state": "ACQUIRING",
+    "canonical_name": "v2",
+    "canonical_state": "COMMITTED",
+    "root_exact_empty_required_before_transaction_creation": true,
+    "all_year_stages_must_be_children_of_transaction": true,
+    "canonical_name_must_not_exist_before_final_publication": true,
+    "single_folder_metadata_patch_is_only_publication_step": true,
+    "patch_response_loss_requires_get_reconciliation": true,
+    "automatic_remote_cleanup_allowed": false,
+    "partial_transaction_cleanup_requires_separate_user_approval": true
+  },
+  "runtime_security": {
+    "root_owner_only_permission_required": true,
+    "shared_drive_allowed": false,
+    "shortcut_allowed": false,
+    "source_scheme": "https",
+    "source_host": "candledata.fxcorporate.com",
+    "source_port": 443,
+    "source_path_template": "/{periodicity}/{instrument}/{year}/{week}.csv.gz",
+    "source_query_allowed": false,
+    "source_fragment_allowed": false,
+    "redirect_allowed": false,
+    "final_response_url_must_equal_request_url": true
+  },
+  "quality_hardening": {
+    "canonical_gap_fields_use_usable_rows_after_crossed_open_quarantine": true,
+    "observed_order_and_duplicate_fields_use_all_observed_rows": true,
+    "batch6_compatibility_passed_forced_false_until_separate_64_series_gate": true,
+    "legacy_batch6_workflow_permanently_fail_closed": true,
+    "public_sha256_fields_must_be_lowercase_hex64": true,
+    "public_boolean_fields_must_be_json_booleans": true
+  },
+  "workflow": {
+    "filename": "phase9-exploratory-fxcm-drive-vault-acquisition-v2-1.yml",
+    "manual_only": true,
+    "required_run_number": 1,
+    "required_run_attempt": 1,
+    "environment": "phase9-fxcm-vault-acquisition-v2",
+    "acquisition_confirmation": "RUN_PHASE9_EXPLORATORY_FXCM_DRIVE_VAULT_V2_1_2012_2025_25_M1_H1_ONCE",
+    "scope_confirmation": "I_ACCEPT_V2_25_PAIRS_2012_2025_M1_H1_WITH_FROZEN_400_MISSING",
+    "usage_confirmation": "I_CONFIRM_PERSONAL_NONCOMMERCIAL_USE_AND_ACCEPT_FXCM_EULA",
+    "formal_acknowledgement": "I_ACCEPT_EXPLORATORY_VAULT_2019_PLUS_RETIRES_FORMAL_PHASE9_UNSEEN_CLAIMS",
+    "reviewed_head_sha_required": true
+  },
+  "authorization": {
+    "user_approved_operational_hardening": true,
+    "price_acquisition_authorized": false,
+    "workflow_dispatch_authorized": false,
+    "count_only_authorized": false,
+    "batch6_authorized": false,
+    "returns_or_outcomes_authorized": false,
+    "formal_phase9_authorization_effect": false
+  },
+  "outcome_access_at_freeze": {
+    "price_response_body_bytes_read_by_v2": 0,
+    "research_outcomes_calculated": false,
+    "outcome_fields": [],
+    "candidates_321_through_324_count_viewed": false
+  }
+}

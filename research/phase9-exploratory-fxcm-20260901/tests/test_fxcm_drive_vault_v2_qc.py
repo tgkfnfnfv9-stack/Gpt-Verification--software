@@ -43,7 +43,7 @@ class VaultV2QcTests(unittest.TestCase):
             for timeframe in ("M5", "M15", "M30", "H1", "H4", "D1", "W1"):
                 self.assertGreater(result[timeframe]["complete_bucket_count"], 0)
             self.assertEqual(result["H1"]["reference_exact_match_count"], 1)
-            self.assertTrue(result["batch6_compatibility_passed"])
+            self.assertFalse(result["batch6_compatibility_passed"])
             self.assertEqual(result["forward_fill_count"], 0)
             self.assertEqual(result["interpolation_count"], 0)
 

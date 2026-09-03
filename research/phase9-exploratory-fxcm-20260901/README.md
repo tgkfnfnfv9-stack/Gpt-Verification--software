@@ -1,6 +1,6 @@
 # Phase 9 Exploratory FXCM Fast Track
 
-Status: `DRIVE_VAULT_V2_OPTION1_ENVIRONMENT_CONFIGURED_NOT_EXECUTED; V1_PERMANENTLY_BLOCKED; LEGACY_FX8_BATCH6_PAUSED`
+Status: `DRIVE_VAULT_V2_1_TRANSACTIONALLY_HARDENED_NOT_EXECUTED; V1_AND_OLD_V2_PERMANENTLY_BLOCKED; LEGACY_FX8_BATCH6_BLOCKED`
 
 ## Current canonical next step: reusable Google Drive Vault
 
@@ -13,19 +13,31 @@ Option 1を選択した。V2は2012～2025年、25通貨ペア、direct m1/H1の
 - V2契約正本: `spec/fxcm_drive_vault_*_v2.frozen.json`
 - V2 Drive root: `1lZ0CkTn3tBxStf5H3V7W38ZcOsZ5Rw_v`（同一OAuth clientで作成、価格取得前は空）
 - exact availability mask: `spec/fxcm_drive_vault_availability_mask_v2.frozen.json`
-- 一括取得: `.github/workflows/phase9-exploratory-fxcm-drive-vault-acquisition-v2.yml`
+- 運用追補: `spec/fxcm_drive_vault_operational_hardening_v2_1.frozen.json`
+- 一括取得: `.github/workflows/phase9-exploratory-fxcm-drive-vault-acquisition-v2-1.yml`
 - direct: m1/H1 BID/ASK OHLC、提供時だけVolume
 - strategy canonical: M1由来M5/M15/M30/H1/H4/D1/W1
 - direct H1: QC参照のみ、補完・代替禁止
 - partition: Development 2012～2019、Strict OOS 2020～2021、Robustness 2022～2023、Final holdout 2024～2025
 - OAuth client、refresh token、同一client作成root: 設定済み（secret値はGitに保存しない）
 - GitHub Environment、required reviewer、OAuth 3 secrets: 設定済み（値はチャット・Git・Artifactへ非公開）
-- 価格取得、V2 workflow、Count、Batch 6: 未実行
+- 価格取得、V2.1 workflow、Count、Batch 6: 未実行
 - V1 acquisition workflow: fail-closedで恒久停止
-- V2専用11 tests、探索track全174 tests: 成功
-- V2 acquisition workflowのpreflightは、app-created root反映後の取得契約SHA-256と同期済み
+- 旧V2 acquisition workflowと旧Batch 6 workflow: fail-closedで恒久停止
+- V2.1専用23 tests、探索track全186 tests: 成功
+- V2.1 acquisition workflowのpreflightは、旧5契約、版付き追補、runner closureのSHA-256と同期済み
 
-V2を公開しても実行許可にはならない。別のユーザー明示承認まではV2 workflowを実行しない。
+2026-09-03の実行前監査で、旧V2にはDriveへの非原子的な昇格、owner-onlyかつ空のrootを
+実行直前に証明しないこと、取得URL pin不足、crossed-open隔離後のcanonical gap過小計上、
+public seal検証不足が見つかった。ユーザー承認を得て、旧5契約を変更せずV2.1運用追補を
+凍結した。全year stageと完成treeは`v2-txn-run-{run_id}`内へ作り、全件検証とseal後の
+単一metadata PATCHだけでcanonical名`v2`・state `COMMITTED`へ公開する。PATCH前の失敗時は
+canonical `v2`を作らず、未完了transactionを隔離する。PATCH境界の応答不明は既知IDをGET
+照合し、exact original / exact committed以外は`UNKNOWN_COMMIT_OUTCOME`で停止する。remote
+cleanupは別承認なしに行わない。
+Batch 6 compatibilityは独立64系列consumer Gateが完成するまで常にfalseである。
+
+V2.1を公開しても実行許可にはならない。別のユーザー明示承認まではV2.1 workflowを実行しない。
 取得後も自動でCountへ進まず、private Drive custodyと旧64系列互換性を独立監査する。
 
 ## Historical V1 availability result
@@ -419,7 +431,7 @@ Outcome検定済み7候補は全件不採用で、確認済みedgeは0件であ�
 - public Git/Artifactへ価格を保存しない
 
 AvailabilityはRun `33627420903`で完了したが、価格取得は未開始である。V1取得workflowは
-恒久停止し、V2取得workflowも別の明示承認前には実行しない。既存Batch 6 workflowはvault
+恒久停止し、V2.1取得workflowも別の明示承認前には実行しない。既存Batch 6 workflowはvault
 移行と独立監査が完了するまでdispatchしない。321〜324の事前登録条件は変更しない。
 
 ### Batch 3 Return/OOS Run 33593743345

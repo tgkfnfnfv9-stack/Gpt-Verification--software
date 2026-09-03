@@ -32,6 +32,8 @@ EXPECTED_SHARD_COUNT_V2 = 700
 BASE_SOURCE_OBJECT_COUNT_V2 = 36400
 PRESENT_SOURCE_OBJECT_COUNT_V2 = 36000
 KNOWN_MISSING_SOURCE_OBJECT_COUNT_V2 = 400
+OPERATIONAL_VERSION_V2_1 = "v2.1"
+BASE_MAIN_COMMIT_V2_1 = "a1780ebdfc1dee058e8ecae0e1bc1033756c6592"
 
 
 def identity_key(year: int, symbol: str, periodicity: str, week: int) -> str:
@@ -294,3 +296,109 @@ def require_v2_confirmations(
     )
     if not all(checks):
         raise VaultError("V2 workflow confirmation mismatch")
+
+
+def load_v2_1_operational_amendment(
+    amendment_path: Path, frozen_contract_paths: tuple[Path, Path, Path, Path, Path]
+) -> dict[str, Any]:
+    amendment = load_json(amendment_path)
+    expected_hashes = {
+        path.name: sha256_file(path) for path in frozen_contract_paths
+    }
+    controls = amendment.get("transactional_publication", {})
+    security = amendment.get("runtime_security", {})
+    quality = amendment.get("quality_hardening", {})
+    workflow = amendment.get("workflow", {})
+    authorization = amendment.get("authorization", {})
+    access = amendment.get("outcome_access_at_freeze", {})
+    checks = (
+        amendment.get("schema_version") == "phase9-exploratory-fxcm-drive-vault-operational-hardening-v2.1.0",
+        amendment.get("status") == "FROZEN_USER_APPROVED_NOT_EXECUTED",
+        amendment.get("approved_date_utc") == "2026-09-03",
+        amendment.get("base_main_commit") == BASE_MAIN_COMMIT_V2_1,
+        amendment.get("vault_version") == "v2",
+        amendment.get("operational_version") == OPERATIONAL_VERSION_V2_1,
+        amendment.get("track") == "EXPLORATORY_FXCM_DRIVE_VAULT_NOT_FORMAL_PHASE9",
+        amendment.get("scope_effect") == "FAIL_CLOSED_OPERATIONAL_NARROWING_ONLY",
+        amendment.get("scientific_scope_changes") == [],
+        amendment.get("frozen_v2_contract_sha256") == expected_hashes,
+        controls.get("transaction_name_template") == "v2-txn-run-{run_id}",
+        controls.get("transaction_initial_state") == "ACQUIRING",
+        controls.get("canonical_name") == "v2",
+        controls.get("canonical_state") == "COMMITTED",
+        controls.get("root_exact_empty_required_before_transaction_creation") is True,
+        controls.get("all_year_stages_must_be_children_of_transaction") is True,
+        controls.get("canonical_name_must_not_exist_before_final_publication") is True,
+        controls.get("single_folder_metadata_patch_is_only_publication_step") is True,
+        controls.get("patch_response_loss_requires_get_reconciliation") is True,
+        controls.get("automatic_remote_cleanup_allowed") is False,
+        controls.get("partial_transaction_cleanup_requires_separate_user_approval") is True,
+        security.get("root_owner_only_permission_required") is True,
+        security.get("shared_drive_allowed") is False,
+        security.get("shortcut_allowed") is False,
+        security.get("source_scheme") == "https",
+        security.get("source_host") == "candledata.fxcorporate.com",
+        security.get("source_port") == 443,
+        security.get("source_path_template") == "/{periodicity}/{instrument}/{year}/{week}.csv.gz",
+        security.get("source_query_allowed") is False,
+        security.get("source_fragment_allowed") is False,
+        security.get("redirect_allowed") is False,
+        security.get("final_response_url_must_equal_request_url") is True,
+        quality.get("canonical_gap_fields_use_usable_rows_after_crossed_open_quarantine") is True,
+        quality.get("observed_order_and_duplicate_fields_use_all_observed_rows") is True,
+        quality.get("batch6_compatibility_passed_forced_false_until_separate_64_series_gate") is True,
+        quality.get("legacy_batch6_workflow_permanently_fail_closed") is True,
+        quality.get("public_sha256_fields_must_be_lowercase_hex64") is True,
+        quality.get("public_boolean_fields_must_be_json_booleans") is True,
+        workflow.get("filename") == "phase9-exploratory-fxcm-drive-vault-acquisition-v2-1.yml",
+        workflow.get("manual_only") is True,
+        workflow.get("required_run_number") == 1,
+        workflow.get("required_run_attempt") == 1,
+        workflow.get("environment") == "phase9-fxcm-vault-acquisition-v2",
+        workflow.get("reviewed_head_sha_required") is True,
+        authorization.get("user_approved_operational_hardening") is True,
+        authorization.get("price_acquisition_authorized") is False,
+        authorization.get("workflow_dispatch_authorized") is False,
+        authorization.get("count_only_authorized") is False,
+        authorization.get("batch6_authorized") is False,
+        authorization.get("returns_or_outcomes_authorized") is False,
+        authorization.get("formal_phase9_authorization_effect") is False,
+        access.get("price_response_body_bytes_read_by_v2") == 0,
+        access.get("research_outcomes_calculated") is False,
+        access.get("outcome_fields") == [],
+        access.get("candidates_321_through_324_count_viewed") is False,
+    )
+    if not all(checks):
+        raise VaultError("V2.1 operational amendment mismatch")
+    scope = amendment.get("frozen_scope_unchanged", {})
+    if (
+        scope.get("years") != list(YEARS_V2)
+        or scope.get("symbol_count") != len(SYMBOLS_V2)
+        or scope.get("direct_periodicities") != list(DIRECT_PERIODICITIES_V2)
+        or scope.get("expected_shard_count") != EXPECTED_SHARD_COUNT_V2
+        or scope.get("base_source_object_count") != BASE_SOURCE_OBJECT_COUNT_V2
+        or scope.get("present_source_object_count") != PRESENT_SOURCE_OBJECT_COUNT_V2
+        or scope.get("known_missing_source_object_count") != KNOWN_MISSING_SOURCE_OBJECT_COUNT_V2
+        or scope.get("known_missing_requests_allowed") is not False
+        or scope.get("interpolation_allowed") is not False
+        or scope.get("forward_fill_allowed") is not False
+    ):
+        raise VaultError("V2.1 amendment expands or changes frozen scope")
+    return amendment
+
+
+def require_v2_1_confirmations(
+    amendment: dict[str, Any],
+    confirmation: str,
+    scope_confirmation: str,
+    usage_confirmation: str,
+    formal_acknowledgement: str,
+) -> None:
+    workflow = amendment.get("workflow", {})
+    if (
+        confirmation != workflow.get("acquisition_confirmation")
+        or scope_confirmation != workflow.get("scope_confirmation")
+        or usage_confirmation != workflow.get("usage_confirmation")
+        or formal_acknowledgement != workflow.get("formal_acknowledgement")
+    ):
+        raise VaultError("V2.1 workflow confirmation mismatch")
