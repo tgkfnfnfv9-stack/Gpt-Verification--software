@@ -1,0 +1,139 @@
+{
+  "schema_version": "phase9-exploratory-fxcm-drive-vault-run1-recovery-simple-v1.0.0",
+  "status": "FROZEN_IMPLEMENTED_NOT_AUTHORIZED_FOR_EXECUTION",
+  "recorded_utc_date": "2026-09-03",
+  "purpose": "Recover only the empty 2022-2025 stages in one manual acquisition-QC-private-upload workflow without an artifact handoff.",
+  "repository": "tgkfnfnfv9-stack/Gpt-Verification--software",
+  "track": "EXPLORATORY_ACQUISITION_QC_ONLY",
+  "formal_phase9_authorization_effect": false,
+  "interval": {
+    "start_inclusive": "2022-01-01T00:00:00Z",
+    "end_exclusive": "2026-01-01T00:00:00Z",
+    "years": [2022, 2023, 2024, 2025]
+  },
+  "symbols": [
+    "AUDCAD", "AUDCHF", "AUDJPY", "AUDNZD", "AUDUSD",
+    "CADCHF", "CADJPY", "EURAUD", "EURCHF", "EURGBP",
+    "EURJPY", "EURNZD", "EURUSD", "GBPCAD", "GBPCHF",
+    "GBPJPY", "GBPNZD", "GBPUSD", "NZDCAD", "NZDCHF",
+    "NZDJPY", "NZDUSD", "USDCAD", "USDCHF", "USDJPY"
+  ],
+  "direct_periodicities": ["m1", "H1"],
+  "derived_periodicities": ["M5", "M15", "M30", "H4", "D1", "W1"],
+  "offer_sides": ["BID", "ASK"],
+  "counts": {
+    "years": 4,
+    "symbols": 25,
+    "direct_periodicities": 2,
+    "archive_shards": 200,
+    "year_manifests": 4,
+    "objects_uploaded_and_redownloaded": 204,
+    "base_weekly_source_identities": 10400,
+    "frozen_present_source_identities": 10084,
+    "frozen_known_missing_source_identities": 316
+  },
+  "per_year": {
+    "2022": {"present": 2600, "known_missing": 0, "archives": 50},
+    "2023": {"present": 2600, "known_missing": 0, "archives": 50},
+    "2024": {"present": 2479, "known_missing": 121, "archives": 50},
+    "2025": {"present": 2405, "known_missing": 195, "archives": 50}
+  },
+  "frozen_anchors_sha256": {
+    "fxcm_drive_vault_acquisition_v2.frozen.json": "209a133895f4035fba9036fb4d05b4ebc8279011110069ad0021c5830e5b2e6a",
+    "fxcm_drive_vault_partitions_v2.frozen.json": "b8e588f7cf69b1cefe64271c3a426b1fa88b9182c9f75fdee0644d9049d2c42b",
+    "fxcm_drive_vault_manifest_schema_v2.frozen.json": "11417d92df817bccadeb826590cd40ea44d0aaff64c1a6203cc12d105d5e1037",
+    "fxcm_drive_vault_formal_boundary_amendment_v2.frozen.json": "f516904dfeace5c9bac87c7ba2d65a5970a1aced8c884817e6a1fd77ddd2a042",
+    "fxcm_drive_vault_availability_mask_v2.frozen.json": "0dcda17adbe53c9572492425405c7feb4b972e0b0312dcbf6d04c0aa4e20f014",
+    "fxcm_drive_vault_operational_hardening_v2_1.frozen.json": "03b8ecaa6a75a1df797f8c4de5fbdf5b59ce0a5655957a5f04c1ab595301434b",
+    "fxcm_drive_vault_run1_recovery_v2_2.frozen.json": "b28800eed38fc3fcf156d84edecf95700c3453b553ca494877c9a16de62a0a32"
+  },
+  "recovery_manifest_schema": {
+    "path": "fxcm_drive_vault_recovery_manifest_simple_v1.schema.json",
+    "sha256": "9df2486f4d65a553052a05f5bcbe7c33802f816dc4cce33648e417212a0dc95a"
+  },
+  "existing_transaction": {
+    "root_folder_id": "1lZ0CkTn3tBxStf5H3V7W38ZcOsZ5Rw_v",
+    "root_folder_name": "Phase9 FXCM Data Vault",
+    "transaction_name": "v2-txn-run-33705800232",
+    "source_run_id": "33705800232",
+    "source_run_attempt": 1,
+    "source_head_sha": "be864557a8e16d253e6aecf1519f85ad6162c1a3",
+    "state": "ACQUIRING",
+    "canonical_v2_folder_count": 0,
+    "preserved_2012_2021_archives": 500,
+    "preserved_2012_2021_manifests": 10,
+    "read_only_inventory_year_digest_sha256": "4a0f0cfb78ead6d6730ca7b41b716de8e2fef984e7f36ded17828d9e7b40dc4d",
+    "required_recovery_stage_state": "EXACTLY_EMPTY_BEFORE_PRICE_ACCESS"
+  },
+  "source_policy": {
+    "provider": "FXCM CandleData",
+    "request_only_frozen_present": true,
+    "request_known_missing": false,
+    "frozen_present_failure": "FAIL_NO_SEAL",
+    "dynamic_scope_change": false,
+    "transport_retry_attempts": 4,
+    "content_integrity_attempts": 3,
+    "content_integrity_failures_retried": ["TOO_SMALL", "NON_GZIP", "EMPTY_GZIP_BODY"]
+  },
+  "qc": {
+    "source_payload_sha256": true,
+    "canonical_csv_sha256": true,
+    "timestamp_column_sha256": true,
+    "dropped_bucket_timestamp_sha256": true,
+    "completed_bucket_timestamp_sha256": true,
+    "duplicate_timestamp_action": "REJECT",
+    "duplicate_shard_action": "REJECT",
+    "unknown_or_duplicate_archive_member_action": "REJECT",
+    "missing_bucket_action": "DROP_COUNT_HASH_NO_FILL",
+    "M5_M15_M30_reference": "EXACT_EXPECTED_M1_COMPONENT_SET",
+    "expected_schedule": "DST_AWARE_SUNDAY_17_NEW_YORK_TO_FRIDAY_17_NEW_YORK",
+    "holiday_or_special_closure": "EXPECTED_BUT_MISSING_COMPONENTS_CAUSE_DROP_COUNT_HASH",
+    "H4_D1_W1_reference": "INDEPENDENT_24X5_NEW_YORK_SESSION_EXPECTED_H1_SET",
+    "derived_storage": "MANIFEST_FINGERPRINTS_ONLY_REGENERATE_FROM_DIRECT_CANONICAL",
+    "archive_reopen": ["AFTER_CREATION", "AFTER_PRIVATE_REDOWNLOAD"]
+  },
+  "workflow": {
+    "file": ".github/workflows/phase9-exploratory-fxcm-drive-vault-run1-recovery-simple-v1.yml",
+    "manual_dispatch_only": true,
+    "required_run_number": 1,
+    "run_attempt": 1,
+    "acquisition_qc_upload_redownload_same_job": true,
+    "artifact_handoff": false,
+    "public_price_artifact": false,
+    "cleanup": "PYTHON_FINALLY_PLUS_ACTIONS_ALWAYS_EPHEMERAL_RUNNER",
+    "confirmation": "RUN_FXCM_2022_2025_RECOVERY_QC_PRIVATE_UPLOAD_ONCE",
+    "scope_confirmation": "I_ACCEPT_10084_PRESENT_316_KNOWN_MISSING_AND_STAGE_UNSEALED_2022_2025",
+    "usage_confirmation": "I_CONFIRM_PERSONAL_NONCOMMERCIAL_USE_AND_ACCEPT_FXCM_EULA"
+  },
+  "provenance": {
+    "preserved_objects": "KEEP_ORIGINAL_RUN_AND_HEAD_SHA",
+    "recovered_objects": "RECORD_NEW_WORKFLOW_RUN_ID_ATTEMPT_HEAD_SHA",
+    "mixed_provenance_manifest_required": true,
+    "rewrite_old_manifests": false
+  },
+  "simplification_amendment": {
+    "supersedes_v2_2_all_four_years_local_before_any_drive_upload": true,
+    "replacement": "EACH_YEAR_MUST_COMPLETE_ALL_50_LOCAL_ARCHIVES_AND_QC_BEFORE_THAT_YEAR_UPLOAD; YEARS_RUN_SEQUENTIALLY_IN_ONE_MANUAL_WORKFLOW",
+    "partial_upload_failure": "LEAVE_UNPUBLISHED; NO_AUTOMATIC_DELETE; NO_RERUN; REQUIRE_SEPARATE_RECONCILIATION_APPROVAL",
+    "old_v2_finalizer_compatible": false,
+    "future_mixed_provenance_finalizer_required": true
+  },
+  "sealed_use": {
+    "2022_2023": "ROBUSTNESS_NO_RESEARCH_USE_IN_THIS_WORKFLOW",
+    "2024_2025": "FINAL_HOLDOUT_NO_RESEARCH_USE_IN_THIS_WORKFLOW",
+    "forbidden": ["SIGNAL", "COUNT", "RETURN", "PF", "WIN_RATE", "MFE", "MAE", "RANKING", "EA"]
+  },
+  "current_authorization": {
+    "implementation": true,
+    "commit": true,
+    "push": true,
+    "workflow_dispatch": false,
+    "price_access": false,
+    "oauth_token_exchange": false,
+    "drive_access": false,
+    "drive_write": false,
+    "transaction_finalization": false,
+    "research_use": false
+  },
+  "next_stop": "AFTER_COMMIT_PUSH_BEFORE_WORKFLOW_DISPATCH"
+}

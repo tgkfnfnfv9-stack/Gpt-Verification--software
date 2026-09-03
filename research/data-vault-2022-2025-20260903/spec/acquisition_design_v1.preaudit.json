@@ -1,0 +1,246 @@
+{
+  "schema": "data-vault-2022-2025-price-free-preaudit-v1.0.0",
+  "status": "PRICE_FREE_PREAUDIT_SUPERSEDED_BY_USER_APPROVED_SIMPLE_IMPLEMENTATION",
+  "recorded_utc_date": "2026-09-03",
+  "repository": "tgkfnfnfv9-stack/Gpt-Verification--software",
+  "baseline_remote_main_sha": "b06c815547e8dbd354a54c554af4ab8b516da348",
+  "classification": "EXPLORATORY_ACQUISITION_QC_ONLY",
+  "formal_phase9_authorization_effect": false,
+  "interval": {
+    "start_inclusive": "2022-01-01T00:00:00Z",
+    "end_exclusive": "2026-01-01T00:00:00Z",
+    "timezone": "UTC",
+    "years": [2022, 2023, 2024, 2025]
+  },
+  "approval_gates": [
+    {"gate": 1, "name": "design_and_price_free_preaudit", "state": "COMPLETED_WITH_BLOCKERS"},
+    {"gate": 2, "name": "implementation_commit_and_push", "state": "AUTHORIZED_SIMPLE_FX_IMPLEMENTATION"},
+    {"gate": 3, "name": "price_acquisition_and_qc", "state": "NOT_AUTHORIZED"},
+    {"gate": 4, "name": "private_vault_write_and_redownload", "state": "NOT_AUTHORIZED"},
+    {"gate": 5, "name": "transaction_final_publication_and_cleanup", "state": "NOT_AUTHORIZED"}
+  ],
+  "fx_recovery": {
+    "contract_version": "v2.3-proposed",
+    "based_on": "fxcm_drive_vault_run1_recovery_v2.2.0",
+    "do_not_rerun": ["V2", "V2.1"],
+    "symbols": ["AUDCAD", "AUDCHF", "AUDJPY", "AUDNZD", "AUDUSD", "CADCHF", "CADJPY", "EURAUD", "EURCHF", "EURGBP", "EURJPY", "EURNZD", "EURUSD", "GBPCAD", "GBPCHF", "GBPJPY", "GBPNZD", "GBPUSD", "NZDCAD", "NZDCHF", "NZDJPY", "NZDUSD", "USDCAD", "USDCHF", "USDJPY"],
+    "direct_periodicities": ["m1", "H1"],
+    "derived_periodicities": ["M5", "M15", "M30", "H4", "D1", "W1"],
+    "offer_sides": ["BID", "ASK"],
+    "archive_unit": "year_symbol_direct_periodicity_with_both_offer_sides",
+    "counts": {
+      "years": 4,
+      "symbols": 25,
+      "direct_periodicities": 2,
+      "offer_sides": 2,
+      "new_archives": 200,
+      "new_year_manifests": 4,
+      "direct_side_series_years": 400,
+      "derived_combined_side_series_years": 600,
+      "derived_side_series_years": 1200,
+      "base_weekly_source_identities": 10400,
+      "frozen_present_source_identities": 10084,
+      "frozen_known_missing_source_identities": 316,
+      "private_objects_to_upload_and_redownload": 204
+    },
+    "year_counts": {
+      "2022": {"present": 2600, "known_missing": 0, "archives": 50, "manifests": 1},
+      "2023": {"present": 2600, "known_missing": 0, "archives": 50, "manifests": 1},
+      "2024": {"present": 2479, "known_missing": 121, "archives": 50, "manifests": 1},
+      "2025": {"present": 2405, "known_missing": 195, "archives": 50, "manifests": 1}
+    },
+    "source_policy": "REQUEST_ONLY_EXACT_FROZEN_PRESENT_IDENTITIES; NEVER_REQUEST_OR_FILL_KNOWN_MISSING",
+    "transaction": {
+      "drive_root_id": "1lZ0CkTn3tBxStf5H3V7W38ZcOsZ5Rw_v",
+      "drive_root_name": "Phase9 FXCM Data Vault",
+      "transaction_name": "v2-txn-run-33705800232",
+      "workflow_run_id": 33705800232,
+      "workflow_run_attempt": 1,
+      "head_sha": "be864557a8e16d253e6aecf1519f85ad6162c1a3",
+      "observed_state": "ACQUIRING",
+      "canonical_v2_folder_count": 0,
+      "preserved_2012_2021_archives": 500,
+      "preserved_2012_2021_manifests": 10,
+      "preserved_2012_2021_archive_bytes": 2548863404,
+      "empty_2022_2025_archives": 0,
+      "empty_2022_2025_manifests": 0,
+      "expected_final_archives": 700,
+      "expected_final_manifests": 14
+    },
+    "anchors_sha256": {
+      "acquisition_v2": "209a133895f4035fba9036fb4d05b4ebc8279011110069ad0021c5830e5b2e6a",
+      "partitions_v2": "b8e588f7cf69b1cefe64271c3a426b1fa88b9182c9f75fdee0644d9049d2c42b",
+      "manifest_schema_v2": "11417d92df817bccadeb826590cd40ea44d0aaff64c1a6203cc12d105d5e1037",
+      "formal_boundary_v2": "f516904dfeace5c9bac87c7ba2d65a5970a1aced8c884817e6a1fd77ddd2a042",
+      "availability_mask_v2": "0dcda17adbe53c9572492425405c7feb4b972e0b0312dcbf6d04c0aa4e20f014",
+      "operational_hardening_v2_1": "03b8ecaa6a75a1df797f8c4de5fbdf5b59ce0a5655957a5f04c1ab595301434b",
+      "read_only_inventory_contract_v2_1": "baf02b5d423097f4ac0f4a4b06ebdf8801147c20fb30182ded05c19610bfa7cc",
+      "read_only_inventory_independent_audit": "fa43cbedfd2588a179c8086188793231e637f2433b4164d28bcb154773c0c928",
+      "read_only_inventory_year_digest": "4a0f0cfb78ead6d6730ca7b41b716de8e2fef984e7f36ded17828d9e7b40dc4d",
+      "recovery_v2_2_spec": "b28800eed38fc3fcf156d84edecf95700c3453b553ca494877c9a16de62a0a32"
+    }
+  },
+  "commodity": {
+    "contract_version": "commodity-v1-proposed",
+    "separate_from_fxcm_v2": true,
+    "interval": {
+      "start_inclusive": "2012-01-01T00:00:00Z",
+      "end_exclusive": "2026-01-01T00:00:00Z",
+      "years": [2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025],
+      "scope_change_authorized_by_user": true
+    },
+    "provider": "Dukascopy Bank SA",
+    "interface": "authenticated JForex API historical bars",
+    "source_version": {
+      "dds2_client": "3.6.51",
+      "api": "2.13.99",
+      "pom_sha256": "ea80b6e0c938ca4831d723f29ec2ca311967788b00c6218c6768b91cbdb28bd9",
+      "root_jar_sha256": "daf2d98cded0a8ff85276965f0c10eb01692acff7949a5898ab295708e2c26c2",
+      "sdk_zip_sha256": "a7a2fb6c070f800145adf5d88a7de9ed37e7544878b12b4312ea006365947016",
+      "provider_dataset_release": "UNPUBLISHED_UNVERSIONED"
+    },
+    "mapping": {
+      "XAUUSD": "XAU/USD",
+      "XAGUSD": "XAG/USD",
+      "BRENTCMDUSD": "BRENT.CMD/USD",
+      "LIGHTCMDUSD": "LIGHT.CMD/USD"
+    },
+    "direct_periodicities": ["ONE_MIN", "ONE_HOUR"],
+    "derived_periodicities": ["M5", "M15", "M30", "H4", "D1", "W1"],
+    "offer_sides": ["BID", "ASK"],
+    "timestamp_semantics": "UTC_BAR_OPEN; API_END_BAR_INCLUSIVE_TRANSLATED_TO_CONTRACT_END_EXCLUSIVE",
+    "counts": {
+      "years": 14,
+      "symbols": 4,
+      "direct_periodicities": 2,
+      "offer_sides": 2,
+      "new_archives_if_fully_available": 112,
+      "new_year_manifests_if_fully_available": 14,
+      "direct_side_series_years_if_fully_available": 224,
+      "derived_combined_side_series_years_if_fully_available": 336,
+      "derived_side_series_years_if_fully_available": 672,
+      "private_objects_to_upload_and_redownload_if_fully_available": 126,
+      "source_rows": "UNKNOWN_UNTIL_AUTHORIZED_ACQUISITION"
+    },
+    "series_policy": {
+      "metals": "PRESERVE_PROVIDER_NATIVE_QUOTE_SERIES",
+      "energy": "PRESERVE_UNADJUSTED_PROVIDER_CONTINUOUS_SPOT_CFD_QUOTES",
+      "local_futures_stitching": false,
+      "back_adjustment": false,
+      "ratio_adjustment": false,
+      "infer_roll_from_price": false,
+      "roll_metadata_required": true
+    },
+    "license_state": "CONDITIONAL_PERSONAL_NONCOMMERCIAL_ALT_SOURCE_UNRESOLVED",
+    "alternative_market_data_source": {
+      "state": "UNRESOLVED",
+      "provider": null,
+      "version": null,
+      "license": null,
+      "access_method": null
+    },
+    "storage": {
+      "logical_path": "My Drive / Phase9 Commodity Data Vault / commodity-v1/",
+      "drive_root_id": "TBD_UNDER_GATE_4",
+      "public_artifact": false,
+      "private_upload_redownload_sha256_required": true
+    },
+    "inventory_only_commodities": ["GAS.CMD/USD", "COPPER.CMD/USD", "DIESEL.CMD/USD", "COFFEE.CMD/USX", "COCOA.CMD/USD", "SUGAR.CMD/USD", "COTTON.CMD/USX", "OJUICE.CMD/USX", "SOYBEAN.CMD/USX", "XPT.CMD/USD", "XPD.CMD/USD"],
+    "inventory_only_indices": ["AUS.IDX/AUD", "ESP.IDX/EUR", "EUS.IDX/EUR", "HKG.IDX/HKD", "DEU.IDX/EUR", "FRA.IDX/EUR", "CHE.IDX/CHF", "GBR.IDX/GBP", "JPN.IDX/JPY", "USA30.IDX/USD", "USATECH.IDX/USD", "USA500.IDX/USD", "USSC2000.IDX/USD", "CHI.IDX/USD", "DOLLAR.IDX/USD", "NLD.IDX/EUR", "SGD.IDX/SGD", "PLN.IDX/PLN", "VOL.IDX/USD", "SOA.IDX/ZAR", "ITA.IDX/EUR"],
+    "inventory_only_acquisition_authorized": false
+  },
+  "qc": {
+    "hashes_required": ["source_payload_sha256", "canonical_csv_sha256", "timestamp_column_sha256", "missing_bucket_identities_sha256"],
+    "reject": ["DUPLICATE_TIMESTAMP", "DUPLICATE_SHARD", "DUPLICATE_ARCHIVE_MEMBER", "UNKNOWN_ARCHIVE_MEMBER", "PATH_TRAVERSAL", "SYMLINK_MEMBER", "OUT_OF_INTERVAL_ROW", "UNSORTED_TIMESTAMP", "NONFINITE_OHLC", "INVALID_OHLC_ORDER", "NEGATIVE_SPREAD"],
+    "missing_bucket_policy": "DROP_COUNT_AND_HASH; NO_INTERPOLATION; NO_FORWARD_FILL",
+    "low_timeframe_completeness": "M5_M15_M30_EXACT_EXPECTED_M1_TIMESTAMP_SET",
+    "high_timeframe_completeness": "H4_D1_W1_EXACT_INDEPENDENT_EXPECTED_H1_TIMESTAMP_SET; MISSING_OR_EXTRA_FAIL",
+    "derived_storage": "REGENERATE_ON_DEMAND_AND_STORE_ONLY_HASHED_FINGERPRINTS_IN_MANIFEST",
+    "archive_reopen_validation": ["AFTER_LOCAL_CREATION", "AFTER_PRIVATE_REDOWNLOAD"]
+  },
+  "data_lifecycle": {
+    "git_price_bytes": false,
+    "public_artifact_price_bytes": false,
+    "cache_price_bytes": false,
+    "logs_price_bytes": false,
+    "normal_success_failure_cancel_cleanup": "FINALLY_TRAP_AND_ALWAYS_STEP",
+    "forced_runner_loss": "EPHEMERAL_RUNNER_TEARDOWN; NO_REMOTE_PLAINTEXT; CLEANUP_CODE_NOT_GUARANTEED",
+    "private_redownload_sha256_required": true
+  },
+  "sealed_use": {
+    "2022_2023": "ROBUSTNESS_SEALED_NO_RESEARCH_USE",
+    "2024_2025": "FINAL_HOLDOUT_SEALED_NO_RESEARCH_USE",
+    "forbidden_outputs": ["SIGNAL", "COUNT", "RETURN", "PF", "WIN_RATE", "MFE", "MAE", "RANKING", "EA"]
+  },
+  "blockers": [
+    "FX_PRICE_ACQUISITION_AND_PRIVATE_UPLOAD_MUST_RUN_IN_ONE_EPHEMERAL_WORKFLOW_WITHOUT_ARTIFACT_HANDOFF",
+    "DUKASCOPY_LICENSE_AND_SIMULTANEOUS_ALTERNATIVE_SOURCE_CONFIRMATION_REQUIRED",
+    "VERSIONED_2012_2025_COMMODITY_HOLIDAY_MAINTENANCE_SPECIAL_CLOSURE_CALENDAR_REQUIRED",
+    "VERSIONED_2012_2025_BRENT_WTI_ROLL_SWITCH_METADATA_REQUIRED",
+    "COMMODITY_PRIVATE_ROOT_ID_MAY_ONLY_BE_CREATED_AT_GATE_4",
+    "PRESERVED_FX_2012_2021_HIGH_TIMEFRAME_QC_REQUIRES_COMPATIBILITY_OVERLAY_AND_LATER_RECHECK"
+  ],
+  "superseded_split_gate_files": {
+    "fx": [
+      "research/phase9-exploratory-fxcm-20260901/spec/fxcm_drive_vault_run1_recovery_execution_v2_3.frozen.json",
+      "research/phase9-exploratory-fxcm-20260901/spec/fxcm_drive_vault_recovery_handoff_encryption_v2_3.frozen.json",
+      "research/phase9-exploratory-fxcm-20260901/spec/fxcm_drive_vault_recovery_manifest_overlay_v2_3.frozen.json",
+      "research/phase9-exploratory-fxcm-20260901/runner/fxcm_drive_vault_run1_recovery_local_v2_3.py",
+      "research/phase9-exploratory-fxcm-20260901/runner/fxcm_drive_vault_run1_recovery_upload_v2_3.py",
+      "research/phase9-exploratory-fxcm-20260901/runner/fxcm_drive_vault_run1_finalize_v2_3.py",
+      "research/phase9-exploratory-fxcm-20260901/runner/verify_fxcm_drive_vault_run1_recovery_v2_3.py",
+      ".github/workflows/phase9-exploratory-fxcm-drive-vault-run1-recovery-local-v2-3.yml",
+      ".github/workflows/phase9-exploratory-fxcm-drive-vault-run1-recovery-private-upload-v2-3.yml",
+      ".github/workflows/phase9-exploratory-fxcm-drive-vault-run1-finalize-v2-3.yml",
+      "research/phase9-exploratory-fxcm-20260901/tests/test_fxcm_drive_vault_run1_recovery_v2_3_contract.py",
+      "research/phase9-exploratory-fxcm-20260901/tests/test_fxcm_drive_vault_run1_recovery_v2_3_qc.py",
+      "research/phase9-exploratory-fxcm-20260901/tests/test_fxcm_drive_vault_run1_recovery_v2_3_workflow.py",
+      "research/phase9-exploratory-fxcm-20260901/tests/test_fxcm_drive_vault_run1_recovery_v2_3_transaction.py",
+      "research/phase9-exploratory-fxcm-20260901/tests/test_fxcm_drive_vault_run1_recovery_v2_3_security.py"
+    ],
+    "commodity": [
+      "research/data-vault-2022-2025-20260903/spec/commodity_acquisition_v1.frozen.json",
+      "research/data-vault-2022-2025-20260903/spec/commodity_calendar_roll_v1.frozen.json",
+      "research/data-vault-2022-2025-20260903/spec/commodity_manifest_v1.schema.json",
+      "research/data-vault-2022-2025-20260903/spec/commodity_qc_v1.frozen.json",
+      "research/data-vault-2022-2025-20260903/spec/commodity_handoff_v1.frozen.json",
+      "research/data-vault-2022-2025-20260903/spec/commodity_transaction_v1.frozen.json",
+      "research/data-vault-2022-2025-20260903/runner/commodity_acquire_qc_local_v1.py",
+      "research/data-vault-2022-2025-20260903/runner/commodity_private_upload_verify_v1.py",
+      "research/data-vault-2022-2025-20260903/runner/commodity_transaction_finalize_v1.py",
+      ".github/workflows/phase9-exploratory-commodity-acquire-qc-v1.yml",
+      ".github/workflows/phase9-exploratory-commodity-private-upload-v1.yml",
+      ".github/workflows/phase9-exploratory-commodity-finalize-v1.yml",
+      "research/data-vault-2022-2025-20260903/tests/test_commodity_v1_contract.py",
+      "research/data-vault-2022-2025-20260903/tests/test_commodity_v1_qc.py",
+      "research/data-vault-2022-2025-20260903/tests/test_commodity_v1_workflow.py",
+      "research/data-vault-2022-2025-20260903/tests/test_commodity_v1_transaction.py",
+      "research/data-vault-2022-2025-20260903/tests/test_commodity_v1_security.py"
+    ]
+  },
+  "batch6_denylist": [
+    "research/phase9-exploratory-fxcm-20260901/BATCH6_FAST_TRACK_DESIGN_PREAUDIT_V1.md",
+    "research/phase9-exploratory-fxcm-20260901/results/batch6-fast-track-design-v1/BLIND_MTF_BATCH6_FAST_TRACK_DESIGN_INDEPENDENT_AUDIT.json",
+    "research/phase9-exploratory-fxcm-20260901/runner/verify_fxcm_blind_mtf_batch6_fast_track_design.py",
+    "research/phase9-exploratory-fxcm-20260901/spec/fxcm_blind_mtf_batch6_fast_track_design_v1.frozen.json",
+    "research/phase9-exploratory-fxcm-20260901/tests/test_fxcm_blind_mtf_batch6_fast_track_design.py"
+  ],
+  "current_authorization": {
+    "fx_implementation": true,
+    "fx_commit": true,
+    "fx_push": true,
+    "commodity_implementation": false,
+    "commodity_commit": false,
+    "commodity_push": false,
+    "workflow_dispatch": false,
+    "price_access": false,
+    "oauth_token_exchange": false,
+    "drive_access": false,
+    "drive_write": false,
+    "drive_content_download": false,
+    "transaction_finalization": false,
+    "cleanup": false,
+    "research_use": false
+  },
+  "commodity_metadata_decision": "HOLD_UNTIL_AUTHORITATIVE_CALENDAR_AND_ROLL_DATA"
+}

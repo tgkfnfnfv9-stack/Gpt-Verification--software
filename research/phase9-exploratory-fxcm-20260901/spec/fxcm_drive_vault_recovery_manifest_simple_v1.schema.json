@@ -1,0 +1,48 @@
+{
+  "schema_version": "phase9-exploratory-fxcm-drive-vault-recovery-manifest-simple-v1.0.0",
+  "status": "FROZEN_IMPLEMENTED_NOT_AUTHORIZED_FOR_EXECUTION",
+  "year_manifest_exact_keys": [
+    "schema_version", "status", "vault_version", "recovery_version",
+    "source_run_id", "source_head_sha", "recovery_run_id",
+    "recovery_run_attempt", "recovery_head_sha", "year", "partition_id",
+    "recovery_contract_sha256", "availability_mask_sha256",
+    "base_source_object_count", "source_object_count",
+    "known_missing_source_object_count", "shard_count", "zstd_version",
+    "shards_sha256", "derived_qc_sha256", "source_object_inventory_sha256",
+    "source_payload_sha256_present", "canonical_csv_sha256_present",
+    "timestamp_column_sha256_present", "missing_bucket_timestamp_sha256_present",
+    "archive_exact_member_validation_passed", "duplicate_shard_count",
+    "forward_fill_count", "interpolation_count",
+    "formal_phase9_authorization_effect", "research_outcomes_calculated",
+    "outcome_fields", "stage_folder_id", "shards", "derived_qc"
+  ],
+  "shard_exact_keys": [
+    "vault_version", "recovery_version", "source_run_id", "source_head_sha",
+    "recovery_run_id", "recovery_run_attempt", "recovery_head_sha",
+    "recovery_contract_sha256", "availability_mask_sha256",
+    "year", "symbol", "periodicity", "partition_id", "archive_name",
+    "archive_sha256", "archive_bytes", "archive_member_names_sha256",
+    "archive_exact_member_validation", "canonical_row_count",
+    "canonical_first_timestamp_utc", "canonical_last_timestamp_utc",
+    "canonical_timestamp_sha256", "canonical_csv_sha256", "base_week_count",
+    "present_week_indices", "known_missing_week_indices", "source_object_count",
+    "source_objects", "source_object_inventory_sha256", "observed_row_count",
+    "usable_row_count", "crossed_quote_count", "crossed_quote_event_sha256",
+    "duplicate_count", "gap_segment_count", "missing_nominal_slot_count",
+    "volume_status", "field_schema", "qc_status",
+    "drive_upload_redownload_sha256_verified", "drive_file_id"
+  ],
+  "derived_required_timeframes": ["M5", "M15", "M30", "H4", "D1", "W1", "H1_cross_check"],
+  "derived_timeframe_required_keys": [
+    "candidate_bucket_count", "complete_bucket_count", "dropped_bucket_count",
+    "completed_bucket_timestamp_sha256", "dropped_bucket_timestamp_sha256",
+    "missing_component_timestamp_count", "missing_component_timestamp_sha256",
+    "extra_component_timestamp_count", "extra_component_timestamp_sha256",
+    "canonical_bucket_sha256", "completeness_reference"
+  ],
+  "hash_algorithm": "SHA-256",
+  "hash_encoding": "LOWERCASE_HEX",
+  "identity_hash_serialization": "ASCII_IDENTITY_PLUS_LF_IN_ASCENDING_ORDER",
+  "derived_canonical_serialization": "timestamp_utc,bid_open,bid_high,bid_low,bid_close,ask_open,ask_high,ask_low,ask_close,volume_status,volume LF",
+  "additional_properties": false
+}

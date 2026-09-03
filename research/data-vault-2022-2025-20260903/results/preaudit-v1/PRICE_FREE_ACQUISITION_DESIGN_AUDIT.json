@@ -1,0 +1,105 @@
+{
+  "schema": "price-free-acquisition-design-audit-v1.1.0",
+  "status": "PASS_GATE2_SIMPLE_FX_IMPLEMENTATION_READY_TO_COMMIT",
+  "recorded_utc_date": "2026-09-03",
+  "baseline": {
+    "repository": "tgkfnfnfv9-stack/Gpt-Verification--software",
+    "remote_main_sha": "b06c815547e8dbd354a54c554af4ab8b516da348",
+    "local_head_sha": "b06c815547e8dbd354a54c554af4ab8b516da348",
+    "authoritative_sources_reviewed": [
+      "remote main HEAD",
+      "AGENTS.md",
+      "PHASE9_OPERATIONS_GUIDE.md",
+      "Vault V2/V2.1/V2.2 contracts",
+      "Vault V2/V2.1/V2.2 audit results"
+    ]
+  },
+  "scope": {
+    "fx_interval": "[2022-01-01T00:00:00Z, 2026-01-01T00:00:00Z)",
+    "fx_symbols": 25,
+    "fx_recovery_archives": 200,
+    "fx_year_manifests": 4,
+    "fx_private_objects": 204,
+    "fx_frozen_present_identities": 10084,
+    "fx_frozen_known_missing_identities": 316,
+    "commodity_interval": "[2012-01-01T00:00:00Z, 2026-01-01T00:00:00Z)",
+    "commodity_symbols": 4,
+    "commodity_archives_if_fully_available": 112,
+    "commodity_year_manifests_if_fully_available": 14,
+    "commodity_private_objects_if_fully_available": 126,
+    "other_products": "AVAILABILITY_INVENTORY_ONLY"
+  },
+  "offline_verification": {
+    "preaudit_verifier_status": "PASS",
+    "preaudit_verifier_assertions": 31,
+    "unit_tests_passed": 26,
+    "unit_tests_failed": 0,
+    "network_access": 0,
+    "price_access": 0,
+    "oauth_token_exchange": 0,
+    "drive_access": 0,
+    "drive_mutation": 0,
+    "workflow_dispatch": 0,
+    "commit": 0,
+    "push": 0
+  },
+  "review_findings": {
+    "fx_contract_audit": "PASS_NO_P0",
+    "qc_manifest_audit": "PASS_NO_P0",
+    "workflow_security_audit": "PASS_NO_P0_STATIC_REAUDIT",
+    "boundary_redteam_audit": "PASS_CODE_LEVEL_NO_P0_AUDIT_REFRESH_REQUIRED",
+    "commodity_provider_audit": "GATE2_TECHNICAL_DESIGN_ONLY_GATE3_HOLD_ALT_SOURCE_UNRESOLVED",
+    "commodity_roll_calendar_audit": "COUNTS_PASS_HOLD_AUTHORITATIVE_2012_2025_CALENDAR_AND_ROLL_DATA"
+  },
+  "implemented_controls": [
+    "ONE_MANUAL_SEQUENTIAL_2022_2025_JOB",
+    "NO_ARTIFACT_HANDOFF",
+    "PER_YEAR_ALL_50_LOCAL_ARCHIVES_AND_QC_BEFORE_UPLOAD",
+    "FROZEN_PRESENT_ONLY_KNOWN_MISSING_NEVER_REQUESTED",
+    "INDEPENDENT_DST_AWARE_EXPECTED_M1_H1_TIMESTAMP_SETS",
+    "MISSING_BUCKET_DROP_COUNT_HASH_NO_FILL",
+    "SOURCE_CANONICAL_TIMESTAMP_SHA256",
+    "ARCHIVE_EXACT_MEMBER_REOPEN_AFTER_CREATION_AND_REDOWNLOAD",
+    "PRIVATE_UPLOAD_REDOWNLOAD_SHA256",
+    "DUPLICATE_SHARD_AND_STAGE_INVENTORY_REJECTION",
+    "PRESERVED_INVENTORY_CANONICAL_DIGEST_EXACT_MATCH",
+    "OAUTH_SECRETS_ONLY_ON_PYTHON_COMMAND_AND_REMOVED_BEFORE_SUBPROCESSES",
+    "SUCCESS_FAILURE_CANCEL_LOCAL_CLEANUP"
+  ],
+  "blockers": [
+    "FX_WORKFLOW_DISPATCH_PRICE_ACCESS_OAUTH_AND_DRIVE_WRITE_REQUIRE_NEXT_APPROVAL",
+    "FX_TRANSACTION_REMAINS_UNSEALED_UNTIL_SEPARATE_MIXED_PROVENANCE_FINALIZER",
+    "COMMODITY_ALTERNATIVE_MARKET_DATA_SOURCE_UNRESOLVED",
+    "VERSIONED_2012_2025_COMMODITY_HOLIDAY_MAINTENANCE_SPECIAL_CLOSURE_CALENDAR_REQUIRED",
+    "VERSIONED_2012_2025_BRENT_WTI_ROLL_SWITCH_METADATA_REQUIRED",
+    "COMMODITY_PRIVATE_ROOT_CREATION_AT_GATE_4_ONLY"
+  ],
+  "batch6": {
+    "denylisted_files_checked": 5,
+    "git_diff": "EMPTY",
+    "modified": false
+  },
+  "artifact_sha256": {
+    "DATA_ACQUISITION_PREAUDIT_V1.md": "156661ffa5defadf96d83a5c133c871db1be2fba1194c509d7d4473006b7a998",
+    "sources/DUKASCOPY_COMMODITY_SOURCE_EVIDENCE.md": "a226b6c900f0a11ab5054ec787562226513136689a153f80f17c33e6b21c271c",
+    "spec/acquisition_design_v1.preaudit.json": "9d539f7de072078f0d2208735319be3de62d08973faba95fc002de5ffd6d6c39",
+    "runner/verify_price_free_acquisition_design_v1.py": "b54b56dc5af162508ef823ffb867b8d838d2f0d0aa84ed90dda1b7fd491bf267",
+    "tests/test_price_free_acquisition_design_v1.py": "1672b1bf6906532e8c40434a96dad89118893fca42c34b38cc74e06945eaae1",
+    ".github/workflows/phase9-exploratory-fxcm-drive-vault-run1-recovery-simple-v1.yml": "57d9b1bb260d69d11206c555b383a397f92f2410aeba95e081258d1e2f057d71",
+    "spec/fxcm_drive_vault_run1_recovery_simple_v1.frozen.json": "d9720058ce7f7261aba20b90f8bc60e3e9a9721fec109fdbbe8ba4f3739be542",
+    "spec/fxcm_drive_vault_recovery_manifest_simple_v1.schema.json": "9df2486f4d65a553052a05f5bcbe7c33802f816dc4cce33648e417212a0dc95a",
+    "runner/fxcm_drive_vault_run1_recovery_simple_v1.py": "24d58cf27bc58925493752df84ea0bc98e16550fcfdbc405a049189e152f8cc3",
+    "runner/verify_fxcm_drive_vault_run1_recovery_simple_v1.py": "135ef7bdf033d96bba979a8d63d13246b9f1fa49b3e2522f2de3399dada25417",
+    "tests/test_fxcm_drive_vault_run1_recovery_simple_v1.py": "4e87bc705c26d6b69f9726456dfa18ccc347b5dc570eacc2184e8ac2fc8fa639",
+    "tests/test_fxcm_drive_vault_run1_recovery_simple_v1_security.py": "d0c62b1bba68ee810c5c59b0c0742acd312a33548789b0ff9f93a16c5eb960a1"
+  },
+  "authorization": {
+    "gate_1_complete": true,
+    "gate_2_simple_fx_implementation_commit_push": true,
+    "commodity_implementation": false,
+    "gate_3": false,
+    "gate_4": false,
+    "gate_5": false
+  },
+  "stop_condition": "AFTER_COMMIT_PUSH_BEFORE_WORKFLOW_DISPATCH_PRICE_ACCESS_OAUTH_OR_DRIVE"
+}

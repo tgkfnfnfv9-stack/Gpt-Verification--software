@@ -1,0 +1,139 @@
+name: phase9-exploratory-fxcm-run1-recovery-simple-v1
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirmation:
+        description: 'Type RUN_FXCM_2022_2025_RECOVERY_QC_PRIVATE_UPLOAD_ONCE'
+        required: true
+        type: string
+      usage_confirmation:
+        description: 'Type I_CONFIRM_PERSONAL_NONCOMMERCIAL_USE_AND_ACCEPT_FXCM_EULA'
+        required: true
+        type: string
+      scope_confirmation:
+        description: 'Type I_ACCEPT_10084_PRESENT_316_KNOWN_MISSING_AND_STAGE_UNSEALED_2022_2025'
+        required: true
+        type: string
+      expected_head_sha:
+        description: 'Exact published main SHA reviewed before this one-time run'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: phase9-exploratory-fxcm-run1-recovery-simple-v1
+  cancel-in-progress: false
+
+jobs:
+  preflight:
+    if: >-
+      github.repository == 'tgkfnfnfv9-stack/Gpt-Verification--software' &&
+      github.ref == 'refs/heads/main' &&
+      github.run_number == 1 &&
+      github.run_attempt == 1 &&
+      inputs.confirmation == 'RUN_FXCM_2022_2025_RECOVERY_QC_PRIVATE_UPLOAD_ONCE' &&
+      inputs.scope_confirmation == 'I_ACCEPT_10084_PRESENT_316_KNOWN_MISSING_AND_STAGE_UNSEALED_2022_2025' &&
+      inputs.usage_confirmation == 'I_CONFIRM_PERSONAL_NONCOMMERCIAL_USE_AND_ACCEPT_FXCM_EULA' &&
+      inputs.expected_head_sha == github.sha
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Checkout exact reviewed main commit
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+          ref: ${{ github.sha }}
+
+      - name: Verify simplified recovery implementation offline
+        shell: bash
+        run: |
+          set -euo pipefail
+          track='research/phase9-exploratory-fxcm-20260901'
+          PYTHONDONTWRITEBYTECODE=1 python3 "$track/runner/verify_fxcm_drive_vault_run1_recovery_simple_v1.py" \
+            --contract "$track/spec/fxcm_drive_vault_run1_recovery_simple_v1.frozen.json" \
+            --runner "$track/runner/fxcm_drive_vault_run1_recovery_simple_v1.py" \
+            --workflow '.github/workflows/phase9-exploratory-fxcm-drive-vault-run1-recovery-simple-v1.yml'
+          PYTHONDONTWRITEBYTECODE=1 python3 -m unittest \
+            "$track/tests/test_fxcm_drive_vault_run1_recovery_simple_v1.py" \
+            "$track/tests/test_fxcm_drive_vault_run1_recovery_simple_v1_security.py"
+          git diff --exit-code
+
+  recover-four-years:
+    needs: preflight
+    environment: phase9-fxcm-vault-acquisition-v2
+    runs-on: ubuntu-24.04
+    timeout-minutes: 360
+    steps:
+      - name: Checkout exact reviewed main commit
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+          ref: ${{ github.sha }}
+
+      - name: Acquire QC private-upload and re-download four years sequentially
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          track='research/phase9-exploratory-fxcm-20260901'
+          work=''
+          cleanup_current() {
+            if [[ -n "$work" ]]; then
+              test "$(dirname "$work")" = "$RUNNER_TEMP"
+              [[ "$(basename "$work")" =~ ^fxcm-recovery-simple-v1-(2022|2023|2024|2025)-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}$ ]]
+              test ! -L "$work"
+              if [[ -d "$work" ]]; then
+                find "$work" -depth -type f -delete
+                find "$work" -depth -type d -empty -delete
+              fi
+              test ! -e "$work"
+            fi
+          }
+          trap cleanup_current EXIT INT TERM HUP
+          for year in 2022 2023 2024 2025; do
+            work="$RUNNER_TEMP/fxcm-recovery-simple-v1-${year}-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+            PHASE9_GDRIVE_OAUTH_CLIENT_ID='${{ secrets.PHASE9_GDRIVE_OAUTH_CLIENT_ID }}' \
+            PHASE9_GDRIVE_OAUTH_CLIENT_SECRET='${{ secrets.PHASE9_GDRIVE_OAUTH_CLIENT_SECRET }}' \
+            PHASE9_GDRIVE_OAUTH_REFRESH_TOKEN='${{ secrets.PHASE9_GDRIVE_OAUTH_REFRESH_TOKEN }}' \
+            python3 "$track/runner/fxcm_drive_vault_run1_recovery_simple_v1.py" \
+              --recovery-contract "$track/spec/fxcm_drive_vault_run1_recovery_simple_v1.frozen.json" \
+              --recovery-manifest-schema "$track/spec/fxcm_drive_vault_recovery_manifest_simple_v1.schema.json" \
+              --recovery-design "$track/spec/fxcm_drive_vault_run1_recovery_v2_2.frozen.json" \
+              --acquisition-contract "$track/spec/fxcm_drive_vault_acquisition_v2.frozen.json" \
+              --partitions-contract "$track/spec/fxcm_drive_vault_partitions_v2.frozen.json" \
+              --manifest-schema "$track/spec/fxcm_drive_vault_manifest_schema_v2.frozen.json" \
+              --formal-boundary "$track/spec/fxcm_drive_vault_formal_boundary_amendment_v2.frozen.json" \
+              --availability-mask "$track/spec/fxcm_drive_vault_availability_mask_v2.frozen.json" \
+              --operational-amendment "$track/spec/fxcm_drive_vault_operational_hardening_v2_1.frozen.json" \
+              --year "$year" --run-id "$GITHUB_RUN_ID" --run-attempt "$GITHUB_RUN_ATTEMPT" \
+              --head-sha "$GITHUB_SHA" --work-dir "$work" \
+              --confirmation '${{ inputs.confirmation }}' \
+              --scope-confirmation '${{ inputs.scope_confirmation }}' \
+              --usage-confirmation '${{ inputs.usage_confirmation }}'
+            cleanup_current
+            work=''
+          done
+
+      - name: Always remove local price workspace
+        if: ${{ always() }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          for year in 2022 2023 2024 2025; do
+            work="$RUNNER_TEMP/fxcm-recovery-simple-v1-${year}-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+            test "$(dirname "$work")" = "$RUNNER_TEMP"
+            test ! -L "$work"
+            if [[ -d "$work" ]]; then
+              find "$work" -depth -type f -delete
+              find "$work" -depth -type d -empty -delete
+            fi
+            test ! -e "$work"
+          done
+
+      # No artifact handoff: raw and canonical price files never leave the
+      # ephemeral runner except through the approved private Drive upload.
